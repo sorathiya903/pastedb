@@ -1,1 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+  <title>PasteDB - Create Paste</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      background:#000;
+      color:#fff;
+      font-family:'Inter',sans-serif;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .bg-glow{
+      position:fixed;
+      width:500px;
+      height:500px;
+      border-radius:50%;
+      background:rgba(255,255,255,0.03);
+      filter:blur(120px);
+      z-index:-1;
+    }
+
+    .glow-1{
+      top:-150px;
+      left:-100px;
+    }
+
+    .glow-2{
+      bottom:-150px;
+      right:-100px;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      backdrop-filter:blur(20px);
+      background:rgba(0,0,0,0.7);
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+
+    .navbar{
+      max-width:1400px;
+      margin:auto;
+      padding:18px 25px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .logo-box{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:rgba(255,255,255,0.03);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 0 40px rgba(255,255,255,0.05);
+    }
+
+    .logo-box div{
+      width:16px;
+      height:16px;
+      background:#fff;
+      border-radius:4px;
+    }
+
+    .logo h1{
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .logo p{
+      font-size:12px;
+      color:#777;
+      margin-top:2px;
+    }
+
+    .nav-btn{
+      padding:12px 22px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:#fff;
+      color:#000;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .nav-btn:hover{
+      background:#000;
+      color:#fff;
+    }
+
+    .nav-btn:active{
+      transform:scale(0.96);
+    }
+
+    main{
+      max-width:1400px;
+      margin:auto;
+      padding:40px 25px;
+    }
+
+    .container{
+      display:grid;
+      grid-template-columns:1fr 340px;
+      gap:30px;
+
+      opacity:0;
+      transform:translateY(30px);
+      animation:fadeUp 0.7s ease forwards;
+    }
+
+    @keyframes fadeUp{
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .editor{
+      background:#0a0a0a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:32px;
+      overflow:hidden;
+      box-shadow:0 0 80px rgba(255,255,255,0.03);
+    }
+
+    .editor-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:22px 28px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.02);
+    }
+
+    .editor-header h2{
+      font-size:20px;
+      font-weight:600;
+    }
+
+    .editor-header p{
+      color:#777;
+      font-size:14px;
+      margin-top:4px;
+    }
+
+    .dots{
+      display:flex;
+      gap:8px;
+    }
+
+    .dots div{
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      background:#555;
+    }
+
+    .editor-body{
+      display:flex;
+      min-height:700px;
+    }
+
+    .lines{
+      width:70px;
+      padding:24px 14px;
+      border-right:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.02);
+
+      font-family:'JetBrains Mono', monospace;
+      color:#555;
+      text-align:right;
+      user-select:none;
+    }
+
+    .lines div{
+      line-height:34px;
+      font-size:14px;
+    }
+
+    textarea{
+      flex:1;
+      background:transparent;
+      border:none;
+      outline:none;
+      resize:none;
+      padding:24px;
+
+      color:#fff;
+      font-size:15px;
+      line-height:34px;
+
+      font-family:'JetBrains Mono', monospace;
+    }
+
+    textarea::placeholder{
+      color:#444;
+    }
+
+    textarea:focus{
+      box-shadow:inset 0 0 0 1px #fff;
+    }
+
+    .sidebar{
+      background:#0a0a0a;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:32px;
+      height:fit-content;
+      position:sticky;
+      top:100px;
+
+      box-shadow:0 0 80px rgba(255,255,255,0.03);
+    }
+
+    .sidebar-header{
+      padding:24px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header h3{
+      font-size:20px;
+      font-weight:600;
+    }
+
+    .sidebar-header p{
+      margin-top:5px;
+      color:#777;
+      font-size:14px;
+    }
+
+    .settings{
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:10px;
+      color:#aaa;
+      font-size:14px;
+    }
+
+    input,
+    select{
+      width:100%;
+      padding:14px 16px;
+
+      background:#000;
+      color:#fff;
+
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+
+      outline:none;
+      transition:0.3s;
+    }
+
+    input:focus,
+    select:focus{
+      border-color:#fff;
+    }
+
+    .visibility{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+
+    .visibility button{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.08);
+
+      background:#111;
+      color:#fff;
+
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .visibility button:hover{
+      background:#fff;
+      color:#000;
+    }
+
+    .visibility button:active{
+      transform:scale(0.96);
+    }
+
+    .visibility .active{
+      background:#fff;
+      color:#000;
+    }
+
+    .create-btn{
+      width:100%;
+      padding:18px;
+
+      border:none;
+      border-radius:20px;
+
+      background:#fff;
+      color:#000;
+
+      font-size:17px;
+      font-weight:600;
+
+      cursor:pointer;
+      transition:0.3s;
+
+      margin-top:10px;
+    }
+
+    .create-btn:hover{
+      background:#000;
+      color:#fff;
+      box-shadow:inset 0 0 0 1px #fff;
+    }
+
+    .create-btn:active{
+      transform:scale(0.97);
+    }
+
+    @media(max-width:1000px){
+
+      .container{
+        grid-template-columns:1fr;
+      }
+
+      .sidebar{
+        position:relative;
+        top:0;
+      }
+
+    }
+
+    @media(max-width:700px){
+
+      .editor-body{
+        min-height:500px;
+      }
+
+      .lines{
+        display:none;
+      }
+
+      textarea{
+        font-size:14px;
+      }
+
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <header>
+
+    <div class="navbar">
+
+      <div class="logo">
+
+        <div class="logo-box">
+          <div></div>
+        </div>
+
+        <div>
+          <h1>PasteDB</h1>
+          <p>Elegant text sharing</p>
+        </div>
+
+      </div>
+
+      <button class="nav-btn">
+        Sign In / Up
+      </button>
+
+    </div>
+
+  </header>
+
+  <main>
+
+    <div class="container">
+
+      <div class="editor">
+
+        <div class="editor-header">
+
+          <div>
+            <h2>Create New Paste</h2>
+            <p>Write and share beautifully.</p>
+          </div>
+
+          <div class="dots">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+
+        </div>
+
+        <div class="editor-body">
+
+          <div class="lines" id="lines"></div>
+
+          <textarea
+            placeholder="// Start writing your paste here..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+      <div class="sidebar">
+
+        <div class="sidebar-header">
+          <h3>Paste Settings</h3>
+          <p>Configure your paste options.</p>
+        </div>
+
+        <div class="settings">
+
+          <div>
+            <label>Paste Title</label>
+
+            <input
+              type="text"
+              placeholder="Untitled Paste"
+            >
+          </div>
+
+          <div>
+            <label>Syntax Highlighting</label>
+
+            <select>
+              <option>Plain Text</option>
+              <option>Python</option>
+              <option>JavaScript</option>
+              <option>HTML</option>
+              <option>CSS</option>
+              <option>JSON</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Paste Expiration</label>
+
+            <select>
+              <option>Never</option>
+              <option>10 Minutes</option>
+              <option>1 Hour</option>
+              <option>1 Day</option>
+            </select>
+          </div>
+
+          <div>
+
+            <label>Visibility</label>
+
+            <div class="visibility">
+
+              <button>
+                Public
+              </button>
+
+              <button>
+                Unlisted
+              </button>
+
+              <button>
+                Private
+              </button>
+
+            </div>
+
+          </div>
+
+          <button class="create-btn">
+            Create New Paste
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+
+    const lines = document.getElementById("lines")
+
+    for(let i = 1; i <= 40; i++){
+
+      const line = document.createElement("div")
+
+      line.textContent = i
+
+      lines.appendChild(line)
+
+    }
+
+  </script>
+
+</body>
+  </html>
