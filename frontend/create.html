@@ -582,11 +582,82 @@
         gap: 16px;
       }
     }
+    .page-loader{
+
+  position: fixed;
+
+  inset: 0;
+
+  background: var(--bg);
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999999;
+
+  transition: 0.5s ease;
+}
+
+.loader-box{
+  text-align: center;
+}
+
+.loader-spinner{
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 50%;
+
+  margin: auto auto 20px;
+
+  border: 3px solid rgba(120,120,120,0.2);
+
+  border-top: 3px solid var(--text);
+
+  animation: spin 0.8s linear infinite;
+}
+
+.loader-box h2{
+
+  font-size: 24px;
+
+  margin-bottom: 8px;
+
+  font-weight: 600;
+}
+
+.loader-box p{
+
+  color: var(--muted);
+
+  font-size: 15px;
+}
+
+@keyframes spin{
+  to{
+    transform: rotate(360deg);
+  }
+}
   </style>
 </head>
 
 <body class="">
+<div class="page-loader" id="pageLoader">
 
+  <div class="loader-box">
+
+    <div class="loader-spinner"></div>
+
+    <h2>PasteDB</h2>
+
+    <p>Preparing your workspace...</p>
+
+  </div>
+
+</div>
   <div class="bg-glow glow1"></div>
   <div class="bg-glow glow2"></div>
 
@@ -783,6 +854,22 @@
       `
     })
 
+
+        window.addEventListener("load", () => {
+
+  const loader = document.getElementById("pageLoader")
+
+  loader.style.opacity = "0"
+
+  loader.style.pointerEvents = "none"
+
+  setTimeout(() => {
+
+    loader.style.display = "none"
+
+  }, 500)
+
+})
   </script>
 
 </body>
