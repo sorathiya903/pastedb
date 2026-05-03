@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import pymongo
 
+client = MongoClient("mongodb://Aditya:Qu1IZrvVdB0ajaCm@ac-zqtl0lb-shard-00-00.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-01.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-02.fz0oqsr.mongodb.net:27017/?ssl=true&replicaSet=atlas-10lbo4-shard-0&authSource=admin&appName=Cluster0")
+db = client["pasteDB"]
+collection = db["pastes"]
 
 app = FastAPI()
 
@@ -34,4 +37,16 @@ async def test(data: DATA):
     age= data.age
     res = f"the user name is  {name} and the age is {age}."
     return {"ans":res}
+
+
+@app.post('/add')
+async def add(data:DATA):
+    user={
+        "name":data.name,
+        'age':data.age
+
+    }
+    collection.insert_one(user)
+    return {"r":f'Added {data.name} with age {data.age}.'}
+                                            
     
