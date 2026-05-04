@@ -2,3 +2,6 @@ uvicorn
 fastapi
 pydantic
 pymongo
+python-jose
+google-auth
+python-multipart
