@@ -848,49 +848,52 @@ if(data.created_at){
 
        if(data.expire_at){
 
-  const now =
-    new Date()
+  const now = new Date()
 
   const expireDate =
     new Date(data.expire_at)
 
   const diff =
-    expireDate - now
+    expireDate.getTime() - now.getTime()
 
-  const minutes =
-    Math.floor(diff / 1000 / 60)
-
-  const hours =
-    Math.floor(minutes / 60)
-
-  const days =
-    Math.floor(hours / 24)
-
-  if(days > 0){
+  if(diff <= 0){
 
     expiration.textContent =
-      `Expires in ${days} day${days > 1 ? "s" : ""}`
-
-  }
-
-  else if(hours > 0){
-
-    expiration.textContent =
-      `Expires in ${hours} hour${hours > 1 ? "s" : ""}`
-
-  }
-
-  else if(minutes > 0){
-
-    expiration.textContent =
-      `Expires in ${minutes} minute${minutes > 1 ? "s" : ""}`
+      "Expired"
 
   }
 
   else{
 
-    expiration.textContent =
-      "Expiring soon"
+    const minutes =
+      Math.floor(diff / 1000 / 60)
+
+    const hours =
+      Math.floor(minutes / 60)
+
+    const days =
+      Math.floor(hours / 24)
+
+    if(days >= 1){
+
+      expiration.textContent =
+        `Expires in ${days} day${days > 1 ? "s" : ""}`
+
+    }
+
+    else if(hours >= 1){
+
+      expiration.textContent =
+        `Expires in ${hours} hour${hours > 1 ? "s" : ""}`
+
+    }
+
+    else{
+
+      expiration.textContent =
+        `Expires in ${minutes} minute${minutes > 1 ? "s" : ""}`
+
+    }
 
   }
 
@@ -902,6 +905,7 @@ else{
     "Never expires"
 
 }
+
 
       expiration.style.display = "block"
 
