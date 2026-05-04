@@ -26,7 +26,6 @@ class GoogleLogin(BaseModel):
 
 
 # ---------------- GOOGLE LOGIN ----------------
-
 @router.post("/auth/google")
 async def google_auth(data: GoogleLogin, response: Response):
 
@@ -52,7 +51,7 @@ async def google_auth(data: GoogleLogin, response: Response):
 
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-    # ✅ FIXED INDENTATION HERE
+    # save/update user
     users_collection.update_one(
         {"email_key": email_key},
         {
@@ -69,10 +68,18 @@ async def google_auth(data: GoogleLogin, response: Response):
         upsert=True
     )
 
-    
-        response.set_cookie( key="session", value=token,httponly=True,secure=False,  samesite="lax",  max_age=60 * 60 * 24 * 7  )
+    # ✅ FIXED INDENTATION
+    response.set_cookie(
+        key="session",
+        value=token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=60 * 60 * 24 * 7
+    )
 
     return {"status": "success"}
+
 # ---------------- AUTH DEPENDENCY ----------------
 def get_current_user(request: Request):
 
