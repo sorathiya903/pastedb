@@ -66,25 +66,20 @@ async def create_new_paste(paste: PasteCreate):
         # DEFAULT
         expire_at = None
 
-        # EXPIRATION LOGIC
-
-        if paste.expiration == "10min":
-
+        if paste.expiration in ["10m", "10min"]:
             expire_at = now + timedelta(minutes=10)
 
-        elif paste.expiration == "1hour":
+        elif paste.expiration in ["1h", "1hour"]:
 
             expire_at = now + timedelta(hours=1)
 
-        elif paste.expiration == "1day":
+        elif paste.expiration in ["1d", "1day"]:
 
             expire_at = now + timedelta(days=1)
 
-        elif paste.expiration == "1week":
+        elif paste.expiration in ["1w", "1week"]:
 
             expire_at = now + timedelta(days=7)
-
-        # SAVE TO DB
 
         paste_dict["expire_at"] = expire_at
 
