@@ -20,7 +20,7 @@ db = client["pasteDB"]
 pastes_collection = db["pastes"]
 users_collection = db["users"]
 
-collection.create_index(
+pastes_collection.create_index(
     "expire_at",
     expireAfterSeconds=0
 )
