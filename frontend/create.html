@@ -771,7 +771,40 @@
             </span>
 
           </button>
+<div
+  id="pasteLinkBox"
+  style="
+    display:none;
+    margin-top:18px;
+    padding:16px;
+    border-radius:18px;
+    border:1px solid var(--border);
+    background:var(--highlight);
+    word-break:break-all;
+  "
+>
 
+  <p
+    style="
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:10px;
+    "
+  >
+    Your paste link
+  </p>
+
+  <a
+    id="pasteLink"
+    target="_blank"
+    style="
+      color:var(--text);
+      text-decoration:none;
+      font-weight:600;
+    "
+  ></a>
+
+</div>
         </div>
 
       </div>
@@ -831,8 +864,19 @@ createBtn.addEventListener("click", async () => {
     if (response.ok) {
       const data = await response.json();
       console.log("Success:", data);
-      alert("Paste created successfully!");
-        } else {
+      const pasteUrl = `https://pastedb.netlify.app/paste.html?id=${data.id}`
+
+const pasteLinkBox = document.getElementById("pasteLinkBox")
+
+const pasteLink = document.getElementById("pasteLink")
+
+pasteLink.href = pasteUrl
+pasteLink.textContent = pasteUrl
+
+pasteLinkBox.style.display = "block"
+    
+    
+    } else {
       alert("Server error: " + response.statusText);
     }
   } catch (error) {
