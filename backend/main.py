@@ -68,45 +68,65 @@ def home():
 
 
 @app.post("/create")
-async def create_paste(paste: PasteCreate, user=Depends(get_current_user)):
+async def create_paste(
+    paste: PasteCreate,
+    user=Depends(get_current_user)
+):
 
-    email_key = user["email"].replace(".", "_")
+    try:
 
-    now = datetime.now(timezone.utc)
-    expire_at = None
+        email_key = user["email"].replace(".", "_")
 
-    if paste.expiration in ["10m", "10min"]:
-        expire_at = now + timedelta(minutes=10)
+        now = datetime.now(timezone.utc)
 
-    elif paste.expiration in ["1h", "1hour"]:
+        expire_at = None
 
-        expire_at = now + timedelta(hours=1)
+        if paste.expiration in ["10m", "10min"]:
+            expire_at = now + timedelta(minutes=10)
 
-    elif paste.expiration in ["1d", "1day"]:
-        expire_at = now + timedelta(days=1)
+        elif paste.expiration in ["1h", "1hour"]:
+            expire_at = now + timedelta(hours=1)
 
-    elif paste.expiration in ["1w", "1week"]:
+        elif paste.expiration in ["1d", "1day"]:
+            expire_at = now + timedelta(days=1)
 
-        expire_at = now + timedelta(days=7)
+        elif paste.expiration in ["1w", "1week"]:
+            expire_at = now + timedelta(days=7)
 
-    paste_doc = paste.dict()
-    paste_doc.update({
-        "user_email_key": email_key,
-        "expire_at": expire_at
-    })
+        # IMPORTANT
+        paste_doc = paste.model_dump()
 
-    result = pastes_collection.insert_one(paste_doc)
+        paste_doc.update({
+            "user_email_key": email_key,
+            "expire_at": expire_at
+        })
 
-    # push paste to user
-    users_collection.update_one(
-        {"email_key": email_key},
-        {"$push": {"pastes": str(result.inserted_id)}}
-    )
+        result = pastes_collection.insert_one(
+            paste_doc
+        )
 
-    return {
-        "status": "success",
-        "id": str(result.inserted_id)
-    }
+        users_collection.update_one(
+            {"email_key": email_key},
+            {
+                "$push": {
+                    "pastes": str(result.inserted_id)
+                }
+            }
+        )
+
+        return {
+            "status": "success",
+            "id": str(result.inserted_id)
+        }
+
+    except Exception as e:
+
+        print("CREATE ERROR:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 # ---------------- GET USER DASHBOARD ----------------
