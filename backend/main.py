@@ -10,15 +10,32 @@ client = MongoClient("mongodb://Aditya:Qu1IZrvVdB0ajaCm@ac-zqtl0lb-shard-00-00.f
 db = client["pasteDB"]
 collection = db["pastes"]
 
+collection.create_index(
+    "expire_at",
+    expireAfterSeconds=0
+)
+
 
 class PasteCreate(BaseModel):
-    title: str = Field(default="Untitled Paste", max_length=100)
-    content: str
-    syntax: str = Field(default="text")
-    expiration: str = Field(default="never")
-    
-    created_at: datetime = Field(default_factory=datetime.utcnow)
 
+    title: str = Field(
+        default="Untitled Paste",
+        max_length=100
+    )
+
+    content: str
+
+    syntax: str = Field(
+        default="text"
+    )
+
+    expiration: str = Field(
+        default="never"
+    )
+
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow
+    )
 
 
 app = FastAPI()
@@ -36,26 +53,63 @@ app.add_middleware(
 def home():
     return {"message": "Server running"}
 
-
-
-
-
 @app.post("/create")
 async def create_new_paste(paste: PasteCreate):
+
     try:
+
         paste_dict = paste.dict()
-        
-    
-        result = collection.insert_one(paste_dict)
-        
-        
+
+        # CURRENT TIME
+        now = datetime.utcnow()
+
+        # DEFAULT
+        expire_at = None
+
+        # EXPIRATION LOGIC
+
+        if paste.expiration == "10min":
+
+            expire_at = now + timedelta(minutes=10)
+
+        elif paste.expiration == "1hour":
+
+            expire_at = now + timedelta(hours=1)
+
+        elif paste.expiration == "1day":
+
+            expire_at = now + timedelta(days=1)
+
+        elif paste.expiration == "1week":
+
+            expire_at = now + timedelta(days=7)
+
+        # SAVE TO DB
+
+        paste_dict["expire_at"] = expire_at
+
+        result = collection.insert_one(
+            paste_dict
+        )
+
         return {
+
             "status": "success",
+
             "id": str(result.inserted_id),
-            "message": "Paste created successfully!"
+
+            "message":
+            "Paste created successfully!"
+
         }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
 
 
 @app.get("/paste/{paste_id}")
@@ -64,24 +118,55 @@ async def get_paste(paste_id: str):
     try:
 
         paste = collection.find_one({
+
             "_id": ObjectId(paste_id)
+
         })
 
         if not paste:
+
             raise HTTPException(
+
                 status_code=404,
+
                 detail="Paste not found"
+
             )
 
+        # EXPIRED CHECK
+
+        expire_at = paste.get("expire_at")
+
+        if expire_at:
+
+            if datetime.utcnow() > expire_at:
+
+                raise HTTPException(
+
+                    status_code=404,
+
+                    detail="Paste expired"
+
+                )
+
         return {
+
             "title": paste.get("title"),
+
             "content": paste.get("content"),
+
             "syntax": paste.get("syntax"),
+
             "expiration": paste.get("expiration"),
-            "created_at": str(paste.get("created_at"))
+
+            "created_at": str(
+                paste.get("created_at")
+            )
+
         }
 
     except Exception as e:
+
         raise HTTPException(
             status_code=500,
             detail=str(e)
