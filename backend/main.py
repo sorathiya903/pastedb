@@ -1,18 +1,24 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from datetime import datetime, timedelta , timezone
 from typing import Optional
 from bson import ObjectId
-from auth import router as auth_router
+from auth import router as auth_router, get_current_user 
 import os
 
 
 client = MongoClient(os.getenv('MONGO_URI'))
-print(os.getenv('MONGO_URI'))
+#print(os.getenv('MONGO_URI'))
+
+if not os.getenv("MONGO_URI"):
+    raise Exception("MONGO_URI not set")
+
+
 db = client["pasteDB"]
-collection = db["pastes"]
+pastes_collection = db["pastes"]
+users_collection = db["users"]
 
 collection.create_index(
     "expire_at",
