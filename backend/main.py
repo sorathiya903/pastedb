@@ -151,14 +151,8 @@ async def get_paste(paste_id: str):
 
             "expiration": paste.get("expiration"),
 
-            "created_at": str(
-                paste.get("created_at")
-            ),
-
-            "expire_at": str(
-                paste.get("expire_at")
-            ) if paste.get("expire_at") else None
-
+            "created_at": paste.get("created_at").isoformat(),
+            "expire_at": paste.get("expire_at").isoformat() if paste.get("expire_at") else None
         }
 
     except HTTPException as e:
