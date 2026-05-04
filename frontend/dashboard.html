@@ -268,7 +268,7 @@ async function loadDashboard(){
   grid.innerHTML = Array(6).fill('<div class="shimmer"></div>').join("");
 
   try {
-    const res = await fetch("http://pastedb.onrender.com/user/dashboard", {
+    const res = await fetch("https://pastedb.onrender.com/user/dashboard", {
       credentials: "include"
     });
 
