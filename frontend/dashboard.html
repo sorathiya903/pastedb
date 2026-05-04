@@ -195,6 +195,15 @@ body {
   text-align: center;
   margin-top: 80px;
 }
+
+   .profile {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 1px solid var(--border);
+   }
 </style>
 </head>
 
@@ -206,7 +215,9 @@ body {
 
   <div style="display:flex; gap:10px; align-items:center;">
     <button class="btn" onclick="toggleTheme()">Toggle Theme</button>
-    <div class="profile" onclick="togglePopup()"></div>
+    
+  <img id="profilePic" class="profile" onclick="togglePopup()" />
+     
   </div>
 
   <!-- POPUP -->
@@ -286,7 +297,7 @@ async function loadDashboard(){
       `;
       return;
     }
-
+document.getElementById("profilePic").src = data.user.picture;
     grid.innerHTML = data.pastes.map(createCard).join("");
 
   } catch(err){
