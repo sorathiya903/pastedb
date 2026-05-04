@@ -339,7 +339,7 @@ async function loadDashboard() {
     `).join("");
 
   } catch (err) {
-    alert("Dashboard error:", err);
+    alert(err);
     grid.innerHTML = "<p>Error loading dashboard</p>";
   }
    }
