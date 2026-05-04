@@ -52,21 +52,20 @@ async def google_auth(data: GoogleLogin, response: Response):
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     # save user in DB (auto-create)
-    users_collection.update_one(
-        {"email_key": email_key},
-        {
-            "$setOnInsert": {
+    
+        users_collection.update_one({"email_key": email_key},{
+            "$set": {
                 "email": email,
-                "email_key": email_key,
                 "name": name,
                 "picture": picture,
+              },
+            "$setOnInsert": {
                 "pastes": [],
                 "created_at": datetime.now(timezone.utc)
-            }
-        },
-        upsert=True
-    )
-
+                 }
+              },
+            upsert=True
+                  )
     response.set_cookie(
         key="session",
         value=token,
