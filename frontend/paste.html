@@ -812,10 +812,30 @@ id="codeBlock"
 
 
       // CREATED
+if(data.created_at){
 
-      createdAt.textContent =
-        data.created_at || "Unknown"
+  const date =
+    new Date(data.created_at)
 
+  createdAt.textContent =
+    date.toLocaleString("en-US", {
+
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+
+      hour: "numeric",
+      minute: "2-digit",
+
+      hour12: true
+
+    })
+
+}else{
+
+  createdAt.textContent = "Unknown"
+
+}
       createdAt.style.display = "block"
 
       document
