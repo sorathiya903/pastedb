@@ -274,21 +274,46 @@ function createCard(p){
 /* ======================
    LOAD DASHBOARD
 ====================== */
-async function loadDashboard(){
+async function loadDashboard() {
+  const grid = document.getElementById("grid");
 
+  // show loading state
   grid.innerHTML = Array(6).fill('<div class="shimmer"></div>').join("");
 
   try {
     const res = await fetch("https://pastedb.onrender.com/user/dashboard", {
-      credentials: "include"
+      method: "GET",
+      credentials: "include", // 🔥 IMPORTANT for cookie auth
+      headers: {
+        "Content-Type": "application/json"
+      }
     });
+
+    // 🔴 handle HTTP errors properly
+    if (!res.ok) {
+      throw new Error("HTTP Error: " + res.status);
+    }
 
     const data = await res.json();
 
-    document.getElementById("username").innerText = data.name;
-    document.getElementById("email").innerText = data.email;
+    // SAFE user access
+    document.getElementById("username").innerText =
+      data?.user?.name || "User";
 
-    if(!data.pastes || data.pastes.length === 0){
+    document.getElementById("email").innerText =
+      data?.user?.email || "";
+
+    //  PROFILE PIC FIX
+    const profile = document.querySelector(".profile");
+
+    if (data?.user?.picture) {
+      profile.style.backgroundImage = `url(${data.user.picture})`;
+      profile.style.backgroundSize = "cover";
+      profile.style.backgroundPosition = "center";
+    }
+
+    //  EMPTY STATE
+    if (!data.pastes || data.pastes.length === 0) {
       grid.innerHTML = `
         <div class="empty">
           <h2>No pastes yet</h2>
@@ -297,22 +322,27 @@ async function loadDashboard(){
       `;
       return;
     }
-document.getElementById("profilePic").src = data.picture;
-    grid.innerHTML = data.pastes.map(createCard).join("");
 
-  } catch(err){
+    // RENDER PASTES
+    grid.innerHTML = data.pastes.map(p => `
+      <div class="card">
+        <div class="title">${p.title || "Untitled"}</div>
+        <div class="meta">
+          ${p.syntax || "text"} • ${p.created_at || ""}
+        </div>
+        <div class="actions">
+          <button class="action-btn">View</button>
+          <button class="action-btn">Edit</button>
+          <button class="action-btn">Delete</button>
+        </div>
+      </div>
+    `).join("");
+
+  } catch (err) {
+    console.error("Dashboard error:", err);
     grid.innerHTML = "<p>Error loading dashboard</p>";
-     alert(err)
   }
-}
-
-/* close popup */
-document.addEventListener("click", (e)=>{
-  if(!e.target.classList.contains("profile")){
-    popup.style.display = "none";
-  }
-});
-
+   }
 loadDashboard();
 </script>
 
