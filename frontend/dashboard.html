@@ -1,1 +1,308 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PasteDB Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ======================
+   THEME VARIABLES
+====================== */
+:root {
+  --bg: #ffffff;
+  --card: #f5f5f5;
+  --text: #000000;
+  --muted: #666;
+  --border: #e5e5e5;
+}
+
+[data-theme="dark"] {
+  --bg: #000000;
+  --card: #0a0a0a;
+  --text: #ffffff;
+  --muted: #aaa;
+  --border: #1f1f1f;
+}
+
+/* ======================
+   BASE
+====================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Inter, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s ease;
+}
+
+/* ======================
+   NAVBAR
+====================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 20px;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+}
+
+/* buttons */
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* profile */
+.profile {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+}
+
+/* ======================
+   POPUP
+====================== */
+.popup {
+  position: absolute;
+  right: 20px;
+  top: 60px;
+  width: 220px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: none;
+}
+
+.popup h4 {
+  font-size: 14px;
+}
+
+.popup p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ======================
+   DASHBOARD
+====================== */
+.container {
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media(max-width: 900px){
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media(max-width: 600px){
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ======================
+   CARD
+====================== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 14px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* actions */
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 6px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ======================
+   SHIMMER
+====================== */
+.shimmer {
+  height: 120px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #ddd 25%, #eee 50%, #ddd 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* dark shimmer */
+[data-theme="dark"] .shimmer {
+  background: linear-gradient(90deg, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%);
+}
+
+/* ======================
+   EMPTY
+====================== */
+.empty {
+  text-align: center;
+  margin-top: 80px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">PasteDB</div>
+
+  <div style="display:flex; gap:10px; align-items:center;">
+    <button class="btn" onclick="toggleTheme()">Toggle Theme</button>
+    <div class="profile" onclick="togglePopup()"></div>
+  </div>
+
+  <!-- POPUP -->
+  <div class="popup" id="popup">
+    <h4 id="username">User</h4>
+    <p id="email">email</p>
+    <button class="btn" style="margin-top:10px;width:100%">Logout</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const grid = document.getElementById("grid");
+const popup = document.getElementById("popup");
+
+/* ======================
+   THEME TOGGLE
+====================== */
+function toggleTheme(){
+  const current = document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute(
+    "data-theme",
+    current === "dark" ? "light" : "dark"
+  );
+}
+
+/* ======================
+   POPUP
+====================== */
+function togglePopup(){
+  popup.style.display = popup.style.display === "block" ? "none" : "block";
+}
+
+/* ======================
+   CREATE CARD
+====================== */
+function createCard(p){
+  return `
+  <div class="card">
+    <div class="title">${p.title}</div>
+    <div class="meta">${p.syntax} • ${p.created_at || ""}</div>
+    <div class="actions">
+      <button class="action-btn">View</button>
+      <button class="action-btn">Edit</button>
+      <button class="action-btn">Delete</button>
+    </div>
+  </div>`;
+}
+
+/* ======================
+   LOAD DASHBOARD
+====================== */
+async function loadDashboard(){
+
+  grid.innerHTML = Array(6).fill('<div class="shimmer"></div>').join("");
+
+  try {
+    const res = await fetch("http://pastedb.onrender.com/user/dashboard", {
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    document.getElementById("username").innerText = data.user.name;
+    document.getElementById("email").innerText = data.user.email;
+
+    if(!data.pastes || data.pastes.length === 0){
+      grid.innerHTML = `
+        <div class="empty">
+          <h2>No pastes yet</h2>
+          <button class="btn">Create First Paste</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = data.pastes.map(createCard).join("");
+
+  } catch(err){
+    grid.innerHTML = "<p>Error loading dashboard</p>";
+  }
+}
+
+/* close popup */
+document.addEventListener("click", (e)=>{
+  if(!e.target.classList.contains("profile")){
+    popup.style.display = "none";
+  }
+});
+
+loadDashboard();
+</script>
+
+</body>
+  </html>
