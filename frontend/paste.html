@@ -58,7 +58,7 @@
       color:var(--text);
       min-height:100vh;
       overflow-x:hidden;
-      padding-bottom:60px;
+      padding-bottom:60px;padding:20px
     }
 
     body.light{
@@ -107,7 +107,7 @@
       position:sticky;
       top:18px;
       z-index:50;
-      margin-top:18px;
+      margin-top:28px;
 
       display:flex;
       align-items:center;
@@ -494,53 +494,161 @@
 <body>
 
 <!-- HEADER ACTIONS -->
-<div class="header-actions">
-  <button class="btn" id="themeToggle">Theme</button>
-  <button class="btn">Share</button>
-</div>
 
 
-<!-- HERO -->
-<section class="hero">
+      <!-- ERROR STATE -->
+<section
+  class="hero"
+  id="errorState"
+  style="display:none;"
+>
 
-  <h1 class="paste-title" id="pasteTitle"></h1>
+  <h1 class="paste-title">
+    Paste Not Found
+  </h1>
 
-  <div class="meta-grid">
-
-    <div class="meta-card">
-      <div class="meta-label">Created</div>
-      <div class="meta-value" id="createdAt"></div>
-    </div>
-
-    <div class="meta-card">
-      <div class="meta-label">Expiration</div>
-      <div class="meta-value" id="expiration"></div>
-    </div>
-
-    <div class="meta-card">
-      <div class="meta-label">Paste ID</div>
-      <div class="meta-value" id="pasteId"></div>
-    </div>
-
-
-
- 
+  <p
+    style="
+      color:var(--text-secondary);
+      margin-top:10px;
+      line-height:1.7;
+    "
+  >
+    The paste may have expired, been deleted,
+    or the URL is invalid.
+  </p>
 
 </section>
 
 
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+
+  <!-- TITLE SHIMMER -->
+  <div
+    class="skeleton-line"
+    id="titleSkeleton"
+    style="
+      width:320px;
+      height:34px;
+      margin-bottom:24px;
+      border-radius:14px;
+    "
+  ></div>
+
+  <h1
+    class="paste-title"
+    id="pasteTitle"
+    style="display:none;"
+  ></h1>
+
+  <div class="meta-grid">
+
+    <!-- CREATED -->
+    <div class="meta-card">
+
+      <div class="meta-label">
+        Created
+      </div>
+
+      <div
+        class="skeleton-line"
+        id="createdSkeleton"
+        style="width:120px;"
+      ></div>
+
+      <div
+        class="meta-value"
+        id="createdAt"
+        style="display:none;"
+      ></div>
+
+    </div>
+
+    <!-- EXPIRATION -->
+    <div class="meta-card">
+
+      <div class="meta-label">
+        Expiration
+      </div>
+
+      <div
+        class="skeleton-line"
+        id="expirationSkeleton"
+        style="width:100px;"
+      ></div>
+
+      <div
+        class="meta-value"
+        id="expiration"
+        style="display:none;"
+      ></div>
+
+    </div>
+
+    <!-- ID -->
+    <div class="meta-card">
+
+      <div class="meta-label">
+        Paste ID
+      </div>
+
+      <div
+        class="skeleton-line"
+        id="idSkeleton"
+        style="width:140px;"
+      ></div>
+
+      <div
+        class="meta-value"
+        id="pasteId"
+        style="display:none;"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
 <!-- CODE WRAPPER -->
-<section class="code-wrapper">
+<section
+  class="code-wrapper"
+  id="codeWrapper"
+>
 
   <div class="code-toolbar">
 
     <div class="toolbar-left">
 
-      <span id="fileName"></span>
+      <!-- FILE NAME SHIMMER -->
+      <div
+        class="skeleton-line"
+        id="fileSkeleton"
+        style="width:90px;"
+      ></div>
+
+      <span
+        id="fileName"
+        style="display:none;"
+      ></span>
 
       <span>•</span>
 
-      <span id="lineCount"></span>
+      <!-- LINE SHIMMER -->
+      <div
+        class="skeleton-line"
+        id="lineSkeleton"
+        style="width:60px;"
+      ></div>
+
+      <span
+        id="lineCount"
+        style="display:none;"
+      ></span>
 
     </div>
 
@@ -558,7 +666,7 @@
 
   </div>
 
-  <!-- SHIMMER -->
+  <!-- CODE SHIMMER -->
   <div class="skeleton" id="skeleton">
 
     <div class="skeleton-line"></div>
@@ -590,7 +698,7 @@ id="codeBlock"
 
 <script>
 
-  // THEME TOGGLE
+  // THEME
 
   document
     .getElementById("themeToggle")
@@ -602,7 +710,7 @@ id="codeBlock"
 
 
 
-  // GET PASTE ID
+  // GET ID
 
   const params =
     new URLSearchParams(window.location.search)
@@ -613,6 +721,17 @@ id="codeBlock"
 
 
   // ELEMENTS
+
+  const heroSection =
+    document.getElementById("heroSection")
+
+  const errorState =
+    document.getElementById("errorState")
+
+  const codeWrapper =
+    document.getElementById("codeWrapper")
+
+
 
   const pasteTitle =
     document.getElementById("pasteTitle")
@@ -626,7 +745,6 @@ id="codeBlock"
   const pasteIdEl =
     document.getElementById("pasteId")
 
-  
   const fileName =
     document.getElementById("fileName")
 
@@ -635,6 +753,8 @@ id="codeBlock"
 
   const codeBlock =
     document.getElementById("codeBlock")
+
+
 
   const skeleton =
     document.getElementById("skeleton")
@@ -654,7 +774,26 @@ id="codeBlock"
         `https://pastedb.onrender.com/paste/${pasteId}`
       )
 
-      const data = await response.json()
+
+
+      // INVALID ID
+
+      if(!response.ok){
+
+        heroSection.style.display = "none"
+
+        codeWrapper.style.display = "none"
+
+        errorState.style.display = "block"
+
+        return
+
+      }
+
+
+
+      const data =
+        await response.json()
 
 
 
@@ -663,23 +802,54 @@ id="codeBlock"
       pasteTitle.textContent =
         data.title || "Untitled Paste"
 
+      pasteTitle.style.display = "block"
+
+      document
+        .getElementById("titleSkeleton")
+        .style.display = "none"
 
 
-      // META
+
+      // CREATED
 
       createdAt.textContent =
         data.created_at || "Unknown"
 
+      createdAt.style.display = "block"
+
+      document
+        .getElementById("createdSkeleton")
+        .style.display = "none"
+
+
+
+      // EXPIRATION
+
       expiration.textContent =
         data.expiration || "Never"
+
+      expiration.style.display = "block"
+
+      document
+        .getElementById("expirationSkeleton")
+        .style.display = "none"
+
+
+
+      // ID
 
       pasteIdEl.textContent =
         pasteId
 
-      
+      pasteIdEl.style.display = "block"
+
+      document
+        .getElementById("idSkeleton")
+        .style.display = "none"
 
 
-      // CODE
+
+      // CONTENT
 
       codeBlock.textContent =
         data.content || ""
@@ -693,7 +863,7 @@ id="codeBlock"
 
 
 
-      // FILE EXTENSION
+      // EXTENSIONS
 
       const extensions = {
 
@@ -711,29 +881,47 @@ id="codeBlock"
 
       }
 
+
+
       const ext =
         extensions[language] || "txt"
 
 
 
+      // FILE NAME
+
       fileName.textContent =
         `main.${ext}`
 
+      fileName.style.display = "block"
+
+      document
+        .getElementById("fileSkeleton")
+        .style.display = "none"
 
 
-      // LINE COUNT
+
+      // LINES
 
       const totalLines =
         codeBlock.textContent
           .split("\n")
           .length
 
+
+
       lineCount.textContent =
         `${totalLines} lines`
 
+      lineCount.style.display = "block"
+
+      document
+        .getElementById("lineSkeleton")
+        .style.display = "none"
 
 
-      // SYNTAX HIGHLIGHT
+
+      // HIGHLIGHT
 
       codeBlock.className =
         `language-${language}`
@@ -754,7 +942,11 @@ id="codeBlock"
 
     catch(err){
 
-      console.log(err)
+      heroSection.style.display = "none"
+
+      codeWrapper.style.display = "none"
+
+      errorState.style.display = "block"
 
     }
 
@@ -774,17 +966,6 @@ id="codeBlock"
       codeBlock.innerText
     )
 
-    const tooltip =
-      document.getElementById("tooltip")
-
-    tooltip.classList.add("show")
-
-    setTimeout(() => {
-
-      tooltip.classList.remove("show")
-
-    }, 2000)
-
   }
 
 
@@ -794,7 +975,6 @@ id="codeBlock"
     .addEventListener("click", copyCode)
 
 </script>
-  
 
 </body>
   </html>
