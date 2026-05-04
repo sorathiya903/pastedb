@@ -8,7 +8,7 @@ from bson import ObjectId
 from auth import router as auth_router
 
 
-client = MongoClient("mongodb://Aditya:Qu1IZrvVdB0ajaCm@ac-zqtl0lb-shard-00-00.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-01.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-02.fz0oqsr.mongodb.net:27017/?ssl=true&replicaSet=atlas-10lbo4-shard-0&authSource=admin&appName=Cluster0")
+client = MongoClient(os.getenv('MONGO_URI'))
 db = client["pasteDB"]
 collection = db["pastes"]
 
