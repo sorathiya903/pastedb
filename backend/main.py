@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from datetime import datetime
 from typing import Optional
+from bson import ObjectId
 
 client = MongoClient("mongodb://Aditya:Qu1IZrvVdB0ajaCm@ac-zqtl0lb-shard-00-00.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-01.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-02.fz0oqsr.mongodb.net:27017/?ssl=true&replicaSet=atlas-10lbo4-shard-0&authSource=admin&appName=Cluster0")
 db = client["pasteDB"]
@@ -57,3 +58,31 @@ async def create_new_paste(paste: PasteCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/paste/{paste_id}")
+async def get_paste(paste_id: str):
+
+    try:
+
+        paste = collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
+
+        if not paste:
+            raise HTTPException(
+                status_code=404,
+                detail="Paste not found"
+            )
+
+        return {
+            "title": paste.get("title"),
+            "content": paste.get("content"),
+            "syntax": paste.get("syntax"),
+            "expiration": paste.get("expiration"),
+            "created_at": str(paste.get("created_at"))
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
