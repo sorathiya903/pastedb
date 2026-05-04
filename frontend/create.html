@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     * {
       margin: 0;
@@ -411,41 +411,10 @@
       border-color: #999;
     }
 
-    .visibility {
 
-      display: grid;
 
-      grid-template-columns: 1fr 1fr 1fr;
-
-      gap: 10px;
-    }
-
-    .visibility button {
-
-      padding: 13px;
-
-      border-radius: 14px;
-
-      border: 1px solid var(--border);
-
-      background: transparent;
-
-      color: var(--text);
-
-      cursor: pointer;
-
-      transition: 0.25s ease;
-    }
-
-    .visibility button:hover {
-      background: var(--button);
-      color: var(--buttonText);
-    }
-
-    .visibility .active {
-      background: var(--button);
-      color: var(--buttonText);
-    }
+    
+    
 
     .create-btn {
 
@@ -685,7 +654,14 @@
         </button>
 
         <button class="nav-btn">
-          Sign In
+          <div
+  id="g_id_onload"
+  data-client_id="169600349371-uqd2ban2g8d60gunf5tes428qjr0hng4.apps.googleusercontent.com"
+  data-callback="handleCredentialResponse"
+  data-auto_prompt="false">
+</div>
+
+<div class="g_id_signin"></div>
         </button>
 
       </div>
@@ -908,6 +884,39 @@ pasteLinkBox.style.display = "block"
 
   
       </script>
+<script>
 
+async function handleCredentialResponse(response){
+
+    const token = response.credential
+
+    const res = await fetch(
+        "https://pastedb.onrender.com/auth/google",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            credentials: "include",
+
+            body: JSON.stringify({
+                token: token
+            })
+        }
+    )
+
+    const data = await res.json()
+
+    if(data.status === "success"){
+
+        window.location.href = "/dashboard.html"
+
+    }
+
+}
+
+</script>
 </body>
   </html>
