@@ -284,9 +284,7 @@ async function loadDashboard() {
     const res = await fetch("https://pastedb.onrender.com/user/dashboard", {
       method: "GET",
       credentials: "include", // 🔥 IMPORTANT for cookie auth
-      headers: {
-        "Content-Type": "application/json"
-      }
+      
     });
 
     // 🔴 handle HTTP errors properly
