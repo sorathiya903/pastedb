@@ -719,7 +719,7 @@
 
           <div class="lines" id="lines"></div>
 
-          <textarea placeholder="// Start writing your paste here..."></textarea>
+          <textarea id="code" placeholder="// Start writing your paste here..."></textarea>
 
         </div>
 
@@ -738,7 +738,7 @@
 
             <label>Paste Title</label>
 
-            <input
+            <input id="title"
               type="text"
               placeholder="Untitled Paste"
             >
@@ -820,9 +820,9 @@
         Creating Paste...
       `
 
-      await new Promise(resolve =>
-        setTimeout(resolve, 2500)
-      )
+      let response = await fetch("https://pastedb.onrender.com/create")
+
+      let data = await response.json()
 
       createBtn.disabled = false
 
@@ -849,7 +849,13 @@
   }, 500)
 
 })
-  </script>
+ 
+  function createPaste(){
+
+        
+  }
+  
+      </script>
 
 </body>
   </html>
