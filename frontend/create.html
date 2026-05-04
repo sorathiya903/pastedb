@@ -746,33 +746,22 @@
           </div>
 
           <div>
+  <label>Syntax Highlighting</label>
+  <select id="syntax"> 
+    <option value="plain">Plain Text</option>
+    <option value="python">Python</option>
+    <option value="javascript">JavaScript</option>
+    <option value="html">HTML</option>
+  </select>
+</div>
 
-            <label>Syntax Highlighting</label>
-
-            <select>
-              <option>Python</option>
-              <option>JavaScript</option>
-              <option>HTML</option>
-              <option>CSS</option>
-              <option>JSON</option>
-            </select>
-
-        
-
-          </div>
-
-          <div>
-
-            <label>Paste Expiration</label>
-
-            <select>
-              <option>Never</option>
-              <option>10 Minutes</option>
-              <option>1 Hour</option>
-              <option>1 Day</option>
-            </select>
-
-          </div>
+<div>
+  <label>Paste Expiration</label>
+  <select id="expiration"> <option value="never">Never</option>
+    <option value="10m">10 Minutes</option>
+    <option value="1h">1 Hour</option>
+  </select>
+</div>
 
       
           <button class="create-btn" id="createBtn">
@@ -809,30 +798,52 @@
       document.body.classList.toggle("dark")
     }
 
-    const createBtn = document.getElementById("createBtn")
+    const createBtn = document.getElementById("createBtn");
 
-    createBtn.addEventListener("click", async () => {
+createBtn.addEventListener("click", async () => {
+  // 1. Collect the data from the UI
+  const pasteData = {
+    title: document.getElementById("title").value || "Untitled Paste",
+    content: document.getElementById("code").value,
+    syntax: document.getElementById("syntax").value,
+    expiration: document.getElementById("expiration").value
+  };
 
-      createBtn.disabled = true
+  
+  if (!pasteData.content.trim()) {
+    alert("Please enter some content!");
+    return;
+  }
 
-      createBtn.innerHTML = `
-        <div class="spinner"></div>
-        Creating Paste...
-      `
+  createBtn.disabled = true;
+  createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
 
-      let response = await fetch("https://pastedb.onrender.com/create")
+  try {
+    
+    const response = await fetch("https://pastedb.onrender.com/create", {
+      method: "POST", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pasteData), 
+    });
 
-      let data = await response.json()
-
-      createBtn.disabled = false
-
-      createBtn.innerHTML = `
-        <span id="btnText">
-          Create New Paste
-        </span>
-      `
-    })
-
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Success:", data);
+      alert("Paste created successfully!");
+        } else {
+      alert("Server error: " + response.statusText);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Could not connect to the server.");
+  } finally {
+  
+    createBtn.disabled = false;
+    createBtn.innerHTML = `<span>Create New Paste</span>`;
+  }
+});
 
         window.addEventListener("load", () => {
 
@@ -850,10 +861,7 @@
 
 })
  
-  function createPaste(){
 
-        
-  }
   
       </script>
 
