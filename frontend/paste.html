@@ -659,7 +659,7 @@
         Copy
       </button>
 
-      <button class="btn">
+      <button id="rawBtn" class="btn">
         Raw View
       </button>
 
@@ -994,6 +994,70 @@ if(data.created_at){
   document
     .getElementById("copyBtn")
     .addEventListener("click", copyCode)
+
+  
+
+
+
+  document
+    .getElementById("rawBtn")
+    .addEventListener("click", () => {
+
+      // CREATE NEW WINDOW
+      const rawWindow = window.open("", "_blank")
+
+      // GET RAW CODE
+      const rawCode = codeBlock.textContent
+
+      // SHOW RAW CONTENT
+      rawWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Raw Paste</title>
+
+  <style>
+
+    body{
+      margin:0;
+      padding:24px;
+
+      background:#0f1115;
+      color:#d7dce2;
+
+      font-family:"JetBrains Mono", monospace;
+      font-size:14px;
+      line-height:1.7;
+
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+  </style>
+</head>
+
+<body>${escapeHtml(rawCode)}</body>
+
+</html>
+      `)
+
+      rawWindow.document.close()
+
+    })
+
+
+
+  // ESCAPE HTML
+
+  function escapeHtml(text){
+
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+
+  }
+
 
 </script>
 
