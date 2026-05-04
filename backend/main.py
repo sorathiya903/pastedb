@@ -145,19 +145,12 @@ async def get_paste(paste_id: str):
                 )
 
         return {
-
             "title": paste.get("title"),
-
             "content": paste.get("content"),
-
             "syntax": paste.get("syntax"),
-
             "expiration": paste.get("expiration"),
-
             "created_at": str(paste.get("created_at")),
-            "expire_at": str(paste.get("expire_at"))
-            
-
+            "expire_at": str(paste.get("expire_at")) if paste.get("expire_at") else None
         }
 
     except Exception as e:
