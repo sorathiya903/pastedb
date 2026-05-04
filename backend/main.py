@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta , timezone
 from typing import Optional
 from bson import ObjectId
 
