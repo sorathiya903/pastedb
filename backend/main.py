@@ -118,12 +118,19 @@ async def create_paste(paste: PasteCreate, user=Depends(get_current_user)):
 @app.get("/user/dashboard")
 async def get_dashboard(user=Depends(get_current_user)):
 
-    email_key = user["email"].replace(".", "_")
+    email_key = user.get("email", "").replace(".", "_")
 
     db_user = users_collection.find_one({"email_key": email_key})
 
     if not db_user:
-        raise HTTPException(404, "User not found")
+        return {
+            "user": {
+                "name": user.get("name", "User"),
+                "email": user.get("email", ""),
+                "picture": user.get("picture", "")
+            },
+            "pastes": []
+        }
 
     paste_ids = db_user.get("pastes", [])
 
@@ -140,9 +147,9 @@ async def get_dashboard(user=Depends(get_current_user)):
 
     return {
         "user": {
-            "name": db_user.get("name"),
-            "email": db_user.get("email"),
-            "picture": db_user.get("picture")
+            "name": db_user.get("name", "User"),
+            "email": db_user.get("email", ""),
+            "picture": db_user.get("picture", "")
         },
         "pastes": pastes
     }
