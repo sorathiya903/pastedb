@@ -69,14 +69,8 @@ async def google_auth(data: GoogleLogin, response: Response):
         upsert=True
     )
 
-    response.set_cookie(
-        key="session",
-        value=token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=60 * 60 * 24 * 7
-    )
+    
+        response.set_cookie( key="session", value=token,httponly=True,secure=False,  samesite="lax",  max_age=60 * 60 * 24 * 7  )
 
     return {"status": "success"}
 # ---------------- AUTH DEPENDENCY ----------------
