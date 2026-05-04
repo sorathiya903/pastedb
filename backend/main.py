@@ -34,7 +34,7 @@ class PasteCreate(BaseModel):
     )
 
     created_at: datetime = Field(
-        default_factory=datetime.utcnow
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
 
@@ -61,7 +61,7 @@ async def create_new_paste(paste: PasteCreate):
         paste_dict = paste.dict()
 
         # CURRENT TIME
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # DEFAULT
         expire_at = None
@@ -134,7 +134,7 @@ async def get_paste(paste_id: str):
 
         if expire_at:
 
-            if datetime.utcnow() > expire_at:
+            if datetime.now(timezone.utc) > expire_at:
 
                 raise HTTPException(
 
