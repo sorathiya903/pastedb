@@ -65,57 +65,83 @@ app.add_middleware(
 def home():
     return {"message": "Server running"}
 
+
 @app.post("/create")
-async def create_new_paste(paste: PasteCreate):
+async def create_paste(paste: PasteCreate, user=Depends(get_current_user)):
 
-    try:
+    email_key = user["email"].replace(".", "_")
 
-        paste_dict = paste.dict()
+    now = datetime.now(timezone.utc)
+    expire_at = None
 
-        # CURRENT TIME
-        now = datetime.now(timezone.utc)
+    if paste.expiration in ["10m", "10min"]:
+        expire_at = now + timedelta(minutes=10)
 
-        # DEFAULT
-        expire_at = None
+    elif paste.expiration in ["1h", "1hour"]:
 
-        if paste.expiration in ["10m", "10min"]:
-            expire_at = now + timedelta(minutes=10)
+        expire_at = now + timedelta(hours=1)
 
-        elif paste.expiration in ["1h", "1hour"]:
+    elif paste.expiration in ["1d", "1day"]:
+        expire_at = now + timedelta(days=1)
 
-            expire_at = now + timedelta(hours=1)
+    elif paste.expiration in ["1w", "1week"]:
 
-        elif paste.expiration in ["1d", "1day"]:
+        expire_at = now + timedelta(days=7)
 
-            expire_at = now + timedelta(days=1)
+    paste_doc = paste.dict()
+    paste_doc.update({
+        "user_email_key": email_key,
+        "expire_at": expire_at
+    })
 
-        elif paste.expiration in ["1w", "1week"]:
+    result = pastes_collection.insert_one(paste_doc)
 
-            expire_at = now + timedelta(days=7)
+    # push paste to user
+    users_collection.update_one(
+        {"email_key": email_key},
+        {"$push": {"pastes": str(result.inserted_id)}}
+    )
 
-        paste_dict["expire_at"] = expire_at
+    return {
+        "status": "success",
+        "id": str(result.inserted_id)
+    }
 
-        result = collection.insert_one(
-            paste_dict
-        )
 
-        return {
+# ---------------- GET USER DASHBOARD ----------------
+@app.get("/user/dashboard")
+async def get_dashboard(user=Depends(get_current_user)):
 
-            "status": "success",
+    email_key = user["email"].replace(".", "_")
 
-            "id": str(result.inserted_id),
+    db_user = users_collection.find_one({"email_key": email_key})
 
-            "message":
-            "Paste created successfully!"
+    if not db_user:
+        raise HTTPException(404, "User not found")
 
-        }
+    paste_ids = db_user.get("pastes", [])
 
-    except Exception as e:
+    pastes = []
 
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+    for pid in paste_ids:
+        try:
+            p = pastes_collection.find_one({"_id": ObjectId(pid)})
+            if p:
+                p["_id"] = str(p["_id"])
+                pastes.append(p)
+        except:
+            pass
+
+    return {
+        "user": {
+            "name": db_user.get("name"),
+            "email": db_user.get("email"),
+            "picture": db_user.get("picture")
+        },
+        "pastes": pastes
+    }
+
+
 
 @app.get("/paste/{paste_id}")
 async def get_paste(paste_id: str):
