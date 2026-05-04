@@ -6,6 +6,7 @@ from datetime import datetime, timedelta , timezone
 from typing import Optional
 from bson import ObjectId
 from auth import router as auth_router
+import os
 
 
 client = MongoClient(os.getenv('MONGO_URI'))
