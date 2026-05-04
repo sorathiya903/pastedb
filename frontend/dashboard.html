@@ -285,8 +285,8 @@ async function loadDashboard(){
 
     const data = await res.json();
 
-    document.getElementById("username").innerText = data.user.name;
-    document.getElementById("email").innerText = data.user.email;
+    document.getElementById("username").innerText = data.name;
+    document.getElementById("email").innerText = data.email;
 
     if(!data.pastes || data.pastes.length === 0){
       grid.innerHTML = `
@@ -297,7 +297,7 @@ async function loadDashboard(){
       `;
       return;
     }
-document.getElementById("profilePic").src = data.user.picture;
+document.getElementById("profilePic").src = data.picture;
     grid.innerHTML = data.pastes.map(createCard).join("");
 
   } catch(err){
