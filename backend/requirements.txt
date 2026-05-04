@@ -5,3 +5,4 @@ pymongo
 python-jose
 google-auth
 python-multipart
+requests
