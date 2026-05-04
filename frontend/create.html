@@ -831,6 +831,7 @@ createBtn.addEventListener("click", async () => {
     
     const response = await fetch("https://pastedb.onrender.com/create", {
       method: "POST", 
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
