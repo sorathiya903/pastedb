@@ -73,8 +73,8 @@ async def google_auth(data: GoogleLogin, response: Response):
         key="session",
         value=token,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         max_age=60 * 60 * 24 * 7
     )
 
