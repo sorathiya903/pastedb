@@ -105,53 +105,65 @@ async def create_new_paste(paste: PasteCreate):
             detail=str(e)
         )
 
-
-
 @app.get("/paste/{paste_id}")
 async def get_paste(paste_id: str):
 
     try:
 
         paste = collection.find_one({
-
             "_id": ObjectId(paste_id)
-
         })
 
         if not paste:
 
             raise HTTPException(
-
                 status_code=404,
-
                 detail="Paste not found"
-
             )
-
-        # EXPIRED CHECK
 
         expire_at = paste.get("expire_at")
 
         if expire_at:
 
-            if datetime.now(timezone.utc) > expire_at:
+            current_time = datetime.now(timezone.utc)
+
+            # Convert MongoDB datetime to UTC aware
+            if expire_at.tzinfo is None:
+
+                expire_at = expire_at.replace(
+                    tzinfo=timezone.utc
+                )
+
+            if current_time > expire_at:
 
                 raise HTTPException(
-
                     status_code=404,
-
                     detail="Paste expired"
-
                 )
 
         return {
+
             "title": paste.get("title"),
+
             "content": paste.get("content"),
+
             "syntax": paste.get("syntax"),
+
             "expiration": paste.get("expiration"),
-            "created_at": str(paste.get("created_at")),
-            "expire_at": str(paste.get("expire_at")) if paste.get("expire_at") else None
+
+            "created_at": str(
+                paste.get("created_at")
+            ),
+
+            "expire_at": str(
+                paste.get("expire_at")
+            ) if paste.get("expire_at") else None
+
         }
+
+    except HTTPException as e:
+
+        raise e
 
     except Exception as e:
 
