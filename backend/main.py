@@ -37,7 +37,6 @@ def home():
 
 
 
-app = FastAPI()
 
 
 @app.post("/create")
