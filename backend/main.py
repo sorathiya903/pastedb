@@ -148,75 +148,18 @@ async def get_dashboard(user=Depends(get_current_user)):
     }
 
 
-
 @app.get("/paste/{paste_id}")
 async def get_paste(paste_id: str):
 
-    try:
+    paste = pastes_collection.find_one({"_id": ObjectId(paste_id)})
 
-        paste = collection.find_one({
-            "_id": ObjectId(paste_id)
-        })
+    if not paste:
+        raise HTTPException(404, "Paste not found")
 
-        if not paste:
+    expire_at = paste.get("expire_at")
 
-            raise HTTPException(
-                status_code=404,
-                detail="Paste not found"
-            )
+    if expire_at and datetime.now(timezone.utc) > expire_at:
+        raise HTTPException(404, "Paste expired")
 
-        expire_at = paste.get("expire_at")
-
-        if expire_at:
-
-            current_time = datetime.now(timezone.utc)
-
-            # Convert MongoDB datetime to UTC aware
-            if expire_at.tzinfo is None:
-
-                expire_at = expire_at.replace(
-                    tzinfo=timezone.utc
-                )
-
-            if current_time > expire_at:
-
-                raise HTTPException(
-                    status_code=404,
-                    detail="Paste expired"
-                )
-
-        return {
-
-            "title": paste.get("title"),
-
-            "content": paste.get("content"),
-
-            "syntax": paste.get("syntax"),
-
-            "expiration": paste.get("expiration"),
-            "created_at": (
-                paste.get("created_at")
-                .astimezone(timezone.utc)
-                .isoformat()
-                .replace("+00:00", "Z")
-               ),
-            "expire_at": (
-                paste.get("expire_at")
-                .astimezone(timezone.utc)
-                .isoformat()
-                .replace("+00:00", "Z")
-                if paste.get("expire_at")
-                else None
-            )
-            }
-
-    except HTTPException as e:
-
-        raise e
-
-    except Exception as e:
-
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+    paste["_id"] = str(paste["_id"])
+    return paste
