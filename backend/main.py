@@ -154,9 +154,9 @@ async def get_paste(paste_id: str):
 
             "expiration": paste.get("expiration"),
 
-            "created_at": str(
-                paste.get("created_at")
-            )
+            "created_at": str(paste.get("created_at")),
+            "expire_at": str(paste.get("expire_at"))
+            
 
         }
 
