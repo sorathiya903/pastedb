@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from datetime import datetime, timedelta , timezone
 from typing import Optional
 from bson import ObjectId
-from backend.auth import router as auth_router
+from auth import router as auth_router
 import os
 
 
