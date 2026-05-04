@@ -5,6 +5,8 @@ from pymongo import MongoClient
 from datetime import datetime, timedelta , timezone
 from typing import Optional
 from bson import ObjectId
+from auth import router as auth_router
+
 
 client = MongoClient("mongodb://Aditya:Qu1IZrvVdB0ajaCm@ac-zqtl0lb-shard-00-00.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-01.fz0oqsr.mongodb.net:27017,ac-zqtl0lb-shard-00-02.fz0oqsr.mongodb.net:27017/?ssl=true&replicaSet=atlas-10lbo4-shard-0&authSource=admin&appName=Cluster0")
 db = client["pasteDB"]
@@ -39,11 +41,19 @@ class PasteCreate(BaseModel):
 
 
 app = FastAPI()
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+
+    allow_origins=[
+        "https://pastedb.netlify.app"
+    ],
+
+    allow_credentials=True,
+
     allow_methods=["*"],
+
     allow_headers=["*"],
 )
 
