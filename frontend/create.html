@@ -839,7 +839,8 @@ createBtn.addEventListener("click", async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Success:", data);
+      alert("data")
+      alert(data);
       const pasteUrl = `https://pastedb.netlify.app/paste.html?id=${data.id}`
 
 const pasteLinkBox = document.getElementById("pasteLinkBox")
@@ -853,10 +854,12 @@ pasteLinkBox.style.display = "block"
     
     
     } else {
-      alert("Server error: " + response.statusText);
+alert("res")
+
+      alert(response);
     }
   } catch (error) {
-    console.error("Error:", error);
+    alert(error);
     alert("Could not connect to the server.");
   } finally {
   
