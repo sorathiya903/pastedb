@@ -255,6 +255,19 @@ def update_paste(
     paste_id: str,
     data: dict
 ):
+    expiry = None
+
+    if paste.expiration in ["10m", "10min"]:
+        expiry = now + timedelta(minutes=10)
+
+    elif paste.expiration in ["1h", "1hour"]:
+        expiry = now + timedelta(hours=1)
+
+    elif paste.expiration in ["1d", "1day"]:
+        expiry = now + timedelta(days=1)
+
+    elif paste.expiration in ["1w", "1week"]:
+        expiry = now + timedelta(days=7)
 
     result = pastes_collection.update_one(
         {
@@ -265,7 +278,8 @@ def update_paste(
                 "title": data.get("title"),
                 "content": data.get("content"),
                 "syntax": data.get("syntax"),
-                "expiration":data.get("expiration")
+                "expiration":data.get("expiration"),
+                "expires_at": expiry
             }
         }
     )
