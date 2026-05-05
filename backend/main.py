@@ -178,7 +178,7 @@ async def get_paste(paste_id: str):
 
     try:
 
-        paste = collection.find_one({
+        paste = pastes_collection.find_one({
             "_id": ObjectId(paste_id)
         })
 
