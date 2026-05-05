@@ -249,3 +249,28 @@ async def delete_paste(
             status_code=500,
             detail=str(e)
         )
+
+
+
+@app.put("/paste/{paste_id}")
+async def update_paste(
+    paste_id: str,
+    data: dict
+):
+
+    pastes_collection.update_one(
+        {
+            "_id": ObjectId(paste_id)
+        },
+        {
+            "$set": {
+                "title": data["title"],
+                "content": data["content"],
+                "syntax": data["syntax"]
+            }
+        }
+    )
+
+    return {
+        "status": "updated"
+    }
