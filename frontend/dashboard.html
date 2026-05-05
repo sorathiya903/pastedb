@@ -256,8 +256,13 @@ function togglePopup(){
 }
 
    window.addEventListener('click', (event) => {
-    if (popup.style.display === "block" && !popup.contains(event.target)) {
+    if (
+    popup.style.display === "block" &&
+    !popup.contains(e.target) &&
+    !profile.contains(e.target)
+  ) {
     popup.style.display = "none";
+   }
   }
 });
 
