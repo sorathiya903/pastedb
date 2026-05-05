@@ -93,7 +93,6 @@ async def create_paste(
         elif paste.expiration in ["1w", "1week"]:
             expire_at = now + timedelta(days=7)
 
-        # IMPORTANT
         paste_doc = paste.model_dump()
 
         paste_doc.update({
@@ -101,11 +100,11 @@ async def create_paste(
             "expire_at": expire_at
         })
 
-        result = pastes_collection.insert_one(
+        result = await pastes_collection.insert_one(
             paste_doc
         )
 
-        users_collection.update_one(
+        await users_collection.update_one(
             {"email_key": email_key},
             {
                 "$push": {
@@ -126,8 +125,7 @@ async def create_paste(
         raise HTTPException(
             status_code=500,
             detail=str(e)
-        )
-
+            )
 
 # ---------------- GET USER DASHBOARD ----------------
 @app.get("/user/dashboard")
