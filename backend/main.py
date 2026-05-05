@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Query
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
@@ -286,3 +286,29 @@ def update_paste(paste_id: str, data: dict):
         raise HTTPException(404, "Paste not found")
 
     return {"status": "updated"}
+
+
+from fastapi import Query
+
+@app.get("/search")
+async def search_pastes(q: str = Query(...)):
+    
+    query = {
+        "$or": [
+            {"title": {"$regex": q, "$options": "i"}},
+            {"content": {"$regex": q, "$options": "i"}},
+            {"syntax": {"$regex": q, "$options": "i"}}
+        ]
+    }
+
+    results = pastes_collection.find(query).limit(20)
+
+    pastes = []
+
+    for p in results:
+        p["_id"] = str(p["_id"])
+        pastes.append(p)
+
+    return {
+        "results": pastes
+    }
