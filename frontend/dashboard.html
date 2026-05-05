@@ -255,7 +255,7 @@ function togglePopup(){
   popup.style.display = popup.style.display === "block" ? "none" : "block";
 }
 
-   window.addEventListener('click', (event) => {
+   document.addEventListener('click', (event) => {
     if (
     popup.style.display === "block" &&
     !popup.contains(e.target) &&
