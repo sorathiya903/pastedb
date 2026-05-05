@@ -258,19 +258,26 @@ async def update_paste(
     data: dict
 ):
 
-    pastes_collection.update_one(
+    result = await pastes_collection.update_one(
         {
             "_id": ObjectId(paste_id)
         },
         {
             "$set": {
-                "title": data["title"],
-                "content": data["content"],
-                "syntax": data["syntax"]
+                "title": data.get("title"),
+                "content": data.get("content"),
+                "syntax": data.get("syntax")
             }
         }
     )
 
+    if result.matched_count == 0:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
+        )
+
     return {
         "status": "updated"
-    }
+        }
