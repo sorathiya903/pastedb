@@ -817,8 +817,13 @@ console.log(new Date())
       // CREATED
 if(data.created_at){
 
-  const date =
-    new Date(data.created_at)
+  
+  const rawDate = data.created_at.endsWith('Z') || data.created_at.includes('+') 
+                ? data.created_at 
+                : data.created_at + 'Z';
+
+const date = new Date(rawDate);
+
 const formatter = new Intl.DateTimeFormat('en-IN', {
   timeZone: 'Asia/Kolkata',
   year: 'numeric',
@@ -830,9 +835,8 @@ const formatter = new Intl.DateTimeFormat('en-IN', {
   hour12: true
 });
 
-let finalDate = formatter.format(new Date(date));
+createdAt.textContent = formatter.format(date);
 
-  createdAt.textContent = finalDate
     
 
 }else{
