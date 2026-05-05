@@ -1198,10 +1198,7 @@ createBtn.addEventListener("click", async () => {
 
   createBtn.disabled = true;
   createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
-    
 try {
-
-
 
   let response
 
@@ -1219,15 +1216,7 @@ try {
 
   console.log(data)
 
-
-
-  
-
-   
-
   if(response.ok){
-
-  
 
     const pasteUrl =
       `https://pastedb.netlify.app/paste.html?id=${editId || data.id}`
@@ -1238,26 +1227,25 @@ try {
     const pasteLink =
       document.getElementById("pasteLink")
 
-    pasteLink.href =
-      pasteUrl
+    pasteLink.href = pasteUrl
 
-    pasteLink.textContent =
-      pasteUrl
+    pasteLink.textContent = pasteUrl
 
-    pasteLinkBox.style.display =
-      "block"
+    pasteLinkBox.style.display = "block"
 
   }
 
   else{
 
-    alert(await response.text())
+    alert(data.detail || "Something went wrong")
 
   }
 
 }
 
 catch(error){
+
+  console.log(error)
 
   alert("Could not connect to the server.")
 
