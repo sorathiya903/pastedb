@@ -469,10 +469,16 @@ async function loadDashboard() {
     if (!data.pastes || data.pastes.length === 0) {
       grid.innerHTML = `
         <div class="empty">
-          <h2>No pastes yet</h2>
-          <br>
-          <button class="btn"><a href="/create" style="text-decoration:none">Create First Paste</a></button>
-        </div>
+  <h2 style="margin-bottom:10px;">No pastes yet</h2>
+  <p style="color:var(--muted); margin-bottom:20px;">
+    Create your first paste and start sharing code instantly.
+  </p>
+  <button class="btn">
+    <a href="/create" style="text-decoration:none;color:inherit;">
+      Create First Paste
+    </a>
+  </button>
+</div>
       `;
       return;
     }
