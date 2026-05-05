@@ -326,6 +326,11 @@ body {
 
 <!-- DASHBOARD -->
 <div class="container">
+   <div style="padding:20px;">
+  <input id="searchInput" placeholder="Search pastes..." 
+    style="width:100%; padding:12px; border-radius:10px;
+    border:1px solid var(--border); background:var(--card); color:var(--text);" />
+   </div>
   <div class="grid" id="grid"></div>
 </div>
 
@@ -365,7 +370,33 @@ body {
 <script>
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
+let allPastes = [];
 
+function renderPastes(pastes){
+  
+  grid.innerHTML = pastes.map(p => `
+    <div class="card">
+        <div class="title">${p.title || "Untitled"}</div>
+        <div class="meta">
+          ${p.syntax || "text"} • ${p.created_at || ""}
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="window.location.href='/paste.html?id=${p._id}'">View</button>
+          <button
+  class="action-btn"
+  onclick="window.location.href='/create.html?edit=${p._id}'"
+>
+  Edit
+</button> <button
+  class="action-btn"
+  onclick="openDeleteDialog('${p._id}', '${p.title}')"
+>
+  Delete
+</button>
+</div>
+      </div>
+  `).join("");
+}
 /* ======================
    THEME TOGGLE
 ====================== */
@@ -447,28 +478,8 @@ async function loadDashboard() {
     }
 
     // RENDER PASTES
-    grid.innerHTML = data.pastes.map(p => `
-      <div class="card">
-        <div class="title">${p.title || "Untitled"}</div>
-        <div class="meta">
-          ${p.syntax || "text"} • ${p.created_at || ""}
-        </div>
-        <div class="actions">
-          <button class="action-btn" onclick="window.location.href='/paste.html?id=${p._id}'">View</button>
-          <button
-  class="action-btn"
-  onclick="window.location.href='/create.html?edit=${p._id}'"
->
-  Edit
-</button> <button
-  class="action-btn"
-  onclick="openDeleteDialog('${p._id}', '${p.title}')"
->
-  Delete
-</button>
-</div>
-      </div>
-    `).join("");
+    allPastes = data.pastes;
+renderPastes(allPastes);
 
   } catch (err) {
     alert(err);
@@ -544,6 +555,20 @@ document
       `create.html?edit=${pasteId}`
 
   })
+
+   document.getElementById("searchInput").addEventListener("input", (e)=>{
+  const value = e.target.value.toLowerCase();
+
+  const filtered = allPastes.filter(p => {
+    return (
+      (p.title || "").toLowerCase().includes(value) ||
+      (p.content || "").toLowerCase().includes(value) ||
+      (p.syntax || "").toLowerCase().includes(value)
+    );
+  });
+
+  renderPastes(filtered);
+});
 </script>
 
 </body>
