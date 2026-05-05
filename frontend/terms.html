@@ -205,14 +205,17 @@ h1{
 <script>
 const cards = document.querySelectorAll(".card");
 
-window.addEventListener("scroll", ()=>{
+function revealCards(){
   cards.forEach(c=>{
     const top = c.getBoundingClientRect().top;
     if(top < window.innerHeight - 80){
       c.classList.add("show");
     }
   });
-});
+}
+
+window.addEventListener("scroll", revealCards);
+window.addEventListener("load", revealCards);
 </script>
 
 </body>
