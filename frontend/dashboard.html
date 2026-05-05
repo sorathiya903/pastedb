@@ -264,18 +264,7 @@ let profile= document.getElementById('profilePic')
 });
 
 
-function createCard(p){
-  return `
-  <div class="card">
-    <div class="title">${p.title}</div>
-    <div class="meta">${p.syntax} • ${p.created_at || ""}</div>
-    <div class="actions">
-      <button class="action-btn" href="/paste/${p.id}">View</button>
-      <button class="action-btn">Edit</button>
-      <button class="action-btn">Delete</button>
-    </div>
-  </div>`;
-}
+
 
 /* ======================
    LOAD DASHBOARD
@@ -336,7 +325,7 @@ async function loadDashboard() {
           ${p.syntax || "text"} • ${p.created_at || ""}
         </div>
         <div class="actions">
-          <button class="action-btn" onclick="window.location.href='/paste.html?id=${p.id}'">View</button>
+          <button class="action-btn" onclick="window.location.href='/paste.html?id=${p._id}'">View</button>
           <button class="action-btn">Edit</button>
           <button class="action-btn">Delete</button>
         </div>
