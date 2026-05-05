@@ -1106,7 +1106,47 @@ textarea.addEventListener("input", updateLines);
 updateLines();
 
 
+// EDIT PASTE
 
+async function editPaste(editId, pasteData){
+
+  const response = await fetch(
+    `https://pastedb.onrender.com/paste/${editId}`,
+    {
+      method: "PUT",
+      credentials: "include",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify(pasteData)
+    }
+  )
+
+  return response
+}
+
+    // CREATE PASTE
+
+async function createPaste(pasteData){
+
+  const response = await fetch(
+    "https://pastedb.onrender.com/create",
+    {
+      method: "POST",
+      credentials: "include",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify(pasteData)
+    }
+  )
+
+  return response
+}
 
     function toggleTheme(){
 
@@ -1135,27 +1175,29 @@ createBtn.addEventListener("click", async () => {
     
 try {
 
-  const response = await fetch(
 
-    editId
-      ? `https://pastedb.onrender.com/paste/${editId}`
-      : "https://pastedb.onrender.com/create",
 
-    {
+  let response
 
-      method:
-        editId ? "PUT" : "POST",
+  if(editId){
 
-      credentials: "include",
+    response = await editPaste(editId, pasteData)
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+  }else{
 
-      body: JSON.stringify(pasteData),
+    response = await createPaste(pasteData)
 
-    }
-  )
+  }
+
+  const data = await response.json()
+
+  console.log(data)
+
+}catch(err){
+
+  console.log(err)
+
+   
 
   if(response.ok){
 
