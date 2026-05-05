@@ -255,6 +255,13 @@ function togglePopup(){
   popup.style.display = popup.style.display === "block" ? "none" : "block";
 }
 
+   window.addEventListener('click', (event) => {
+      if (popup.style.display ==="block"){
+  togglePopup()
+      }
+   });
+
+
 /* ======================
    CREATE CARD
 ====================== */
