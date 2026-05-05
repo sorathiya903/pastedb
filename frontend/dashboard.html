@@ -223,7 +223,7 @@ body {
   <!-- POPUP -->
   <div class="popup" id="popup">
     <h4 id="username">User</h4>
-    <p id="email">email</p>
+    <p id="email">Email</p>
     <button class="btn" style="margin-top:10px;width:100%">Logout</button>
   </div>
 </div>
@@ -264,16 +264,13 @@ let profile= document.getElementById('profilePic')
 });
 
 
-/* ======================
-   CREATE CARD
-====================== */
 function createCard(p){
   return `
   <div class="card">
     <div class="title">${p.title}</div>
     <div class="meta">${p.syntax} • ${p.created_at || ""}</div>
     <div class="actions">
-      <button class="action-btn">View</button>
+      <button class="action-btn" href="/paste/${p.id}">View</button>
       <button class="action-btn">Edit</button>
       <button class="action-btn">Delete</button>
     </div>
