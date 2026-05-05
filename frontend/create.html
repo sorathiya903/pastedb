@@ -1031,30 +1031,56 @@ display:flex;
   </main>
 
   <script>
-async function loadPasteForEditing(){
 
-  const response = await fetch(
+async function loadPasteForEditing(editId){
 
-  editId
-    ? `https://pastedb.onrender.com/paste/${editId}`
-    : "https://pastedb.onrender.com/create",
+  try{
 
-  {
-    method: editId ? "PUT" : "POST"})
+    const response = await fetch(
+      `https://pastedb.onrender.com/paste/${editId}`,
+      {
+        method: "GET",
+        credentials: "include"
+      }
+    )
 
-  const data = await response.json()
+    if(!response.ok){
 
-  document.getElementById("title").value =
-    data.title || ""
-
-  document.getElementById("code").value =
-    data.content || ""
-
-  document.getElementById("syntax").value =
-    data.syntax || "plain"
-
+      alert("Could not load paste")
+      return
     }
 
+    const data = await response.json()
+
+    // FILL INPUTS
+
+    document.getElementById("title").value =
+      data.title || ""
+
+    document.getElementById("code").value =
+      data.content || ""
+
+    document.getElementById("syntax").value =
+      data.syntax || "plain"
+
+    document.getElementById("expiration").value =
+      data.expiration || "never"
+
+    // UPDATE LINE NUMBERS
+
+    updateLines()
+
+  }
+
+  catch(err){
+
+    console.log(err)
+
+    alert("Failed to fetch paste")
+
+  }
+
+}
 const params =
   new URLSearchParams(window.location.search)
 
@@ -1062,7 +1088,7 @@ const editId =
   params.get("edit")
 if(editId){
 
-  loadPasteForEditing()
+  loadPasteForEditing(editId)
 
 }
 if(editId){
