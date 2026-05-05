@@ -249,48 +249,40 @@ async def delete_paste(
         )
 
 
-
 @app.put("/paste/{paste_id}")
-def update_paste(
-    paste_id: str,
-    data: dict
-):
-    expiry = None
+def update_paste(paste_id: str, data: dict):
 
-    if paste.expiration in ["10m", "10min"]:
+    now = datetime.now(timezone.utc)
+
+    expiry = None
+    expiration = data.get("expiration")
+
+    if expiration in ["10m", "10min"]:
         expiry = now + timedelta(minutes=10)
 
-    elif paste.expiration in ["1h", "1hour"]:
+    elif expiration in ["1h", "1hour"]:
         expiry = now + timedelta(hours=1)
 
-    elif paste.expiration in ["1d", "1day"]:
+    elif expiration in ["1d", "1day"]:
         expiry = now + timedelta(days=1)
 
-    elif paste.expiration in ["1w", "1week"]:
+    elif expiration in ["1w", "1week"]:
         expiry = now + timedelta(days=7)
 
     result = pastes_collection.update_one(
-        {
-            "_id": ObjectId(paste_id)
-        },
+        {"_id": ObjectId(paste_id)},
         {
             "$set": {
                 "title": data.get("title"),
                 "content": data.get("content"),
                 "syntax": data.get("syntax"),
-                "expiration":data.get("expiration"),
-                "expires_at": expiry
+                "expiration": expiration,
+                "expire_at": expiry
             }
         }
     )
 
     if result.matched_count == 0:
+        raise HTTPException(404, "Paste not found")
 
-        raise HTTPException(
-            status_code=404,
-            detail="Paste not found"
-        )
-
-    return {
-        "status": "updated"
-        }
+    return {"status": "updated"}
