@@ -1212,9 +1212,9 @@ try {
 
   }
 
-  const data = await response.json()
-
+  
   if(response.ok){
+const data = await response.json()
 
     const pasteUrl =
       `https://pastedb.netlify.app/paste.html?id=${editId || data.id}`
