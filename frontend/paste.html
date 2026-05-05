@@ -854,20 +854,26 @@ createdAt.textContent = formatter.format(date);
 
       // EXPIRATION
 
-       if(data.expire_at){
+       if (data.expire_at) {
 
-  const now = new Date()
+  const now = new Date();
 
-  const expireDate =
-    new Date(data.expire_at)
+  
+  const expireDate = new Date(
+    data.expire_at.endsWith("Z")
+      ? data.expire_at
+      : data.expire_at + "Z"
+  );
 
   const diff =
-    expireDate.getTime() - now.getTime()
+    expireDate.getTime() - now.getTime();
 
-  if(diff <= 0){
+  if (diff <= 0) {
 
     expiration.textContent =
-      "Expired"
+      "Expired";
+
+  }
 
   }
 
