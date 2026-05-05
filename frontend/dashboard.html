@@ -204,6 +204,102 @@ body {
   object-fit: cover;
   border: 1px solid var(--border);
    }
+
+
+.delete-dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+
+  display: none;
+
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999;
+}
+
+.delete-box {
+  width: 320px;
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+
+  padding: 18px;
+}
+
+.delete-box h3 {
+  margin-bottom: 10px;
+}
+
+.delete-box p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.delete-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.delete-btn {
+
+  flex: 1;
+
+  padding: 10px;
+
+  border-radius: 10px;
+
+  border: 1px solid var(--border);
+
+  background: transparent;
+
+  color: var(--text);
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.delete-btn {
+  border-color: #444;
+}
+
+.delete-btn:hover {
+  background: #111;
+}
+
+.cancel-btn:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* loader */
+.loader {
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid #666;
+  border-top: 2px solid white;
+
+  border-radius: 50%;
+
+  animation: spin 0.8s linear infinite;
+
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+     }
 </style>
 </head>
 
@@ -233,6 +329,39 @@ body {
   <div class="grid" id="grid"></div>
 </div>
 
+
+   <!--delete box -->
+<div class="delete-dialog" id="deleteDialog">
+
+  <div class="delete-box">
+
+    <h3>Delete Paste</h3>
+
+    <p id="deleteText">
+      Are you sure you want to delete this paste?
+    </p>
+
+    <div class="delete-actions">
+
+      <button
+        class="cancel-btn"
+        onclick="closeDeleteDialog()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="delete-btn"
+        id="confirmDeleteBtn"
+      >
+        Delete
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 <script>
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
@@ -327,8 +456,13 @@ async function loadDashboard() {
         <div class="actions">
           <button class="action-btn" onclick="window.location.href='/paste.html?id=${p._id}'">View</button>
           <button class="action-btn">Edit</button>
-          <button class="action-btn">Delete</button>
-        </div>
+          <button
+  class="action-btn"
+  onclick="openDeleteDialog('${p._id}', '${p.title}')"
+>
+  Delete
+</button>
+</div>
       </div>
     `).join("");
 
@@ -338,6 +472,65 @@ async function loadDashboard() {
   }
    }
 loadDashboard();
+
+   let deletePasteId = null;
+
+function openDeleteDialog(id, title) {
+
+  deletePasteId = id;
+
+  document.getElementById("deleteText").innerHTML =
+    `Are you sure you want to delete <b>${title}</b>?`;
+
+  document.getElementById("deleteDialog").style.display = "flex";
+}
+
+function closeDeleteDialog() {
+
+  document.getElementById("deleteDialog").style.display = "none";
+}
+
+document
+.getElementById("confirmDeleteBtn")
+.onclick = async function () {
+
+  const btn = this;
+
+  btn.disabled = true;
+
+  btn.innerHTML = `<div class="loader"></div>`;
+
+  try {
+
+    const res = await fetch(
+      `https://pastedb.onrender.com/delete/${deletePasteId}`,
+      {
+        method: "DELETE",
+        credentials: "include"
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Delete failed");
+    }
+
+    closeDeleteDialog();
+
+    loadDashboard();
+
+  } catch (err) {
+
+    alert(err);
+
+  } finally {
+
+    btn.disabled = false;
+
+    btn.innerHTML = "Delete";
+  }
+};
 </script>
 
 </body>
