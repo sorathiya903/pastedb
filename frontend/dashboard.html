@@ -255,17 +255,13 @@ function togglePopup(){
   popup.style.display = popup.style.display === "block" ? "none" : "block";
 }
 
-   document.addEventListener('click', (event) => {
-    if (
-    popup.style.display === "block" &&
-    !popup.contains(e.target) &&
-    !profile.contains(e.target)
-  ) {
-    popup.style.display = "none";
-   }
-  
+document.addEventListener("click", function(e) {
+      let menu = document.getElementById("popup");
+let profile= document.getElementById('profilepro')
+    if (!profile.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = "none";
+    }
 });
-
 
 
 /* ======================
