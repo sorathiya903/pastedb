@@ -257,7 +257,7 @@ function togglePopup(){
 
 document.addEventListener("click", function(e) {
       let menu = document.getElementById("popup");
-let profile= document.getElementById('profilepro')
+let profile= document.getElementById('profilePic')
     if (!profile.contains(e.target) && !menu.contains(e.target)) {
         menu.style.display = "none";
     }
@@ -292,11 +292,11 @@ async function loadDashboard() {
   try {
     const res = await fetch("https://pastedb.onrender.com/user/dashboard", {
       method: "GET",
-      credentials: "include", // 🔥 IMPORTANT for cookie auth
+      credentials: "include", // IMPORTANT for cookie auth
       
     });
 
-    // 🔴 handle HTTP errors properly
+    //  handle HTTP errors properly
     if (!res.ok) {
       throw new Error("HTTP Error: " + res.status);
     }
