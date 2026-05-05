@@ -256,10 +256,11 @@ function togglePopup(){
 }
 
    window.addEventListener('click', (event) => {
-      if (popup.style.display ==="block"){
-  togglePopup()
-      }
-   });
+    if (popup.style.display === "block" && !popup.contains(event.target)) {
+    popup.style.display = "none";
+  }
+});
+
 
 
 /* ======================
