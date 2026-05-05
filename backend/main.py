@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from datetime import datetime, timedelta , timezone
 from typing import Optional
-from bson import ObjectId
+from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user 
 import os
 
@@ -174,6 +174,8 @@ async def get_dashboard(user=Depends(get_current_user)):
 @app.get("/paste/{paste_id}")
 async def get_paste(paste_id: str):
 
+    print("PASTE ID:", paste_id)
+
     try:
 
         paste = collection.find_one({
@@ -186,19 +188,18 @@ async def get_paste(paste_id: str):
                 detail="Paste not found"
             )
 
-        # convert ObjectId to string
         paste["_id"] = str(paste["_id"])
 
         return paste
 
-    except:
+    except Exception as e:
+
+        print(e)
 
         raise HTTPException(
             status_code=400,
             detail="Invalid paste ID"
         )
-
-
 # delete
 
 @app.delete("/delete/{paste_id}")
