@@ -68,7 +68,7 @@ def home():
 
 
 @app.post("/create")
-async def create_paste(
+def create_paste(
     paste: PasteCreate,
     user=Depends(get_current_user)
 ):
@@ -100,11 +100,11 @@ async def create_paste(
             "expire_at": expire_at
         })
 
-        result = await pastes_collection.insert_one(
+        result = pastes_collection.insert_one(
             paste_doc
         )
 
-        await users_collection.update_one(
+        users_collection.update_one(
             {"email_key": email_key},
             {
                 "$push": {
@@ -251,12 +251,12 @@ async def delete_paste(
 
 
 @app.put("/paste/{paste_id}")
-async def update_paste(
+def update_paste(
     paste_id: str,
     data: dict
 ):
 
-    result = await pastes_collection.update_one(
+    result = pastes_collection.update_one(
         {
             "_id": ObjectId(paste_id)
         },
