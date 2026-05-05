@@ -1,1 +1,402 @@
-<h1>Under development</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PasteDB - Secure Developer Paste Tool</title>
+
+<style>
+/* =========================
+   BASE THEME
+========================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body{
+  background:#0a0a0a;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* soft noise + grid */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image: radial-gradient(#1c1c1c 1px, transparent 1px);
+  background-size:28px 28px;
+  opacity:0.35;
+  z-index:-1;
+}
+
+/* =========================
+   FLOATING GLASS NAVBAR
+========================= */
+header{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:1100px;
+
+  background:rgba(30,30,30,0.55);
+  backdrop-filter: blur(16px);
+
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+
+  z-index:100;
+
+  transition:0.3s ease;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+}
+
+.logo{
+  font-weight:700;
+  letter-spacing:1px;
+  color:#eaeaea;
+}
+
+/* desktop links */
+.nav-links{
+  display:flex;
+  gap:18px;
+}
+
+.nav-links a{
+  color:#9a9a9a;
+  text-decoration:none;
+  font-size:14px;
+  transition:0.25s;
+}
+
+.nav-links a:hover{
+  color:#fff;
+}
+
+/* CTA */
+.btn{
+  background:#fff;
+  color:#000;
+  padding:9px 14px;
+  border-radius:10px;
+  font-weight:600;
+  text-decoration:none;
+  transition:0.3s ease;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+}
+
+/* =========================
+   MOBILE MENU
+========================= */
+.menu-btn{
+  display:none;
+  cursor:pointer;
+  font-size:22px;
+  color:#fff;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  display:none;
+  z-index:90;
+}
+
+.mobile-menu{
+  position:fixed;
+  top:85px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  max-width:380px;
+
+  background:rgba(20,20,20,0.95);
+  backdrop-filter: blur(18px);
+
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+
+  display:none;
+  flex-direction:column;
+  gap:16px;
+  padding:18px;
+
+  z-index:100;
+
+  animation: fadeUp 0.25s ease;
+}
+
+.mobile-menu a{
+  color:#fff;
+  text-decoration:none;
+}
+
+/* =========================
+   HERO
+========================= */
+.hero{
+  text-align:center;
+  padding:150px 20px 70px;
+  max-width:900px;
+  margin:auto;
+}
+
+.hero h1{
+  font-size:44px;
+  font-weight:800;
+  animation: fadeUp 0.6s ease;
+}
+
+.hero p{
+  color:#9a9a9a;
+  margin-top:16px;
+  line-height:1.6;
+}
+
+.cta{
+  margin-top:28px;
+}
+
+/* =========================
+   FEATURES
+========================= */
+.section{
+  max-width:1100px;
+  margin:auto;
+  padding:60px 20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:#141414;
+  border:1px solid #222;
+  border-radius:14px;
+  padding:18px;
+
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.6s ease;
+}
+
+.card h3{
+  margin-bottom:8px;
+}
+
+.card p{
+  color:#8a8a8a;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.show{
+  opacity:1 !important;
+  transform:translateY(0) !important;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media(max-width:768px){
+  .nav-links, .btn {
+    display:none;
+  }
+  .menu-btn{
+    display:block;
+  }
+  .hero h1{
+    font-size:32px;
+  }
+}
+  .mobile-menu{
+  position:fixed;
+  top:85px;
+  left:50%;
+  transform:translateX(-50%) scale(0.95);
+
+  width:90%;
+  max-width:380px;
+
+  background:rgba(20,20,20,0.95);
+  backdrop-filter: blur(18px);
+
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding:18px;
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:0.25s ease;
+  z-index:100;
+}
+
+/* ACTIVE STATE */
+.mobile-menu.active{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) scale(1);
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+
+  opacity:0;
+  visibility:hidden;
+  transition:0.25s ease;
+
+  z-index:90;
+}
+
+.overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+</style>
+</head>
+
+<body>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- NAVBAR -->
+<header id="header">
+  <div class="nav">
+
+    <div class="logo">PasteDB</div>
+
+    <div class="nav-links">
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="#">Terms</a>
+      <a href="/create">Create</a>
+    </div>
+
+    <a class="btn" href="/create">Get Started</a>
+
+    <div class="menu-btn" id="menuBtn" onclick="toggleMenu(event)">☰</div>
+
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="menu">
+  <a href="/dashboard.html">Dashboard</a>
+  <a href="#">Terms</a>
+  <a href="/create">Create Paste</a>
+  <a class="btn" href="/create">Get Started</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Secure. Simple. Developer First Paste Tool.</h1>
+
+  <p>
+    PasteDB lets you create instant code pastes.
+    If you're logged in, you can manage them.
+    If not, they are still publicly viewable — but not stored in your account.
+  </p>
+
+  <div class="cta">
+    <a class="btn" href="/create">Get Started — Free</a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="grid">
+
+    <div class="card">
+      <h3>Instant Paste</h3>
+      <p>Create and share code snippets in seconds.</p>
+    </div>
+
+    <div class="card">
+      <h3>Public by Default</h3>
+      <p>Every paste is accessible via link.</p>
+    </div>
+
+    <div class="card">
+      <h3>Google Login Control</h3>
+      <p>Login to edit or delete your pastes anytime.</p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+let menuOpen = false;
+
+function toggleMenu(e){
+  e.stopPropagation();
+  menuOpen = !menuOpen;
+
+  document.getElementById("menu").classList.toggle("active", menuOpen);
+  document.getElementById("overlay").classList.toggle("active", menuOpen);
+}
+
+function closeMenu(){
+  menuOpen = false;
+
+  document.getElementById("menu").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+}
+
+/* outside click */
+document.addEventListener("click", () => {
+  if(menuOpen) closeMenu();
+});
+
+document.getElementById("menu").addEventListener("click", e => {
+  e.stopPropagation();
+});
+  
+  const cards = document.querySelectorAll(".card");
+
+window.addEventListener("scroll", ()=>{
+  cards.forEach(c=>{
+    const top = c.getBoundingClientRect().top;
+    if(top < window.innerHeight - 80){
+      c.classList.add("show");
+    }
+  });
+});
+</script>
+
+</body>
+  </html>
