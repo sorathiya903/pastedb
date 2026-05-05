@@ -852,13 +852,11 @@ createdAt.textContent = formatter.format(date);
 
 
 
-      // EXPIRATION
-
-       if (data.expire_at) {
+      
+if (data.expire_at) {
 
   const now = new Date();
 
-  
   const expireDate = new Date(
     data.expire_at.endsWith("Z")
       ? data.expire_at
@@ -875,37 +873,35 @@ createdAt.textContent = formatter.format(date);
 
   }
 
-  }
-
-  else{
+  else {
 
     const minutes =
-      Math.floor(diff / 1000 / 60)
+      Math.floor(diff / 1000 / 60);
 
     const hours =
-      Math.floor(minutes / 60)
+      Math.floor(minutes / 60);
 
     const days =
-      Math.floor(hours / 24)
+      Math.floor(hours / 24);
 
-    if(days >= 1){
+    if (days >= 1) {
 
       expiration.textContent =
-        `Expires in ${days} day${days > 1 ? "s" : ""}`
+        `Expires in ${days} day${days > 1 ? "s" : ""}`;
 
     }
 
-    else if(hours >= 1){
+    else if (hours >= 1) {
 
       expiration.textContent =
-        `Expires in ${hours} hour${hours > 1 ? "s" : ""}`
+        `Expires in ${hours} hour${hours > 1 ? "s" : ""}`;
 
     }
 
-    else{
+    else {
 
       expiration.textContent =
-        `Expires in ${minutes} minute${minutes > 1 ? "s" : ""}`
+        `Expires in ${minutes} minute${minutes > 1 ? "s" : ""}`;
 
     }
 
@@ -913,13 +909,13 @@ createdAt.textContent = formatter.format(date);
 
 }
 
-else{
+else {
 
   expiration.textContent =
-    "Never expires"
+    "Never expires";
 
 }
-
+    
 
       expiration.style.display = "block"
 
