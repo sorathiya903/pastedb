@@ -455,8 +455,12 @@ async function loadDashboard() {
         </div>
         <div class="actions">
           <button class="action-btn" onclick="window.location.href='/paste.html?id=${p._id}'">View</button>
-          <button class="action-btn">Edit</button>
           <button
+  class="action-btn"
+  onclick="window.location.href='/create.html?edit=${p._id}'"
+>
+  Edit
+</button> <button
   class="action-btn"
   onclick="openDeleteDialog('${p._id}', '${p.title}')"
 >
@@ -531,6 +535,15 @@ document
     btn.innerHTML = "Delete";
   }
 };
+
+   document
+  .getElementById("editBtn")
+  .addEventListener("click", () => {
+
+    window.location.href =
+      `create.html?edit=${pasteId}`
+
+  })
 </script>
 
 </body>
