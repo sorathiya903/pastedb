@@ -1031,10 +1031,47 @@ display:flex;
   </main>
 
   <script>
+async function loadPasteForEditing(){
 
+  const response = await fetch(
 
+  editId
+    ? `https://pastedb.onrender.com/paste/${editId}`
+    : "https://pastedb.onrender.com/create",
 
+  {
+    method: editId ? "PUT" : "POST"})
 
+  const data = await response.json()
+
+  document.getElementById("title").value =
+    data.title || ""
+
+  document.getElementById("code").value =
+    data.content || ""
+
+  document.getElementById("syntax").value =
+    data.syntax || "plain"
+
+    }
+
+const params =
+  new URLSearchParams(window.location.search)
+
+const editId =
+  params.get("edit")
+if(editId){
+
+  loadPasteForEditing()
+
+}
+if(editId){
+
+  document.getElementById("btnText")
+    .textContent = "Save Changes"
+
+}
+    
 const textarea = document.getElementById("code");
 const lines = document.getElementById("lines");
 
@@ -1095,49 +1132,83 @@ createBtn.addEventListener("click", async () => {
 
   createBtn.disabled = true;
   createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
-
-  try {
     
-    const response = await fetch("https://pastedb.onrender.com/create", {
-      method: "POST", 
+try {
+
+  const response = await fetch(
+
+    editId
+      ? `https://pastedb.onrender.com/paste/${editId}`
+      : "https://pastedb.onrender.com/create",
+
+    {
+
+      method:
+        editId ? "PUT" : "POST",
+
       credentials: "include",
+
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(pasteData), 
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-     // alert("data")
-     // alert(data);
-      const pasteUrl = `https://pastedb.netlify.app/paste.html?id=${data.id}`
+      body: JSON.stringify(pasteData),
 
-const pasteLinkBox = document.getElementById("pasteLinkBox")
+    }
+  )
 
-const pasteLink = document.getElementById("pasteLink")
+  if(response.ok){
 
-pasteLink.href = pasteUrl
-pasteLink.textContent = pasteUrl
+    const data = await response.json()
 
-pasteLinkBox.style.display = "block"
-    
-    
-    } else {
-//alert("res")
+    const pasteUrl =
+      `https://pastedb.netlify.app/paste.html?id=${editId || data.id}`
 
- 
- alert(await response.text())   }
-  } catch (error) {
-   // alert(error);
-    alert("Could not connect to the server.");
-  } finally {
-  
-    createBtn.disabled = false;
-    createBtn.innerHTML = `<span>Create New Paste</span>`;
+    const pasteLinkBox =
+      document.getElementById("pasteLinkBox")
+
+    const pasteLink =
+      document.getElementById("pasteLink")
+
+    pasteLink.href =
+      pasteUrl
+
+    pasteLink.textContent =
+      pasteUrl
+
+    pasteLinkBox.style.display =
+      "block"
+
   }
-});
 
+  else{
+
+    alert(await response.text())
+
+  }
+
+}
+
+catch(error){
+
+  alert("Could not connect to the server.")
+
+}
+
+finally{
+
+  createBtn.disabled = false
+
+  createBtn.innerHTML =
+    `<span id="btnText">${
+      editId
+        ? "Save Changes"
+        : "Create New Paste"
+    }</span>`
+
+}
+    })
+  
         window.addEventListener("load", () => {
 
   const loader = document.getElementById("pageLoader")
