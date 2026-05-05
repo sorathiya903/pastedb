@@ -264,7 +264,8 @@ def update_paste(
             "$set": {
                 "title": data.get("title"),
                 "content": data.get("content"),
-                "syntax": data.get("syntax")
+                "syntax": data.get("syntax"),
+                "expiration":data.get("expiration")
             }
         }
     )
