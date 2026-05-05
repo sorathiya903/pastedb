@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PasteDB - Terms & Conditions</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body{
+  background:#0A0A0A;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* subtle grid */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image: radial-gradient(#1d1d1d 1px, transparent 1px);
+  background-size:28px 28px;
+  opacity:0.35;
+  z-index:-1;
+}
+
+/* NAVBAR (same style as your landing page) */
+header{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:1100px;
+
+  background:rgba(30,30,30,0.55);
+  backdrop-filter: blur(16px);
+
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+
+  z-index:100;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+}
+
+.logo{
+  font-weight:700;
+}
+
+.btn{
+  background:#fff;
+  color:#000;
+  padding:9px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+}
+
+/* CONTENT */
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:140px 20px 60px;
+}
+
+h1{
+  font-size:36px;
+  margin-bottom:10px;
+}
+
+.sub{
+  color:#888;
+  margin-bottom:30px;
+  line-height:1.6;
+}
+
+/* card sections */
+.card{
+  background:#141414;
+  border:1px solid #222;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:16px;
+
+  opacity:0;
+  transform:translateY(15px);
+  transition:0.6s ease;
+}
+
+.card h2{
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.card p{
+  color:#9a9a9a;
+  font-size:14px;
+  line-height:1.6;
+}
+
+/* animation */
+.show{
+  opacity:1 !important;
+  transform:translateY(0) !important;
+}
+
+/* footer note */
+.footer{
+  margin-top:40px;
+  color:#666;
+  font-size:13px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<header>
+  <div class="nav">
+    <div class="logo">PasteDB</div>
+    <a class="btn" href="/create">Back to App</a>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="container">
+
+  <h1>Terms & Conditions</h1>
+  <p class="sub">
+    By using PasteDB, you agree to the following terms. Please read carefully.
+  </p>
+
+  <div class="card">
+    <h2>1. Usage of Service</h2>
+    <p>
+      PasteDB is a developer tool that allows users to create and share text-based pastes.
+      All pastes are public by default and accessible via link.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>2. User Accounts</h2>
+    <p>
+      Google login is used for authentication. Logged-in users can manage (edit/delete)
+      their own pastes. Non-logged users can create pastes without ownership control.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>3. Data Ownership</h2>
+    <p>
+      You retain ownership of your content. However, by publishing a paste,
+      you grant PasteDB permission to store and serve it publicly.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>4. Content Responsibility</h2>
+    <p>
+      Users are fully responsible for the content they publish. Illegal, harmful,
+      or abusive content is strictly prohibited.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>5. Data Storage</h2>
+    <p>
+      Logged-in users' pastes are stored in MongoDB and linked to their account.
+      Anonymous pastes may not be editable or deletable later.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>6. Service Changes</h2>
+    <p>
+      PasteDB may update, modify, or discontinue features at any time without prior notice.
+    </p>
+  </div>
+
+  <div class="footer">
+    Last updated: 2026 • PasteDB
+  </div>
+
+</div>
+
+<script>
+const cards = document.querySelectorAll(".card");
+
+window.addEventListener("scroll", ()=>{
+  cards.forEach(c=>{
+    const top = c.getBoundingClientRect().top;
+    if(top < window.innerHeight - 80){
+      c.classList.add("show");
+    }
+  });
+});
+</script>
+
+</body>
+</html>
