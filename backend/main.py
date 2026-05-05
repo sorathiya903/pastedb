@@ -185,3 +185,54 @@ async def get_paste(paste_id: str):
 
     paste["_id"] = str(paste["_id"])
     return paste
+
+
+# delete
+
+@app.delete("/delete/{paste_id}")
+async def delete_paste(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+
+    try:
+
+        email_key = user["email"].replace(".", "_")
+
+        paste = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
+
+        if not paste:
+            raise HTTPException(404, "Paste not found")
+
+        # SECURITY CHECK
+        if paste.get("user_email_key") != email_key:
+            raise HTTPException(403, "Unauthorized")
+
+        # DELETE FROM PASTES COLLECTION
+        pastes_collection.delete_one({
+            "_id": ObjectId(paste_id)
+        })
+
+        # REMOVE FROM USER DOCUMENT
+        users_collection.update_one(
+            {"email_key": email_key},
+            {
+                "$pull": {
+                    "pastes": paste_id
+                }
+            }
+        )
+
+        return {
+            "status": "success",
+            "message": "Paste deleted"
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
