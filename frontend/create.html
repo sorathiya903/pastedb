@@ -1197,7 +1197,11 @@ createBtn.addEventListener("click", async () => {
   }
 
   createBtn.disabled = true;
-  createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
+  if (editId){
+  createBtn.innerHTML = `<div class="spinner"></div> Saving Changes...`;
+  }else{
+    createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
+}
 try {
 
   let response
