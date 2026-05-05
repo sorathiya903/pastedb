@@ -336,7 +336,7 @@ async function loadDashboard() {
           ${p.syntax || "text"} • ${p.created_at || ""}
         </div>
         <div class="actions">
-          <button class="action-btn">View</button>
+          <button class="action-btn" onclick="window.location.href='/paste.html?id=${p.id}'">View</button>
           <button class="action-btn">Edit</button>
           <button class="action-btn">Delete</button>
         </div>
