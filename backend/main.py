@@ -170,21 +170,33 @@ async def get_dashboard(user=Depends(get_current_user)):
     }
 
 
+
 @app.get("/paste/{paste_id}")
 async def get_paste(paste_id: str):
 
-    paste = pastes_collection.find_one({"_id": ObjectId(paste_id)})
+    try:
 
-    if not paste:
-        raise HTTPException(404, "Paste not found")
+        paste = collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
 
-    expire_at = paste.get("expire_at")
+        if not paste:
+            raise HTTPException(
+                status_code=404,
+                detail="Paste not found"
+            )
 
-    if expire_at and datetime.now(timezone.utc) > expire_at:
-        raise HTTPException(404, "Paste expired")
+        # convert ObjectId to string
+        paste["_id"] = str(paste["_id"])
 
-    paste["_id"] = str(paste["_id"])
-    return paste
+        return paste
+
+    except:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid paste ID"
+        )
 
 
 # delete
