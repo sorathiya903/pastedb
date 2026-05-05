@@ -1182,7 +1182,7 @@ async function createPaste(pasteData){
     const createBtn = document.getElementById("createBtn");
 
 createBtn.addEventListener("click", async () => {
-  // 1. Collect the data from the UI
+
   const pasteData = {
     title: document.getElementById("title").value || "Untitled Paste",
     content: document.getElementById("code").value,
