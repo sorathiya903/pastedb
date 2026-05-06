@@ -530,10 +530,10 @@ function renderPastes(pastes){
   ${highlight(p.title || "Untitled", currentSearch)}
 </div>
    <div class="meta">
-          ${p.syntax || "text"} • ${p.created_at || ""}
+          ${p.syntax || "text"} • /${p.custom_id|| ""}
         </div>
         <div class="actions">
-        <button class="action-btn" onclick="copyText('${p._id}')">Copy Content</button>
+        <button class="action-btn" onclick="copyText(`https://pastedb.netlify.app/paste/${p.custom_id}`)">Copy</button>
           <button class="action-btn" onclick="window.location.href='/paste/${p.custom_id}'">View</button>
           <button
   class="action-btn"
