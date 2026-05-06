@@ -1308,10 +1308,19 @@ const customId =
     title: document.getElementById("title").value || "Untitled Paste",
     content: document.getElementById("code").value,
     syntax: document.getElementById("syntax").value,
-    expiration: document.getElementById("expiration").value,
-    custom_id: customId
-  };
+    expiration: document.getElementById("expiration").value
 
+  };
+  if (!editId) {
+  pasteData.custom_id =
+    document.getElementById("customId").value.trim();
+  }
+if (editId) {
+  document.getElementById("customId").disabled = true;
+}
+  if (editId) {
+  document.getElementById("idStatus").style.display = "none";
+  }
     if (!pasteData.content.trim()) {
     alert("Please enter some content!");
     return;
@@ -1415,7 +1424,7 @@ let timeout = null;
 customIdInput.addEventListener("input", () => {
 
   clearTimeout(timeout);
-
+if (editId) return;
   const value =
     customIdInput.value.trim();
 
