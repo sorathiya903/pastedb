@@ -322,3 +322,26 @@ async def search_pastes(q: str = Query(...)):
     return {
         "results": pastes
     }
+
+
+@app.get("/suggest")
+async def suggest(q: str):
+
+    results = pastes_collection.find(
+        {
+            "$text": {
+                "$search": q
+            }
+        }
+    ).limit(5)
+
+    suggestions = []
+
+    for p in results:
+
+        if p.get("title"):
+            suggestions.append(p["title"])
+
+    return {
+        "suggestions": suggestions
+    }
