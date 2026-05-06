@@ -1051,7 +1051,7 @@ margin:10px;
 
   <div class="custom-id-row">
 
-    <span class="prefix">pastedb.netlify.app/p/</span>
+    <span class="prefix">pastedb.netlify.app/paste/</span>
 
     <input
       type="text"
@@ -1073,7 +1073,16 @@ margin:10px;
   <small>
     Only letters, numbers and hyphens allowed
   </small>
-
+<div id="idStatus"
+     style="
+       margin-top:10px;
+       padding:10px 14px;
+       border-radius:12px;
+       font-size:14px;
+       background:rgba(255,255,255,0.04);
+       border:1px solid rgba(255,255,255,0.1);
+     ">
+</div>
       </div>
           <button class="create-btn" id="createBtn">
 
@@ -1333,7 +1342,7 @@ try {
 const data = await response.json()
 
     const pasteUrl =
-      `https://pastedb.netlify.app/p/${data.custom_id}`
+      `https://pastedb.netlify.app/paste/${data.custom_id}`
 
     const pasteLinkBox =
       document.getElementById("pasteLinkBox")
@@ -1416,8 +1425,7 @@ customIdInput.addEventListener(
 
     alert(data.available);
   }
-);
-      </script>
+);   </script>
 <script>
 
 async function handleCredentialResponse(response){
