@@ -1150,20 +1150,6 @@ else {
   }
 
 
-const path = window.location.pathname
-
-if(path.startsWith("/paste/")){
-
-  pasteId = path.split("/paste/")[1]
-
-}else{
-
-  const params =
-    new URLSearchParams(window.location.search)
-
-  pasteId = params.get("id")
-
-               }
 
 </script>
 
