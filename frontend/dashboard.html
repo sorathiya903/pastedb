@@ -332,14 +332,53 @@ body {
   padding: 14px 16px;
   border-radius: 14px;
   border: 1px solid var(--border);
+
   background: transparent;
+
   color: var(--text);
+
   font-size: 16px;
+
   outline: none;
+
   position: relative;
-  z-index: 2;margin-bottom:15px
+
+  z-index: 2;
+
+  margin-bottom:15px;
 }
 
+.search-wrapper{
+  position: relative;
+}
+
+.ghost-text{
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 14px 16px;
+
+  font-size: 16px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  z-index: 1;
+
+  color: transparent;
+}
+
+.ghost-text span{
+  color: #6f6f6f;
+   }
 .ghost-text{
   position: absolute;
   top: 0;
@@ -366,6 +405,10 @@ body {
 .ghost-text span{
   color: rgba(255,255,255,0.32);
 }
+
+   #searchInput::placeholder{
+  color: var(--muted);
+   }
 </style>
 </head>
 
@@ -652,64 +695,72 @@ let currentSuggestion = "";
 
 searchInput.addEventListener("input", async (e)=>{
 
-  const value = e.target.value;
+  const value = e.target.value.trim();
 
-  // SEARCH
-  const res = await fetch(
-    `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
-  );
+  currentSearch = value;
 
-  const data = await res.json();
+  /* EMPTY INPUT */
+  if(!value){
 
-  renderPastes(data.results || []);
+    renderPastes(allPastes);
 
-  // EMPTY
-  if(!value.trim()){
     ghostText.innerHTML = "";
+
     currentSuggestion = "";
+
     return;
   }
 
-  // SUGGESTION API
-  const suggestRes = await fetch(
-    `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
-  );
+  try{
 
-  const suggestData = await suggestRes.json();
+    /* SEARCH */
+    const res = await fetch(
+      `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
+    );
 
-  const first = suggestData.suggestions?.[0];
+    const data = await res.json();
 
-  // NO MATCH
-  if(!first){
-    ghostText.innerHTML = "";
-    currentSuggestion = "";
-    return;
-  }
+    renderPastes(data.results || []);
 
-  // MUST START WITH INPUT
-  if(
-    first.toLowerCase()
-    .startsWith(value.toLowerCase())
-  ){
+    /* SUGGESTION */
+    const suggestRes = await fetch(
+      `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
+    );
 
-    currentSuggestion = first;
+    const suggestData = await suggestRes.json();
 
-    const remaining =
-      first.slice(value.length);
+    const first = suggestData.suggestions?.[0];
 
-    ghostText.innerHTML =
-  `<span style="opacity:0">${value}</span><span>${remaining}</span>`;
+    if(
+      first &&
+      first.toLowerCase().startsWith(value.toLowerCase())
+    ){
 
-  } else {
+      currentSuggestion = first;
 
-    ghostText.innerHTML = "";
-    currentSuggestion = "";
+      const remaining = first.slice(value.length);
+
+      ghostText.innerHTML =
+        value + `<span>${remaining}</span>`;
+
+    }else{
+
+      ghostText.innerHTML = "";
+
+      currentSuggestion = "";
+    }
+
+  }catch(err){
+
+    console.log(err);
+
+    renderPastes(allPastes);
   }
 });
 
-   searchInput.addEventListener("keydown", (e)=>{
+/* TAB / RIGHT ARROW */
+searchInput.addEventListener("keydown", (e)=>{
 
-  // ACCEPT SUGGESTION
   if(
     (e.key === "Tab" || e.key === "ArrowRight")
     &&
@@ -720,22 +771,24 @@ searchInput.addEventListener("input", async (e)=>{
 
     searchInput.value = currentSuggestion;
 
+    currentSearch = currentSuggestion;
+
     ghostText.innerHTML = "";
+
+    currentSuggestion = "";
 
     searchInput.dispatchEvent(
       new Event("input")
     );
   }
 
-  // ENTER SEARCH
   if(e.key === "Enter"){
 
-    searchInput.dispatchEvent(
-      new Event("input")
-    );
+    ghostText.innerHTML = "";
+
+    currentSuggestion = "";
   }
 });
 </script>
-
 </body>
   </html>
