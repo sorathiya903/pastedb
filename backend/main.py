@@ -25,6 +25,11 @@ pastes_collection.create_index(
     expireAfterSeconds=0
 )
 
+pastes_collection.create_index([
+    ("title", "text"),
+    ("content", "text"),
+    ("syntax", "text")
+])
 
 class PasteCreate(BaseModel):
 
@@ -288,18 +293,25 @@ def update_paste(paste_id: str, data: dict):
     return {"status": "updated"}
 
 
+
+
 @app.get("/search")
 async def search_pastes(q: str = Query(...)):
-    
-    query = {
-        "$or": [
-            {"title": {"$regex": q, "$options": "i"}},
-            {"content": {"$regex": q, "$options": "i"}},
-            {"syntax": {"$regex": q, "$options": "i"}}
-        ]
-    }
 
-    results = pastes_collection.find(query).limit(20)
+    results = pastes_collection.find(
+        {
+            "$text": {
+                "$search": q
+            }
+        },
+        {
+            "score": {
+                "$meta": "textScore"
+            }
+        }
+    ).sort([
+        ("score", {"$meta": "textScore"})
+    ]).limit(20)
 
     pastes = []
 
