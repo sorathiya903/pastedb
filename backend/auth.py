@@ -107,46 +107,30 @@ async def logout():
 
     return response
 
-
 @router.delete("/delete-account")
-async def delete_account(request: Request):
+async def delete_account(
+    user = Depends(get_current_user)
+):
 
-    # get jwt cookie
-    token = request.cookies.get("session")
+    user_email = user.get("email")
 
-    if not token:
-        raise HTTPException(401, "Not authenticated")
+    if not user_email:
+        raise HTTPException(401, "Invalid token")
 
-    try:
-        payload = jwt.decode(
-            token,
-            os.getenv("SECRET_KEY"),
-            algorithms=["HS256"]
-        )
+    # delete all pastes
+    await db.pastes.delete_many({
+        "email": user_email
+    })
 
-        user_email = payload.get("email")
+    # delete user
+    await db.users.delete_one({
+        "email": user_email
+    })
 
-        if not user_email:
-            raise HTTPException(401, "Invalid token")
+    response = JSONResponse({
+        "message": "Account deleted"
+    })
 
-        # delete all pastes
-        await db.pastes.delete_many({
-            "email": user_email
-        })
+    response.delete_cookie("session")
 
-        # delete user
-        await db.users.delete_one({
-            "email": user_email
-        })
-
-        response = JSONResponse({
-            "message": "Account deleted"
-        })
-
-        # remove cookie
-        response.delete_cookie("session")
-
-        return response
-
-    except Exception:
-        raise HTTPException(401, "Authentication failed")
+    return response
