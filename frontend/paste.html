@@ -1209,12 +1209,11 @@ alert("fun verify passc")
   const data = await res.json();
 
   if(data.access){
-isUnlocked = true 
-    document.getElementById("passwordModal").style.display = "none";
+  document.getElementById("passwordModal").style.display = "none";
 
-    // NOW LOAD PASTE CONTENT
-    loadPaste();
-
+  window._pasteUnlocked = true; // add flag
+  loadPaste();
+                      
   }else{
 
     document.getElementById("passError")
