@@ -1141,7 +1141,7 @@ margin:10px;
   </main>
 
   <script>
-
+let customIdForPaste;
     function generateCustomId(){
 
   const chars =
@@ -1195,7 +1195,7 @@ async function loadPasteForEditing(editId){
 
     document.getElementById("customId").value = data.custom_id;
     // UPDATE LINE NUMBERS
-
+customIdForPaste = data.custom_id
     updateLines()
 
   }
@@ -1363,7 +1363,7 @@ try {
 const data = await response.json()
 
     const pasteUrl =
-      `https://pastedb.netlify.app/paste/${data.custom_id}`
+      `https://pastedb.netlify.app/paste/${customIdForPaste}`
 
     const pasteLinkBox =
       document.getElementById("pasteLinkBox")
