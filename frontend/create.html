@@ -1106,7 +1106,7 @@ margin:10px;
       type="text"
       id="customId"
       placeholder="my-cool-paste"
-      maxlength="40"
+      maxlength="40" oninput="this.value = this.value.toLowerCase()"
     />
 
     
@@ -1118,9 +1118,9 @@ margin:10px;
     >
       Generate
     </button>
-
+<br>
   <small>
-    Only letters, numbers and hyphens allowed
+    Only small letters, numbers and hyphens allowed
   </small>
 <div id="idStatus"
      style="
@@ -1135,9 +1135,9 @@ margin:10px;
       </div>
           <div class="password-box">
 
+    Password <span id="pwdTick">❌</span>
   <label style="display:flex;align-items:center;gap:10px;">
     <input type="checkbox" id="enablePassword" />
-    Password <span id="pwdTick">❌</span>
   </label>
 
   <div id="passwordContainer" style="display:none;margin-top:10px;position:relative;">
