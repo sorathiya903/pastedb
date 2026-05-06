@@ -599,8 +599,8 @@ document
   }
 };
 
-   
-   let searchTimeout;
+let searchTimeout;
+let currentSearch = "";
 
 document
 .getElementById("searchInput")
@@ -610,15 +610,23 @@ document
 
     const value = e.target.value.trim();
 
+    currentSearch = value;
+
     searchTimeout = setTimeout(async () => {
 
+        // EMPTY SEARCH
         if (!value) {
+
             renderPastes(allPastes);
+
+            document.getElementById("suggestions").innerHTML = "";
+
             return;
         }
 
         try {
 
+            // SEARCH API
             const res = await fetch(
                 `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
             );
@@ -626,6 +634,21 @@ document
             const data = await res.json();
 
             renderPastes(data.results || []);
+
+            // SUGGESTIONS API
+            const suggestRes = await fetch(
+                `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
+            );
+
+            const suggestData = await suggestRes.json();
+
+            document.getElementById("suggestions").innerHTML =
+                suggestData.suggestions.map(s => `
+                    <div class="suggestion-item"
+                        onclick="selectSuggestion('${s}')">
+                        ${s}
+                    </div>
+                `).join("");
 
         } catch(err) {
 
@@ -637,29 +660,17 @@ document
 
 });
 
-  async function selectSuggestion(text){
+function selectSuggestion(text){
 
-  document.getElementById("searchInput").value = text;
+    document.getElementById("searchInput").value = text;
 
-  currentSearch = text;
+    currentSearch = text;
 
-  document.getElementById("searchInput")
+    document
+    .getElementById("searchInput")
     .dispatchEvent(new Event("input"));
    }
-
-   const suggestRes = await fetch(
-  `https://pastedb.onrender.com/suggest?q=${value}`
-);
-
-const suggestData = await suggestRes.json();
-
-document.getElementById("suggestions").innerHTML =
-  suggestData.suggestions.map(s => `
-    <div class="suggestion-item"
-      onclick="selectSuggestion('${s}')">
-      ${s}
-    </div>
-  `).join("");
+   
 </script>
 
 </body>
