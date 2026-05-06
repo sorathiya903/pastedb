@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, RedirectResponse
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
@@ -394,6 +394,7 @@ async def check_custom_id(id: str):
         "available": existing is None
     }
 
+
 @app.get("/p/{custom_id}")
 async def get_custom_paste(custom_id: str):
 
@@ -407,6 +408,6 @@ async def get_custom_paste(custom_id: str):
             "Paste not found"
         )
 
-    paste["_id"] = str(paste["_id"])
-
-    return paste
+    return RedirectResponse(
+        url=f"/paste.html?id={paste['_id']}"
+    )
