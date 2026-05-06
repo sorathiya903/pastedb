@@ -499,7 +499,24 @@ function highlight(text, query){
     );
    }
 function renderPastes(pastes){
-  
+
+  // fallback safety
+  if(!Array.isArray(pastes)){
+    pastes = [];
+  }
+
+  // empty state
+  if(pastes.length === 0){
+
+    grid.innerHTML = `
+      <div class="empty">
+        <h2>No pastes found</h2>
+      </div>
+    `;
+
+    return;
+  }
+
   grid.innerHTML = pastes.map(p => `
     <div class="card">
         <div class="title">
