@@ -454,3 +454,23 @@ def verify_paste_password(paste_id: str, body: PasswordCheck):
         return {"access": True}
 
     return {"access": False}
+
+@app.post("/p/{custom_id}/verify-password")
+def verify_custom_password(custom_id: str, body: PasswordCheck):
+
+    paste = pastes_collection.find_one({
+        "custom_id": custom_id
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    stored_password = paste.get("password")
+
+    if not stored_password:
+        return {"access": True}
+
+    if verify_password(body.password, stored_password):
+        return {"access": True}
+
+    return {"access": False}
