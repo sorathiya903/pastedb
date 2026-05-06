@@ -338,6 +338,64 @@ body {
 .suggestion-item:hover{
   transform:translateX(4px);
       }
+
+   .search-wrapper{
+  position: relative;
+  width: 100%;
+}
+
+.suggestions{
+  position: absolute;
+
+  top: calc(100% + 10px);
+
+  left: 0;
+
+  width: 100%;
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  z-index: 999;
+
+  backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.18);
+
+  max-height: 260px;
+
+  overflow-y: auto;
+
+  display: none;
+}
+
+.suggestion-item{
+  padding: 14px 16px;
+
+  cursor: pointer;
+
+  transition: 0.18s ease;
+
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+
+  color: var(--text);
+}
+
+.suggestion-item:last-child{
+  border-bottom: none;
+}
+
+.suggestion-item:hover{
+  background: rgba(255,255,255,0.04);
+
+  padding-left: 22px;
+     }
 </style>
 </head>
 
@@ -364,12 +422,24 @@ body {
 
 <!-- DASHBOARD -->
 <div class="container">
-   <div style="padding:20px;">
-  <input id="searchInput" placeholder="Search pastes..." 
-    style="width:100%; padding:12px; border-radius:10px;
-    border:1px solid var(--border); background:var(--card); color:var(--text);" />
-   </div>
-   <div id="suggestions" class="suggestions"></div>
+<div class="search-wrapper">
+
+  <input
+    id="searchInput"
+    placeholder="Search pastes..."
+    style="
+      width:100%;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--card);
+      color:var(--text);
+    "
+  />
+
+  <div id="suggestions" class="suggestions"></div>
+
+</div>
   <div class="grid" id="grid"></div>
 </div>
 
@@ -637,36 +707,64 @@ document
 
         try {
 
-            // SEARCH API
-            const res = await fetch(
-                `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
-            );
+  // SEARCH API
+  const res = await fetch(
+    `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`,
+    {
+      credentials: "include"
+    }
+  );
 
-            const data = await res.json();
+  const data = await res.json();
 
-            renderPastes(data.results || []);
+  allPastes = data.results || [];
 
-            // SUGGESTIONS API
-            const suggestRes = await fetch(
-                `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
-            );
+  renderPastes(allPastes);
 
-            const suggestData = await suggestRes.json();
+  // AUTOCOMPLETE API
+  const suggestRes = await fetch(
+    `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
+  );
 
-            document.getElementById("suggestions").innerHTML =
-                suggestData.suggestions.map(s => `
-                    <div class="suggestion-item"
-                        onclick="selectSuggestion('${s}')">
-                        ${s}
-                    </div>
-                `).join("");
+  const suggestData = await suggestRes.json();
 
-        } catch(err) {
+  const suggestionsBox =
+    document.getElementById("suggestions");
 
-            console.log(err);
+  // HIDE IF EMPTY
+  if (!value.trim() || suggestData.suggestions.length === 0) {
 
-        }
+    suggestionsBox.style.display = "none";
+    suggestionsBox.innerHTML = "";
 
+  } else {
+
+    suggestionsBox.style.display = "block";
+
+    suggestionsBox.innerHTML =
+      suggestData.suggestions.map(s => `
+        <div
+          class="suggestion-item"
+          onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')"
+        >
+          ${s}
+        </div>
+      `).join("");
+  }
+
+} catch (err) {
+
+  console.error(err);
+
+  grid.innerHTML = `
+    <div class="empty">
+      <h2>Search failed</h2>
+      <p style="color:var(--muted)">
+        Could not load search results.
+      </p>
+    </div>
+  `;
+   }
     }, 250);
 
 });
@@ -681,7 +779,24 @@ function selectSuggestion(text){
     .getElementById("searchInput")
     .dispatchEvent(new Event("input"));
    }
-   
+
+
+   document.addEventListener("click", (e) => {
+
+  const box =
+    document.getElementById("suggestions");
+
+  const input =
+    document.getElementById("searchInput");
+
+  if(
+    !box.contains(e.target) &&
+    !input.contains(e.target)
+  ){
+    box.style.display = "none";
+  }
+
+});
 </script>
 
 </body>
