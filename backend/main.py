@@ -7,6 +7,7 @@ from typing import Optional
 from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user 
 import os
+import re
 
 
 client = MongoClient(os.getenv('MONGO_URI'))
@@ -47,6 +48,8 @@ class PasteCreate(BaseModel):
     expiration: str = Field(
         default="never"
     )
+
+    custom_id: Optional[str] = None
 
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
@@ -98,11 +101,35 @@ def create_paste(
         elif paste.expiration in ["1w", "1week"]:
             expire_at = now + timedelta(days=7)
 
+        # CUSTOM ID VALIDATION
+        custom_id = paste.custom_id
+
+        if custom_id:
+
+            custom_id = custom_id.lower().strip()
+
+            if not re.match(r"^[a-z0-9-]+$", custom_id):
+                raise HTTPException(
+                    400,
+                    "Invalid custom ID"
+                )
+
+            existing = pastes_collection.find_one({
+                "custom_id": custom_id
+            })
+
+            if existing:
+                raise HTTPException(
+                    400,
+                    "Custom ID already taken"
+                )
+
         paste_doc = paste.model_dump()
 
         paste_doc.update({
             "user_email_key": email_key,
-            "expire_at": expire_at
+            "expire_at": expire_at,
+            "custom_id": custom_id
         })
 
         result = pastes_collection.insert_one(
@@ -120,7 +147,8 @@ def create_paste(
 
         return {
             "status": "success",
-            "id": str(result.inserted_id)
+            "id": str(result.inserted_id),
+            "custom_id": custom_id
         }
 
     except Exception as e:
@@ -130,8 +158,7 @@ def create_paste(
         raise HTTPException(
             status_code=500,
             detail=str(e)
-            )
-
+        )
 # ---------------- GET USER DASHBOARD ----------------
 @app.get("/user/dashboard")
 async def user_dash(user=Depends(get_current_user)):
@@ -366,3 +393,20 @@ async def check_custom_id(id: str):
     return {
         "available": existing is None
     }
+
+@app.get("/p/{custom_id}")
+async def get_custom_paste(custom_id: str):
+
+    paste = pastes_collection.find_one({
+        "custom_id": custom_id
+    })
+
+    if not paste:
+        raise HTTPException(
+            404,
+            "Paste not found"
+        )
+
+    paste["_id"] = str(paste["_id"])
+
+    return paste
