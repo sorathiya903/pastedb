@@ -163,8 +163,9 @@ body {
   font-size: 12px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--text);
+  background: transparent;
   cursor: pointer;
+  color:var(--text);
 }
 
 /* ======================
@@ -853,7 +854,7 @@ async function deleteAccount(){
 }
 
 async function logout(){
-
+alert("logout btn click")
   try{
 
     await fetch(
