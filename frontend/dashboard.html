@@ -300,6 +300,33 @@ body {
     transform: rotate(360deg);
   }
      }
+
+      mark{
+  background: rgba(255,255,255,0.12);
+  color: white;
+  padding: 1px 4px;
+  border-radius: 4px;
+      }
+
+   .suggestions{
+  margin-top:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.suggestion-item{
+  padding:10px;
+  border-radius:10px;
+  background:var(--card);
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.suggestion-item:hover{
+  transform:translateX(4px);
+      }
 </style>
 </head>
 
@@ -331,6 +358,7 @@ body {
     style="width:100%; padding:12px; border-radius:10px;
     border:1px solid var(--border); background:var(--card); color:var(--text);" />
    </div>
+   <div id="suggestions" class="suggestions"></div>
   <div class="grid" id="grid"></div>
 </div>
 
@@ -371,13 +399,25 @@ body {
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
 let allPastes = [];
+function highlight(text, query){
 
+    if(!query) return text;
+
+    const regex = new RegExp(`(${query})`, "gi");
+
+    return text.replace(
+        regex,
+        `<mark>$1</mark>`
+    );
+   }
 function renderPastes(pastes){
   
   grid.innerHTML = pastes.map(p => `
     <div class="card">
-        <div class="title">${p.title || "Untitled"}</div>
-        <div class="meta">
+        <div class="title">
+  ${highlight(p.title || "Untitled", currentSearch)}
+</div>
+   <div class="meta">
           ${p.syntax || "text"} • ${p.created_at || ""}
         </div>
         <div class="actions">
@@ -560,32 +600,66 @@ document
 };
 
    
-   
-let timeout;
+   let searchTimeout;
 
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  clearTimeout(timeout);
+document
+.getElementById("searchInput")
+.addEventListener("input", (e) => {
 
-  const value = e.target.value;
+    clearTimeout(searchTimeout);
 
-  timeout = setTimeout(async () => {
-    if (!value) {
-      renderPastes(allPastes);
-      return;
-    }
+    const value = e.target.value.trim();
 
-    const res = await fetch(
-      `https://pastedb.onrender.com/search?q=${value}`,
-      {
-        credentials: "include"
-      }
-    );
+    searchTimeout = setTimeout(async () => {
 
-    const data = await res.json();
+        if (!value) {
+            renderPastes(allPastes);
+            return;
+        }
 
-    renderPastes(data.results || []);
-  }, 300); // debounce
+        try {
+
+            const res = await fetch(
+                `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
+            );
+
+            const data = await res.json();
+
+            renderPastes(data.results || []);
+
+        } catch(err) {
+
+            console.log(err);
+
+        }
+
+    }, 250);
+
 });
+
+   function selectSuggestion(text){
+
+  document.getElementById("searchInput").value = text;
+
+  currentSearch = text;
+
+  document.getElementById("searchInput")
+    .dispatchEvent(new Event("input"));
+   }
+
+   const suggestRes = await fetch(
+  `https://pastedb.onrender.com/suggest?q=${value}`
+);
+
+const suggestData = await suggestRes.json();
+
+document.getElementById("suggestions").innerHTML =
+  suggestData.suggestions.map(s => `
+    <div class="suggestion-item"
+      onclick="selectSuggestion('${s}')">
+      ${s}
+    </div>
+  `).join("");
 </script>
 
 </body>
