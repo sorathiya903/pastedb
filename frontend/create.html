@@ -880,6 +880,13 @@ display:flex;
 margin:10px;
   font-weight:600;
 }
+    .generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: grayscale(30%);
+    }
   </style>
 </head>
 
@@ -1221,6 +1228,9 @@ if(editId){
     if (editId) {
   document.getElementById('customId').readOnly = true;
       }
+    if(editId){
+  document.querySelector(".generate-btn").style.display = "none";
+    }
     
 const textarea = document.getElementById("code");
 const lines = document.getElementById("lines");
