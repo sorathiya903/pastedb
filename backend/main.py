@@ -288,8 +288,6 @@ def update_paste(paste_id: str, data: dict):
     return {"status": "updated"}
 
 
-from fastapi import Query
-
 @app.get("/search")
 async def search_pastes(q: str = Query(...)):
     
