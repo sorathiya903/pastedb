@@ -815,6 +815,71 @@ display:flex;
   max-width:140px;
 }
 }
+
+    .custom-id-box{
+  margin-top: 18px;
+}
+
+.custom-id-box label{
+  display:block;
+  margin-bottom:8px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.custom-id-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  border-radius:14px;
+
+  padding:10px 12px;
+
+  overflow:hidden;
+}
+
+.prefix{
+  color:var(--muted);
+  font-size:14px;
+  white-space:nowrap;
+}
+
+#customId{
+  flex:1;
+
+  background:transparent;
+
+  border:none;
+
+  outline:none;
+
+  color:var(--text);
+
+  font-size:15px;
+}
+
+.generate-btn{
+  border:none;
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  padding:10px 14px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+
+  font-size:13px;
+
+  font-weight:600;
+}
   </style>
 </head>
 
@@ -980,7 +1045,36 @@ display:flex;
   </select>
 </div>
 
-      
+      <div class="custom-id-box">
+
+  <label>Custom Endpoint</label>
+
+  <div class="custom-id-row">
+
+    <span class="prefix">pastedb.netlify.app/paste?id=</span>
+
+    <input
+      type="text"
+      id="customId"
+      placeholder="my-cool-paste"
+      maxlength="40"
+    />
+
+    <button
+      type="button"
+      class="generate-btn"
+      onclick="generateCustomId()"
+    >
+      Generate
+    </button>
+
+  </div>
+
+  <small>
+    Only letters, numbers and hyphens allowed
+  </small>
+
+      </div>
           <button class="create-btn" id="createBtn">
 
             <span id="btnText">
@@ -1031,6 +1125,23 @@ display:flex;
   </main>
 
   <script>
+
+    function generateCustomId(){
+
+  const chars =
+    "abcdefghijklmnopqrstuvwxyz0123456789";
+
+  let result = "";
+
+  for(let i = 0; i < 8; i++){
+
+    result += chars[
+      Math.floor(Math.random() * chars.length)
+    ];
+  }
+
+  document.getElementById("customId").value = result;
+    }
 
 async function loadPasteForEditing(editId){
 
@@ -1182,16 +1293,17 @@ async function createPaste(pasteData){
     const createBtn = document.getElementById("createBtn");
 
 createBtn.addEventListener("click", async () => {
-
+const customId =
+  document.getElementById("customId").value.trim();
   const pasteData = {
     title: document.getElementById("title").value || "Untitled Paste",
     content: document.getElementById("code").value,
     syntax: document.getElementById("syntax").value,
-    expiration: document.getElementById("expiration").value
+    expiration: document.getElementById("expiration").value,
+    customId: customId
   };
 
-  
-  if (!pasteData.content.trim()) {
+    if (!pasteData.content.trim()) {
     alert("Please enter some content!");
     return;
   }
@@ -1284,7 +1396,27 @@ finally{
 })
  
 
-  
+  const customIdInput =
+  document.getElementById("customId");
+
+customIdInput.addEventListener(
+  "input",
+  async () => {
+
+    const value =
+      customIdInput.value.trim();
+
+    if(!value) return;
+
+    const res = await fetch(
+      `https://pastedb.onrender.com/check-id?id=${value}`
+    );
+
+    const data = await res.json();
+
+    console.log(data.available);
+  }
+);
       </script>
 <script>
 
