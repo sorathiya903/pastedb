@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, HTTPException, Request
 from pydantic import BaseModel
-
+from fastapi.responses import JSONResponse
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -93,3 +93,60 @@ def get_current_user(request: Request):
         return payload
     except:
         raise HTTPException(401, "Invalid token")
+
+
+
+@router.post("/logout")
+async def logout():
+
+    response = JSONResponse({
+        "message": "Logged out"
+    })
+
+    response.delete_cookie("token")
+
+    return response
+
+
+@router.delete("/delete-account")
+async def delete_account(request: Request):
+
+    # get jwt cookie
+    token = request.cookies.get("token")
+
+    if not token:
+        raise HTTPException(401, "Not authenticated")
+
+    try:
+        payload = jwt.decode(
+            token,
+            os.getenv("SECRET_KEY"),
+            algorithms=["HS256"]
+        )
+
+        user_email = payload.get("email")
+
+        if not user_email:
+            raise HTTPException(401, "Invalid token")
+
+        # delete all pastes
+        await db.pastes.delete_many({
+            "email": user_email
+        })
+
+        # delete user
+        await db.users.delete_one({
+            "email": user_email
+        })
+
+        response = JSONResponse({
+            "message": "Account deleted"
+        })
+
+        # remove cookie
+        response.delete_cookie("token")
+
+        return response
+
+    except Exception:
+        raise HTTPException(401, "Authentication failed")
