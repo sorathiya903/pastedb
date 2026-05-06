@@ -702,13 +702,15 @@ searchInput.addEventListener("input", async (e)=>{
   /* EMPTY INPUT */
   if(!value){
 
-    renderPastes(allPastes);
+  currentSearch = "";
 
-    ghostText.innerHTML = "";
+  ghostText.innerHTML = "";
 
-    currentSuggestion = "";
+  currentSuggestion = "";
 
-    return;
+  renderPastes(allPastes);
+
+  return;
   }
 
   try{
@@ -790,7 +792,7 @@ searchInput.addEventListener("keydown", (e)=>{
   }
 });
 
-   alert(document.cookie)
+   
 </script>
 </body>
   </html>
