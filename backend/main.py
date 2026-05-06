@@ -8,6 +8,9 @@ from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user 
 import os
 import re
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 client = MongoClient(os.getenv('MONGO_URI'))
@@ -31,6 +34,13 @@ pastes_collection.create_index([
     ("content", "text"),
     ("syntax", "text")
 ])
+
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
 
 class PasteCreate(BaseModel):
 
