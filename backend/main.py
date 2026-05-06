@@ -9,6 +9,9 @@ from auth import router as auth_router, get_current_user
 import os
 import re
 import hashlib
+import logging
+logging.basicConfig(level=logging.DEBUG)
+import traceback
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -151,6 +154,7 @@ def create_paste(
                 )
 
         paste_doc = paste.model_dump()
+        print("DEBUG PAYLOAD:", paste_doc)
         if paste_doc.get("password"):
             paste_doc["password"] = hash_password(paste_doc["password"])
 
@@ -178,15 +182,11 @@ def create_paste(
             "id": str(result.inserted_id),
             "custom_id": custom_id
         }
-
+    
     except Exception as e:
-
-        print("CREATE ERROR:", e)
-
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        print("CREATE ERROR:")
+        traceback.print_exc()
+        raise HTTPException(status_code=500,detail="Internal Server Error")
 # ---------------- GET USER DASHBOARD ----------------
 @app.get("/user/dashboard")
 async def user_dash(user=Depends(get_current_user)):
