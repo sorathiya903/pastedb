@@ -560,18 +560,31 @@ document
 };
 
    
-   document.getElementById("searchInput").addEventListener("input", (e)=>{
-  const value = e.target.value.toLowerCase();
+   
+let timeout;
 
-  const filtered = allPastes.filter(p => {
-    return (
-      (p.title || "").toLowerCase().includes(value) ||
-      (p.content || "").toLowerCase().includes(value) ||
-      (p.syntax || "").toLowerCase().includes(value)
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  clearTimeout(timeout);
+
+  const value = e.target.value;
+
+  timeout = setTimeout(async () => {
+    if (!value) {
+      renderPastes(allPastes);
+      return;
+    }
+
+    const res = await fetch(
+      `https://pastedb.onrender.com/search?q=${value}`,
+      {
+        credentials: "include"
+      }
     );
-  });
 
-  renderPastes(filtered);
+    const data = await res.json();
+
+    renderPastes(data.results || []);
+  }, 300); // debounce
 });
 </script>
 
