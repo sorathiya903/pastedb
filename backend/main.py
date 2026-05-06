@@ -134,13 +134,9 @@ def create_paste(
 
 # ---------------- GET USER DASHBOARD ----------------
 @app.get("/user/dashboard")
-async def dashboard(token: str = Cookie(None),user=Depends(get_current_user)):
+async def user_dash(user=Depends(get_current_user)):
 
-    if not token:
-        raise HTTPException(
-            status_code=401,
-            detail="Not authenticated"
-        )
+    
     email_key = user.get("email", "").replace(".", "_")
 
     db_user = users_collection.find_one({"email_key": email_key})
