@@ -599,7 +599,10 @@ async function loadDashboard() {
       credentials: "include", // IMPORTANT for cookie auth
       
     });
-
+if (res.status === 401) {
+  window.location.href = "/";
+  return;
+}
     //  handle HTTP errors properly
     if (!res.ok) {
       throw new Error("HTTP Error: " + res.status);
