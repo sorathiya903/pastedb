@@ -447,7 +447,7 @@ async def get_custom_paste(custom_id: str):
 
 @app.post("/paste/{paste_id}/verify-password")
 def verify_paste_password(paste_id: str, body: PasswordCheck):
-
+    print("VERIFY HIT:", paste_id, body.password)
     paste = pastes_collection.find_one({
         "_id": ObjectId(paste_id)
     })
