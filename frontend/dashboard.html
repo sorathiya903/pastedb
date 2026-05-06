@@ -562,14 +562,28 @@ function toggleTheme(){
 }
 function copyText(customId){
 
-  if(!customId){
-    alert("No custom ID found");
-    return;
-  }
-
   navigator.clipboard.writeText(customId);
 
-  alert("Copied: " + customId);
+  // small UI feedback instead of alert
+  const toast = document.createElement("div");
+  toast.innerText = "Copied: " + customId;
+
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 9999;
+  `;
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.remove(), 1500);
 }
 /* ======================
    POPUP
