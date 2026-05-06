@@ -6,5 +6,4 @@ python-jose
 google-auth
 python-multipart
 requests
-passlib
-bcrypt
+argon2-cffi
