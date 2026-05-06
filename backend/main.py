@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user 
 import os
 import re
+import hashlib
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -35,14 +36,25 @@ pastes_collection.create_index([
     ("syntax", "text")
 ])
 
+
+
+def normalize_password(password: str) -> str:
+    # convert ANY long password into fixed 64-char hash
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+
 def hash_password(password: str):
-    return pwd_context.hash(password)
+    normalized = normalize_password(password)
+    return pwd_context.hash(normalized)
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-    
+    normalized = normalize_password(plain_password)
+    return pwd_context.verify(normalized, hashed_password)
+
+
 class PasswordCheck(BaseModel):
-    password: str
+    password: str = Field(min_length=1, max_length=200)
+
 
 class PasteCreate(BaseModel):
 
