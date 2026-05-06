@@ -493,6 +493,61 @@
 
 <body>
 
+  <div id="passwordModal"
+     style="
+       position:fixed;
+       inset:0;
+       background:rgba(0,0,0,0.6);
+       display:none;
+       align-items:center;
+       justify-content:center;
+       z-index:9999;
+     ">
+
+  <div style="
+      background:#14171d;
+      padding:20px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.1);
+      width:300px;
+    ">
+
+    <h3 style="margin-bottom:10px;">Enter Password</h3>
+
+    <input id="pastePassword"
+           type="password"
+           placeholder="Password"
+           style="
+             width:100%;
+             padding:10px;
+             border-radius:10px;
+             border:1px solid #333;
+             background:#0f1115;
+             color:white;
+           " />
+
+    <button onclick="verifyPassword()"
+            style="
+              margin-top:12px;
+              width:100%;
+              padding:10px;
+              border:none;
+              border-radius:10px;
+              background:#8d95a5;
+              color:black;
+              font-weight:600;
+              cursor:pointer;
+            ">
+      Unlock
+    </button>
+
+    <p id="passError"
+       style="color:red;font-size:12px;margin-top:8px;"></p>
+
+  </div>
+
+  </div>
+
 <!-- HEADER ACTIONS -->
 
 
@@ -801,6 +856,11 @@ if(path.startsWith("/paste/")){
         await response.json()
 
 
+if (data.password) {
+  window._pasteData = data; // store temporarily
+  document.getElementById("passwordModal").style.display = "flex";
+  return; 
+}
 
       // TITLE
       console.log(data.expire_at)
@@ -1130,7 +1190,38 @@ else {
 
   }
 
+async function verifyPassword(){
 
+  const password =
+    document.getElementById("pastePassword").value;
+
+  const res = await fetch(
+    `https://pastedb.onrender.com/paste/${pasteId}/verify-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password })
+    }
+  );
+
+  const data = await res.json();
+
+  if(data.access){
+
+    document.getElementById("passwordModal").style.display = "none";
+
+    // NOW LOAD PASTE CONTENT
+    renderPaste(window._pasteData);
+
+  }else{
+
+    document.getElementById("passError")
+      .textContent = "Wrong password";
+
+  }
+}
 
 </script>
 
