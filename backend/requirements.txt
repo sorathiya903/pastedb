@@ -7,3 +7,4 @@ google-auth
 python-multipart
 requests
 passlib
+bcrypt
