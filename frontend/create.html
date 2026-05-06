@@ -1404,28 +1404,61 @@ finally{
 
 })
  
-
-  const customIdInput =
+const customIdInput =
   document.getElementById("customId");
 
-customIdInput.addEventListener(
-  "input",
-  async () => {
+const idStatus =
+  document.getElementById("idStatus");
 
-    const value =
-      customIdInput.value.trim();
+let timeout = null;
 
-    if(!value) return;
+customIdInput.addEventListener("input", () => {
 
-    const res = await fetch(
-      `https://pastedb.onrender.com/check-id?id=${value}`
-    );
+  clearTimeout(timeout);
 
-    const data = await res.json();
+  const value =
+    customIdInput.value.trim();
 
-    alert(data.available);
+  if (!value) {
+    idStatus.textContent = "";
+    return;
   }
-);   </script>
+
+  // debounce (prevents spam API calls)
+  timeout = setTimeout(async () => {
+
+    try {
+
+      const res = await fetch(
+        `https://pastedb.onrender.com/check-id?id=${value}`
+      );
+
+      const data = await res.json();
+
+      if (data.available) {
+
+        idStatus.textContent = "✅ ID is available";
+        idStatus.style.color = "lightgreen";
+
+      } else {
+
+        idStatus.textContent = "❌ ID is already taken";
+        idStatus.style.color = "salmon";
+
+      }
+
+    } catch (err) {
+
+      idStatus.textContent = "⚠️ Error checking ID";
+      idStatus.style.color = "orange";
+
+    }
+
+  }, 400);
+
+});
+   
+  </script>
 <script>
 
 async function handleCredentialResponse(response){
