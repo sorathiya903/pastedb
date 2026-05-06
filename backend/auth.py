@@ -118,12 +118,12 @@ async def delete_account(
         raise HTTPException(401, "Invalid token")
 
     # delete all pastes
-    await db.pastes.delete_many({
+    db.pastes.delete_many({
         "email": user_email
     })
 
     # delete user
-    await db.users.delete_one({
+    db.users.delete_one({
         "email": user_email
     })
 
