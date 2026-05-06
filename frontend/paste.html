@@ -1190,8 +1190,7 @@ else {
 
   }
 
-async function verifyPassword(){
-alert("fun verify passc")
+ async function verifyPassword(){
   const password =
     document.getElementById("pastePassword").value;
 
@@ -1209,19 +1208,16 @@ alert("fun verify passc")
   const data = await res.json();
 
   if(data.access){
-  document.getElementById("passwordModal").style.display = "none";
+    isUnlocked = true;   // ✅ FIX HERE
 
-  window._pasteUnlocked = true; // add flag
-  loadPaste();
-                      
-  }else{
+    document.getElementById("passwordModal").style.display = "none";
+    document.getElementById("passError").textContent = "";
 
-    document.getElementById("passError")
-      .textContent = "Wrong password";
-
+    loadPaste(); // reload with unlocked state
+  } else {
+    document.getElementById("passError").textContent = "Wrong password";
   }
-}
-
+        }
 </script>
 
 </body>
