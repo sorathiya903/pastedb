@@ -1300,7 +1300,7 @@ const customId =
     content: document.getElementById("code").value,
     syntax: document.getElementById("syntax").value,
     expiration: document.getElementById("expiration").value,
-    customId: customId
+    custom_id: customId
   };
 
     if (!pasteData.content.trim()) {
@@ -1333,7 +1333,7 @@ try {
 const data = await response.json()
 
     const pasteUrl =
-      `https://pastedb.netlify.app/paste.html?id=${editId || data.id}`
+      `https://pastedb.netlify.app/p/${data.custom_id}`
 
     const pasteLinkBox =
       document.getElementById("pasteLinkBox")
@@ -1414,7 +1414,7 @@ customIdInput.addEventListener(
 
     const data = await res.json();
 
-    console.log(data.available);
+    alert(data.available);
   }
 );
       </script>
