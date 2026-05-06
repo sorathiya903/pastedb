@@ -753,6 +753,7 @@ id="codeBlock"
 
 
 <script>
+  let isUnlocked = false;
 
   // THEME
 
@@ -856,12 +857,11 @@ if(path.startsWith("/paste/")){
         await response.json()
 
 
-if (data.password) {
-  window._pasteData = data; // store temporarily
+if (data.password && !isUnlocked) {
+  window._pasteData = data;
   document.getElementById("passwordModal").style.display = "flex";
-  return; 
+  return;
 }
-
       // TITLE
       console.log(data.expire_at)
 console.log(new Date(data.expire_at))
@@ -1209,7 +1209,7 @@ async function verifyPassword(){
   const data = await res.json();
 
   if(data.access){
-
+isUnlocked = true 
     document.getElementById("passwordModal").style.display = "none";
 
     // NOW LOAD PASTE CONTENT
