@@ -887,6 +887,48 @@ margin:10px;
   box-shadow: none;
   filter: grayscale(30%);
     }
+
+    .password-box input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+#passwordContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#passwordInput {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--input);
+  color: var(--text);
+  outline: none;
+}
+
+.icon-btn {
+  position: absolute;
+  right: 85px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.strong-btn {
+  position: absolute;
+  right: 10px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
   </style>
 </head>
 
@@ -1091,6 +1133,35 @@ margin:10px;
      ">
 </div>
       </div>
+          <div class="password-box">
+
+  <label style="display:flex;align-items:center;gap:10px;">
+    <input type="checkbox" id="enablePassword" />
+    Password <span id="pwdTick">❌</span>
+  </label>
+
+  <div id="passwordContainer" style="display:none;margin-top:10px;position:relative;">
+
+    <input
+      type="password"
+      id="passwordInput"
+      placeholder="Enter password"
+      style="padding-right:90px;"
+    />
+
+    <!-- eye button -->
+    <button type="button" onclick="togglePassword()" class="icon-btn">
+      👁
+    </button>
+
+    <!-- strong password -->
+    <button type="button" onclick="generateStrongPassword()" class="strong-btn">
+      Strong
+    </button>
+
+  </div>
+
+          </div>
           <button class="create-btn" id="createBtn">
 
             <span id="btnText">
@@ -1141,6 +1212,37 @@ margin:10px;
   </main>
 
   <script>
+    const checkbox = document.getElementById("enablePassword");
+const container = document.getElementById("passwordContainer");
+
+checkbox.addEventListener("change", () => {
+  container.style.display = checkbox.checked ? "flex" : "none";
+
+  document.getElementById("pwdTick").textContent =
+    checkbox.checked ? "✅" : "❌";
+});
+
+  function togglePassword() {
+  const input = document.getElementById("passwordInput");
+
+  input.type =
+    input.type === "password" ? "text" : "password";
+    }
+
+    function generateStrongPassword() {
+
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+
+  let pass = "";
+
+  for (let i = 0; i < 12; i++) {
+    pass += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  const input = document.getElementById("passwordInput");
+  input.value = pass;
+    }
 let customIdForPaste;
     function generateCustomId(){
 
@@ -1197,6 +1299,12 @@ async function loadPasteForEditing(editId){
     // UPDATE LINE NUMBERS
 customIdForPaste = data.custom_id
     updateLines()
+
+    if(data.password){
+  document.getElementById("enablePassword").checked = true;
+  document.getElementById("passwordContainer").style.display = "flex";
+  document.getElementById("pwdTick").textContent = "✅";
+    }
 
   }
 
@@ -1315,16 +1423,25 @@ async function createPaste(pasteData){
       document.body.classList.toggle("dark")
     }
 
-    const createBtn = document.getElementById("createBtn");
-
+    
 createBtn.addEventListener("click", async () => {
 const customId =
   document.getElementById("customId").value.trim();
+
+const passwordEnabled =
+  document.getElementById("enablePassword").checked;
+
+const password =
+  passwordEnabled
+    ? document.getElementById("passwordInput").value
+    : null;
+  
   const pasteData = {
     title: document.getElementById("title").value || "Untitled Paste",
     content: document.getElementById("code").value,
     syntax: document.getElementById("syntax").value,
-    expiration: document.getElementById("expiration").value
+    expiration: document.getElementById("expiration").value,
+    password:password
 
   };
   if (!editId) {
