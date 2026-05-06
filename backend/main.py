@@ -40,7 +40,9 @@ def hash_password(password: str):
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
-
+    
+class PasswordCheck(BaseModel):
+    password: str
 
 class PasteCreate(BaseModel):
 
@@ -64,6 +66,8 @@ class PasteCreate(BaseModel):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
+    password: Optional[str] = None
+
 
 
 app = FastAPI()
@@ -135,6 +139,8 @@ def create_paste(
                 )
 
         paste_doc = paste.model_dump()
+        if paste_doc.get("password"):
+            paste_doc["password"] = hash_password(paste_doc["password"])
 
         paste_doc.update({
             "user_email_key": email_key,
@@ -302,27 +308,32 @@ def update_paste(paste_id: str, data: dict):
 
     if expiration in ["10m", "10min"]:
         expiry = now + timedelta(minutes=10)
-
     elif expiration in ["1h", "1hour"]:
         expiry = now + timedelta(hours=1)
-
     elif expiration in ["1d", "1day"]:
         expiry = now + timedelta(days=1)
-
     elif expiration in ["1w", "1week"]:
         expiry = now + timedelta(days=7)
 
+    update_data = {
+        "title": data.get("title"),
+        "content": data.get("content"),
+        "syntax": data.get("syntax"),
+        "expiration": expiration,
+        "expire_at": expiry
+    }
+
+    # 🔐 HANDLE PASSWORD IN EDIT
+    if "password" in data:
+
+        if data["password"] is None or data["password"] == "":
+            update_data["password"] = None
+        else:
+            update_data["password"] = hash_password(data["password"])
+
     result = pastes_collection.update_one(
         {"_id": ObjectId(paste_id)},
-        {
-            "$set": {
-                "title": data.get("title"),
-                "content": data.get("content"),
-                "syntax": data.get("syntax"),
-                "expiration": expiration,
-                "expire_at": expiry
-            }
-        }
+        {"$set": update_data}
     )
 
     if result.matched_count == 0:
@@ -421,3 +432,25 @@ async def get_custom_paste(custom_id: str):
     paste["_id"] = str(paste["_id"])
 
     return paste
+
+
+@app.post("/paste/{paste_id}/verify-password")
+def verify_paste_password(paste_id: str, body: PasswordCheck):
+
+    paste = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    stored_password = paste.get("password")
+
+    # no password set → allow access
+    if not stored_password:
+        return {"access": True}
+
+    if verify_password(body.password, stored_password):
+        return {"access": True}
+
+    return {"access": False}
