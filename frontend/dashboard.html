@@ -533,7 +533,7 @@ function renderPastes(pastes){
           ${p.syntax || "text"} • /${p.custom_id|| ""}
         </div>
         <div class="actions">
-        <button class="action-btn" onclick="copyText(`${p.custom_id}`)">Copy</button>
+        <button class="action-btn" onclick="copyText('${p.custom_id}')">Copy</button>
           <button class="action-btn" onclick="window.location.href='/paste/${p.custom_id}'">View</button>
           <button
   class="action-btn"
@@ -560,11 +560,16 @@ function toggleTheme(){
     current === "dark" ? "light" : "dark"
   );
 }
-function copyText(id){
-  const paste = allPastes.find(p => p.custom_id === id);
-  navigator.clipboard.writeText(paste.custom_id);
+function copyText(customId){
 
-  alert("Copied!");
+  if(!customId){
+    alert("No custom ID found");
+    return;
+  }
+
+  navigator.clipboard.writeText(customId);
+
+  alert("Copied: " + customId);
 }
 /* ======================
    POPUP
