@@ -534,7 +534,7 @@ function renderPastes(pastes){
         </div>
         <div class="actions">
         <button class="action-btn" onclick="copyText('${p._id}')">Copy Content</button>
-          <button class="action-btn" onclick="window.location.href='/paste.html?id=${p._id}'">View</button>
+          <button class="action-btn" onclick="window.location.href='/paste/${p.custom_id}'">View</button>
           <button
   class="action-btn"
   onclick="window.location.href='/create.html?edit=${p._id}'"
