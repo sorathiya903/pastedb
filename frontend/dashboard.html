@@ -319,83 +319,48 @@ body {
   backdrop-filter: blur(4px);
                         }
 
-   .suggestions{
-  margin:8px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.suggestion-item{
-  padding:10px;
-  border-radius:10px;
-  background:var(--card);
-  border:1px solid var(--border);
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.suggestion-item:hover{
-  transform:translateX(4px);
-      }
-
-   .search-wrapper{
+   
+  .search-wrapper{
   position: relative;
   width: 100%;
+  max-width: 700px;
+  margin: auto;
 }
 
-.suggestions{
-  position: absolute;
-
-  top: calc(100% + 10px);
-
-  left: 0;
-
+#searchInput{
   width: 100%;
-
-  background: var(--card);
-
+  padding: 14px 16px;
+  border-radius: 14px;
   border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  overflow: hidden;
-
-  z-index: 999;
-
-  backdrop-filter: blur(18px);
-
-  box-shadow:
-    0 10px 40px rgba(0,0,0,0.18);
-
-  max-height: 260px;
-
-  overflow-y: auto;
-
-  display: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+  position: relative;
+  z-index: 2;
 }
 
-.suggestion-item{
+.ghost-text{
+  position: absolute;
+  inset: 0;
+
   padding: 14px 16px;
 
-  cursor: pointer;
+  font-size: 16px;
 
-  transition: 0.18s ease;
+  pointer-events: none;
 
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: transparent;
 
-  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+
+  z-index: 1;
 }
 
-.suggestion-item:last-child{
-  border-bottom: none;
+.ghost-text span{
+  color: var(--muted);
 }
-
-.suggestion-item:hover{
-  background: rgba(255,255,255,0.04);
-
-  padding-left: 22px;
-     }
 </style>
 </head>
 
@@ -424,20 +389,13 @@ body {
 <div class="container">
 <div class="search-wrapper">
 
+  <div class="ghost-text" id="ghostText"></div>
+
   <input
     id="searchInput"
+    autocomplete="off"
     placeholder="Search pastes..."
-    style="
-      width:100%;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:var(--card);
-      color:var(--text);
-    "
   />
-
-  <div id="suggestions" class="suggestions"></div>
 
 </div>
   <div class="grid" id="grid"></div>
@@ -680,122 +638,96 @@ document
   }
 };
 
-let searchTimeout;
-let currentSearch = "";
 
-document
-.getElementById("searchInput")
-.addEventListener("input", (e) => {
+const searchInput = document.getElementById("searchInput");
+const ghostText = document.getElementById("ghostText");
 
-    clearTimeout(searchTimeout);
+let currentSuggestion = "";
 
-    const value = e.target.value.trim();
+searchInput.addEventListener("input", async (e)=>{
 
-    currentSearch = value;
+  const value = e.target.value;
 
-    searchTimeout = setTimeout(async () => {
-
-        // EMPTY SEARCH
-        if (!value) {
-
-            renderPastes(allPastes);
-
-            document.getElementById("suggestions").innerHTML = "";
-
-            return;
-        }
-
-        try {
-
-  // SEARCH API
+  // SEARCH
   const res = await fetch(
-    `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`,
-    {
-      credentials: "include"
-    }
+    `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
   );
 
   const data = await res.json();
 
-  allPastes = data.results || [];
+  renderPastes(data.results || []);
 
-  renderPastes(allPastes);
+  // EMPTY
+  if(!value.trim()){
+    ghostText.innerHTML = "";
+    currentSuggestion = "";
+    return;
+  }
 
-  // AUTOCOMPLETE API
+  // SUGGESTION API
   const suggestRes = await fetch(
     `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
   );
 
   const suggestData = await suggestRes.json();
 
-  const suggestionsBox =
-    document.getElementById("suggestions");
+  const first = suggestData.suggestions?.[0];
 
-  // HIDE IF EMPTY
-  if (!value.trim() || suggestData.suggestions.length === 0) {
+  // NO MATCH
+  if(!first){
+    ghostText.innerHTML = "";
+    currentSuggestion = "";
+    return;
+  }
 
-    suggestionsBox.style.display = "none";
-    suggestionsBox.innerHTML = "";
+  // MUST START WITH INPUT
+  if(
+    first.toLowerCase()
+    .startsWith(value.toLowerCase())
+  ){
+
+    currentSuggestion = first;
+
+    const remaining =
+      first.slice(value.length);
+
+    ghostText.innerHTML =
+      value + `<span>${remaining}</span>`;
 
   } else {
 
-    suggestionsBox.style.display = "block";
-
-    suggestionsBox.innerHTML =
-      suggestData.suggestions.map(s => `
-        <div
-          class="suggestion-item"
-          onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')"
-        >
-          ${s}
-        </div>
-      `).join("");
+    ghostText.innerHTML = "";
+    currentSuggestion = "";
   }
-
-} catch (err) {
-
-  console.error(err);
-
-  grid.innerHTML = `
-    <div class="empty">
-      <h2>Search failed</h2>
-      <p style="color:var(--muted)">
-        Could not load search results.
-      </p>
-    </div>
-  `;
-   }
-    }, 250);
-
 });
 
-function selectSuggestion(text){
+   searchInput.addEventListener("keydown", (e)=>{
 
-    document.getElementById("searchInput").value = text;
-
-    currentSearch = text;
-
-    document
-    .getElementById("searchInput")
-    .dispatchEvent(new Event("input"));
-   }
-
-
-   document.addEventListener("click", (e) => {
-
-  const box =
-    document.getElementById("suggestions");
-
-  const input =
-    document.getElementById("searchInput");
-
+  // ACCEPT SUGGESTION
   if(
-    !box.contains(e.target) &&
-    !input.contains(e.target)
+    (e.key === "Tab" || e.key === "ArrowRight")
+    &&
+    currentSuggestion
   ){
-    box.style.display = "none";
+
+    e.preventDefault();
+
+    searchInput.value = currentSuggestion;
+
+    ghostText.innerHTML = "";
+
+    searchInput.dispatchEvent(
+      new Event("input")
+    );
   }
 
+  // ENTER SEARCH
+  if(e.key === "Enter"){
+
+    searchInput.dispatchEvent(
+      new Event("input")
+    );
+  }
 });
 </script>
 
