@@ -68,7 +68,7 @@ async def google_auth(data: GoogleLogin, response: Response):
         upsert=True
     )
 
-    # ✅ FIXED INDENTATION
+    
     response.set_cookie(
         key="session",
         value=token,
@@ -89,12 +89,26 @@ def get_current_user(request: Request):
         raise HTTPException(401, "Not authenticated")
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        email = payload.get("email")
+
+        user = users_collection.find_one({
+            "email": email
+        })
+
+        if not user:
+            raise HTTPException(401, "User not found")
+
         return payload
+
     except:
         raise HTTPException(401, "Invalid token")
-
-
 
 @router.post("/logout")
 async def logout():
