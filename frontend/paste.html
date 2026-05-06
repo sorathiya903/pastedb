@@ -488,6 +488,21 @@
       }
     }
     .theme{margin-bottom:15px}
+
+    .spinner {
+  width:10px;
+  height:10px;
+  border:2px solid #555;
+  border-top:2px solid white;
+  border-radius:50%;
+  display:inline-block;
+  animation:spin 0.8s linear infinite;
+  margin-right:6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+          }
   </style>
 </head>
 
@@ -540,7 +555,9 @@
             ">
       Unlock
     </button>
-
+<p id="loadingText" style="color:#aaa;font-size:12px;margin-top:8px;display:none;">
+ <span class="spinner"></span>  ⏳ Verifying password...
+</p>
     <p id="passError"
        style="color:red;font-size:12px;margin-top:8px;"></p>
 
@@ -1191,33 +1208,59 @@ else {
   }
 
  async function verifyPassword(){
+
   const password =
     document.getElementById("pastePassword").value;
 
-  const res = await fetch(
-    `https://pastedb.onrender.com/paste/${pasteId}/verify-password`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ password })
+  const loadingText =
+    document.getElementById("loadingText");
+
+  const errorText =
+    document.getElementById("passError");
+
+  // RESET UI
+  errorText.textContent = "";
+  loadingText.style.display = "block";   // 👈 show spinner text
+
+  try {
+
+    const res = await fetch(
+      `https://pastedb.onrender.com/paste/${pasteId}/verify-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password })
+      }
+    );
+
+    const data = await res.json();
+
+    if(data.access){
+
+      isUnlocked = true;
+
+      document.getElementById("passwordModal").style.display = "none";
+
+      loadPaste();
+
+    } else {
+
+      errorText.textContent = "Wrong password";
+
     }
-  );
 
-  const data = await res.json();
+  } catch (err) {
 
-  if(data.access){
-    isUnlocked = true;   // ✅ FIX HERE
+    errorText.textContent = "Server error. Try again.";
 
-    document.getElementById("passwordModal").style.display = "none";
-    document.getElementById("passError").textContent = "";
+  } finally {
 
-    loadPaste(); // reload with unlocked state
-  } else {
-    document.getElementById("passError").textContent = "Wrong password";
+    loadingText.style.display = "none"; // 👈 always hide
+
   }
-        }
+  }
 </script>
 
 </body>
