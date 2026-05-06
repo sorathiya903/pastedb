@@ -725,7 +725,7 @@ searchInput.addEventListener("input", async (e)=>{
 
   currentSuggestion = "";
 
-  renderPastes(allPastes);
+  await loadDashboard();
 
   return;
   }
