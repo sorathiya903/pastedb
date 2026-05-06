@@ -103,7 +103,7 @@ async def logout():
         "message": "Logged out"
     })
 
-    response.delete_cookie("token")
+    response.delete_cookie("session")
 
     return response
 
@@ -112,7 +112,7 @@ async def logout():
 async def delete_account(request: Request):
 
     # get jwt cookie
-    token = request.cookies.get("token")
+    token = request.cookies.get("session")
 
     if not token:
         raise HTTPException(401, "Not authenticated")
@@ -144,7 +144,7 @@ async def delete_account(request: Request):
         })
 
         # remove cookie
-        response.delete_cookie("token")
+        response.delete_cookie("session")
 
         return response
 
