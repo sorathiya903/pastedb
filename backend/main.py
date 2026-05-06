@@ -8,14 +8,16 @@ from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user 
 import os
 import re
-import hashlib
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 import traceback
-from passlib.context import CryptContext
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+
+ph = PasswordHasher()
 
 client = MongoClient(os.getenv('MONGO_URI'))
 #print(os.getenv('MONGO_URI'))
@@ -41,19 +43,16 @@ pastes_collection.create_index([
 
 
 
-def normalize_password(password: str) -> str:
-    # convert ANY long password into fixed 64-char hash
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
 def hash_password(password: str):
-    normalized = normalize_password(password)
-    return pwd_context.hash(normalized)
+    return ph.hash(password)
 
 def verify_password(plain_password, hashed_password):
-    normalized = normalize_password(plain_password)
-    return pwd_context.verify(normalized, hashed_password)
-
+    try:
+        return ph.verify(hashed_password, plain_password)
+    except VerifyMismatchError:
+        return False
 
 class PasswordCheck(BaseModel):
     password: str = Field(min_length=1, max_length=200)
