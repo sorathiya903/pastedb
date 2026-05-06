@@ -1186,6 +1186,7 @@ async function loadPasteForEditing(editId){
     document.getElementById("expiration").value =
       data.expiration || "never"
 
+    document.getElementById("customId").value = data.custom_id;
     // UPDATE LINE NUMBERS
 
     updateLines()
@@ -1217,6 +1218,9 @@ if(editId){
     .textContent = "Save Changes"
 
 }
+    if (editId) {
+  customIdInput.readOnly = true;
+      }
     
 const textarea = document.getElementById("code");
 const lines = document.getElementById("lines");
@@ -1272,7 +1276,9 @@ async function editPaste(editId, pasteData){
 
   return response
 }
-
+if (editId) {
+  document.getElementById("idStatus").style.display = "none";
+}
     // CREATE PASTE
 
 async function createPaste(pasteData){
@@ -1315,12 +1321,8 @@ const customId =
   pasteData.custom_id =
     document.getElementById("customId").value.trim();
   }
-if (editId) {
-  document.getElementById("customId").disabled = true;
-}
-  if (editId) {
-  document.getElementById("idStatus").style.display = "none";
-  }
+
+  
     if (!pasteData.content.trim()) {
     alert("Please enter some content!");
     return;
