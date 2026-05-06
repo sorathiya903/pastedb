@@ -346,3 +346,23 @@ async def suggest(q: str):
     return {
         "suggestions": suggestions
     }
+
+
+@app.get("/check-id")
+async def check_custom_id(id: str):
+
+    # basic validation
+    if len(id) < 3:
+        return {
+            "available": False,
+            "message": "Too short"
+        }
+
+    # check existing paste
+    existing = pastes_collection.find_one({
+        "custom_id": id
+    })
+
+    return {
+        "available": existing is None
+    }
