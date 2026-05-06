@@ -93,7 +93,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px;
-  display: none;
+  display: none;z-index:100000
 }
 
 .popup h4 {
@@ -429,7 +429,14 @@ body {
   <div class="popup" id="popup">
     <h4 id="username">User</h4>
     <p id="email">Email</p>
-    <button class="btn" style="margin-top:10px;width:100%">Logout</button>
+    <button class="btn" onclick="logout()" style="margin-top:10px;width:100%">Logout</button>
+     <button
+  class="btn"
+  onclick="deleteAccount()"
+  style="margin-top:10px;width:100%;border-color:#5a1d1d"
+>
+  Delete Account
+     </button>
   </div>
 </div>
 
@@ -809,7 +816,61 @@ searchInput.addEventListener("keydown", (e)=>{
   }
 });
 
-   
+async function deleteAccount(){
+
+  const confirmDelete = confirm(
+    "Delete your account permanently?"
+  );
+
+  if(!confirmDelete) return;
+
+  try{
+
+    const res = await fetch(
+      "https://pastedb.onrender.com/delete-account",
+      {
+        method: "DELETE",
+        credentials: "include"
+      }
+    );
+
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(
+        data.detail || "Delete failed"
+      );
+    }
+
+    alert("Account deleted");
+
+    window.location.href = "/";
+
+  }catch(err){
+
+    alert(err.message);
+  }
+}
+
+async function logout(){
+
+  try{
+
+    await fetch(
+      "https://pastedb.onrender.com/logout",
+      {
+        method: "POST",
+        credentials: "include"
+      }
+    );
+
+    window.location.href = "/";
+
+  }catch(err){
+
+    alert("Logout failed");
+  }
+}
 </script>
 </body>
   </html>
