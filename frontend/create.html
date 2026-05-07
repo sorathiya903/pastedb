@@ -893,41 +893,194 @@ margin:10px;
   cursor: pointer;
 }
 
-#passwordContainer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.password-box{
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  border-radius:20px;
+
+  padding:18px;
+
+  display:flex;
+  flex-direction:column;
+  gap:16px;
 }
 
-#passwordInput {
-  flex: 1;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--input);
-  color: var(--text);
-  outline: none;
+.password-header{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
 }
 
-.icon-btn {
-  position: absolute;
-  right: 85px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
+.password-title{
+
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
 
-.strong-btn {
-  position: absolute;
-  right: 10px;
-  background: var(--text);
-  color: var(--bg);
-  border: none;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 12px;
+.password-title span:first-child{
+
+  font-size:15px;
+
+  font-weight:600;
+}
+
+.pwd-status{
+
+  font-size:13px;
+
+  color:var(--muted);
+}
+
+.password-container{
+
+  display:none;
+
+  position:relative;
+}
+
+#passwordInput{
+
+  width:100%;
+
+  padding:14px 110px 14px 16px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:var(--input);
+
+  color:var(--text);
+
+  outline:none;
+
+  font-size:14px;
+}
+
+#passwordInput:focus{
+
+  border-color:#888;
+}
+
+.icon-btn{
+
+  position:absolute;
+
+  right:78px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  border:none;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  cursor:pointer;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+}
+
+.eye-icon{
+
+  width:18px;
+  height:18px;
+}
+
+.strong-btn{
+
+  position:absolute;
+
+  right:8px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  border:none;
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  padding:8px 12px;
+
+  border-radius:10px;
+
+  font-size:12px;
+
+  font-weight:600;
+
+  cursor:pointer;
+}
+
+/* SWITCH */
+
+.switch{
+  position:relative;
+
+  width:48px;
+  height:26px;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+
+  position:absolute;
+
+  inset:0;
+
+  background:#888;
+
+  border-radius:999px;
+
+  cursor:pointer;
+
+  transition:0.3s ease;
+}
+
+.slider::before{
+
+  content:"";
+
+  position:absolute;
+
+  width:20px;
+  height:20px;
+
+  left:3px;
+  top:3px;
+
+  background:white;
+
+  border-radius:50%;
+
+  transition:0.3s ease;
+}
+
+.switch input:checked + .slider{
+
+  background:#22c55e;
+}
+
+.switch input:checked + .slider::before{
+
+  transform:translateX(22px);
 }
   </style>
 </head>
@@ -1135,31 +1288,61 @@ margin:10px;
       </div>
           <div class="password-box">
 
-    Password <span id="pwdTick">❌</span>
-  <label style="display:flex;align-items:center;gap:10px;">
-    <input type="checkbox" id="enablePassword" />
-  </label>
+  <div class="password-header">
 
-  <div id="passwordContainer" style="display:none;margin-top:10px;position:relative;">
+    <div class="password-title">
+      <span>Password Protection</span>
+      <span id="pwdTick" class="pwd-status">Disabled</span>
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" id="enablePassword">
+      <span class="slider"></span>
+    </label>
+
+  </div>
+
+  <div id="passwordContainer" class="password-container">
 
     <input
       type="password"
       id="passwordInput"
-      placeholder="Enter password"
-      style="padding-right:90px;"
+      placeholder="Enter secure password"
     />
 
-    <!-- eye button -->
-    <button type="button" onclick="togglePassword()" class="icon-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-</svg>
+    <button
+      type="button"
+      onclick="togglePassword()"
+      class="icon-btn"
+    >
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.7"
+        stroke="currentColor"
+        class="eye-icon"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+        />
+      </svg>
 
     </button>
 
-    <!-- strong password -->
-    <button type="button" onclick="generateStrongPassword()" class="strong-btn">
+    <button
+      type="button"
+      onclick="generateStrongPassword()"
+      class="strong-btn"
+    >
       Strong
     </button>
 
@@ -1220,10 +1403,9 @@ margin:10px;
 const container = document.getElementById("passwordContainer");
 
 checkbox.addEventListener("change", () => {
-  container.style.display = checkbox.checked ? "flex" : "none";
-
+  container.style.display = checkbox.checked ? "block" : "none";
   document.getElementById("pwdTick").textContent =
-    checkbox.checked ? "✅" : "❌";
+  checkbox.checked ? "Enabled" : "Disabled";
 });
 
   function togglePassword() {
