@@ -1107,6 +1107,124 @@ margin:10px;
 
   transform:translateX(22px);
 }
+
+    .editor-tabs{
+
+  display:flex;
+  align-items:center;
+
+  gap:8px;
+
+  background:var(--highlight);
+
+  padding:6px;
+
+  border-radius:14px;
+}
+
+.tab-btn{
+
+  border:none;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  padding:10px 16px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+
+  font-size:14px;
+
+  font-weight:600;
+
+  transition:0.25s ease;
+}
+
+.tab-btn.active{
+
+  background:var(--card);
+
+  color:var(--text);
+
+  box-shadow:var(--shadow);
+}
+
+.preview-pane{
+
+  flex:1;
+
+  padding:28px;
+
+  overflow-y:auto;
+
+  display:none;
+
+  background:transparent;
+
+  color:var(--text);
+}
+
+.preview-pane.show{
+  display:block;
+}
+
+.preview-pane h1,
+.preview-pane h2,
+.preview-pane h3{
+  margin:18px 0 10px;
+}
+
+.preview-pane p{
+  line-height:1.8;
+  margin-bottom:14px;
+}
+
+.preview-pane code{
+
+  background:var(--highlight);
+
+  padding:2px 6px;
+
+  border-radius:6px;
+
+  font-family:'JetBrains Mono', monospace;
+}
+
+.preview-pane pre{
+
+  background:var(--highlight);
+
+  padding:18px;
+
+  border-radius:16px;
+
+  overflow:auto;
+
+  margin:16px 0;
+}
+
+.preview-pane blockquote{
+
+  border-left:4px solid var(--border);
+
+  padding-left:16px;
+
+  color:var(--muted);
+
+  margin:16px 0;
+}
+
+.preview-pane img{
+
+  max-width:100%;
+
+  border-radius:18px;
+
+  margin:16px 0;
+}
   </style>
 </head>
 
@@ -1216,10 +1334,24 @@ margin:10px;
             <p>Write and share beautifully.</p>
           </div>
 
-          <div class="dots">
-            <div></div>
-            <div></div>
-            <div></div>
+          <div class="editor-tabs" id="editorTabs" style="display:none;">
+
+  <button
+    class="tab-btn active"
+    id="writeTab"
+    onclick="switchTab('write')"
+  >
+    Markdown
+  </button>
+
+  <button
+    class="tab-btn"
+    id="previewTab"
+    onclick="switchTab('preview')"
+  >
+    Preview
+  </button>
+
           </div>
 
         </div>
@@ -1229,7 +1361,7 @@ margin:10px;
           <div class="lines" id="lines"></div>
 
           <textarea id="code" placeholder="// Start writing your paste here..."></textarea>
-
+<div id="previewPane" class="preview-pane"></div>
         </div>
 
       </div>
@@ -1261,6 +1393,7 @@ margin:10px;
     <option value="python">Python</option>
     <option value="javascript">JavaScript</option>
     <option value="html">HTML</option>
+    <option value="markdown">Markdown</option>
   </select>
 </div>
 
@@ -1424,6 +1557,79 @@ margin:10px;
   </main>
 
   <script>
+    const syntaxSelect =
+  document.getElementById("syntax");
+
+const editorTabs =
+  document.getElementById("editorTabs");
+
+const previewPane =
+  document.getElementById("previewPane");
+
+const writeTab =
+  document.getElementById("writeTab");
+
+const previewTab =
+  document.getElementById("previewTab");
+
+function updateMarkdownPreview(){
+
+  previewPane.innerHTML =
+    marked.parse(textarea.value);
+}
+
+textarea.addEventListener(
+  "input",
+  updateMarkdownPreview
+);
+
+syntaxSelect.addEventListener("change", () => {
+
+  if(syntaxSelect.value === "markdown"){
+
+    editorTabs.style.display = "flex";
+
+  }else{
+
+    editorTabs.style.display = "none";
+
+    textarea.style.display = "block";
+
+    lines.style.display = "block";
+
+    previewPane.classList.remove("show");
+  }
+});
+
+function switchTab(tab){
+
+  if(tab === "preview"){
+
+    updateMarkdownPreview();
+
+    textarea.style.display = "none";
+
+    lines.style.display = "none";
+
+    previewPane.classList.add("show");
+
+    previewTab.classList.add("active");
+
+    writeTab.classList.remove("active");
+
+  }else{
+
+    textarea.style.display = "block";
+
+    lines.style.display = "block";
+
+    previewPane.classList.remove("show");
+
+    writeTab.classList.add("active");
+
+    previewTab.classList.remove("active");
+  }
+    }
     const checkbox =
   document.getElementById("enablePassword");
 
