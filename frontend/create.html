@@ -1225,6 +1225,50 @@ margin:10px;
 
   margin:16px 0;
 }
+    .visibility-box{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.visibility-options{
+  display:flex;
+  gap:10px;
+}
+
+.visibility-btn{
+
+  flex:1;
+
+  padding:14px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  color:var(--text);
+
+  cursor:pointer;
+
+  font-weight:600;
+
+  transition:0.25s ease;
+}
+
+.visibility-btn:hover{
+  transform:translateY(-1px);
+}
+
+.visibility-btn.active{
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  border-color:var(--text);
+}
   </style>
 </head>
 
@@ -1404,7 +1448,37 @@ margin:10px;
     <option value="1h">1 Hour</option>
   </select>
 </div>
+<div class="visibility-box">
 
+  <label>Paste Visibility</label>
+
+  <div class="visibility-options">
+
+    <button
+      type="button"
+      class="visibility-btn active"
+      id="publicBtn"
+      onclick="setVisibility('public')"
+    >
+      🌍 Public
+    </button>
+
+    <button
+      type="button"
+      class="visibility-btn"
+      id="privateBtn"
+      onclick="setVisibility('private')"
+    >
+      🔒 Private
+    </button>
+
+  </div>
+
+  <small id="visibilityText">
+    Anyone with the link can access this paste.
+  </small>
+
+</div>
       <div class="custom-id-box">
 
   <label>Custom Endpoint</label>
@@ -1557,6 +1631,40 @@ margin:10px;
   </main>
 
   <script>
+    let visibility = "public";
+
+function setVisibility(type){
+
+  visibility = type;
+
+  const publicBtn =
+    document.getElementById("publicBtn");
+
+  const privateBtn =
+    document.getElementById("privateBtn");
+
+  const text =
+    document.getElementById("visibilityText");
+
+  publicBtn.classList.remove("active");
+  privateBtn.classList.remove("active");
+
+  if(type === "public"){
+
+    publicBtn.classList.add("active");
+
+    text.textContent =
+      "Anyone with the link can access this paste.";
+
+  }else{
+
+    privateBtn.classList.add("active");
+
+    text.textContent =
+      "Only you can access this paste after login.";
+
+  }
+    }
     const textarea =
   document.getElementById("code");
 
@@ -1877,6 +1985,7 @@ const pasteData = {
   content: document.getElementById("code").value,
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
+  visibility:visibility
 };
   
 if (passwordEnabled) {
