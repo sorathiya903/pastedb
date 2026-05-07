@@ -938,11 +938,35 @@ margin:10px;
   color:var(--muted);
 }
 
+
+
 .password-container{
 
-  display:none;
+  max-height:0;
+
+  opacity:0;
+
+  overflow:hidden;
+
+  transform:translateY(-10px);
+
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    transform 0.35s ease;
 
   position:relative;
+}
+
+.password-container.show{
+
+  max-height:120px;
+
+  opacity:1;
+
+  transform:translateY(0);
+
+  margin-top:14px;
 }
 
 #passwordInput{
@@ -1399,13 +1423,24 @@ margin:10px;
   </main>
 
   <script>
-    const checkbox = document.getElementById("enablePassword");
-const container = document.getElementById("passwordContainer");
+    const checkbox =
+  document.getElementById("enablePassword");
+
+const container =
+  document.getElementById("passwordContainer");
 
 checkbox.addEventListener("change", () => {
-  container.style.display = checkbox.checked ? "block" : "none";
+
+  container.classList.toggle(
+    "show",
+    checkbox.checked
+  );
+
   document.getElementById("pwdTick").textContent =
-  checkbox.checked ? "Enabled" : "Disabled";
+    checkbox.checked
+      ? "Enabled"
+      : "Disabled";
+
 });
 
   function togglePassword() {
