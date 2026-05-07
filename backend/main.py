@@ -81,6 +81,7 @@ class PasteCreate(BaseModel):
         default_factory=lambda: datetime.now(timezone.utc)
     )
     password: Optional[str] = None
+    visibility: str = "public"
 
 
 
@@ -447,6 +448,15 @@ async def get_custom_paste(custom_id: str):
             404,
             "Paste not found"
         )
+    if paste.visibility == "private":
+
+        if not current_user:
+            raise HTTPException(status_code=401,detail="Login required")
+
+        if str(paste.user_id) != str(current_user["_id"]):
+            raise HTTPException(
+                status_code=403,
+                detail="This paste is private")
 
     paste["_id"] = str(paste["_id"])
 
