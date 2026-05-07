@@ -1518,13 +1518,13 @@ async function loadPasteForEditing(editId){
 
     document.getElementById("customId").value = data.custom_id;
     // UPDATE LINE NUMBERS
-customIdForPaste = data.custom_id
     updateLines()
 
     if(data.password){
   document.getElementById("enablePassword").checked = true;
   document.getElementById("passwordContainer").style.display = "flex";
-  document.getElementById("pwdTick").textContent = "✅";
+  document.getElementById("pwdTick").textContent = "Enabled";
+      document.getElementById('passwordInput').value=data.password;
     }
 
   }
