@@ -1521,10 +1521,17 @@ async function loadPasteForEditing(editId){
     updateLines()
 
     if(data.password){
+
   document.getElementById("enablePassword").checked = true;
-  document.getElementById("passwordContainer").style.display = "flex";
-  document.getElementById("pwdTick").textContent = "Enabled";
-      document.getElementById('passwordInput').value=data.password;
+
+  container.classList.add("show");
+
+  document.getElementById("pwdTick").textContent =
+    "Password already set";
+
+  document.getElementById("passwordInput").placeholder =
+    "Enter new password to reset";
+
     }
 
   }
@@ -1652,19 +1659,30 @@ const customId =
 const passwordEnabled =
   document.getElementById("enablePassword").checked;
 
-const password =
-  passwordEnabled
-    ? document.getElementById("passwordInput").value
-    : null;
-  
-  const pasteData = {
-    title: document.getElementById("title").value || "Untitled Paste",
-    content: document.getElementById("code").value,
-    syntax: document.getElementById("syntax").value,
-    expiration: document.getElementById("expiration").value,
-    password:password
+const passwordValue =
+  document.getElementById("passwordInput").value.trim();
 
-  };
+const pasteData = {
+  title: document.getElementById("title").value || "Untitled Paste",
+  content: document.getElementById("code").value,
+  syntax: document.getElementById("syntax").value,
+  expiration: document.getElementById("expiration").value,
+};
+  if(passwordEnabled){
+
+  // only send if user typed a new password
+  if(passwordValue){
+
+    pasteData.password = passwordValue;
+
+  }
+
+}else{
+
+  // remove password completely
+  pasteData.remove_password = true;
+
+    }
   if (!editId) {
   pasteData.custom_id =
     document.getElementById("customId").value.trim();
