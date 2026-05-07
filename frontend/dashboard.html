@@ -410,6 +410,44 @@ body {
    #searchInput::placeholder{
   color: var(--muted);
    }
+
+   .paste-badges{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+}
+
+.badge{
+
+  padding:6px 12px;
+
+  border-radius:999px;
+
+  font-size:12px;
+
+  font-weight:600;
+
+  border:1px solid transparent;
+}
+
+.public-badge{
+
+  background:rgba(34,197,94,0.12);
+
+  color:#22c55e;
+
+  border-color:rgba(34,197,94,0.25);
+}
+
+.private-badge{
+
+  background:rgba(239,68,68,0.12);
+
+  color:#ef4444;
+
+  border-color:rgba(239,68,68,0.25);
+}
 </style>
 </head>
 
@@ -532,6 +570,23 @@ function renderPastes(pastes){
    <div class="meta">
           ${p.syntax || "text"} • /${p.custom_id|| ""}
         </div>
+        <div class="paste-badges">
+
+      ${
+        paste.visibility === "private"
+        ? `
+          <span class="badge private-badge">
+            🔒 Private
+          </span>
+        `
+        : `
+          <span class="badge public-badge">
+            🌍 Public
+          </span>
+        `
+      }
+
+    </div>
         <div class="actions">
         <button class="action-btn" onclick="copyText('${p.custom_id}')">Copy</button>
           <button class="action-btn" onclick="window.location.href='/paste/${p.custom_id}'">View</button>
