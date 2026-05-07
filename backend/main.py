@@ -162,7 +162,6 @@ def create_paste(
             "expire_at": expire_at,
             "custom_id": custom_id
         })
-
         result = pastes_collection.insert_one(
             paste_doc
         )
@@ -334,10 +333,19 @@ def update_paste(paste_id: str, data: dict):
         "expire_at": expiry
     }
 
-    # 🔐 HANDLE PASSWORD IN EDIT
+    #  HANDLE PASSWORD IN EDIT
     if "password" in data:
+        # new password entered
+        if data.get('password'):
+            hashed = hash_password(data.get('password'))
+            update_data["password"] = hashed
 
-        if data["password"] is None or data["password"] == "":
+# user disabled password
+    
+        elif data.get("remove_password"):
+            update_data["password"] = None
+
+        elif data["password"] is None or data["password"] == "":
             update_data["password"] = None
         else:
             update_data["password"] = hash_password(data["password"])
