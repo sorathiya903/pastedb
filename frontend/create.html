@@ -1668,21 +1668,29 @@ const pasteData = {
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
 };
-  if(passwordEnabled){
+  
+if (passwordEnabled) {
 
-  // only send if user typed a new password
-  if(passwordValue){
+  // enabled but empty
+  if (passwordValue === "") {
 
+    pasteData.password = null;
+
+  } else {
+
+    // enabled with password
     pasteData.password = passwordValue;
 
   }
 
-}else{
+} else {
 
-  // remove password completely
-  pasteData.remove_password = true;
+  // disabled
+  pasteData.password = null;
 
-    }
+}
+
+    
   if (!editId) {
   pasteData.custom_id =
     document.getElementById("customId").value.trim();
