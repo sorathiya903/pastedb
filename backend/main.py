@@ -437,7 +437,10 @@ async def check_custom_id(id: str):
 
 
 @app.get("/p/{custom_id}")
-async def get_custom_paste(custom_id: str):
+async def get_custom_paste(
+    custom_id: str,
+    current_user=Depends(get_current_user)
+):
 
     paste = pastes_collection.find_one({
         "custom_id": custom_id
@@ -448,15 +451,16 @@ async def get_custom_paste(custom_id: str):
             404,
             "Paste not found"
         )
-    if paste.visibility == "private":
 
-        if not current_user:
-            raise HTTPException(status_code=401,detail="Login required")
+    if paste.get("visibility") == "private":
 
-        if str(paste.user_id) != str(current_user["_id"]):
+        email_key = current_user["email"].replace(".", "_")
+
+        if paste.get("user_email_key") != email_key:
             raise HTTPException(
                 status_code=403,
-                detail="This paste is private")
+                detail="This paste is private"
+            )
 
     paste["_id"] = str(paste["_id"])
 
