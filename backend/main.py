@@ -9,8 +9,6 @@ from auth import router as auth_router, get_current_user , get_optional_user
 import os
 import re
 from fastapi import Request, HTTPException
-from bson import ObjectId
-from datetime import datetime
 from collections import Counter
 import user_agents
 
