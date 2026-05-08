@@ -253,7 +253,7 @@ async def get_paste(paste_id: str):
             )
 
         paste["_id"] = str(paste["_id"])
-
+        pastes_collection.update_one(     {"custom_id": paste_id},     {         "$inc": {             "analytics.views": 1         },          "$push": {             "analytics.visitors": {                 "ip": request.client.host,                 "timestamp":                     datetime.utcnow().timestamp(),                  "user_agent":                     request.headers.get(                         "user-agent"                     )             }         },          "$set": {             "analytics.last_viewed":                 datetime.utcnow().timestamp()         }     } )
         return paste
 
     except Exception as e:
