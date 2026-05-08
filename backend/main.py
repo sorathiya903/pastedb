@@ -535,8 +535,7 @@ async def paste_stats(
 
     for v in visitors:
 
-        ua_string =
-            v.get("user_agent", "")
+        ua_string =v.get("user_agent", "")
 
         ua = user_agents.parse(ua_string)
 
