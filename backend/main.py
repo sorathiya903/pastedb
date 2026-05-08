@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from datetime import datetime, timedelta , timezone
 from typing import Optional
 from bson.objectid import ObjectId
-from auth import router as auth_router, get_current_user 
+from auth import router as auth_router, get_current_user , get_optional_user 
 import os
 import re
 
@@ -458,6 +458,7 @@ def get_optional_user(access_token: str = Cookie(default=None)):
     except:
         return None
 
+
 @app.get("/p/{custom_id}")
 async def get_custom_paste(
     custom_id: str,
@@ -477,6 +478,7 @@ async def get_custom_paste(
     # PRIVATE CHECK
     if paste.get("visibility") == "private":
 
+        # not logged in
         if not current_user:
             raise HTTPException(
                 401,
@@ -485,6 +487,7 @@ async def get_custom_paste(
 
         email_key = current_user["email"].replace(".", "_")
 
+        # not owner
         if paste.get("user_email_key") != email_key:
             raise HTTPException(
                 403,
