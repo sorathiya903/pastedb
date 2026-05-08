@@ -416,7 +416,7 @@ body {
   align-items:center;
   gap:8px;
       justify-content:center;
-  margin-top:10px;
+  margin-top:10px;border:2px green solid
 }
 .badge{
   display:inline-flex;
@@ -590,7 +590,7 @@ function renderPastes(pastes){
 
   grid.innerHTML = pastes.map(p => `
     <div class="card">
-    <div style="display:flex;flex-direction:row;justify-content:space-between;align-items:center">
+    <div style="display:flex;flex-direction:row;border:red 2px solid;justify-content:space-between;align-items:center">
     <div>
         <div class="title">
   ${highlight(p.title || "Untitled", currentSearch)}
