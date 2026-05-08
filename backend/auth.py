@@ -210,5 +210,5 @@ async def get_paste(
         "content": paste.get("content"),
         "syntax": paste.get("syntax"),
         "created_at": paste.get("created_at"),
-        "expire_at": paste.get("expire_at"),
+        "expire_at": paste.get("expire_at"),"visibility": paste.get("visibility", "public")
                 }
