@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Paste Stats • PasteDB</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+  --bg:#ffffff;
+  --card:#f6f6f6;
+  --text:#111111;
+  --muted:#777;
+  --border:#e5e5e5;
+  --accent:#111;
+}
+
+[data-theme="dark"]{
+  --bg:#0b0b0b;
+  --card:#111111;
+  --text:#ffffff;
+  --muted:#a0a0a0;
+  --border:#1f1f1f;
+  --accent:#fff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Inter,sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  transition:.25s ease;
+}
+
+/* NAVBAR */
+
+.navbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:16px 24px;
+
+  border-bottom:1px solid var(--border);
+
+  background:rgba(255,255,255,0.75);
+
+  backdrop-filter:blur(12px);
+}
+
+[data-theme="dark"] .navbar{
+  background:rgba(0,0,0,0.75);
+}
+
+.logo{
+  font-size:14px;
+  font-weight:700;
+}
+
+.nav-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.btn{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+
+  padding:10px 14px;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  transition:.2s ease;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+/* CONTAINER */
+
+.container{
+  max-width:1400px;
+  margin:auto;
+  padding:28px;
+}
+
+/* HERO */
+
+.hero{
+  margin-bottom:24px;
+}
+
+.hero h1{
+  font-size:34px;
+  margin-bottom:10px;
+}
+
+.hero p{
+  color:var(--muted);
+  line-height:1.7;
+}
+
+/* GRID */
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:18px;
+}
+
+/* CARD */
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+
+  border-radius:22px;
+
+  padding:22px;
+
+  transition:.25s ease;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+}
+
+.card-title{
+  font-size:14px;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+
+.card-value{
+  font-size:32px;
+  font-weight:700;
+}
+
+/* SECTION */
+
+.section{
+  margin-top:34px;
+}
+
+.section-title{
+  font-size:22px;
+  margin-bottom:18px;
+}
+
+/* LIST */
+
+.info-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.info-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:14px 16px;
+
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  border-radius:16px;
+}
+
+.info-row span:first-child{
+  color:var(--muted);
+}
+
+/* GRAPH */
+
+.graph{
+  margin-top:20px;
+
+  height:220px;
+
+  border-radius:24px;
+
+  border:1px solid var(--border);
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(120,120,120,.08),
+      transparent
+    );
+
+  position:relative;
+
+  overflow:hidden;
+}
+
+.graph svg{
+  position:absolute;
+  inset:0;
+}
+
+/* HEATMAP */
+
+.heatmap{
+  display:grid;
+  grid-template-columns:repeat(14,1fr);
+  gap:8px;
+}
+
+.heat{
+  aspect-ratio:1/1;
+
+  border-radius:8px;
+
+  background:rgba(120,120,120,.08);
+}
+
+/* RECENT */
+
+.feed{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.feed-item{
+  padding:14px;
+
+  border-radius:14px;
+
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  font-size:14px;
+}
+
+/* SHIMMER */
+
+.shimmer{
+  position:relative;
+  overflow:hidden;
+}
+
+.shimmer::after{
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.08),
+      transparent
+    );
+
+  transform:translateX(-100%);
+
+  animation:shimmer 1.4s infinite;
+}
+
+@keyframes shimmer{
+  100%{
+    transform:translateX(100%);
+  }
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+  .container{
+    padding:18px;
+  }
+
+  .hero h1{
+    font-size:28px;
+  }
+
+}
+  
+  .chart-box{
+  height:300px;
+  position:relative;
+}
+
+.heatmap{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(10, 1fr);
+
+  gap:8px;
+
+  margin-top:20px;
+}
+
+.heat{
+
+  width:100%;
+
+  aspect-ratio:1;
+
+  border-radius:6px;
+
+  background:#22c55e;
+
+  transition:0.2s;
+}
+
+.heat:hover{
+  transform:scale(1.15);
+}
+
+</style>
+</head>
+<body>
+
+<div class="navbar">
+
+  <div class="logo">
+    PasteDB Stats
+  </div>
+
+  <div class="nav-actions">
+
+    <button class="btn" onclick="toggleTheme()">
+      Toggle Theme
+    </button>
+
+    <button class="btn" onclick="history.back()">
+      Back
+    </button>
+
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <h1 id="pasteTitle">
+      Loading stats...
+    </h1>
+
+    <p>
+      Detailed analytics and engagement metrics for your paste.
+    </p>
+  </div>
+
+  <!-- BASIC STATS -->
+
+  <div class="stats-grid" id="topStats">
+
+    <div class="card shimmer">
+      <div class="card-title">Total Views</div>
+      <div class="card-value">--</div>
+    </div>
+
+  </div>
+
+  <!-- VISITOR INSIGHTS -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Visitor Insights
+    </div>
+
+    <div class="info-list" id="visitorInsights"></div>
+
+  </div>
+
+  <!-- TRAFFIC -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Traffic Analytics
+    </div>
+
+    <div class="info-list" id="trafficStats"></div>
+
+    <div class="chart-box">
+  <canvas id="viewsChart"></canvas>
+</div>
+
+<div
+  class="heatmap"
+  id="heatmap"
+></div>
+
+  </div>
+
+  <!-- ENGAGEMENT -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Engagement
+    </div>
+
+    <div class="info-list" id="engagementStats"></div>
+
+  </div>
+
+  <!-- SECURITY -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Security Stats
+    </div>
+
+    <div class="info-list" id="securityStats"></div>
+
+  </div>
+
+  <!-- TECHNICAL -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Technical Stats
+    </div>
+
+    <div class="info-list" id="technicalStats"></div>
+
+  </div>
+
+  <!-- HEATMAP -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Activity Heatmap
+    </div>
+
+    <div class="heatmap" id="heatmap"></div>
+
+  </div>
+
+  <!-- RECENT FEED -->
+
+  <div class="section">
+
+    <div class="section-title">
+      Recent Activity
+    </div>
+
+    <div class="feed" id="recentFeed"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+function toggleTheme(){
+
+  const current =
+    document.documentElement.getAttribute(
+      "data-theme"
+    );
+
+  document.documentElement.setAttribute(
+    "data-theme",
+    current === "dark"
+      ? "light"
+      : "dark"
+  );
+}
+
+const params =
+  new URLSearchParams(window.location.search);
+
+const id =
+  params.get("id");
+
+async function loadStats(){
+
+  try{
+
+    const res = await fetch(
+      `https://pastedb.onrender.com/stats/${id}`,
+      {
+        credentials:"include"
+      }
+    );
+
+    const data = await res.json();
+
+    document.getElementById(
+      "pasteTitle"
+    ).textContent =
+      data.title || "Paste Stats";
+
+    // TOP CARDS
+
+    document.getElementById(
+      "topStats"
+    ).innerHTML = `
+      ${card("Total Views", data.views)}
+      ${card("Unique Visitors", data.unique_visitors)}
+      ${card("Total Copies", data.copies)}
+      ${card("Total Shares", data.shares)}
+      ${card("Trending Score", data.trending_score)}
+      ${card("Live Viewers", data.live_viewers)}
+    `;
+
+    // VISITOR INSIGHTS
+
+    setList(
+      "visitorInsights",
+      [
+        ["Top Country", data.top_country],
+        ["Mobile Users", data.mobile],
+        ["Desktop Users", data.desktop],
+        ["Chrome Users", data.chrome],
+        ["Android Users", data.android]
+      ]
+    );
+
+    // TRAFFIC
+
+    setList(
+      "trafficStats",
+      [
+        ["Views Today", data.views_today],
+        ["Views This Week", data.views_week],
+        ["Views This Month", data.views_month],
+        ["Peak Traffic Hour", data.peak_hour]
+      ]
+    );
+
+    // ENGAGEMENT
+
+    setList(
+      "engagementStats",
+      [
+        ["Average Read Time", data.read_time],
+        ["Scroll Completion", data.scroll_completion + "%"],
+        ["Paste Open Rate", data.open_rate + "%"]
+      ]
+    );
+
+    // SECURITY
+
+    setList(
+      "securityStats",
+      [
+        ["Password Protected", data.password_protected],
+        ["Failed Password Attempts", data.failed_passwords],
+        ["Visibility", data.visibility]
+      ]
+    );
+
+    // TECH
+
+    setList(
+      "technicalStats",
+      [
+        ["Paste Size", data.size_kb + " KB"],
+        ["Character Count", data.characters],
+        ["Line Count", data.lines],
+        ["Syntax", data.syntax]
+      ]
+    );
+
+    // HEATMAP
+
+    // ==========================
+// REAL GRAPH
+// ==========================
+
+const ctx =
+  document
+    .getElementById("viewsChart")
+    .getContext("2d");
+
+const labels =
+  Object.keys(data.daily_views || {});
+
+const values =
+  Object.values(data.daily_views || {});
+
+new Chart(ctx, {
+
+  type: "line",
+
+  data: {
+
+    labels: labels,
+
+    datasets: [{
+
+      label: "Views",
+
+      data: values,
+
+      tension: 0.4,
+
+      fill: true,
+
+      borderWidth: 3
+    }]
+  },
+
+  options: {
+
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+
+      legend: {
+        display: false
+      }
+    },
+
+    scales: {
+
+      x: {
+
+        ticks: {
+          color: "#888"
+        },
+
+        grid: {
+          display: false
+        }
+      },
+
+      y: {
+
+        ticks: {
+          color: "#888"
+        },
+
+        grid: {
+          color: "rgba(120,120,120,0.1)"
+        }
+      }
+    }
+  }
+});
+
+
+// ==========================
+// REAL HEATMAP
+// ==========================
+
+const heatmap =
+  document.getElementById("heatmap");
+
+heatmap.innerHTML = "";
+
+const timestamps =
+  data.activity_timestamps || [];
+
+/* LAST 70 DAYS */
+
+const days = [];
+
+for(let i = 69; i >= 0; i--){
+
+  const d = new Date();
+
+  d.setDate(
+    d.getDate() - i
+  );
+
+  const key =
+    d.toISOString()
+      .split("T")[0];
+
+  days.push({
+    date: key,
+    count: 0
+  });
+}
+
+/* COUNT VIEWS */
+
+timestamps.forEach(ts => {
+
+  const key =
+    new Date(ts * 1000)
+      .toISOString()
+      .split("T")[0];
+
+  const found =
+    days.find(
+      d => d.date === key
+    );
+
+  if(found){
+    found.count++;
+  }
+});
+
+/* MAX VALUE */
+
+const max =
+  Math.max(
+    ...days.map(d => d.count),
+    1
+  );
+
+/* CREATE CELLS */
+
+days.forEach(day => {
+
+  const div =
+    document.createElement("div");
+
+  div.className = "heat";
+
+  const intensity =
+    day.count / max;
+
+  div.style.opacity =
+    0.12 + (intensity * 0.88);
+
+  div.title =
+    `${day.date} • ${day.count} views`;
+
+  heatmap.appendChild(div);
+});
+    
+
+    
+  }
+
+  catch(err){
+
+    alert(err);
+
+  }
+
+}
+
+function card(title,value){
+
+  return `
+    <div class="card">
+
+      <div class="card-title">
+        ${title}
+      </div>
+
+      <div class="card-value">
+        ${value}
+      </div>
+
+    </div>
+  `;
+}
+
+function setList(id,items){
+
+  document.getElementById(id).innerHTML =
+    items.map(i => `
+      <div class="info-row">
+
+        <span>${i[0]}</span>
+
+        <b>${i[1]}</b>
+
+      </div>
+    `).join("");
+}
+
+loadStats();
+
+</script>
+</body>
+  </html>
