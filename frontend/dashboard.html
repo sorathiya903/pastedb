@@ -580,122 +580,55 @@ margin-bottom:5px;
                     }
 
      
-
-/* =========================
-   BOTTOM SHEET
-========================= */
-
 .bottom-sheet{
 
   position:fixed;
-  inset:0;
+
+  left:0;
+  right:0;
+  bottom:0;
 
   z-index:99999;
 
   display:flex;
   justify-content:center;
-  align-items:flex-end;
 
-  opacity:0;
   pointer-events:none;
-
-  transition:0.25s ease;
 }
 
-/* ACTIVE */
-.bottom-sheet.show{
-
-  opacity:1;
-  pointer-events:auto;
-}
-
-/* BACKDROP */
-.sheet-backdrop{
-
-  position:absolute;
-  inset:0;
-
-  background:rgba(0,0,0,0.45);
-
-  backdrop-filter:blur(4px);
-}
-
-/* PANEL */
 .sheet-content{
-
-  position:relative;
 
   width:100%;
   max-width:500px;
 
   background:var(--card);
 
+  border:1px solid var(--border);
+
   border-top-left-radius:24px;
   border-top-right-radius:24px;
 
-  border:1px solid var(--border);
+  padding:18px;
 
-  padding:16px;
+  transform:translateY(420px);
 
-  padding-bottom:28px;
+  transition:transform .35s cubic-bezier(.22,.9,.31,1);
 
-  transform:translateY(120%);
-
-  transition:0.3s ease;
-
-  z-index:2;
-
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+  box-shadow:
+    0 -10px 40px rgba(0,0,0,0.35);
 }
 
-/* SLIDE UP */
+/* SHOW */
+
+.bottom-sheet.show{
+
+  pointer-events:auto;
+}
+
 .bottom-sheet.show .sheet-content{
 
   transform:translateY(0);
 }
-
-/* HANDLE */
-.sheet-handle{
-
-  width:60px;
-  height:5px;
-
-  border-radius:999px;
-
-  background:rgba(255,255,255,0.18);
-
-  margin:auto;
-  margin-bottom:8px;
-}
-
-/* CLOSE BUTTON */
-.sheet-close{
-
-  position:absolute;
-
-  top:12px;
-  right:12px;
-
-  width:34px;
-  height:34px;
-
-  border-radius:10px;
-
-  border:1px solid var(--border);
-
-  background:transparent;
-
-  color:var(--text);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  cursor:pointer;
-}
-
 /* ACTION BUTTON */
 .sheet-btn{
 
