@@ -821,9 +821,7 @@ if (res.status === 401) {
     const profile = document.querySelector(".profile");
 
     if (data?.user?.picture) {
-      profile.style.backgroundImage = `url(${data.user.picture})`;
-      profile.style.backgroundSize = "cover";
-      profile.style.backgroundPosition = "center";
+      profile.src = data.user.picture;
     }
 
     //  EMPTY STATE
