@@ -658,6 +658,90 @@ transform:translateY(20px);
 
   background:rgba(255,255,255,0.08);
 }
+
+     /* WRAPPER */
+
+.more-wrapper{
+  position:relative;
+}
+
+/* DROPDOWN */
+
+.more-dropdown{
+
+  position:absolute;
+
+  top:48px;
+  right:0;
+
+  width:180px;
+
+  background:var(--card);
+
+  border:1px solid var(--border);
+
+  border-radius:16px;
+
+  padding:8px;
+
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+
+  opacity:0;
+  visibility:hidden;
+
+  transform:translateY(-10px) scale(.98);
+
+  transition:0.22s ease;
+
+  z-index:9999;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* SHOW */
+
+.more-dropdown.show{
+
+  opacity:1;
+  visibility:visible;
+
+  transform:translateY(0) scale(1);
+}
+
+/* BUTTONS */
+
+.dropdown-btn{
+
+  border:none;
+
+  background:transparent;
+
+  color:var(--text);
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  width:100%;
+
+  padding:12px;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  transition:0.2s ease;
+
+  font-size:14px;
+}
+
+.dropdown-btn:hover{
+
+  background:rgba(255,255,255,0.05);
+}
 </style>
 </head>
 
@@ -897,43 +981,40 @@ function renderPastes(pastes){
 
 </button>
    
+
+
+
+
+    
+
+
 </div>
-<div
-  class="bottom-sheet"
-  id="sheet-${p._id}"
->
+<div class="more-wrapper">
 
-//  <button class="sheet-close" onclick="closeBottomSheet('${p._id}')">  ✕</button>
+  <button
+    class="more-btn"
+    onclick="toggleDropdown(event, '${p._id}')"
+  >
+    ⋮
+  </button>
 
-<div class="sheet-handle"></div>
-  <div class="sheet-content">
-
-    <div class="sheet-handle"></div>
+  <div
+    class="more-dropdown"
+    id="dropdown-${p._id}"
+  >
 
     <button
-      class="sheet-btn"
+      class="dropdown-btn"
       onclick="openStats('${p._id}')"
     >
+      📊 Stats
+    </button>
 
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M3 3v18h18"></path>
-        <path d="M18 17V9"></path>
-        <path d="M13 17V5"></path>
-        <path d="M8 17v-3"></path>
-      </svg>
-
-      View Stats
-
+    <button
+      class="dropdown-btn"
+      onclick="copyText('${p.custom_id}')"
+    >
+      📋 Copy ID
     </button>
 
   </div>
@@ -942,22 +1023,43 @@ function renderPastes(pastes){
       </div>
   `).join("");
 }
-/* ======================
-   THEME TOGGLE
-====================== */
-   function toggleMenu(event, id){
+function toggleDropdown(event, id){
 
   event.stopPropagation();
 
-  // CLOSE ALL MENUS
-  document.querySelectorAll(".paste-menu")
-    .forEach(menu => {
+  // CLOSE OTHER DROPDOWNS
+  document
+    .querySelectorAll(".more-dropdown")
+    .forEach(drop => {
 
-      if(menu.id !== `menu-${id}`){
-        menu.classList.remove("show");
+      if(drop.id !== `dropdown-${id}`){
+        drop.classList.remove("show");
       }
 
     });
+
+  const dropdown =
+    document.getElementById(`dropdown-${id}`);
+
+  dropdown.classList.toggle("show");
+}
+
+/* OUTSIDE CLICK */
+
+document.addEventListener("click", (e)=>{
+
+  document
+    .querySelectorAll(".more-dropdown")
+    .forEach(drop => {
+
+      // CLOSE ONLY IF CLICKED OUTSIDE
+      if(!drop.contains(e.target)){
+        drop.classList.remove("show");
+      }
+
+    });
+
+});
 
   const menu =
     document.getElementById(`menu-${id}`);
