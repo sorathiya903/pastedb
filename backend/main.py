@@ -476,7 +476,7 @@ async def paste_stats(
     request: Request
 ):
 
-    paste = await db.pastes.find_one({
+    paste = pastes_collection.find_one({
         "_id": ObjectId(paste_id)
     })
 
