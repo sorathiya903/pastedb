@@ -8,6 +8,11 @@ from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user , get_optional_user 
 import os
 import re
+from fastapi import Request, HTTPException
+from bson import ObjectId
+from datetime import datetime
+from collections import Counter
+import user_agents
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -461,3 +466,349 @@ def verify_custom_password(custom_id: str, body: PasswordCheck):
         return {"access": True}
 
     return {"access": False}
+
+
+
+
+
+@app.get("/stats/{paste_id}")
+async def paste_stats(
+    paste_id: str,
+    request: Request
+):
+
+    paste = await db.pastes.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not paste:
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
+        )
+
+    content = paste.get("content", "")
+
+    analytics =
+        paste.get("analytics", {})
+
+    visitors =
+        analytics.get("visitors", [])
+
+    views =
+        analytics.get("views", 0)
+
+    copies =
+        analytics.get("copies", 0)
+
+    shares =
+        analytics.get("shares", 0)
+
+    failed_passwords =
+        analytics.get("failed_passwords", 0)
+
+    # UNIQUE VISITORS
+
+    unique_ips = set()
+
+    for v in visitors:
+        ip = v.get("ip")
+
+        if ip:
+            unique_ips.add(ip)
+
+    unique_visitors = len(unique_ips)
+
+    # COUNTRIES
+
+    countries = [
+        v.get("country", "Unknown")
+        for v in visitors
+    ]
+
+    top_country = "Unknown"
+
+    if countries:
+        top_country = Counter(
+            countries
+        ).most_common(1)[0][0]
+
+    # DEVICE TYPES
+
+    mobile = 0
+    desktop = 0
+    tablet = 0
+
+    browsers = []
+    operating_systems = []
+
+    for v in visitors:
+
+        ua_string =
+            v.get("user_agent", "")
+
+        ua =
+            user_agents.parse(ua_string)
+
+        if ua.is_mobile:
+            mobile += 1
+
+        elif ua.is_tablet:
+            tablet += 1
+
+        else:
+            desktop += 1
+
+        browsers.append(
+            ua.browser.family
+        )
+
+        operating_systems.append(
+            ua.os.family
+        )
+
+    total_devices = max(
+        mobile + desktop + tablet,
+        1
+    )
+
+    mobile_percent = round(
+        (mobile / total_devices) * 100
+    )
+
+    desktop_percent = round(
+        (desktop / total_devices) * 100
+    )
+
+    tablet_percent = round(
+        (tablet / total_devices) * 100
+    )
+
+    # TOP BROWSER
+
+    top_browser = "Unknown"
+
+    if browsers:
+        top_browser = Counter(
+            browsers
+        ).most_common(1)[0][0]
+
+    # TOP OS
+
+    top_os = "Unknown"
+
+    if operating_systems:
+        top_os = Counter(
+            operating_systems
+        ).most_common(1)[0][0]
+
+    # TIME ANALYTICS
+
+    now = datetime.utcnow()
+
+    views_today = 0
+    views_week = 0
+    views_month = 0
+
+    hours = []
+
+    for v in visitors:
+
+        ts = v.get("timestamp")
+
+        if not ts:
+            continue
+
+        diff =
+            now.timestamp() - ts
+
+        hours.append(
+            datetime.fromtimestamp(ts).hour
+        )
+
+        if diff <= 86400:
+            views_today += 1
+
+        if diff <= 604800:
+            views_week += 1
+
+        if diff <= 2592000:
+            views_month += 1
+
+    # PEAK HOUR
+
+    peak_hour = "N/A"
+
+    if hours:
+
+        peak =
+            Counter(hours).most_common(1)[0][0]
+
+        peak_hour =
+            f"{peak}:00"
+
+    # AVG READ TIME
+
+    total_read_time =
+        analytics.get("total_read_time", 0)
+
+    avg_read_seconds = 0
+
+    if views > 0:
+        avg_read_seconds =
+            int(total_read_time / views)
+
+    minutes =
+        avg_read_seconds // 60
+
+    seconds =
+        avg_read_seconds % 60
+
+    read_time =
+        f"{minutes}m {seconds}s"
+
+    # SCROLL COMPLETION
+
+    scroll_completion =
+        analytics.get(
+            "scroll_completion",
+            0
+        )
+
+    # OPEN RATE
+
+    open_rate = 0
+
+    if analytics.get("impressions", 0) > 0:
+
+        open_rate = round(
+            (
+                views /
+                analytics.get("impressions")
+            ) * 100
+        )
+
+    # TRENDING SCORE
+
+    trending_score = min(
+        100,
+        (
+            views_today * 2 +
+            shares * 4 +
+            copies * 3
+        )
+    )
+
+    # LIVE VIEWERS
+
+    live_viewers = 0
+
+    for v in visitors:
+
+        ts = v.get("timestamp", 0)
+
+        if now.timestamp() - ts < 300:
+            live_viewers += 1
+
+    return {
+
+        "title":
+            paste.get("title", "Untitled"),
+
+        "views":
+            views,
+
+        "unique_visitors":
+            unique_visitors,
+
+        "copies":
+            copies,
+
+        "shares":
+            shares,
+
+        "trending_score":
+            trending_score,
+
+        "live_viewers":
+            live_viewers,
+
+        "top_country":
+            top_country,
+
+        "mobile":
+            f"{mobile_percent}%",
+
+        "desktop":
+            f"{desktop_percent}%",
+
+        "tablet":
+            f"{tablet_percent}%",
+
+        "browser":
+            top_browser,
+
+        "os":
+            top_os,
+
+        "views_today":
+            views_today,
+
+        "views_week":
+            views_week,
+
+        "views_month":
+            views_month,
+
+        "peak_hour":
+            peak_hour,
+
+        "read_time":
+            read_time,
+
+        "scroll_completion":
+            scroll_completion,
+
+        "open_rate":
+            open_rate,
+
+        "password_protected":
+            "Yes" if paste.get("password")
+            else "No",
+
+        "failed_passwords":
+            failed_passwords,
+
+        "visibility":
+            paste.get(
+                "visibility",
+                "public"
+            ),
+
+        "size_kb":
+            round(
+                len(content.encode()) / 1024,
+                2
+            ),
+
+        "characters":
+            len(content),
+
+        "lines":
+            len(content.splitlines()),
+
+        "syntax":
+            paste.get(
+                "syntax",
+                "plain"
+            ),
+
+        "created_at":
+            paste.get("created_at"),
+
+        "updated_at":
+            paste.get("updated_at"),
+
+        "last_viewed":
+            analytics.get("last_viewed")
+    }
