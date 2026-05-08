@@ -629,8 +629,7 @@ async def paste_stats(
 
     if hours:
 
-        peak =
-            Counter(hours).most_common(1)[0][0]
+        peak = Counter(hours).most_common(1)[0][0]
 
         peak_hour = f"{peak}:00"
 
@@ -641,8 +640,7 @@ async def paste_stats(
     avg_read_seconds = 0
 
     if views > 0:
-        avg_read_seconds =
-            int(total_read_time / views)
+        avg_read_seconds =int(total_read_time / views)
 
     minutes =avg_read_seconds // 60
 
