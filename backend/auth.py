@@ -121,6 +121,28 @@ async def logout():
 
     return response
 
+
+def get_optional_user(request: Request):
+
+    token = request.cookies.get("session")
+
+    if not token:
+        return None
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        return payload
+
+    except:
+        return None
+
+
 @router.delete("/delete-account")
 async def delete_account(
     user = Depends(get_current_user)
