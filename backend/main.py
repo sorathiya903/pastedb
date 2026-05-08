@@ -12,7 +12,7 @@ from collections import Counter
 import user_agents
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+#ogging.basicConfig(level=logging.DEBUG)
 import traceback
 
 
@@ -158,7 +158,7 @@ def create_paste(
                 )
 
         paste_doc = paste.model_dump()
-        print("DEBUG PAYLOAD:", paste_doc)
+       # print("DEBUG PAYLOAD:", paste_doc)
         if paste_doc.get("password"):
             paste_doc["password"] = hash_password(paste_doc["password"])
 
@@ -189,7 +189,7 @@ def create_paste(
         }
 
     except Exception as e:
-        traceback.print_exc()
+       # traceback.print_exc()
         raise HTTPException(status_code=500,detail=str(e))
     
     
