@@ -181,11 +181,13 @@ def create_paste(
             "id": str(result.inserted_id),
             "custom_id": custom_id
         }
-    
+
     except Exception as e:
-        print("CREATE ERROR:")
         traceback.print_exc()
-        raise HTTPException(status_code=500,detail="Internal Server Error")
+        raise HTTPException(status_code=500,detail=str(e))
+    
+    
+
 # ---------------- GET USER DASHBOARD ----------------
 @app.get("/user/dashboard")
 async def user_dash(user=Depends(get_current_user)):
