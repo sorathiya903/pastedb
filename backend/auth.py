@@ -15,6 +15,7 @@ router = APIRouter()
 client = MongoClient(os.getenv("MONGO_URI"))
 db = client["pasteDB"]
 users_collection = db["users"]
+pastes_collection = db["pastes"]
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -188,29 +189,20 @@ async def get_paste(
     # CHECK USER COOKIE
     token = request.cookies.get("session")
 
-    current_email = None
-
+    current_email_key = None
     if token:
         try:
-            payload = jwt.decode(
-                token,
-                SECRET_KEY,
-                algorithms=[ALGORITHM]
-            )
+            payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM] )
 
-            current_email = payload.get("email")
+            email = payload.get("email")
 
+            current_email_key = email.replace(".", "_")
         except:
             pass
 
-    # PRIVATE CHECK
     if paste.get("visibility") == "private":
-
-        
-        owner_email = paste.get("email")
-
-        # NOT OWNER
-        if current_email != owner_email:
+        owner_email_key = paste.get("user_email_key")
+        if current_email_key != owner_email_key:
             raise HTTPException(404, "Paste not found")
 
     return {
