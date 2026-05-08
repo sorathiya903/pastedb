@@ -564,12 +564,15 @@ function renderPastes(pastes){
 
   grid.innerHTML = pastes.map(p => `
     <div class="card">
+    <div style="display:flex;flex-direction:row">
+    <div>
         <div class="title">
   ${highlight(p.title || "Untitled", currentSearch)}
 </div>
    <div class="meta">
           ${p.syntax || "text"} • /${p.custom_id|| ""}
         </div>
+              </div>
         <div class="paste-badges">
 
       ${
@@ -585,7 +588,7 @@ function renderPastes(pastes){
           </span>
         `
       }
-
+                              </div>
     </div>
         <div class="actions">
         <button class="action-btn" onclick="copyText('${p.custom_id}')">Copy</button>
