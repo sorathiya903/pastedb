@@ -20,7 +20,9 @@ from argon2.exceptions import VerifyMismatchError
 ph = PasswordHasher()
 
 client = MongoClient(os.getenv('MONGO_URI'))
-#print(os.getenv('MONGO_URI'))
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
+
 
 if not os.getenv("MONGO_URI"):
     raise Exception("MONGO_URI not set")
