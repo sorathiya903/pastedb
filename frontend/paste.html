@@ -849,7 +849,10 @@ if(path.startsWith("/paste/")){
     try{
   
       const response = await fetch(
-        `https://pastedb.onrender.com/p/${pasteId}`
+        `https://pastedb.onrender.com/p/${pasteId}`,
+      {
+        credentials:"include"
+      }
         
       )
 
@@ -1107,7 +1110,7 @@ else {
       codeContainer.style.display = "block"
 
 console.log(window.location.pathname)
-console.log(paste_id)
+console.log(pasteId)
 
     }
 
