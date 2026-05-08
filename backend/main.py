@@ -8,7 +8,6 @@ from bson.objectid import ObjectId
 from auth import router as auth_router, get_current_user , get_optional_user 
 import os
 import re
-from fastapi import Request, HTTPException
 from collections import Counter
 import user_agents
 
@@ -707,6 +706,15 @@ async def paste_stats(
 
         if now.timestamp() - ts < 300:
             live_viewers += 1
+    daily_views ={}
+    for v in visitors:
+        ts = v.get("timestamp")
+        if not ts:
+            continue
+
+        date = datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+        daily_views[date] = (daily_views.get(date, 0) + 1)
+
 
     return {
 
@@ -788,6 +796,7 @@ async def paste_stats(
                 len(content.encode()) / 1024,
                 2
             ),
+        "daily_views": daily_views,
 
         "characters":
             len(content),
@@ -808,5 +817,9 @@ async def paste_stats(
             paste.get("updated_at"),
 
         "last_viewed":
-            analytics.get("last_viewed")
+            analytics.get("last_viewed"),
+        "activity_timestamps": [
+            v.get("timestamp")
+            for v in visitors
+            if v.get("timestamp")],
     }
