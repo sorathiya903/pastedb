@@ -592,7 +592,7 @@ margin-bottom:5px;
 
   display:flex;
   justify-content:center;
-transform:translateY(-200px);
+transform:translateY(20px);
   pointer-events:none;
 }
 
@@ -622,7 +622,7 @@ transform:translateY(-200px);
 
 .bottom-sheet.show{
 
-  transform:translateY(200px)
+  transform:translateY(20px)
 }
 
 .bottom-sheet.show .sheet-content{
@@ -903,12 +903,9 @@ function renderPastes(pastes){
   id="sheet-${p._id}"
 >
 
-  <button
-  class="sheet-close"
-  onclick="closeBottomSheet('${p._id}')"
->
-  ✕
-</button><div class="sheet-handle"></div>
+//  <button class="sheet-close" onclick="closeBottomSheet('${p._id}')">  ✕</button>
+
+<div class="sheet-handle"></div>
   <div class="sheet-content">
 
     <div class="sheet-handle"></div>
