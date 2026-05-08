@@ -514,6 +514,84 @@ margin-bottom:5px;
   width:18px;
   height:18px;
 }
+   .paste-menu-wrapper{
+  position:relative;
+}
+
+.more-btn{
+  border:none;
+  background:transparent;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+  padding:6px 10px;
+  border-radius:10px;
+  transition:0.2s;
+}
+
+.more-btn:hover{
+  background:rgba(255,255,255,0.08);
+}
+
+.paste-menu{
+  position:absolute;
+  top:42px;
+  right:0;
+
+  width:160px;
+
+  background:#14171d;
+  border:1px solid rgba(255,255,255,0.08);
+
+  border-radius:14px;
+
+  padding:8px;
+
+  display:none;
+
+  flex-direction:column;
+
+  z-index:1000;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.35);
+}
+
+.paste-menu.show{
+  display:flex;
+  animation:menuFade 0.18s ease;
+}
+
+.paste-menu button{
+  border:none;
+  background:transparent;
+  color:white;
+
+  padding:12px;
+  border-radius:10px;
+
+  text-align:left;
+  cursor:pointer;
+
+  font-size:14px;
+
+  transition:0.2s;
+}
+
+.paste-menu button:hover{
+  background:rgba(255,255,255,0.07);
+}
+
+@keyframes menuFade{
+  from{
+    opacity:0;
+    transform:translateY(-8px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+                    }
 </style>
 </head>
 
@@ -727,6 +805,8 @@ function renderPastes(pastes){
 >
   Delete
 </button>
+
+   
 </div>
       </div>
   `).join("");
@@ -734,6 +814,41 @@ function renderPastes(pastes){
 /* ======================
    THEME TOGGLE
 ====================== */
+   function toggleMenu(event, id){
+
+  event.stopPropagation();
+
+  // CLOSE ALL MENUS
+  document.querySelectorAll(".paste-menu")
+    .forEach(menu => {
+
+      if(menu.id !== `menu-${id}`){
+        menu.classList.remove("show");
+      }
+
+    });
+
+  const menu =
+    document.getElementById(`menu-${id}`);
+
+  menu.classList.toggle("show");
+}
+
+function openStats(id){
+
+  window.location.href =
+    `https://pastedb.netlify.app/stats?id=${id}`;
+}
+
+// CLOSE MENU ON OUTSIDE CLICK
+document.addEventListener("click", () => {
+
+  document.querySelectorAll(".paste-menu")
+    .forEach(menu => {
+      menu.classList.remove("show");
+    });
+
+});
 function toggleTheme(){
   const current = document.documentElement.getAttribute("data-theme");
   document.documentElement.setAttribute(
