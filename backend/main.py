@@ -608,8 +608,7 @@ async def paste_stats(
         if not ts:
             continue
 
-        diff =
-            now.timestamp() - ts
+        diff =now.timestamp() - ts
 
         hours.append(
             datetime.fromtimestamp(ts).hour
@@ -633,13 +632,11 @@ async def paste_stats(
         peak =
             Counter(hours).most_common(1)[0][0]
 
-        peak_hour =
-            f"{peak}:00"
+        peak_hour = f"{peak}:00"
 
     # AVG READ TIME
 
-    total_read_time =
-        analytics.get("total_read_time", 0)
+    total_read_time = analytics.get("total_read_time", 0)
 
     avg_read_seconds = 0
 
@@ -647,22 +644,15 @@ async def paste_stats(
         avg_read_seconds =
             int(total_read_time / views)
 
-    minutes =
-        avg_read_seconds // 60
+    minutes =avg_read_seconds // 60
 
-    seconds =
-        avg_read_seconds % 60
+    seconds = avg_read_seconds % 60
 
-    read_time =
-        f"{minutes}m {seconds}s"
+    read_time = f"{minutes}m {seconds}s"
 
     # SCROLL COMPLETION
 
-    scroll_completion =
-        analytics.get(
-            "scroll_completion",
-            0
-        )
+    scroll_completion =analytics.get("scroll_completion", 0 )
 
     # OPEN RATE
 
