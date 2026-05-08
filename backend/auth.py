@@ -173,42 +173,126 @@ async def delete_account(
     return response
 
 
+
 @router.get("/p/{paste_id}")
 async def get_paste(
     paste_id: str,
     request: Request
 ):
 
-    paste = pastes_collection.find_one({
-        "custom_id": paste_id
-    })
+    paste = None
+
+    # SEARCH BY OBJECT ID
+    if ObjectId.is_valid(paste_id):
+
+        paste = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
+
+    # SEARCH BY CUSTOM ID
+    if not paste:
+
+        paste = pastes_collection.find_one({
+            "custom_id": paste_id
+        })
 
     if not paste:
-        raise HTTPException(404, "Paste not found")
+        raise HTTPException(
+            404,
+            "Paste not found"
+        )
 
     # CHECK USER COOKIE
     token = request.cookies.get("session")
 
     current_email_key = None
+
     if token:
+
         try:
-            payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM] )
+
+            payload = jwt.decode(
+                token,
+                SECRET_KEY,
+                algorithms=[ALGORITHM]
+            )
 
             email = payload.get("email")
 
-            current_email_key = email.replace(".", "_")
+            current_email_key = (
+                email.replace(".", "_")
+            )
+
         except:
             pass
 
+    # PRIVATE CHECK
     if paste.get("visibility") == "private":
-        owner_email_key = paste.get("user_email_key")
+
+        owner_email_key = paste.get(
+            "user_email_key"
+        )
+
         if current_email_key != owner_email_key:
-            raise HTTPException(404, "Paste not found")
+
+            raise HTTPException(
+                404,
+                "Paste not found"
+            )
+
+    # ANALYTICS UPDATE
+    pastes_collection.update_one(
+        {"_id": paste["_id"]},
+        {
+            "$inc": {
+                "analytics.views": 1
+            },
+
+            "$push": {
+                "analytics.visitors": {
+                    "ip": request.client.host,
+
+                    "timestamp":
+                        datetime.utcnow().timestamp(),
+
+                    "user_agent":
+                        request.headers.get(
+                            "user-agent"
+                        )
+                }
+            },
+
+            "$set": {
+                "analytics.last_viewed":
+                    datetime.utcnow().timestamp()
+            }
+        }
+    )
 
     return {
-        "title": paste.get("title"),
-        "content": paste.get("content"),
-        "syntax": paste.get("syntax"),
-        "created_at": paste.get("created_at"),
-        "expire_at": paste.get("expire_at"),"visibility": paste.get("visibility", "public")
-                }
+
+        "title":
+            paste.get("title"),
+
+        "content":
+            paste.get("content"),
+
+        "syntax":
+            paste.get("syntax"),
+
+        "created_at":
+            paste.get("created_at"),
+
+        "expire_at":
+            paste.get("expire_at"),
+
+        "visibility":
+            paste.get(
+                "visibility",
+                "public"
+            ),
+
+        "password":
+            True if paste.get("password")
+            else False
+        }
