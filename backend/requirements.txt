@@ -7,3 +7,6 @@ google-auth
 python-multipart
 requests
 argon2-cffi
+user-agents
+ua-parser
+pyyaml
