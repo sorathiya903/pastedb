@@ -836,49 +836,7 @@ margin-bottom:5px;
 </div>
  
 
-<!-- BOTTOM SHEET -->
-<div
-  class="bottom-sheet"
-  id="sheet-${p._id}"
->
 
-  <div class="sheet-backdrop"
-       onclick="closeBottomSheet('${p._id}')">
-  </div>
-
-  <div class="sheet-content">
-
-    <div class="sheet-handle"></div>
-
-    <button
-      class="sheet-btn"
-      onclick="openStats('${p._id}')"
-    >
-
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M3 3v18h18"></path>
-        <path d="M18 17V9"></path>
-        <path d="M13 17V5"></path>
-        <path d="M8 17v-3"></path>
-      </svg>
-
-      View Stats
-
-    </button>
-
-  </div>
-
-</div>
 <script>
    let currentSearch =""
 const grid = document.getElementById("grid");
@@ -1011,6 +969,48 @@ function renderPastes(pastes){
 
 </button>
    
+</div>
+<div
+  class="bottom-sheet"
+  id="sheet-${p._id}"
+>
+
+  <div class="sheet-backdrop"
+       onclick="closeBottomSheet('${p._id}')">
+  </div>
+
+  <div class="sheet-content">
+
+    <div class="sheet-handle"></div>
+
+    <button
+      class="sheet-btn"
+      onclick="openStats('${p._id}')"
+    >
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 3v18h18"></path>
+        <path d="M18 17V9"></path>
+        <path d="M13 17V5"></path>
+        <path d="M8 17v-3"></path>
+      </svg>
+
+      View Stats
+
+    </button>
+
+  </div>
+
 </div>
       </div>
   `).join("");
