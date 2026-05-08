@@ -486,23 +486,17 @@ async def paste_stats(
 
     content = paste.get("content", "")
 
-    analytics =
-        paste.get("analytics", {})
+    analytics = paste.get("analytics", {})
 
-    visitors =
-        analytics.get("visitors", [])
+    visitors =analytics.get("visitors", [])
 
-    views =
-        analytics.get("views", 0)
+    views =  analytics.get("views", 0)
 
-    copies =
-        analytics.get("copies", 0)
+    copies = analytics.get("copies", 0)
 
-    shares =
-        analytics.get("shares", 0)
+    shares = analytics.get("shares", 0)
 
-    failed_passwords =
-        analytics.get("failed_passwords", 0)
+    failed_passwords = analytics.get("failed_passwords", 0)
 
     # UNIQUE VISITORS
 
@@ -544,8 +538,7 @@ async def paste_stats(
         ua_string =
             v.get("user_agent", "")
 
-        ua =
-            user_agents.parse(ua_string)
+        ua = user_agents.parse(ua_string)
 
         if ua.is_mobile:
             mobile += 1
