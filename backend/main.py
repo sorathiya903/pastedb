@@ -335,7 +335,8 @@ def update_paste(paste_id: str, data: dict):
         "content": data.get("content"),
         "syntax": data.get("syntax"),
         "expiration": expiration,
-        "expire_at": expiry
+        "expire_at": expiry,
+        "visibility":data.get("visibility")
     }
 
     #  HANDLE PASSWORD IN EDIT
