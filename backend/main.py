@@ -471,7 +471,7 @@ def verify_custom_password(custom_id: str, body: PasswordCheck):
 
 
 @app.get("/stats/{paste_id}")
-async def paste_stats(
+def paste_stats(
     paste_id: str,
     request: Request
 ):
