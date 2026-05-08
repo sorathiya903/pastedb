@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, Cookie 
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
@@ -438,10 +438,28 @@ async def check_custom_id(id: str):
     }
 
 
+def get_optional_user(access_token: str = Cookie(default=None)):
+
+    if not access_token:
+        return None
+
+    try:
+
+        payload = jwt.decode(
+            access_token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        return payload
+
+    except:
+        return None
+
 @app.get("/p/{custom_id}")
 async def get_custom_paste(
     custom_id: str,
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_optional_user)
 ):
 
     paste = pastes_collection.find_one({
@@ -454,42 +472,27 @@ async def get_custom_paste(
             "Paste not found"
         )
 
+    # PRIVATE CHECK
     if paste.get("visibility") == "private":
+
+        if not current_user:
+            raise HTTPException(
+                401,
+                "Login required"
+            )
 
         email_key = current_user["email"].replace(".", "_")
 
         if paste.get("user_email_key") != email_key:
             raise HTTPException(
-                status_code=403,
-                detail="This paste is private"
+                403,
+                "This paste is private"
             )
 
     paste["_id"] = str(paste["_id"])
 
     return paste
-
-
-@app.post("/paste/{paste_id}/verify-password")
-def verify_paste_password(paste_id: str, body: PasswordCheck):
-    print("VERIFY HIT:", paste_id, body.password)
-    paste = pastes_collection.find_one({
-        "_id": ObjectId(paste_id)
-    })
-
-    if not paste:
-        raise HTTPException(404, "Paste not found")
-
-    stored_password = paste.get("password")
-
-    # no password set → allow access
-    if not stored_password:
-        return {"access": True}
-
-    if verify_password(body.password, stored_password):
-        return {"access": True}
-
-    return {"access": False}
-
+    
 @app.post("/p/{custom_id}/verify-password")
 def verify_custom_password(custom_id: str, body: PasswordCheck):
 
