@@ -919,41 +919,53 @@ console.log(new Date())
 
 
 
-      // CREATED
-if(data.created_at){
+// CREATED
 
-  
-  const rawDate = data.created_at.endsWith('Z') || data.created_at.includes('+') 
-                ? data.created_at 
-                : data.created_at + 'Z';
+if (data.created_at) {
 
-const date = new Date(rawDate);
+  let rawDate = String(data.created_at);
 
-const formatter = new Intl.DateTimeFormat('en-IN', {
-  timeZone: 'Asia/Kolkata',
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-  hour12: true
-});
+  if (
+    !rawDate.endsWith("Z") &&
+    !rawDate.includes("+")
+  ) {
+    rawDate += "Z";
+  }
 
-createdAt.textContent = formatter.format(date);
+  const date = new Date(rawDate);
 
-    
+  if (isNaN(date.getTime())) {
 
-}else{
+    createdAt.textContent = "Unknown";
 
-  createdAt.textContent = "Unknown"
+  } else {
+
+    const formatter = new Intl.DateTimeFormat("en-IN", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true
+    });
+
+    createdAt.textContent = formatter.format(date);
+
+  }
+
+} else {
+
+  createdAt.textContent = "Unknown";
 
 }
-      createdAt.style.display = "block"
 
-      document
-        .getElementById("createdSkeleton")
-        .style.display = "none"
+createdAt.style.display = "block";
+
+document
+  .getElementById("createdSkeleton")
+  .style.display = "none";
 
 
 
