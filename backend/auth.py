@@ -179,7 +179,7 @@ async def get_paste(
 ):
 
     paste = pastes_collection.find_one({
-        "paste_id": paste_id
+        "custom_id": paste_id
     })
 
     if not paste:
@@ -206,7 +206,7 @@ async def get_paste(
     # PRIVATE CHECK
     if paste.get("visibility") == "private":
 
-        # owner email stored in db
+        
         owner_email = paste.get("email")
 
         # NOT OWNER
