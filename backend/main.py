@@ -440,64 +440,7 @@ async def check_custom_id(id: str):
     }
 
 
-def get_optional_user(access_token: str = Cookie(default=None)):
 
-    if not access_token:
-        return None
-
-    try:
-
-        payload = jwt.decode(
-            access_token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
-
-        return payload
-
-    except:
-        return None
-
-
-@app.get("/p/{custom_id}")
-async def get_custom_paste(
-    custom_id: str,
-    current_user=Depends(get_optional_user)
-):
-
-    paste = pastes_collection.find_one({
-        "custom_id": custom_id
-    })
-
-    if not paste:
-        raise HTTPException(
-            404,
-            "Paste not found"
-        )
-
-    # PRIVATE CHECK
-    if paste.get("visibility") == "private":
-
-        # not logged in
-        if not current_user:
-            raise HTTPException(
-                401,
-                "Login required"
-            )
-
-        email_key = current_user["email"].replace(".", "_")
-
-        # not owner
-        if paste.get("user_email_key") != email_key:
-            raise HTTPException(
-                403,
-                "This paste is private"
-            )
-
-    paste["_id"] = str(paste["_id"])
-
-    return paste
-    
 @app.post("/p/{custom_id}/verify-password")
 def verify_custom_password(custom_id: str, body: PasswordCheck):
 
