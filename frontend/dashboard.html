@@ -420,38 +420,29 @@ body {
 .badge{
   display:inline-flex;
   align-items:center;
-  gap:8px;
+  gap:6px;
 
-  padding:10px 16px;
+  padding:5px 10px;
 
   border-radius:999px;
 
-  font-size:13px;
+  font-size:11px;
   font-weight:600;
   letter-spacing:0.2px;
 
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.06);
 
-  border:1px solid var(--border);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 4px 18px rgba(0,0,0,0.18);
+  line-height:1;
 
-  transition:
-    transform .25s ease,
-    background .25s ease,
-    border .25s ease;
-}
-
-.badge:hover{
-  transform:translateY(-1px);
+  transition:all .2s ease;
 }
 
 .badge svg{
-  width:15px;
-  height:15px;
+  width:12px;
+  height:12px;
   flex-shrink:0;
 }
 
@@ -460,17 +451,9 @@ body {
 /* PUBLIC */
 
 .public-badge{
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(34,197,94,0.14),
-      rgba(34,197,94,0.08)
-    );
-
-  color:#86efac;
-
-  border-color:rgba(34,197,94,0.18);
+  background:rgba(34,197,94,0.08);
+  color:#7ee7a2;
+  border-color:rgba(34,197,94,0.14);
 }
 
 .public-badge svg{
@@ -482,23 +465,14 @@ body {
 /* PRIVATE */
 
 .private-badge{
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(239,68,68,0.14),
-      rgba(239,68,68,0.08)
-    );
-
-  color:#fca5a5;
-
-  border-color:rgba(239,68,68,0.18);
+  background:rgba(239,68,68,0.08);
+  color:#f3a3a3;
+  border-color:rgba(239,68,68,0.14);
 }
 
 .private-badge svg{
   stroke:#f87171;
-         }
-
+}
 </style>
 </head>
 
@@ -629,27 +603,6 @@ function renderPastes(pastes){
       ${
         p.visibility === "private"
         ? `
-          <div class="badge public-badge">
-
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="2"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.5-2.5 4-5.8 4-9s-1.5-6.5-4-9m0 18c-2.5-2.5-4-5.8-4-9s1.5-6.5 4-9m-9 9h18"
-    />
-  </svg>
-
-  Public
-
-</div>
-        `
-        : `
           <div class="badge private-badge">
 
   <svg
@@ -662,11 +615,32 @@ function renderPastes(pastes){
     <path
       stroke-linecap="round"
       stroke-linejoin="round"
-      d="M16.5 10.5V7.875a4.5 4.5 0 10-9 0V10.5m-.75 0h10.5A1.5 1.5 0 0118.75 12v6A1.5 1.5 0 0117.25 19.5H6.75A1.5 1.5 0 015.25 18v-6a1.5 1.5 0 011.5-1.5z"
+      d="M16 11V8a4 4 0 10-8 0v3m-1 0h10a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6a1 1 0 011-1z"
     />
   </svg>
 
   Private
+
+</div>
+        `
+        : `
+          <div class="badge public-badge">
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="2"
+    stroke="currentColor"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M3 12h18M12 3c2.5 2.5 4 5.8 4 9s-1.5 6.5-4 9m0-18c-2.5 2.5-4 5.8-4 9s1.5 6.5 4 9"
+    />
+  </svg>
+
+  Public
 
 </div>
         `
