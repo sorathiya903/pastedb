@@ -680,7 +680,26 @@
       ></div>
 
     </div>
+<!-- VISIBILITY -->
+<div class="meta-card">
 
+  <div class="meta-label">
+    Visibility
+  </div>
+
+  <div
+    class="skeleton-line"
+    id="visibilitySkeleton"
+    style="width:90px;"
+  ></div>
+
+  <div
+    class="meta-value"
+    id="visibility"
+    style="display:none;"
+  ></div>
+
+</div>
   </div>
 
 </section>
@@ -799,6 +818,8 @@ if(path.startsWith("/paste/")){
 }
 
   // ELEMENTS
+  const visibility =
+  document.getElementById("visibility")
 
   const heroSection =
     document.getElementById("heroSection")
@@ -1111,6 +1132,18 @@ else {
 
 console.log(window.location.pathname)
 console.log(pasteId)
+      // VISIBILITY
+
+visibility.textContent =
+  data.visibility === "private"
+    ? "Private"
+    : "Public"
+
+visibility.style.display = "block"
+
+document
+  .getElementById("visibilitySkeleton")
+  .style.display = "none"
 
     }
 
