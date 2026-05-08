@@ -518,20 +518,6 @@ margin-bottom:5px;
   position:relative;
 }
 
-.more-btn{
-  border:none;
-  background:transparent;
-  color:white;
-  font-size:20px;
-  cursor:pointer;
-  padding:6px 10px;
-  border-radius:10px;
-  transition:0.2s;
-}
-
-.more-btn:hover{
-  background:rgba(255,255,255,0.08);
-}
 
 .paste-menu{
   position:absolute;
@@ -593,34 +579,7 @@ margin-bottom:5px;
   }
                     }
 
-     .more-btn{
-
-  width:38px;
-  height:38px;
-
-  border-radius:12px;
-
-  border:1px solid var(--border);
-
-  background:transparent;
-
-  color:var(--text);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  cursor:pointer;
-
-  transition:0.25s ease;
-}
-
-.more-btn:hover{
-
-  background:rgba(255,255,255,0.05);
-
-  transform:translateY(-2px);
-}
+     
 
 /* =========================
    BOTTOM SHEET
@@ -633,9 +592,24 @@ margin-bottom:5px;
 
   z-index:99999;
 
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+
+  opacity:0;
   pointer-events:none;
+
+  transition:0.25s ease;
 }
 
+/* ACTIVE */
+.bottom-sheet.show{
+
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* BACKDROP */
 .sheet-backdrop{
 
   position:absolute;
@@ -643,18 +617,16 @@ margin-bottom:5px;
 
   background:rgba(0,0,0,0.45);
 
-  opacity:0;
-
-  transition:0.25s ease;
+  backdrop-filter:blur(4px);
 }
 
+/* PANEL */
 .sheet-content{
 
-  position:absolute;
+  position:relative;
 
-  left:0;
-  right:0;
-  bottom:0;
+  width:100%;
+  max-width:500px;
 
   background:var(--card);
 
@@ -663,32 +635,28 @@ margin-bottom:5px;
 
   border:1px solid var(--border);
 
-  padding:18px;
+  padding:16px;
 
-  transform:translateY(100%);
+  padding-bottom:28px;
+
+  transform:translateY(120%);
 
   transition:0.3s ease;
+
+  z-index:2;
 
   display:flex;
   flex-direction:column;
   gap:12px;
 }
 
-.bottom-sheet.show{
-
-  pointer-events:auto;
-}
-
-.bottom-sheet.show .sheet-backdrop{
-
-  opacity:1;
-}
-
+/* SLIDE UP */
 .bottom-sheet.show .sheet-content{
 
   transform:translateY(0);
 }
 
+/* HANDLE */
 .sheet-handle{
 
   width:60px;
@@ -702,11 +670,38 @@ margin-bottom:5px;
   margin-bottom:8px;
 }
 
+/* CLOSE BUTTON */
+.sheet-close{
+
+  position:absolute;
+
+  top:12px;
+  right:12px;
+
+  width:34px;
+  height:34px;
+
+  border-radius:10px;
+
+  border:1px solid var(--border);
+
+  background:transparent;
+
+  color:var(--text);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+}
+
+/* ACTION BUTTON */
 .sheet-btn{
 
   border:none;
 
-  background:transparent;
+  background:rgba(255,255,255,0.04);
 
   color:var(--text);
 
@@ -728,7 +723,7 @@ margin-bottom:5px;
 
 .sheet-btn:hover{
 
-  background:rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.08);
 }
 </style>
 </head>
@@ -975,10 +970,12 @@ function renderPastes(pastes){
   id="sheet-${p._id}"
 >
 
-  <div class="sheet-backdrop"
-       onclick="closeBottomSheet('${p._id}')">
-  </div>
-
+  <button
+  class="sheet-close"
+  onclick="closeBottomSheet('${p._id}')"
+>
+  ✕
+</button><div class="sheet-handle"></div>
   <div class="sheet-content">
 
     <div class="sheet-handle"></div>
