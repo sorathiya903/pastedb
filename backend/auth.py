@@ -170,3 +170,53 @@ async def delete_account(
     response.delete_cookie("session")
 
     return response
+
+
+@router.get("/p/{paste_id}")
+async def get_paste(
+    paste_id: str,
+    request: Request
+):
+
+    paste = pastes_collection.find_one({
+        "paste_id": paste_id
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    # CHECK USER COOKIE
+    token = request.cookies.get("session")
+
+    current_email = None
+
+    if token:
+        try:
+            payload = jwt.decode(
+                token,
+                SECRET_KEY,
+                algorithms=[ALGORITHM]
+            )
+
+            current_email = payload.get("email")
+
+        except:
+            pass
+
+    # PRIVATE CHECK
+    if paste.get("visibility") == "private":
+
+        # owner email stored in db
+        owner_email = paste.get("email")
+
+        # NOT OWNER
+        if current_email != owner_email:
+            raise HTTPException(404, "Paste not found")
+
+    return {
+        "title": paste.get("title"),
+        "content": paste.get("content"),
+        "syntax": paste.get("syntax"),
+        "created_at": paste.get("created_at"),
+        "expire_at": paste.get("expire_at"),
+                }
