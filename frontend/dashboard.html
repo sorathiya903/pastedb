@@ -695,7 +695,7 @@ transform:translateY(20px);
 
   transition:0.22s ease;
 
-  z-index:9999;
+  z-index:111111119999;
 
   box-shadow:
     0 10px 30px rgba(0,0,0,0.25);
@@ -960,7 +960,7 @@ function renderPastes(pastes){
 </button>
 <button
   class="action-btn"
-  onclick="toggleBottomSheet('${p._id}')"
+  onclick="toggleDropdown(event, '${p._id}')"
 >
 
   <svg
@@ -991,12 +991,6 @@ function renderPastes(pastes){
 </div>
 <div class="more-wrapper">
 
-  <button
-    class="more-btn"
-    onclick="toggleDropdown(event, '${p._id}')"
-  >
-    ⋮
-  </button>
 
   <div
     class="more-dropdown"
