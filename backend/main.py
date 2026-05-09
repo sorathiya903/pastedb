@@ -166,6 +166,8 @@ def create_paste(
             "user_email_key": email_key,
             "expire_at": expire_at,
             "custom_id": custom_id,
+            "owner":user.get("name"),
+            "picture":user.get("picture"),
             "created_at":         datetime.now(             timezone.utc         ).timestamp(),      "updated_at":         datetime.now(             timezone.utc         ).timestamp(),      "analytics": {          "views": 0,          "copies": 0,          "shares": 0,          "failed_passwords": 0,          "last_viewed": None,          "total_read_time": 0,          "scroll_completion": 0,          "impressions": 0,          "visitors": [],          "activities": [],          "daily_views": {}     }
         })
         
