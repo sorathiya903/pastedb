@@ -1271,6 +1271,11 @@ margin:10px;
 
   border-color:var(--text);
 }
+
+    #monacoEditor{
+  flex:1;
+  height:680px;
+    }
   </style>
 </head>
 
@@ -1404,10 +1409,9 @@ margin:10px;
 
         <div class="editor-body">
 
-          <div class="lines" id="lines"></div>
-
-          <textarea id="code" placeholder="// Start writing your paste here..."></textarea>
-<div id="previewPane" class="preview-pane"></div>
+          <div id="monacoEditor"></div>
+          
+          <div id="previewPane" class="preview-pane"></div>
         </div>
 
       </div>
