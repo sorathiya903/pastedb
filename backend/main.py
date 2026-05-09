@@ -882,7 +882,7 @@ def explore_pastes():
 
             "owner_name":
                 paste.get(
-                    "name",
+                    "owner",
                     "Unknown"
                 ),
 
