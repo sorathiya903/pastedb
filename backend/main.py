@@ -880,13 +880,13 @@ def explore_pastes():
 
             "owner_name":
                 paste.get(
-                    "owner_name",
-                    "Anonymous"
+                    "name",
+                    "Unknown"
                 ),
 
             "owner_picture":
                 paste.get(
-                    "owner_picture",
+                    "picture",
                     ""
                 ),
 
