@@ -1671,8 +1671,50 @@ function setVisibility(type){
 
   }
     }
-    const textarea =
-  document.getElementById("code");
+    let editor;
+
+require.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs"
+  }
+});
+
+require(["vs/editor/editor.main"], function () {
+
+  editor = monaco.editor.create(
+    document.getElementById("monacoEditor"),
+    {
+      value: "",
+      language: "plaintext",
+
+      theme:
+        document.body.classList.contains("dark")
+          ? "vs-dark"
+          : "vs",
+
+      automaticLayout: true,
+
+      fontSize: 15,
+
+      fontFamily: "JetBrains Mono",
+
+      minimap: {
+        enabled: false
+      },
+
+      roundedSelection: true,
+
+      scrollBeyondLastLine: false,
+
+      lineHeight: 34,
+
+      padding: {
+        top: 24
+      }
+    }
+  );
+
+});
 
     const syntaxSelect =
   document.getElementById("syntax");
