@@ -889,7 +889,7 @@ def explore_pastes():
             "owner_picture":
                 paste.get(
                     "picture",
-                    ""
+                    "https://share.google/IYg1IdYoqMPJgJ0Hj"
                 ),
 
             "created_at":
