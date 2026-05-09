@@ -1276,6 +1276,10 @@ margin:10px;
   flex:1;
   height:680px;
     }
+    #monacoEditor .monaco-editor,
+#monacoEditor .overflow-guard{
+  touch-action: pan-y !important;
+}
   </style>
 </head>
 
@@ -1705,6 +1709,21 @@ require(["vs/editor/editor.main"], function () {
       roundedSelection: true,
 
       scrollBeyondLastLine: false,
+      mouseWheelZoom: false,
+
+scrollbar: {
+  alwaysConsumeMouseWheel: false
+},
+
+overviewRulerLanes: 0,
+      domReadOnly: false,
+
+automaticLayout: true,
+
+fixedOverflowWidgets: true,
+      wordWrap: "on",
+smoothScrolling: true,
+cursorSmoothCaretAnimation: "on",
 
       lineHeight: 34,
 
@@ -1713,6 +1732,16 @@ require(["vs/editor/editor.main"], function () {
       }
     }
   );
+
+});
+
+    editor.onDidScrollChange(() => {
+
+  if(window.innerWidth < 768){
+
+    document.activeElement.blur();
+
+  }
 
 });
 
