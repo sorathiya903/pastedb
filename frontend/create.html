@@ -1766,10 +1766,7 @@ function switchTab(tab){
 
     updateMarkdownPreview();
 
-    textarea.style.display = "none";
-
-    lines.style.display = "none";
-
+    
     previewPane.classList.add("show");
 
     previewTab.classList.add("active");
@@ -1778,9 +1775,7 @@ function switchTab(tab){
 
   }else{
 
-    textarea.style.display = "block";
-
-    lines.style.display = "block";
+    
 
     previewPane.classList.remove("show");
 
@@ -1937,38 +1932,6 @@ if(editId){
   document.querySelector(".generate-btn").style.display = "none";
     }
     
-
-const lines = document.getElementById("lines");
-
-function updateLines() {
-
-  const totalLines =
-    textarea.value.split("\n").length;
-
-  lines.innerHTML = "";
-
-  for (let i = 1; i <= totalLines; i++) {
-
-    const line = document.createElement("div");
-
-    line.textContent = i;
-
-    lines.appendChild(line);
-  }
-}
-
-// sync scrolling
-textarea.addEventListener("scroll", () => {
-
-  lines.scrollTop = textarea.scrollTop;
-
-});
-
-// update lines live
-textarea.addEventListener("input", updateLines);
-
-// initial
-updateLines();
 
 
 // EDIT PASTE
