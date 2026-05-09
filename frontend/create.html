@@ -1,3 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PasteDB - Create Paste</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+
+      --bg: #f4f4f3;
+      --card: #fbfbfa;
+      --border: #e5e5e3;
+
+      --text: #1d1d1d;
+      --muted: #787878;
+
+      --input: #ffffff;
+
+      --button: #202020;
+      --buttonText: #f5f5f5;
+
+      --shadow:
+        0 10px 30px rgba(0, 0, 0, 0.04);
+
+      --highlight:
+        rgba(0, 0, 0, 0.03);
+
+      --editor:
+        #fcfcfb;
+
+      --line:
+        #b3b3b3;
+    }
+
+    body.dark {
+
+      --bg: #161616;
+      --card: #1d1d1d;7
+      --border: #2b2b2b;
+
+      --text: #ececec;
+      --muted: #9d9d9d;
+
+      --input: #202020;
+
+      --button: #efefef;
+      --buttonText: #111;
+
+      --shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25);
+
+      --highlight:
+        rgba(255, 255, 255, 0.03);
+
+      --editor:
+        #1a1a1a;
+
+      --line:
+        #666;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      transition: 0.35s ease;
+      overflow-x: hidden;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.5;
+    }
+
+    .glow1 {
+      background: rgba(120, 120, 120, 0.08);
+      top: -200px;
+      left: -150px;
+    }
+
+    .glow2 {
+      background: rgba(160, 160, 160, 0.08);
       right: -150px;
       bottom: -200px;
     }
@@ -1166,15 +1269,6 @@ margin:10px;
 
   border-color:var(--text);
 }
-
-    #monacoEditor{
-  flex:1;
-  height:680px;
-    }
-    #monacoEditor .monaco-editor,
-#monacoEditor .overflow-guard{
-  touch-action: pan-y !important;
-}
   </style>
 </head>
 
@@ -1308,9 +1402,10 @@ margin:10px;
 
         <div class="editor-body">
 
-          <div id="monacoEditor"></div>
-          
-          <div id="previewPane" class="preview-pane"></div>
+          <div class="lines" id="lines"></div>
+
+          <textarea id="code" placeholder="// Start writing your paste here..."></textarea>
+<div id="previewPane" class="preview-pane"></div>
         </div>
 
       </div>
@@ -1570,81 +1665,8 @@ function setVisibility(type){
 
   }
     }
-
-
-let editor;
-
-require.config({
-  paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs"
-  }
-});
-
-require(["vs/editor/editor.main"], function () {
-
-  editor = monaco.editor.create(
-    document.getElementById("monacoEditor"),
-    {
-      value: "",
-      language: "plaintext",
-
-      theme:
-        document.body.classList.contains("dark")
-          ? "vs-dark"
-          : "vs",
-
-      automaticLayout: true,
-
-      fontSize: 15,
-
-      fontFamily: "JetBrains Mono",
-
-      minimap: {
-        enabled: false
-      },
-
-      roundedSelection: true,
-
-      scrollBeyondLastLine: false,
-
-      mouseWheelZoom: false,
-
-      scrollbar: {
-        alwaysConsumeMouseWheel: false
-      },
-
-      overviewRulerLanes: 0,
-
-      domReadOnly: false,
-
-      fixedOverflowWidgets: true,
-
-      wordWrap: "on",
-
-      smoothScrolling: true,
-
-      cursorSmoothCaretAnimation: "on",
-
-      lineHeight: 34,
-
-      padding: {
-        top: 24
-      }
-    }
-  );
-
-  editor.onDidScrollChange(() => {
-
-    if(window.innerWidth < 768){
-
-      document.activeElement.blur();
-
-    }
-
-  });
-
-});
-    
+    const textarea =
+  document.getElementById("code");
 
     const syntaxSelect =
   document.getElementById("syntax");
@@ -1664,8 +1686,13 @@ const previewTab =
 function updateMarkdownPreview(){
 
   previewPane.innerHTML =
-    marked.parse(editor.getValue());
+    marked.parse(textarea.value);
 }
+
+textarea.addEventListener(
+  "input",
+  updateMarkdownPreview
+);
 
 syntaxSelect.addEventListener("change", () => {
 
@@ -1691,7 +1718,10 @@ function switchTab(tab){
 
     updateMarkdownPreview();
 
-    
+    textarea.style.display = "none";
+
+    lines.style.display = "none";
+
     previewPane.classList.add("show");
 
     previewTab.classList.add("active");
@@ -1700,7 +1730,9 @@ function switchTab(tab){
 
   }else{
 
-    
+    textarea.style.display = "block";
+
+    lines.style.display = "block";
 
     previewPane.classList.remove("show");
 
@@ -1793,7 +1825,8 @@ async function loadPasteForEditing(editId){
     document.getElementById("title").value =
       data.title || ""
 
-editor.setValue(data.content || "")
+    document.getElementById("code").value =
+      data.content || ""
 
     document.getElementById("syntax").value =
       data.syntax || "plain"
@@ -1802,7 +1835,8 @@ editor.setValue(data.content || "")
       data.expiration || "never"
 
     document.getElementById("customId").value = data.custom_id;
-    
+    // UPDATE LINE NUMBERS
+    updateLines()
 
     if(data.password){
 
@@ -1855,6 +1889,38 @@ if(editId){
   document.querySelector(".generate-btn").style.display = "none";
     }
     
+
+const lines = document.getElementById("lines");
+
+function updateLines() {
+
+  const totalLines =
+    textarea.value.split("\n").length;
+
+  lines.innerHTML = "";
+
+  for (let i = 1; i <= totalLines; i++) {
+
+    const line = document.createElement("div");
+
+    line.textContent = i;
+
+    lines.appendChild(line);
+  }
+}
+
+// sync scrolling
+textarea.addEventListener("scroll", () => {
+
+  lines.scrollTop = textarea.scrollTop;
+
+});
+
+// update lines live
+textarea.addEventListener("input", updateLines);
+
+// initial
+updateLines();
 
 
 // EDIT PASTE
@@ -1919,7 +1985,7 @@ const passwordValue =
 
 const pasteData = {
   title: document.getElementById("title").value || "Untitled Paste",
-  content: editor.getValue(),
+  content: document.getElementById("code").value,
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
   visibility:visibility
