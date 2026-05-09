@@ -511,17 +511,23 @@ def paste_stats(
             unique_ips.add(ip)
 
     unique_visitors = len(unique_ips)
+    countries = []
+    for v in visitors:
+        country = v.get("country")
 
-    # COUNTRIES
-
-    countries = [
-        v.get("country", "Unknown")
-        for v in visitors
-    ]
-
+    # ignore invalid countries
+        if (
+            country and
+            isinstance(country, str) and
+            country.strip() and
+            country.lower() != "unknown"
+        ):
+            countries.append(country.strip())
+            
     top_country = "Unknown"
 
     if countries:
+
         top_country = Counter(
             countries
         ).most_common(1)[0][0]
