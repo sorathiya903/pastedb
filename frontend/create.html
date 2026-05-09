@@ -1675,7 +1675,9 @@ function setVisibility(type){
 
   }
     }
-    let editor;
+
+
+let editor;
 
 require.config({
   paths: {
@@ -1709,21 +1711,24 @@ require(["vs/editor/editor.main"], function () {
       roundedSelection: true,
 
       scrollBeyondLastLine: false,
+
       mouseWheelZoom: false,
 
-scrollbar: {
-  alwaysConsumeMouseWheel: false
-},
+      scrollbar: {
+        alwaysConsumeMouseWheel: false
+      },
 
-overviewRulerLanes: 0,
+      overviewRulerLanes: 0,
+
       domReadOnly: false,
 
-automaticLayout: true,
+      fixedOverflowWidgets: true,
 
-fixedOverflowWidgets: true,
       wordWrap: "on",
-smoothScrolling: true,
-cursorSmoothCaretAnimation: "on",
+
+      smoothScrolling: true,
+
+      cursorSmoothCaretAnimation: "on",
 
       lineHeight: 34,
 
@@ -1733,17 +1738,18 @@ cursorSmoothCaretAnimation: "on",
     }
   );
 
+  editor.onDidScrollChange(() => {
+
+    if(window.innerWidth < 768){
+
+      document.activeElement.blur();
+
+    }
+
+  });
+
 });
-
-    editor.onDidScrollChange(() => {
-
-  if(window.innerWidth < 768){
-
-    document.activeElement.blur();
-
-  }
-
-});
+    
 
     const syntaxSelect =
   document.getElementById("syntax");
