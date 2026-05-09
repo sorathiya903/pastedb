@@ -1878,8 +1878,7 @@ async function loadPasteForEditing(editId){
       data.expiration || "never"
 
     document.getElementById("customId").value = data.custom_id;
-    // UPDATE LINE NUMBERS
-    updateLines()
+    
 
     if(data.password){
 
@@ -1996,7 +1995,7 @@ const passwordValue =
 
 const pasteData = {
   title: document.getElementById("title").value || "Untitled Paste",
-  content: document.getElementById("code").value,
+  content: editor.getValue(),
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
   visibility:visibility
