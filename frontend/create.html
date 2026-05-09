@@ -1734,13 +1734,8 @@ const previewTab =
 function updateMarkdownPreview(){
 
   previewPane.innerHTML =
-    marked.parse(textarea.value);
+    marked.parse(editor.getValue());
 }
-
-textarea.addEventListener(
-  "input",
-  updateMarkdownPreview
-);
 
 syntaxSelect.addEventListener("change", () => {
 
@@ -1868,7 +1863,7 @@ async function loadPasteForEditing(editId){
     document.getElementById("title").value =
       data.title || ""
 
-
+editor.setValue(data.content || "")
 
     document.getElementById("syntax").value =
       data.syntax || "plain"
