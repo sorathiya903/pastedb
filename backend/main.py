@@ -812,7 +812,8 @@ def paste_stats(
             if v.get("timestamp")],
     }
 
-    @app.get("/explore")
+
+@app.get("/explore")
 def explore_pastes():
 
     pastes = list(
