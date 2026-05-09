@@ -811,3 +811,97 @@ def paste_stats(
             for v in visitors
             if v.get("timestamp")],
     }
+
+    @app.get("/explore")
+def explore_pastes():
+
+    pastes = list(
+        pastes_collection.find({
+            "visibility": "public"
+        })
+    )
+
+    results = []
+
+    for paste in pastes:
+
+        analytics = paste.get(
+            "analytics",
+            {}
+        )
+
+        results.append({
+
+            "id":
+                str(paste["_id"]),
+
+            "title":
+                paste.get(
+                    "title",
+                    "Untitled"
+                ),
+
+            "content":
+                paste.get(
+                    "content",
+                    ""
+                )[:240],
+
+            "syntax":
+                paste.get(
+                    "syntax",
+                    "plain"
+                ),
+
+            "stars":
+                paste.get(
+                    "stars",
+                    0
+                ),
+
+            "views":
+                analytics.get(
+                    "views",
+                    0
+                ),
+
+            "copies":
+                analytics.get(
+                    "copies",
+                    0
+                ),
+
+            "shares":
+                analytics.get(
+                    "shares",
+                    0
+                ),
+
+            "owner_name":
+                paste.get(
+                    "owner_name",
+                    "Anonymous"
+                ),
+
+            "owner_picture":
+                paste.get(
+                    "owner_picture",
+                    ""
+                ),
+
+            "created_at":
+                paste.get(
+                    "created_at"
+                )
+        })
+
+    results.sort(
+        key=lambda x: (
+            x["stars"] * 5 +
+            x["views"] * 1 +
+            x["shares"] * 3
+        ),
+        reverse=True
+    )
+
+    return results[:50]
