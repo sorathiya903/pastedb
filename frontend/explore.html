@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Explore Pastes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    :root{
+
+      --bg:#f5f5f4;
+      --card:#ffffff;
+      --border:#e8e8e8;
+
+      --text:#111;
+      --muted:#777;
+
+      --shadow:
+        0 10px 30px rgba(0,0,0,0.04);
+    }
+
+    body{
+
+      background:var(--bg);
+
+      color:var(--text);
+
+      font-family:'Inter',sans-serif;
+
+      min-height:100vh;
+
+      padding:40px 22px;
+    }
+
+    .container{
+
+      max-width:1450px;
+
+      margin:auto;
+    }
+
+    .hero{
+
+      margin-bottom:40px;
+    }
+
+    .hero h1{
+
+      font-size:52px;
+
+      margin-bottom:14px;
+    }
+
+    .hero p{
+
+      color:var(--muted);
+
+      font-size:18px;
+    }
+
+    .topbar{
+
+      display:flex;
+
+      gap:14px;
+
+      margin-top:26px;
+
+      flex-wrap:wrap;
+    }
+
+    .search{
+
+      flex:1;
+
+      min-width:240px;
+    }
+
+    input{
+
+      width:100%;
+
+      padding:16px 18px;
+
+      border-radius:18px;
+
+      border:1px solid var(--border);
+
+      outline:none;
+
+      font-size:15px;
+    }
+
+    .grid{
+
+      display:grid;
+
+      grid-template-columns:
+        repeat(auto-fit,minmax(340px,1fr));
+
+      gap:24px;
+    }
+
+    .card{
+
+      background:var(--card);
+
+      border:1px solid var(--border);
+
+      border-radius:28px;
+
+      overflow:hidden;
+
+      box-shadow:var(--shadow);
+
+      transition:0.25s ease;
+    }
+
+    .card:hover{
+
+      transform:translateY(-4px);
+    }
+
+    .card-top{
+
+      padding:22px;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:space-between;
+
+      border-bottom:1px solid var(--border);
+    }
+
+    .user{
+
+      display:flex;
+
+      align-items:center;
+
+      gap:12px;
+    }
+
+    .user img{
+
+      width:46px;
+      height:46px;
+
+      border-radius:50%;
+
+      object-fit:cover;
+    }
+
+    .user h3{
+
+      font-size:15px;
+    }
+
+    .user p{
+
+      font-size:13px;
+
+      color:var(--muted);
+
+      margin-top:2px;
+    }
+
+    .syntax{
+
+      padding:8px 12px;
+
+      border-radius:999px;
+
+      background:#f1f1f1;
+
+      font-size:12px;
+
+      font-weight:600;
+    }
+
+    .content{
+
+      padding:22px;
+    }
+
+    .content h2{
+
+      margin-bottom:14px;
+
+      font-size:22px;
+    }
+
+    pre{
+
+      background:#f7f7f7;
+
+      padding:18px;
+
+      border-radius:18px;
+
+      overflow:hidden;
+
+      font-size:13px;
+
+      line-height:1.7;
+
+      font-family:
+        'JetBrains Mono',
+        monospace;
+
+      max-height:220px;
+
+      white-space:pre-wrap;
+    }
+
+    .stats{
+
+      display:flex;
+
+      gap:18px;
+
+      padding:22px;
+
+      border-top:1px solid var(--border);
+
+      color:var(--muted);
+
+      font-size:14px;
+
+      flex-wrap:wrap;
+    }
+
+    .open-btn{
+
+      margin:0 22px 22px;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+      padding:15px;
+
+      border-radius:18px;
+
+      background:#111;
+
+      color:white;
+
+      text-decoration:none;
+
+      font-weight:600;
+    }
+
+    @media(max-width:700px){
+
+      .hero h1{
+        font-size:36px;
+      }
+
+      body{
+        padding:20px 14px;
+      }
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="hero">
+
+      <h1>
+        Explore Pastes
+      </h1>
+
+      <p>
+        Discover trending snippets,
+        ideas and code shared by developers.
+      </p>
+
+      <div class="topbar">
+
+        <div class="search">
+
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search pastes..."
+          >
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div
+      class="grid"
+      id="grid"
+    ></div>
+
+  </div>
+
+  <script>
+
+    let allPastes = [];
+
+    async function loadPastes(){
+
+      const response = await fetch(
+        "https://pastedb.onrender.com/explore"
+      );
+
+      const data = await response.json();
+
+      allPastes = data;
+
+      renderPastes(data);
+    }
+
+    function renderPastes(pastes){
+
+      const grid =
+        document.getElementById("grid");
+
+      grid.innerHTML = "";
+
+      pastes.forEach(paste => {
+
+        grid.innerHTML += `
+
+          <div class="card">
+
+            <div class="card-top">
+
+              <div class="user">
+
+                <img
+                  src="${paste.owner_picture}"
+                >
+
+                <div>
+
+                  <h3>
+                    ${paste.owner_name}
+                  </h3>
+
+                  <p>
+                    ${paste.created_at || ""}
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div class="syntax">
+                ${paste.syntax}
+              </div>
+
+            </div>
+
+            <div class="content">
+
+              <h2>
+                ${paste.title}
+              </h2>
+
+              <pre>${escapeHtml(
+                paste.content
+              )}</pre>
+
+            </div>
+
+            <div class="stats">
+
+              <span>
+                ⭐ ${paste.stars}
+              </span>
+
+              <span>
+                👁 ${paste.views}
+              </span>
+
+              <span>
+                📋 ${paste.copies}
+              </span>
+
+              <span>
+                🔗 ${paste.shares}
+              </span>
+
+            </div>
+
+            <a
+              href="/paste/${paste.id}"
+              class="open-btn"
+            >
+              Open Paste
+            </a>
+
+          </div>
+
+        `;
+      });
+    }
+
+    function escapeHtml(text){
+
+      const div =
+        document.createElement("div");
+
+      div.textContent = text;
+
+      return div.innerHTML;
+    }
+
+    document
+      .getElementById("searchInput")
+      .addEventListener(
+        "input",
+        e => {
+
+          const q =
+            e.target.value.toLowerCase();
+
+          const filtered =
+            allPastes.filter(p =>
+
+              p.title
+                .toLowerCase()
+                .includes(q)
+
+              ||
+
+              p.content
+                .toLowerCase()
+                .includes(q)
+
+              ||
+
+              p.owner_name
+                .toLowerCase()
+                .includes(q)
+            );
+
+          renderPastes(filtered);
+        }
+      );
+
+    loadPastes();
+
+  </script>
+
+</body>
+
+  </html>
