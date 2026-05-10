@@ -1061,8 +1061,7 @@ async def api_create_paste(
     request: Request
 ):
 
-    api_key =
-        request.headers.get("x-api-key")
+    api_key =  request.headers.get("x-api-key")
 
     if not api_key:
 
@@ -1071,10 +1070,7 @@ async def api_create_paste(
             "API key required"
         )
 
-    key_doc =
-        api_keys_collection.find_one({
-            "api_key": api_key
-        })
+    key_doc = api_keys_collection.find_one({  "api_key": api_key  })
 
     if not key_doc:
 
@@ -1083,19 +1079,15 @@ async def api_create_paste(
             "Invalid API key"
         )
 
-    data =
-        await request.json()
+    data =  await request.json()
 
     fake_user = {
 
-        "email":
-            key_doc["email"],
+        "email":  key_doc["email"],
 
-        "name":
-            key_doc.get("name", "API User"),
+        "name": key_doc.get("name", "API User"),
 
-        "picture":
-            key_doc.get("picture", "")
+        "picture": key_doc.get("picture", "")
 
     }
 
