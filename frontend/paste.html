@@ -923,51 +923,47 @@ console.log(new Date())
 
 if (data.created_at) {
 
-  let rawDate = String(data.created_at);
+  let date;
 
-  if (
-    !rawDate.endsWith("Z") &&
-    !rawDate.includes("+")
-  ) {
-    rawDate += "Z";
-  }
+  // UNIX timestamp
+  if (typeof data.created_at === "number") {
 
-  const date = new Date(rawDate);
-
-  if (isNaN(date.getTime())) {
-
-    createdAt.textContent = "Unknown";
-
-  } else {
-
-    const formatter = new Intl.DateTimeFormat("en-IN", {
-      timeZone: "Asia/Kolkata",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true
-    });
-
-    createdAt.textContent = formatter.format(date);
+    date = new Date(data.created_at * 1000);
 
   }
+
+  // ISO string
+  else {
+
+    const rawDate =
+      data.created_at.endsWith("Z") ||
+      data.created_at.includes("+")
+        ? data.created_at
+        : data.created_at + "Z";
+
+    date = new Date(rawDate);
+
+  }
+
+  const formatter = new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  createdAt.textContent =
+    formatter.format(date);
 
 } else {
 
   createdAt.textContent = "Unknown";
 
 }
-
-createdAt.style.display = "block";
-
-document
-  .getElementById("createdSkeleton")
-  .style.display = "none";
-
-
 
       
 if (data.expire_at) {
