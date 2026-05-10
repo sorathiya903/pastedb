@@ -120,8 +120,7 @@ async def create_paste_logic(
 
     expire_at = None
 
-    expiration =
-        paste_data.get("expiration", "never")
+    expiration = paste_data.get("expiration", "never")
 
     if expiration in ["10m", "10min"]:
         expire_at = now + timedelta(minutes=10)
@@ -136,13 +135,11 @@ async def create_paste_logic(
         expire_at = now + timedelta(days=7)
 
     # CUSTOM ID
-    custom_id =
-        paste_data.get("custom_id")
+    custom_id = paste_data.get("custom_id")
 
     if custom_id:
 
-        custom_id =
-            custom_id.lower().strip()
+        custom_id =  custom_id.lower().strip()
 
         if not re.match(
             r"^[a-z0-9-]+$",
@@ -154,8 +151,7 @@ async def create_paste_logic(
                 "Invalid custom ID"
             )
 
-        existing =
-            pastes_collection.find_one({
+        existing = pastes_collection.find_one({
                 "custom_id": custom_id
             })
 
@@ -169,10 +165,7 @@ async def create_paste_logic(
     # PASSWORD HASH
     if paste_data.get("password"):
 
-        paste_data["password"] =
-            hash_password(
-                paste_data["password"]
-            )
+        paste_data["password"] = hash_password( paste_data["password"])
 
     # FINAL DOC
     paste_data.update({
@@ -183,17 +176,13 @@ async def create_paste_logic(
 
         "custom_id": custom_id,
 
-        "owner":
-            user_data.get("name"),
+        "owner": user_data.get("name"),
 
-        "picture":
-            user_data.get("picture"),
+        "picture":  user_data.get("picture"),
 
-        "created_at":
-            now.timestamp(),
+        "created_at":now.timestamp(),
 
-        "updated_at":
-            now.timestamp(),
+        "updated_at": now.timestamp(),
 
         "analytics": {
 
@@ -224,10 +213,7 @@ async def create_paste_logic(
     })
 
     # INSERT
-    result =
-        pastes_collection.insert_one(
-            paste_data
-        )
+    result =  pastes_collection.insert_one(  paste_data    )
 
     # UPDATE USER
     users_collection.update_one(
@@ -244,11 +230,9 @@ async def create_paste_logic(
 
         "status": "success",
 
-        "id":
-            str(result.inserted_id),
+        "id": str(result.inserted_id),
 
-        "custom_id":
-            custom_id
+        "custom_id":  custom_id
 
     }
 
