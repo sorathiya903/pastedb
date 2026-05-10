@@ -10,7 +10,7 @@ import os
 import re
 from collections import Counter
 import user_agents
-
+import secrets
 import logging
 #ogging.basicConfig(level=logging.DEBUG)
 import traceback
@@ -33,6 +33,7 @@ if not os.getenv("MONGO_URI"):
 db = client["pasteDB"]
 pastes_collection = db["pastes"]
 users_collection = db["users"]
+api_keys_collection = db["api_keys"]
 
 pastes_collection.create_index(
     "expire_at",
@@ -925,3 +926,93 @@ def explore_pastes():
     )
 
     return results[:50]
+
+
+
+#API KEYS SECTION
+
+@app.post("/generate-api-key")
+async def generate_api_key(
+    user=Depends(get_current_user)
+):
+
+    email = user.get("email")
+
+    if not email:
+        raise HTTPException(401, "Unauthorized")
+
+    # generate secure key
+    api_key = secrets.token_hex(32)
+
+    # save in db
+    api_keys_collection.insert_one({
+        "email": email,
+        "api_key": api_key,
+        "created_at": datetime.now(timezone.utc)
+    })
+
+    return {
+        "status": "success",
+        "api_key": api_key
+    }
+
+@app.get("/my-api-keys")
+async def my_api_keys(
+    user=Depends(get_current_user)
+):
+
+    email = user.get("email")
+
+    keys = list(
+        api_keys_collection.find(
+            {"email": email},
+            {"_id": 0}
+        )
+    )
+
+    return {
+        "keys": keys
+    }
+
+@app.delete("/delete-api-key/{api_key}")
+async def delete_api_key(
+    api_key: str,
+    user=Depends(get_current_user)
+):
+
+    email = user.get("email")
+
+    result = api_keys_collection.delete_one({
+        "email": email,
+        "api_key": api_key
+    })
+
+    if result.deleted_count == 0:
+        raise HTTPException(404, "API key not found")
+
+    return {
+        "status": "success",
+        "message": "API key deleted"
+    }
+
+@app.post("/api/create")
+async def api_create_paste(request: Request):
+
+    api_key = request.headers.get("x-api-key")
+
+    if not api_key:
+        raise HTTPException(401, "API key required")
+
+    key_doc = api_keys_collection.find_one({
+        "api_key": api_key
+    })
+
+    if not key_doc:
+        raise HTTPException(401, "Invalid API key")
+
+    return {
+        "status": "success",
+        "message": "Authenticated with API key"
+    }
+
+
