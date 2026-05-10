@@ -739,6 +739,167 @@ transform:translateY(20px);
 
   background:rgba(255,255,255,0.05);
 }
+
+   /* MENU BUTTON */
+
+.menu-btn{
+
+  position:fixed;
+  top:20px;
+  left:20px;
+
+  width:52px;
+  height:52px;
+
+  border:none;
+  border-radius:16px;
+
+  background:#171a21;
+  color:white;
+
+  font-size:22px;
+  cursor:pointer;
+
+  z-index:1001;
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.3);
+
+  transition:0.25s;
+}
+
+.menu-btn:hover{
+  transform:scale(1.05);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+  position:fixed;
+  top:0;
+  left:-320px;
+
+  width:320px;
+  height:100vh;
+
+  background:#11141b;
+
+  border-right:
+    1px solid rgba(255,255,255,0.08);
+
+  z-index:1002;
+
+  padding:22px;
+
+  transition:0.35s ease;
+
+  display:flex;
+  flex-direction:column;
+}
+
+.sidebar.open{
+  left:0;
+}
+
+/* HEADER */
+
+.sidebar-header{
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  margin-bottom:30px;
+}
+
+.sidebar-header h2{
+
+  color:white;
+
+  font-size:22px;
+  font-family:Inter,sans-serif;
+}
+
+/* CLOSE BTN */
+
+.close-btn{
+
+  width:40px;
+  height:40px;
+
+  border:none;
+  border-radius:12px;
+
+  background:rgba(255,255,255,0.06);
+
+  color:white;
+
+  cursor:pointer;
+
+  font-size:18px;
+}
+
+/* MENU ITEMS */
+
+.sidebar-links{
+
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.sidebar-item{
+
+  padding:14px 16px;
+
+  border:none;
+  border-radius:14px;
+
+  background:rgba(255,255,255,0.04);
+
+  color:white;
+
+  text-align:left;
+
+  font-size:15px;
+
+  cursor:pointer;
+
+  transition:0.25s;
+}
+
+.sidebar-item:hover{
+
+  background:rgba(255,255,255,0.08);
+
+  transform:translateX(4px);
+}
+
+/* OVERLAY */
+
+.overlay{
+
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,0.45);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:0.3s;
+
+  z-index:1000;
+}
+
+.overlay.show{
+
+  opacity:1;
+  pointer-events:auto;
+   }
 </style>
 </head>
 
@@ -755,7 +916,44 @@ transform:translateY(20px);
      
   </div>
 
-  
+  <!-- MENU BUTTON -->
+<button id="menuBtn" class="menu-btn">
+  ☰
+</button>
+
+<!-- SIDEBAR MENU -->
+<div id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+
+    <h2>Developer Menu</h2>
+
+    <button id="closeSidebar" class="close-btn">
+      ✕
+    </button>
+
+  </div>
+
+  <div class="sidebar-links">
+
+    <button class="sidebar-item">
+      Generate API Key
+    </button>
+
+    <button class="sidebar-item">
+      My API Keys
+    </button>
+
+    <button class="sidebar-item">
+      API Docs
+    </button>
+
+  </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay" class="overlay"></div>
 </div>
  <div class="popup" id="popup">
     <h4 id="username">User</h4>
@@ -847,6 +1045,36 @@ transform:translateY(20px);
 
 
 <script>
+
+   const menuBtn =
+  document.getElementById("menuBtn");
+
+const sidebar =
+  document.getElementById("sidebar");
+
+const closeSidebar =
+  document.getElementById("closeSidebar");
+
+const overlay =
+  document.getElementById("overlay");
+
+menuBtn.onclick = () => {
+
+  sidebar.classList.add("open");
+
+  overlay.classList.add("show");
+};
+
+closeSidebar.onclick = closeMenu;
+
+overlay.onclick = closeMenu;
+
+function closeMenu(){
+
+  sidebar.classList.remove("open");
+
+  overlay.classList.remove("show");
+   }
    let currentSearch =""
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
