@@ -995,24 +995,110 @@ async def delete_api_key(
         "message": "API key deleted"
     }
 
-@app.post("/api/create")
-async def api_create_paste(request: Request):
 
+
+@app.post("/api/create")
+async def api_create_paste(
+    request: Request
+):
+
+    # GET API KEY
     api_key = request.headers.get("x-api-key")
 
     if not api_key:
-        raise HTTPException(401, "API key required")
+        raise HTTPException(
+            status_code=401,
+            detail="API key required"
+        )
 
+    # FIND KEY
     key_doc = api_keys_collection.find_one({
         "api_key": api_key
     })
 
     if not key_doc:
-        raise HTTPException(401, "Invalid API key")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API key"
+        )
+
+    # GET JSON BODY
+    data = await request.json()
+
+    title = data.get("title", "Untitled Paste")
+    content = data.get("content", "")
+    syntax = data.get("syntax", "plain")
+    expiration = data.get("expiration", "never")
+    custom_id = data.get("custom_id")
+
+    if not content.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Content required"
+        )
+
+    # CHECK CUSTOM ID
+    if custom_id:
+
+        existing = pastes_collection.find_one({
+            "custom_id": custom_id
+        })
+
+        if existing:
+            raise HTTPException(
+                status_code=400,
+                detail="Custom ID already taken"
+            )
+
+    now = datetime.now(timezone.utc)
+
+    expire_at = None
+
+    if expiration in ["10m", "10min"]:
+        expire_at = now + timedelta(minutes=10)
+
+    elif expiration in ["1h", "1hour"]:
+        expire_at = now + timedelta(hours=1)
+
+    elif expiration in ["1d", "1day"]:
+        expire_at = now + timedelta(days=1)
+
+    elif expiration in ["1w", "1week"]:
+        expire_at = now + timedelta(days=7)
+
+    # CREATE DOCUMENT
+    paste_doc = {
+        "title": title,
+        "content": content,
+        "syntax": syntax,
+        "expiration": expiration,
+        "custom_id": custom_id,
+        "created_at": now,
+        "expire_at": expire_at,
+        "user_email_key": key_doc["email"]
+            .replace(".", "_")
+    }
+
+    # INSERT
+    result = pastes_collection.insert_one(
+        paste_doc
+    )
+
+    # UPDATE USER
+    users_collection.update_one(
+        {
+            "email": key_doc["email"]
+        },
+        {
+            "$push": {
+                "pastes": str(result.inserted_id)
+            }
+        }
+    )
 
     return {
         "status": "success",
-        "message": "Authenticated with API key"
+        "id": str(result.inserted_id),
+        "custom_id": custom_id,
+        "url": f"https://pastedb.netlify.app/p/{custom_id}"
     }
-
-
