@@ -900,6 +900,7 @@ transform:translateY(20px);
   opacity:1;
   pointer-events:auto;
    }
+   .row{display:flex; flex-direction:row}
 </style>
 </head>
 
@@ -908,7 +909,7 @@ transform:translateY(20px);
 <!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">PasteDB</div>
-
+<div class="row">
   <div style="display:flex; gap:10px; align-items:center;">
     <button class="btn" onclick="toggleTheme()">Toggle Theme</button>
     
@@ -917,10 +918,10 @@ transform:translateY(20px);
   </div>
 
   <!-- MENU BUTTON -->
-<button id="menuBtn" class="menu-btn">
+<button id="menuBtn" class="btn">
   ☰
 </button>
-
+</div>
 <!-- SIDEBAR MENU -->
 <div id="sidebar" class="sidebar">
 
