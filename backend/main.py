@@ -109,92 +109,168 @@ def home():
     return {"message": "Server running"}
 
 
+async def create_paste_logic(
+    paste_data: dict,
+    user_data: dict
+):
+
+    email_key = user_data["email"].replace(".", "_")
+
+    now = datetime.now(timezone.utc)
+
+    expire_at = None
+
+    expiration =
+        paste_data.get("expiration", "never")
+
+    if expiration in ["10m", "10min"]:
+        expire_at = now + timedelta(minutes=10)
+
+    elif expiration in ["1h", "1hour"]:
+        expire_at = now + timedelta(hours=1)
+
+    elif expiration in ["1d", "1day"]:
+        expire_at = now + timedelta(days=1)
+
+    elif expiration in ["1w", "1week"]:
+        expire_at = now + timedelta(days=7)
+
+    # CUSTOM ID
+    custom_id =
+        paste_data.get("custom_id")
+
+    if custom_id:
+
+        custom_id =
+            custom_id.lower().strip()
+
+        if not re.match(
+            r"^[a-z0-9-]+$",
+            custom_id
+        ):
+
+            raise HTTPException(
+                400,
+                "Invalid custom ID"
+            )
+
+        existing =
+            pastes_collection.find_one({
+                "custom_id": custom_id
+            })
+
+        if existing:
+
+            raise HTTPException(
+                400,
+                "Custom ID already taken"
+            )
+
+    # PASSWORD HASH
+    if paste_data.get("password"):
+
+        paste_data["password"] =
+            hash_password(
+                paste_data["password"]
+            )
+
+    # FINAL DOC
+    paste_data.update({
+
+        "user_email_key": email_key,
+
+        "expire_at": expire_at,
+
+        "custom_id": custom_id,
+
+        "owner":
+            user_data.get("name"),
+
+        "picture":
+            user_data.get("picture"),
+
+        "created_at":
+            now.timestamp(),
+
+        "updated_at":
+            now.timestamp(),
+
+        "analytics": {
+
+            "views": 0,
+
+            "copies": 0,
+
+            "shares": 0,
+
+            "failed_passwords": 0,
+
+            "last_viewed": None,
+
+            "total_read_time": 0,
+
+            "scroll_completion": 0,
+
+            "impressions": 0,
+
+            "visitors": [],
+
+            "activities": [],
+
+            "daily_views": {}
+
+        }
+
+    })
+
+    # INSERT
+    result =
+        pastes_collection.insert_one(
+            paste_data
+        )
+
+    # UPDATE USER
+    users_collection.update_one(
+        {"email_key": email_key},
+        {
+            "$push": {
+                "pastes":
+                    str(result.inserted_id)
+            }
+        }
+    )
+
+    return {
+
+        "status": "success",
+
+        "id":
+            str(result.inserted_id),
+
+        "custom_id":
+            custom_id
+
+    }
+
 @app.post("/create")
-def create_paste(
+async def create_paste(
     paste: PasteCreate,
     user=Depends(get_current_user)
 ):
 
     try:
 
-        email_key = user["email"].replace(".", "_")
-
-        now = datetime.now(timezone.utc)
-
-        expire_at = None
-
-        if paste.expiration in ["10m", "10min"]:
-            expire_at = now + timedelta(minutes=10)
-
-        elif paste.expiration in ["1h", "1hour"]:
-            expire_at = now + timedelta(hours=1)
-
-        elif paste.expiration in ["1d", "1day"]:
-            expire_at = now + timedelta(days=1)
-
-        elif paste.expiration in ["1w", "1week"]:
-            expire_at = now + timedelta(days=7)
-
-        # CUSTOM ID VALIDATION
-        custom_id = paste.custom_id
-
-        if custom_id:
-
-            custom_id = custom_id.lower().strip()
-
-            if not re.match(r"^[a-z0-9-]+$", custom_id):
-                raise HTTPException(
-                    400,
-                    "Invalid custom ID"
-                )
-
-            existing = pastes_collection.find_one({
-                "custom_id": custom_id
-            })
-
-            if existing:
-                raise HTTPException(
-                    400,
-                    "Custom ID already taken"
-                )
-
-        paste_doc = paste.model_dump()
-       # print("DEBUG PAYLOAD:", paste_doc)
-        if paste_doc.get("password"):
-            paste_doc["password"] = hash_password(paste_doc["password"])
-
-        paste_doc.update({
-            "user_email_key": email_key,
-            "expire_at": expire_at,
-            "custom_id": custom_id,
-            "owner":user.get("name"),
-            "picture":user.get("picture"),
-            "created_at":         datetime.now(             timezone.utc         ).timestamp(),      "updated_at":         datetime.now(             timezone.utc         ).timestamp(),      "analytics": {          "views": 0,          "copies": 0,          "shares": 0,          "failed_passwords": 0,          "last_viewed": None,          "total_read_time": 0,          "scroll_completion": 0,          "impressions": 0,          "visitors": [],          "activities": [],          "daily_views": {}     }
-        })
-        
-        result = pastes_collection.insert_one(
-            paste_doc
+        return await create_paste_logic(
+            paste.model_dump(),
+            user
         )
-
-        users_collection.update_one(
-            {"email_key": email_key},
-            {
-                "$push": {
-                    "pastes": str(result.inserted_id)
-                }
-            }
-        )
-
-        return {
-            "status": "success",
-            "id": str(result.inserted_id),
-            "custom_id": custom_id
-        }
 
     except Exception as e:
-       # traceback.print_exc()
-        raise HTTPException(status_code=500,detail=str(e))
-    
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
     
 
 # ---------------- GET USER DASHBOARD ----------------
@@ -996,109 +1072,50 @@ async def delete_api_key(
     }
 
 
-
 @app.post("/api/create")
 async def api_create_paste(
     request: Request
 ):
 
-    # GET API KEY
-    api_key = request.headers.get("x-api-key")
+    api_key =
+        request.headers.get("x-api-key")
 
     if not api_key:
+
         raise HTTPException(
-            status_code=401,
-            detail="API key required"
+            401,
+            "API key required"
         )
 
-    # FIND KEY
-    key_doc = api_keys_collection.find_one({
-        "api_key": api_key
-    })
-
-    if not key_doc:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid API key"
-        )
-
-    # GET JSON BODY
-    data = await request.json()
-
-    title = data.get("title", "Untitled Paste")
-    content = data.get("content", "")
-    syntax = data.get("syntax", "plain")
-    expiration = data.get("expiration", "never")
-    custom_id = data.get("custom_id")
-
-    if not content.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="Content required"
-        )
-
-    # CHECK CUSTOM ID
-    if custom_id:
-
-        existing = pastes_collection.find_one({
-            "custom_id": custom_id
+    key_doc =
+        api_keys_collection.find_one({
+            "api_key": api_key
         })
 
-        if existing:
-            raise HTTPException(
-                status_code=400,
-                detail="Custom ID already taken"
-            )
+    if not key_doc:
 
-    now = datetime.now(timezone.utc)
+        raise HTTPException(
+            401,
+            "Invalid API key"
+        )
 
-    expire_at = None
+    data =
+        await request.json()
 
-    if expiration in ["10m", "10min"]:
-        expire_at = now + timedelta(minutes=10)
+    fake_user = {
 
-    elif expiration in ["1h", "1hour"]:
-        expire_at = now + timedelta(hours=1)
+        "email":
+            key_doc["email"],
 
-    elif expiration in ["1d", "1day"]:
-        expire_at = now + timedelta(days=1)
+        "name":
+            key_doc.get("name", "API User"),
 
-    elif expiration in ["1w", "1week"]:
-        expire_at = now + timedelta(days=7)
+        "picture":
+            key_doc.get("picture", "")
 
-    # CREATE DOCUMENT
-    paste_doc = {
-        "title": title,
-        "content": content,
-        "syntax": syntax,
-        "expiration": expiration,
-        "custom_id": custom_id,
-        "created_at": now,
-        "expire_at": expire_at,
-        "user_email_key": key_doc["email"]
-            .replace(".", "_")
     }
 
-    # INSERT
-    result = pastes_collection.insert_one(
-        paste_doc
+    return await create_paste_logic(
+        data,
+        fake_user
     )
-
-    # UPDATE USER
-    users_collection.update_one(
-        {
-            "email": key_doc["email"]
-        },
-        {
-            "$push": {
-                "pastes": str(result.inserted_id)
-            }
-        }
-    )
-
-    return {
-        "status": "success",
-        "id": str(result.inserted_id),
-        "custom_id": custom_id,
-        "url": f"https://pastedb.netlify.app/p/{custom_id}"
-    }
