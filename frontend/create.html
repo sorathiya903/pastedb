@@ -1805,7 +1805,7 @@ async function loadPasteForEditing(editId){
   try{
 
     const response = await fetch(
-      `https://pastedb.onrender.com/paste/${editId}`,
+      `https://pastedb.onrender.com/p/${editId}`,
       {
         method: "GET",
         credentials: "include"
