@@ -919,6 +919,7 @@ console.log(new Date())
 
 
 
+
 // CREATED
 
 if (data.created_at) {
@@ -964,6 +965,14 @@ if (data.created_at) {
   createdAt.textContent = "Unknown";
 
 }
+
+// SHOW CREATED SECTION ALWAYS
+
+createdAt.style.display = "block";
+
+document
+  .getElementById("createdSkeleton")
+  .style.display = "none";
 
       
 if (data.expire_at) {
