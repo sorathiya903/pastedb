@@ -701,14 +701,18 @@ def paste_stats(
 
     # LIVE VIEWERS
 
-    live_viewers = 0
-
+    live_ips = set()
     for v in visitors:
-
         ts = v.get("timestamp", 0)
-
         if now.timestamp() - ts < 300:
-            live_viewers += 1
+            ip = v.get("ip")
+
+            if ip:
+                live_ips.add(ip)
+
+    live_viewers = len(live_ips)
+
+    
     daily_views ={}
     for v in visitors:
         ts = v.get("timestamp")
