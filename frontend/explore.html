@@ -347,6 +347,23 @@
 
       renderPastes(data);
     }
+    function formatTimestamp(timestamp){
+
+  if(!timestamp) return "Unknown";
+
+  const date = new Date(timestamp * 1000);
+
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  }).format(date);
+
+    }
 
     function renderPastes(pastes){
 
@@ -376,7 +393,7 @@
                   </h3>
 
                   <p>
-                    ${paste.created_at || ""}
+                    ${formatTimestamp(paste.created_at)|| ""}
                   </p>
 
                 </div>
