@@ -477,7 +477,7 @@ def verify_custom_password(
         {"_id": paste["_id"]},
         {
             "$inc": {
-                "failed_password_attempts": 1
+                "failed_passwords": 1
             }
         }
     )
