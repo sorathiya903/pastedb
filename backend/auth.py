@@ -291,7 +291,8 @@ async def get_paste(
                 "visibility",
                 "public"
             ),
-
+        "custom_id":paste.get("custom_id", "Not found"),
+        
         "password":
             True if paste.get("password")
             else False
