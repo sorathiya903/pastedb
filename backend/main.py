@@ -446,50 +446,44 @@ async def check_custom_id(id: str):
         "available": existing is None
     }
 
-
-
-@app.post("/p/{paste_id}/verify-password")
-async def verify_password(
-    paste_id: str,
-    body: PasswordRequest,
-    request: Request
+@app.post("/p/{custom_id}/verify-password")
+def verify_custom_password(
+    custom_id: str,
+    body: PasswordCheck
 ):
 
-    paste = collection.find_one({"custom_id": paste_id})
+    paste = pastes_collection.find_one({
+        "custom_id": custom_id
+    })
 
     if not paste:
-        raise HTTPException(status_code=404, detail="Paste not found")
+        raise HTTPException(404, "Paste not found")
 
-    # create stats object if missing
-    if "stats" not in paste:
-        paste["stats"] = {
-            "views": 0,
-            "failed_password_attempts": 0
-        }
+    stored_password = paste.get("password")
+
+    # no password
+    if not stored_password:
+        return {"access": True}
+
+    # correct password
+    if verify_password(
+        body.password,
+        stored_password
+    ):
+        return {"access": True}
 
     # WRONG PASSWORD
-    if paste.get("password") != body.password:
-
-        collection.update_one(
-            {"_id": paste["_id"]},
-            {
-                "$inc": {
-                    "stats.failed_password_attempts": 1
-                }
+    pastes_collection.update_one(
+        {"_id": paste["_id"]},
+        {
+            "$inc": {
+                "failed_password_attempts": 1
             }
-        )
-
-        return {
-            "access": False
         }
+    )
 
-    # SUCCESS
-    return {
-        "access": True
-    }
-
-
-
+    return {"access": False}
+    
 
 @app.get("/stats/{paste_id}")
 def paste_stats(
