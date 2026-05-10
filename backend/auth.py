@@ -82,6 +82,7 @@ async def google_auth(data: GoogleLogin, response: Response):
     return {"status": "success"}
 
 # ---------------- AUTH DEPENDENCY ----------------
+
 def get_current_user(request: Request):
 
     token = request.cookies.get("session")
@@ -89,27 +90,32 @@ def get_current_user(request: Request):
     if not token:
         raise HTTPException(401, "Not authenticated")
 
-    try:
+    payload = decode_token(token)
 
+    if not payload:
+        raise HTTPException(401, "Invalid token")
+
+    user = users_collection.find_one({
+        "email": payload.get("email")
+    })
+
+    if not user:
+        raise HTTPException(401, "User not found")
+
+    return payload
+
+def decode_token(token: str):
+    try:
         payload = jwt.decode(
             token,
             SECRET_KEY,
             algorithms=[ALGORITHM]
         )
-
-        email = payload.get("email")
-
-        user = users_collection.find_one({
-            "email": email
-        })
-
-        if not user:
-            raise HTTPException(401, "User not found")
-
         return payload
 
     except:
-        raise HTTPException(401, "Invalid token")
+        return None
+
 
 @router.post("/logout")
 async def logout():
@@ -130,18 +136,7 @@ def get_optional_user(request: Request):
     if not token:
         return None
 
-    try:
-
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
-
-        return payload
-
-    except:
-        return None
+    return decode_token(token)
 
 
 @router.delete("/delete-account")
