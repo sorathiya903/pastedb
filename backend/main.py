@@ -239,7 +239,7 @@ async def create_paste_logic(
 @app.post("/create")
 async def create_paste(
     paste: PasteCreate,
-    user=Depends(get_current_user)
+    user=Depends(get_optional_user)
 ):
 
     try:
