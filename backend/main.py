@@ -240,28 +240,33 @@ async def create_paste(
     user=Depends(get_optional_user)
 ):
 
-    # guest user support
-    if not user:
+    # logged in user
+    if user:
 
-        user = {
+        db_user = users_collection.find_one({
+            "email": user["email"]
+        })
+
+        # token valid but account deleted
+        if not db_user:
+            raise HTTPException(
+                status_code=401,
+                detail="User no longer exists"
+            )
+
+    # guest user
+    else:
+
+        db_user = {
             "email": "guest@pastedb.com",
             "name": "Guest",
             "picture": ""
         }
 
-    try:
-
-        return await create_paste_logic(
-            paste.model_dump(),
-            user
-        )
-
-    except Exception as e:
-
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+    return await create_paste_logic(
+        paste.model_dump(),
+        db_user
+    )
     
 
 # ---------------- GET USER DASHBOARD ----------------
