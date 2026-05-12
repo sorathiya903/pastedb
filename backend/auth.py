@@ -145,13 +145,14 @@ async def delete_account(
 ):
 
     user_email = user.get("email")
+    email_key = user_email.replace(".", "_")
 
     if not user_email:
         raise HTTPException(401, "Invalid token")
 
-    # delete all pastes
+    # delete all user pastes
     db.pastes.delete_many({
-        "email": user_email
+        "user_email_key": email_key
     })
 
     # delete user
@@ -159,15 +160,23 @@ async def delete_account(
         "email": user_email
     })
 
+    # delete api keys also
+    db.api_keys.delete_many({
+        "email": user_email
+    })
+
     response = JSONResponse({
         "message": "Account deleted"
     })
 
-    response.delete_cookie("session")
+    response.delete_cookie(
+        key="session",
+        httponly=True,
+        secure=True,
+        samesite="none"
+    )
 
     return response
-
-
 
 @router.get("/p/{paste_id}")
 async def get_paste(
