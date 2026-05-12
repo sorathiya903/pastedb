@@ -312,35 +312,135 @@ async def user_dash(user=Depends(get_current_user)):
 
 
 
-@app.get("/paste/{paste_id}")
-async def get_paste(paste_id: str):
 
-    print("PASTE ID:", paste_id)
+@app.get("/paste/{paste_id}")
+async def get_paste(
+    paste_id: str,
+    request: Request
+):
 
     try:
 
-        paste = pastes_collection.find_one({
-            "_id": ObjectId(paste_id)
-        })
+        paste = None
 
+        # SEARCH BY OBJECT ID
+        if ObjectId.is_valid(paste_id):
+
+            paste = pastes_collection.find_one({
+                "_id": ObjectId(paste_id)
+            })
+
+        # SEARCH BY CUSTOM ID
         if not paste:
+
+            paste = pastes_collection.find_one({
+                "custom_id": paste_id
+            })
+
+        # NOT FOUND
+        if not paste:
+
             raise HTTPException(
                 status_code=404,
                 detail="Paste not found"
             )
 
-        paste["_id"] = str(paste["_id"])
-        pastes_collection.update_one(     {"custom_id": paste_id},     {         "$inc": {             "analytics.views": 1         },          "$push": {             "analytics.visitors": {                 "ip": request.client.host,                 "timestamp":                     datetime.utcnow().timestamp(),                  "user_agent":                     request.headers.get(                         "user-agent"                     )             }         },          "$set": {             "analytics.last_viewed":                 datetime.utcnow().timestamp()         }     } )
+        # PRIVATE CHECK
+        if paste.get("visibility") == "private":
+
+            token = request.cookies.get("session")
+
+            if not token:
+
+                raise HTTPException(
+                    status_code=404,
+                    detail="Paste not found"
+                )
+
+            payload = decode_token(token)
+
+            if not payload:
+
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid token"
+                )
+
+            current_email_key = (
+                payload["email"]
+                .replace(".", "_")
+            )
+
+            if (
+                current_email_key !=
+                paste.get("user_email_key")
+            ):
+
+                raise HTTPException(
+                    status_code=404,
+                    detail="Paste not found"
+                )
+
+        # ANALYTICS UPDATE
+        now = datetime.now(
+            timezone.utc
+        ).timestamp()
+
+        visitor_data = {
+
+            "ip": request.client.host,
+
+            "timestamp": now,
+
+            "user_agent": request.headers.get(
+                "user-agent",
+                "Unknown"
+            )
+        }
+
+        pastes_collection.update_one(
+
+            {"_id": paste["_id"]},
+
+            {
+                "$inc": {
+                    "analytics.views": 1
+                },
+
+                "$push": {
+                    "analytics.visitors":
+                        visitor_data
+                },
+
+                "$set": {
+                    "analytics.last_viewed":
+                        now
+                }
+            }
+        )
+
+        # SAFE SERIALIZATION
+        paste["_id"] = str(
+            paste["_id"]
+        )
+
         return paste
+
+    except HTTPException:
+
+        raise
 
     except Exception as e:
 
-        print(e)
+        print("GET PASTE ERROR:")
+        print(traceback.format_exc())
 
         raise HTTPException(
-            status_code=400,
-            detail="Invalid paste ID"
+            status_code=500,
+            detail="Internal server error"
         )
+
+
 # delete
 
 @app.delete("/delete/{paste_id}")
