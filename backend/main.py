@@ -346,7 +346,7 @@ async def user_dash(user=Depends(get_current_user)):
 
 
 
-@app.get("/paste/{paste_id}")
+@app.get("/p/{paste_id}")
 async def get_paste(
     paste_id: str,
     request: Request
