@@ -48,7 +48,40 @@ pastes_collection.create_index([
 
 
 
+def get_api_user(request: Request):
 
+    api_key = request.headers.get(
+        "x-api-key"
+    )
+
+    if not api_key:
+
+        raise HTTPException(
+            status_code=401,
+            detail="API key required"
+        )
+
+    key_doc = api_keys_collection.find_one({
+        "api_key": api_key
+    })
+
+    if not key_doc:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API key"
+        )
+
+    return {
+
+        "email": key_doc.get("email"),
+
+        "api_key": api_key,
+
+        "created_at": key_doc.get(
+            "created_at"
+        )
+    }
 
 def hash_password(password: str):
     return ph.hash(password)
@@ -1340,3 +1373,16 @@ async def api_create_paste(
         data,
         fake_user
     )
+
+
+
+@app.get("/api/me")
+async def api_me(
+
+    api_user = Depends(get_api_user)
+
+):
+
+    return {
+        "email": api_user["email"]
+    }
