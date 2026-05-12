@@ -117,7 +117,8 @@
     .grid{
 
       display:grid;
-
+justify-content:center;
+      align-items:center;
       grid-template-columns:
         repeat(auto-fit,minmax(340px,1fr));
 
@@ -289,6 +290,15 @@
       }
     }
 
+.load {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: #000 #0000;
+  animation: l1 1s infinite;
+}
+@keyframes l1 {to{transform: rotate(.5turn)}}
   </style>
 
 </head>
@@ -327,7 +337,10 @@
     <div
       class="grid"
       id="grid"
-    >Loading...</div>
+    >
+
+      <div class="load"></div>
+    </div>
 
   </div>
 
