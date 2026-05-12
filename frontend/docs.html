@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>PasteDB Python SDK Docs</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+  --bg:#0a0a0a;
+  --card:#111111;
+  --border:#1f1f1f;
+
+  --text:#ffffff;
+  --muted:#9ca3af;
+
+  --accent:#ffffff;
+
+  --sidebar:#0d0d0d;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-family:Inter,sans-serif;
+
+  display:flex;
+
+  min-height:100vh;
+
+  overflow-x:hidden;
+}
+
+/* =========================
+SIDEBAR
+========================= */
+
+.sidebar{
+
+  position:fixed;
+
+  top:0;
+  left:-280px;
+
+  width:280px;
+  height:100vh;
+
+  background:var(--sidebar);
+
+  border-right:1px solid var(--border);
+
+  padding:22px;
+
+  transition:.3s ease;
+
+  z-index:1000;
+}
+
+.sidebar.open{
+  left:0;
+}
+
+.sidebar-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:30px;
+}
+
+.sidebar-header h2{
+
+  font-size:20px;
+  font-weight:700;
+}
+
+.close-btn{
+
+  width:38px;
+  height:38px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#161616;
+
+  color:white;
+
+  cursor:pointer;
+
+  font-size:18px;
+}
+
+.sidebar-links{
+
+  display:flex;
+  flex-direction:column;
+
+  gap:10px;
+}
+
+.sidebar-links a{
+
+  text-decoration:none;
+
+  color:var(--text);
+
+  background:#121212;
+
+  border:1px solid var(--border);
+
+  padding:14px;
+
+  border-radius:14px;
+
+  transition:.25s ease;
+}
+
+.sidebar-links a:hover{
+
+  transform:translateX(4px);
+
+  background:#191919;
+}
+
+/* =========================
+TOPBAR
+========================= */
+
+.topbar{
+
+  position:fixed;
+
+  top:0;
+  left:0;
+  right:0;
+
+  height:70px;
+
+  background:rgba(10,10,10,.85);
+
+  backdrop-filter:blur(12px);
+
+  border-bottom:1px solid var(--border);
+
+  display:flex;
+  align-items:center;
+
+  padding:0 20px;
+
+  z-index:999;
+}
+
+.menu-btn{
+
+  width:46px;
+  height:46px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:#151515;
+
+  color:white;
+
+  cursor:pointer;
+
+  font-size:20px;
+
+  margin-right:14px;
+}
+
+.logo{
+
+  font-size:20px;
+  font-weight:700;
+}
+
+/* =========================
+CONTENT
+========================= */
+
+.main{
+
+  width:100%;
+
+  padding:100px 24px 60px 24px;
+
+  max-width:1100px;
+
+  margin:auto;
+}
+
+.hero{
+
+  margin-bottom:50px;
+}
+
+.hero h1{
+
+  font-size:48px;
+
+  line-height:1.1;
+
+  margin-bottom:16px;
+}
+
+.hero p{
+
+  color:var(--muted);
+
+  font-size:18px;
+
+  max-width:700px;
+
+  line-height:1.7;
+}
+
+/* =========================
+SECTION
+========================= */
+
+.section{
+
+  margin-bottom:50px;
+}
+
+.section h2{
+
+  font-size:28px;
+
+  margin-bottom:18px;
+}
+
+.section p{
+
+  color:var(--muted);
+
+  line-height:1.8;
+
+  margin-bottom:18px;
+}
+
+/* =========================
+CODE BLOCK
+========================= */
+
+.code-block{
+
+  background:#0f1115;
+
+  border:1px solid var(--border);
+
+  border-radius:20px;
+
+  overflow:hidden;
+
+  margin-top:20px;
+}
+
+.code-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:14px 18px;
+
+  border-bottom:1px solid var(--border);
+
+  background:#121418;
+}
+
+.code-header span{
+
+  font-size:14px;
+
+  color:var(--muted);
+}
+
+.copy-btn{
+
+  border:none;
+
+  background:#1a1a1a;
+
+  color:white;
+
+  padding:8px 14px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+}
+
+pre{
+
+  padding:24px;
+
+  overflow:auto;
+
+  font-size:15px;
+
+  line-height:1.8;
+
+  font-family:"JetBrains Mono",monospace;
+}
+
+/* =========================
+OUTPUT
+========================= */
+
+.output{
+
+  margin-top:18px;
+
+  background:#101010;
+
+  border:1px solid var(--border);
+
+  border-radius:16px;
+
+  padding:18px;
+
+  font-family:"JetBrains Mono",monospace;
+
+  color:#d1d5db;
+}
+
+/* =========================
+BADGE
+========================= */
+
+.badge{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  background:#141414;
+
+  border:1px solid var(--border);
+
+  padding:10px 14px;
+
+  border-radius:999px;
+
+  margin-top:18px;
+
+  font-size:14px;
+}
+
+/* =========================
+OVERLAY
+========================= */
+
+.overlay{
+
+  position:fixed;
+
+  inset:0;
+
+  background:rgba(0,0,0,.45);
+
+  opacity:0;
+
+  pointer-events:none;
+
+  transition:.3s;
+
+  z-index:998;
+}
+
+.overlay.show{
+
+  opacity:1;
+
+  pointer-events:auto;
+}
+
+/* =========================
+SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+  width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#1f1f1f;
+  border-radius:999px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+  <div class="sidebar-header">
+
+    <h2>Documentation</h2>
+
+    <button class="close-btn" onclick="closeMenu()">
+      ✕
+    </button>
+
+  </div>
+
+  <div class="sidebar-links">
+
+    <a href="#installation">
+      Installation
+    </a>
+
+    <a href="#basic">
+      Basic Usage
+    </a>
+
+    <a href="#authentication">
+      Authentication
+    </a>
+
+    <a href="#errors">
+      Error Handling
+    </a>
+
+    <a href="#methods">
+      Methods
+    </a>
+
+  </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+
+  <button class="menu-btn" onclick="openMenu()">
+    ☰
+  </button>
+
+  <div class="logo">
+    PasteDB Python SDK
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+
+    <h1>
+      PasteDB Python SDK
+    </h1>
+
+    <p>
+      Official Python SDK for interacting with the PasteDB API.
+      Create pastes, manage your account, and automate workflows
+      directly from Python.
+    </p>
+
+    <div class="badge">
+      Python SDK • FastAPI Powered • Secure API Keys
+    </div>
+
+  </div>
+
+  <!-- INSTALLATION -->
+  <section class="section" id="installation">
+
+    <h2>Installation</h2>
+
+    <p>
+      Install the SDK using pip:
+    </p>
+
+    <div class="code-block">
+
+      <div class="code-header">
+
+        <span>bash</span>
+
+        <button class="copy-btn" onclick="copyCode('installCode')">
+          Copy
+        </button>
+
+      </div>
+
+<pre id="installCode">pip install pastedb</pre>
+
+    </div>
+
+  </section>
+
+  <!-- BASIC -->
+  <section class="section" id="basic">
+
+    <h2>Basic Usage</h2>
+
+    <p>
+      Initialize the client with your API key and make requests easily.
+    </p>
+
+    <div class="code-block">
+
+      <div class="code-header">
+
+        <span>python</span>
+
+        <button class="copy-btn" onclick="copyCode('basicCode')">
+          Copy
+        </button>
+
+      </div>
+
+<pre id="basicCode">import pastedb as p
+
+# initialize client
+cl = p.Client(
+    "your_api_key_here"
+)
+
+# get account info
+account = cl.me()
+
+print(account)</pre>
+
+    </div>
+
+    <div class="output">
+{
+  "email": "your@email.com"
+}
+    </div>
+
+  </section>
+
+  <!-- AUTH -->
+  <section class="section" id="authentication">
+
+    <h2>Authentication</h2>
+
+    <p>
+      Every request requires a valid API key.
+      Invalid or expired keys will return an HTTP 401 error.
+    </p>
+
+    <div class="code-block">
+
+      <div class="code-header">
+
+        <span>python</span>
+
+      </div>
+
+<pre>import pastedb as p
+
+cl = p.Client("invalid_key")
+
+print(cl.me())</pre>
+
+    </div>
+
+    <div class="output">
+HTTP 401 Unauthorized
+
+{
+  "detail": "Invalid API key"
+}
+    </div>
+
+  </section>
+
+  <!-- METHODS -->
+  <section class="section" id="methods">
+
+    <h2>Methods</h2>
+
+    <p>
+      Current supported SDK methods:
+    </p>
+
+    <div class="code-block">
+
+      <div class="code-header">
+
+        <span>python</span>
+
+      </div>
+
+<pre>cl.me()
+
+cl.makePaste(
+    title="Hello",
+    content="My first paste",
+    syntax="python",
+    visibility="public"
+)</pre>
+
+    </div>
+
+  </section>
+
+  <!-- ERRORS -->
+  <section class="section" id="errors">
+
+    <h2>Error Handling</h2>
+
+    <p>
+      You can safely catch exceptions using try/except blocks.
+    </p>
+
+    <div class="code-block">
+
+      <div class="code-header">
+
+        <span>python</span>
+
+      </div>
+
+<pre>import pastedb as p
+
+try:
+
+    cl = p.Client("invalid_key")
+
+    print(cl.me())
+
+except Exception as e:
+
+    print(e)</pre>
+
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+
+const sidebar =
+  document.getElementById("sidebar");
+
+const overlay =
+  document.getElementById("overlay");
+
+function openMenu(){
+
+  sidebar.classList.add("open");
+
+  overlay.classList.add("show");
+}
+
+function closeMenu(){
+
+  sidebar.classList.remove("open");
+
+  overlay.classList.remove("show");
+}
+
+overlay.onclick = closeMenu;
+
+function copyCode(id){
+
+  const text =
+    document.getElementById(id).innerText;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Copied!");
+}
+
+</script>
+
+</body>
+    </html>
