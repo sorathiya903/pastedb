@@ -239,6 +239,11 @@ async def create_paste(
     paste: PasteCreate,
     user=Depends(get_optional_user)
 ):
+    user = users_collection.find_one({
+    "email": decoded["email"]})
+    
+    if not user:
+        raise HTTPException(401, "User no longer exists")
 
     try:
 
