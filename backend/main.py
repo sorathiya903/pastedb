@@ -393,7 +393,7 @@ async def delete_paste(
 
 
 @app.put("/paste/{paste_id}")
-def update_paste(paste_id: str, data: dict):
+def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
 
     now = datetime.now(timezone.utc)
 
@@ -449,36 +449,168 @@ def update_paste(paste_id: str, data: dict):
 
 
 @app.get("/search")
-async def search_pastes(q: str = Query(...)):
+async def search_pastes(
 
-    results = pastes_collection.find(
-        {
+    q: str = "",
+
+    syntax: str = None,
+
+    visibility: str = "public",
+
+    owner: str = None,
+
+    has_password: bool = None,
+
+    created_after: float = None,
+
+    created_before: float = None,
+
+    min_views: int = None,
+
+    max_views: int = None,
+
+    sort_by: str = "relevance"
+):
+
+    filters = []
+
+    # TEXT SEARCH
+    if q:
+
+        filters.append({
             "$text": {
                 "$search": q
             }
-        },
+        })
+
+    # VISIBILITY
+    if visibility:
+
+        filters.append({
+            "visibility": visibility
+        })
+
+    # LANGUAGE / SYNTAX
+    if syntax:
+
+        filters.append({
+            "syntax": syntax
+        })
+
+    # OWNER
+    if owner:
+
+        filters.append({
+            "owner": {
+                "$regex": owner,
+                "$options": "i"
+            }
+        })
+
+    # PASSWORD FILTER
+    if has_password is True:
+
+        filters.append({
+            "password": {
+                "$ne": None
+            }
+        })
+
+    elif has_password is False:
+
+        filters.append({
+            "$or": [
+                {"password": None},
+                {"password": {"$exists": False}}
+            ]
+        })
+
+    # DATE RANGE
+    if created_after or created_before:
+
+        date_filter = {}
+
+        if created_after:
+            date_filter["$gte"] = created_after
+
+        if created_before:
+            date_filter["$lte"] = created_before
+
+        filters.append({
+            "created_at": date_filter
+        })
+
+    # VIEWS RANGE
+    if min_views or max_views:
+
+        views_filter = {}
+
+        if min_views is not None:
+            views_filter["$gte"] = min_views
+
+        if max_views is not None:
+            views_filter["$lte"] = max_views
+
+        filters.append({
+            "analytics.views": views_filter
+        })
+
+    # FINAL QUERY
+    mongo_query = {}
+
+    if filters:
+        mongo_query = {
+            "$and": filters
+        }
+
+    # SORTING
+    sort_stage = None
+
+    if sort_by == "views":
+
+        sort_stage = [("analytics.views", -1)]
+
+    elif sort_by == "latest":
+
+        sort_stage = [("created_at", -1)]
+
+    elif sort_by == "oldest":
+
+        sort_stage = [("created_at", 1)]
+
+    else:
+        # relevance
+        sort_stage = [
+            ("score", {"$meta": "textScore"})
+        ] if q else [("created_at", -1)]
+
+    # QUERY
+    cursor = pastes_collection.find(
+        mongo_query,
         {
             "score": {
                 "$meta": "textScore"
             }
         }
-    ).sort([
-        ("score", {"$meta": "textScore"})
-    ]).limit(20)
+    )
 
-    pastes = []
+    cursor = cursor.sort(sort_stage).limit(50)
 
-    for p in results:
-        p["_id"] = str(p["_id"])
-        pastes.append(p)
+    results = []
+
+    for paste in cursor:
+
+        paste["_id"] = str(paste["_id"])
+
+        results.append(paste)
 
     return {
-        "results": pastes
-    }
-
+        "count": len(results),
+        "results": results
+            }
 
 @app.get("/suggest")
-async def suggest(q: str):
+async def suggest(q: str, user=Depends(get_current_user)):
 
     results = pastes_collection.find(
         {
@@ -561,7 +693,8 @@ def verify_custom_password(
 @app.get("/stats/{paste_id}")
 def paste_stats(
     paste_id: str,
-    request: Request
+    request: Request, 
+    user=Depends(get_current_user)
 ):
 
     paste = pastes_collection.find_one({
