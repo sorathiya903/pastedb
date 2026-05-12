@@ -628,6 +628,223 @@ cl.makePaste(
 
     </div>
 
+    
+    <!-- =========================
+METHOD : me()
+========================= -->
+
+<section class="section" id="method-me">
+
+  <h2>Client.me()</h2>
+
+  <p>
+    Returns information about the currently authenticated user.
+    This method internally sends a GET request to:
+  </p>
+
+  <div class="badge">
+    GET /api/me
+  </div>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>python</span>
+
+      <button
+        class="copy-btn"
+        onclick="copyCode('meMethodCode')"
+      >
+        Copy
+      </button>
+
+    </div>
+
+<pre id="meMethodCode">import pastedb as p
+
+cl = p.Client(
+    "your_api_key"
+)
+
+user = cl.me()
+
+print(user)</pre>
+
+  </div>
+
+  <div class="output">
+{
+  "email": "your@email.com"
+}
+  </div>
+
+  <p style="margin-top:18px;">
+    If the API key is invalid:
+  </p>
+
+  <div class="output">
+HTTP 401 Unauthorized
+
+{
+  "detail": "Invalid API key"
+}
+  </div>
+
+</section>
+
+<!-- =========================
+METHOD : makePaste()
+========================= -->
+
+<section class="section" id="method-makepaste">
+
+  <h2>Client.makePaste()</h2>
+
+  <p>
+    Creates a new paste using a Python dictionary.
+    This method internally sends a POST request to:
+  </p>
+
+  <div class="badge">
+    POST /api/create
+  </div>
+
+  <p style="margin-top:20px;">
+    The method accepts a single parameter:
+  </p>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>python</span>
+
+    </div>
+
+<pre>makePaste(data: dict)</pre>
+
+  </div>
+
+  <p style="margin-top:20px;">
+    Example usage:
+  </p>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>python</span>
+
+      <button
+        class="copy-btn"
+        onclick="copyCode('makePasteCode')"
+      >
+        Copy
+      </button>
+
+    </div>
+
+<pre id="makePasteCode">import pastedb as p
+
+cl = p.Client(
+    "your_api_key"
+)
+
+paste = cl.makePaste({
+
+    "title": "Hello World",
+
+    "content": "My first paste",
+
+    "syntax": "python",
+
+    "visibility": "public"
+})
+
+print(paste)</pre>
+
+  </div>
+
+  <div class="output">
+{
+  "status": "success",
+  "id": "682dxxxxxxxx",
+  "custom_id": null
+}
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Supported Fields
+  </h3>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>dict structure</span>
+ <button
+        class="copy-btn"
+        onclick="copyCode('makeP')"
+      >
+        Copy
+      </button>
+    </div>
+
+<pre id="makeP">{
+  "title": "Paste title",
+
+  "content": "Paste content",
+
+  "syntax": "python",
+
+  "visibility": "public",
+
+  "custom_id": "optional-id",
+
+  "expiration": "1h",
+
+  "password": "optional-password"
+}</pre>
+
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Visibility Options
+  </h3>
+
+  <div class="output">
+public  → anyone can access
+
+private → only owner can access
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Expiration Options
+  </h3>
+
+  <div class="output">
+10m   → 10 minutes
+    <br>
+1h    → 1 hour
+ <br>
+
+never → no expiration
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Invalid API Key
+  </h3>
+
+  <div class="output">
+HTTP 401 Unauthorized
+
+{
+  "detail": "Invalid API key"
+}
+  </div>
+
+</section>
   </section>
 
   <!-- ERRORS -->
@@ -702,4 +919,4 @@ function copyCode(id){
 </script>
 
 </body>
-    </html>
+  </html>
