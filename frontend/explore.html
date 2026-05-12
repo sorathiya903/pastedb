@@ -116,7 +116,7 @@
 
     .grid{
 
-      display:grid;
+      display:flex ;
 justify-content:center;
       align-items:center;
       grid-template-columns:
@@ -384,7 +384,7 @@ justify-content:center;
         document.getElementById("grid");
 
       grid.innerHTML = "";
-
+grid.style.display ="grid"
       pastes.forEach(paste => {
 
         grid.innerHTML += `
