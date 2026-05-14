@@ -1334,25 +1334,15 @@ async def run_code(data: RunCode):
 
 
 
-        stdout =
-            result.get("stdout")
+        stdout =  result.get("stdout")
 
-        stderr =
-            result.get("stderr")
+        stderr = result.get("stderr")
 
-        compile_output =
-            result.get("compile_output")
+        compile_output =   result.get("compile_output")
 
 
 
-        output = (
-
-            stdout
-            or stderr
-            or compile_output
-            or "No output"
-
-        )
+        output = (  stdout or stderr  or compile_output  or "No output" )
 
 
 
@@ -1367,6 +1357,7 @@ async def run_code(data: RunCode):
         return {
             "error": str(e)
         }
+        
 #API KEYS SECTION
 
 @app.post("/generate-api-key")
