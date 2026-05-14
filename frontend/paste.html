@@ -850,7 +850,8 @@ async function runCode(){
   outputBlock.textContent =
     "Running..."
 
-
+runBtn.innerHTML =
+  "Running..."
 
   try{
 
@@ -897,6 +898,12 @@ async function runCode(){
     outputBlock.textContent =
       "Execution failed"
 
+  }
+  finally{
+
+
+    runBtn.innerHTML =
+  "Run Code"
   }
 
 }
