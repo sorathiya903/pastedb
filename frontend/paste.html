@@ -854,10 +854,28 @@ async function runCode(){
     "Running..."
 
   try{
+let language =
+  codeBlock.className
+    .replace("language-", "")
 
-    const language =
-      codeBlock.className
-        .replace("language-", "")
+
+
+const languageMap = {
+
+  py: "python",
+
+  python: "python",
+
+  js: "javascript",
+
+  javascript: "javascript"
+
+}
+
+
+
+language =
+  languageMap[language] || language
 
     const response = await fetch(
       "https://pastedb.onrender.com/run",
