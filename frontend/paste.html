@@ -850,16 +850,14 @@ async function runCode(){
   outputBlock.textContent =
     "Running..."
 
-runBtn.innerHTML =
-  "Running..."
+  runBtn.innerHTML =
+    "Running..."
 
   try{
 
     const language =
       codeBlock.className
         .replace("language-", "")
-
-
 
     const response = await fetch(
       "https://pastedb.onrender.com/run",
@@ -883,10 +881,19 @@ runBtn.innerHTML =
 
 
 
+    if(!response.ok){
+
+      throw new Error(
+        "Server returned " +
+        response.status
+      )
+
+    }
+
+
+
     const data =
       await response.json()
-
-
 
     outputBlock.textContent =
       data.output || data.error
@@ -895,15 +902,18 @@ runBtn.innerHTML =
 
   catch(err){
 
+    console.error(err)
+
     outputBlock.textContent =
-      "Execution failed"
+      "Execution failed: " + err
 
   }
+
   finally{
 
-
     runBtn.innerHTML =
-  "Run Code"
+      "Run Code"
+
   }
 
 }
