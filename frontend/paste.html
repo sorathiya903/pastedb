@@ -503,6 +503,17 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
           }
+
+    #outputBlock{
+  color:#d7dce2;
+  font-family:"JetBrains Mono", monospace;
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+
+#outputWrapper{
+  animation:fadeUp .5s ease;
+}
   </style>
 </head>
 
@@ -753,6 +764,9 @@
       <button id="rawBtn" class="btn">
         Raw View
       </button>
+<button class="btn" id="runBtn">
+    Run Code
+  </button>
 
     </div>
 
@@ -787,8 +801,106 @@ id="codeBlock"
 </section>
 
 
+<section
+  class="code-wrapper"
+  id="outputWrapper"
+  style="margin-top:20px; display:none;"
+>
 
+  <div class="code-toolbar">
+    <div class="toolbar-left">
+      Output
+    </div>
+  </div>
+
+  <div class="code-container">
+
+<pre>
+<code id="outputBlock"></code>
+</pre>
+
+  </div>
+
+</section>
 <script>
+
+
+const runBtn =
+  document.getElementById("runBtn")
+
+const outputWrapper =
+  document.getElementById("outputWrapper")
+
+const outputBlock =
+  document.getElementById("outputBlock")
+
+
+
+runBtn.addEventListener(
+  "click",
+  runCode
+)
+
+
+
+async function runCode(){
+
+  outputWrapper.style.display = "block"
+
+  outputBlock.textContent =
+    "Running..."
+
+
+
+  try{
+
+    const language =
+      codeBlock.className
+        .replace("language-", "")
+
+
+
+    const response = await fetch(
+      "https://pastedb.onrender.com/run",
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+          language,
+
+          code:codeBlock.textContent
+
+        })
+
+      }
+    )
+
+
+
+    const data =
+      await response.json()
+
+
+
+    outputBlock.textContent =
+      data.output || data.error
+
+  }
+
+  catch(err){
+
+    outputBlock.textContent =
+      "Execution failed"
+
+  }
+
+}
+  
   let isUnlocked = false;
 
   // THEME
