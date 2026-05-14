@@ -854,9 +854,12 @@ async function runCode(){
     "Running..."
 
   try{
-let language =
-  codeBlock.className
-    .replace("language-", "")
+ let language =
+  [...codeBlock.classList]
+    .find(cls =>
+      cls.startsWith("language-")
+    )
+    ?.replace("language-", "")
 
 
 
