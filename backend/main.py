@@ -1267,6 +1267,30 @@ def explore_pastes():
 
 
 
+
+class RunCode(BaseModel):
+    language: str
+    code: str
+
+
+@app.post("/run")
+async def run_code(data: RunCode):
+
+    response = requests.post(
+        "https://emkc.org/api/v2/piston/execute",
+        json={
+            "language": data.language,
+            "source": data.code
+        }
+    )
+
+    result = response.json()
+
+    return {
+        "output": result.get("output", "")
+    }
+
+
 #API KEYS SECTION
 
 @app.post("/generate-api-key")
