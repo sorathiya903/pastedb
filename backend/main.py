@@ -1275,7 +1275,10 @@ class RunCode(BaseModel):
 
 @app.post("/run")
 async def run_code(data: RunCode):
-
+    allowed = [  "python",  "javascript"]
+    if data.language not in allowed:
+        return { "error": "Language not supported" }
+        
     response = requests.post(
         "https://emkc.org/api/v2/piston/execute",
         json={
