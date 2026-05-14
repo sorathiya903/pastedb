@@ -846,7 +846,17 @@ runBtn.addEventListener(
 async function runCode(){
 
   outputWrapper.style.display = "block"
+setTimeout(() => {
 
+  outputWrapper.scrollIntoView({
+
+    behavior: "smooth",
+
+    block: "start"
+
+  })
+
+}, 100)
   outputBlock.textContent =
     "Running..."
 
@@ -879,7 +889,7 @@ const languageMap = {
 
 language =
   languageMap[language] || language
-alert(language)
+
     const response = await fetch(
       "https://pastedb.onrender.com/run",
       {
