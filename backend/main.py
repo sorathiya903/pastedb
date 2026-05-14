@@ -14,7 +14,7 @@ import secrets
 import logging
 #ogging.basicConfig(level=logging.DEBUG)
 import traceback
-
+import requests
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -129,9 +129,15 @@ app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+
+    allow_origins=[
+        "https://pastedb.netlify.app"
+    ],
+
     allow_credentials=True,
+
     allow_methods=["*"],
+
     allow_headers=["*"],
 )
 
@@ -1275,23 +1281,47 @@ class RunCode(BaseModel):
 
 @app.post("/run")
 async def run_code(data: RunCode):
-    allowed = [  "python",  "javascript"]
+
+    allowed = [
+        "python",
+        "javascript"
+    ]
+
     if data.language not in allowed:
-        return { "error": "Language not supported" }
-        
-    response = requests.post(
-        "https://emkc.org/api/v2/piston/execute",
-        json={
-            "language": data.language,
-            "source": data.code
+
+        return {
+            "error": "Language not supported"
         }
-    )
 
-    result = response.json()
+    try:
 
-    return {
-        "output": result.get("output", "")
-    }
+        response = requests.post(
+            "https://emkc.org/api/v2/piston/execute",
+
+            json={
+                "language": data.language,
+                "source": data.code
+            },
+
+            timeout=15
+        )
+
+        result = response.json()
+
+        return {
+
+            "output":
+                result.get("output")
+                or result.get("run", {}).get("output")
+                or "No output"
+
+        }
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }
 
 
 #API KEYS SECTION
