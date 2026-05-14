@@ -15,7 +15,7 @@ import logging
 #ogging.basicConfig(level=logging.DEBUG)
 import traceback
 import requests
-
+import time
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 
@@ -1279,6 +1279,9 @@ class RunCode(BaseModel):
     code: str
 
 
+
+
+
 @app.post("/run")
 async def run_code(data: RunCode):
 
@@ -1293,34 +1296,71 @@ async def run_code(data: RunCode):
             "error": "Language not supported"
         }
 
+
+
+    language_ids = {
+
+        "python": 71,
+
+        "javascript": 63
+
+    }
+
+
+
     try:
 
+        # CREATE SUBMISSION
+
         response = requests.post(
-            "https://emkc.org/api/v2/piston/execute",
+
+            "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
 
             json={
-                "language": data.language,
-                "source": data.code
+
+                "source_code": data.code,
+
+                "language_id":
+                    language_ids[data.language]
+
             },
 
-            timeout=15
+            timeout=20
         )
+
+
 
         result = response.json()
 
-        run = result.get("run", {})
+
+
+        stdout =
+            result.get("stdout")
+
+        stderr =
+            result.get("stderr")
+
+        compile_output =
+            result.get("compile_output")
+
+
 
         output = (
-            run.get("stdout")
-            or run.get("output")
-            or run.get("stderr")
+
+            stdout
+            or stderr
+            or compile_output
             or "No output"
+
         )
-        print(result)
+
+
 
         return {
             "output": output
         }
+
+
 
     except Exception as e:
 
