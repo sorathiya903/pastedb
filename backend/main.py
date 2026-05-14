@@ -1308,13 +1308,18 @@ async def run_code(data: RunCode):
 
         result = response.json()
 
+        run = result.get("run", {})
+
+        output = (
+            run.get("stdout")
+            or run.get("output")
+            or run.get("stderr")
+            or "No output"
+        )
+        print(result)
+
         return {
-
-            "output":
-                result.get("output")
-                or result.get("run", {}).get("output")
-                or "No output"
-
+            "output": output
         }
 
     except Exception as e:
@@ -1322,8 +1327,6 @@ async def run_code(data: RunCode):
         return {
             "error": str(e)
         }
-
-
 #API KEYS SECTION
 
 @app.post("/generate-api-key")
