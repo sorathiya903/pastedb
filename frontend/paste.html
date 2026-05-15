@@ -870,7 +870,7 @@ id="codeBlock"
 
   </div>
 <script>
-
+let currentPreviewHTML = ""
 
 const runBtn =
   document.getElementById("runBtn")
@@ -885,26 +885,24 @@ function openHtmlPreview(){
 
   const blob = new Blob(
 
-    [codeBlock.textContent],
+    [currentPreviewHTML],
 
     { type: "text/html" }
 
   )
 
-
-
   const url =
     URL.createObjectURL(blob)
-
-
 
   window.open(
     url,
     "_blank"
   )
 
-}
+  }
 
+
+  
   document
   .getElementById("openPreviewBtn")
   .addEventListener("click", openHtmlPreview)
@@ -929,25 +927,27 @@ function runMarkdown(){
     "block"
 
   const dirty =
-  marked.parse(codeBlock.textContent)
+  marked.parse(
+    codeBlock.textContent
+  )
 
 const clean =
   DOMPurify.sanitize(dirty)
 
+currentPreviewHTML = `
+<html>
+<body style="
+  font-family:Inter,sans-serif;
+  padding:20px;
+  line-height:1.7;
+">
+  ${clean}
+</body>
+</html>
+`
 
-
-  iframe.srcdoc = `
-    <html>
-      <body style="
-        font-family:Inter,sans-serif;
-        padding:20px;
-        line-height:1.7;
-      ">
-        ${clean}
-      </body>
-    </html>
-  `
-
+iframe.srcdoc =
+  currentPreviewHTML
     }
 
   
@@ -984,8 +984,11 @@ function runHtml(){
 
 
 
-  iframe.srcdoc =
-    codeBlock.textContent
+  currentPreviewHTML =
+  codeBlock.textContent
+
+iframe.srcdoc =
+  currentPreviewHTML
 
 }
 
