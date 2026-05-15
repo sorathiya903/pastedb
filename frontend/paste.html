@@ -846,6 +846,12 @@ id="codeBlock"
     "
   >
     HTML Preview
+    <button
+    class="btn"
+    id="openPreviewBtn"
+  >
+    Open in New Tab
+    </button>
   </div>
 
   <iframe
@@ -872,7 +878,33 @@ const outputWrapper =
 const outputBlock =
   document.getElementById("outputBlock")
 
+function openHtmlPreview(){
 
+  const blob = new Blob(
+
+    [codeBlock.textContent],
+
+    { type: "text/html" }
+
+  )
+
+
+
+  const url =
+    URL.createObjectURL(blob)
+
+
+
+  window.open(
+    url,
+    "_blank"
+  )
+
+}
+
+  document
+  .getElementById("openPreviewBtn")
+  .addEventListener("click", openHtmlPreview)
 
 runBtn.addEventListener(
   "click",
