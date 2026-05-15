@@ -433,9 +433,14 @@ grid.style.display ="grid"
 
             <div class="stats">
 
-              <span>
-                ⭐ ${paste.stars}
-              </span>
+              
+              <button class="btn star-btn" id="starBtn">
+
+  <span id="starIcon">☆</span>
+
+  <span id="starCount">0</span>
+
+</button>
 
               <span>
                 👁 ${paste.views}
@@ -464,7 +469,68 @@ grid.style.display ="grid"
       });
     }
 
-    function escapeHtml(text){
+    const starBtn =
+  document.getElementById("starBtn")
+
+const starIcon =
+  document.getElementById("starIcon")
+
+const starCount =
+  document.getElementById("starCount")
+
+
+
+    starBtn.addEventListener(
+  "click",
+  async () => {
+
+    try{
+
+      const response = await fetch(
+
+        `https://pastedb.onrender.com/star/${pasteId}`,
+
+        {
+          method:"POST",
+          credentials:"include"
+        }
+
+      )
+
+      const data =
+        await response.json()
+
+      if(data.starred){
+
+        starBtn.classList.add("active")
+
+        starIcon.textContent = "⭐"
+
+      }
+
+      else{
+
+        starBtn.classList.remove("active")
+
+        starIcon.textContent = "☆"
+
+      }
+
+      starCount.textContent =
+        data.stars
+
+    }
+
+    catch(err){
+
+      console.error(err)
+
+    }
+
+  }
+)
+
+        function escapeHtml(text){
 
       const div =
         document.createElement("div");
