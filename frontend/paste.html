@@ -951,20 +951,7 @@ function runHtml(){
 
 async function runCode(){
 
-  outputWrapper.style.display = "block"
-setTimeout(() => {
 
-  outputWrapper.scrollIntoView({
-
-    behavior: "smooth",
-
-    block: "start"
-
-  })
-
-}, 100)
-  outputBlock.textContent =
-    "Running..."
 
   runBtn.innerHTML =
     "Running..."
@@ -984,7 +971,22 @@ if(language === "html"){
   return
 
 }
+  outputWrapper.style.display = "block"
+setTimeout(() => {
 
+  outputWrapper.scrollIntoView({
+
+    behavior: "smooth",
+
+    block: "start"
+
+  })
+
+}, 100)
+  outputBlock.textContent =
+    "Running..."
+
+    
 const languageMap = {
 
   py: "python",
