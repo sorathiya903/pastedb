@@ -1357,6 +1357,73 @@ async def run_code(data: RunCode):
         return {
             "error": str(e)
         }
+
+
+@app.post("/star/{paste_id}")
+async def toggle_star(
+
+    paste_id: str,
+
+    user=Depends(get_current_user)
+
+):
+
+    email = user["email"]
+
+    paste = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+    if not user:
+        raise HTTPException(   401, "Login required"  )
+
+    if not paste:
+        raise HTTPException(404)
+
+    starred_by = paste.get(
+        "starred_by",
+        []
+    )
+
+    if email in starred_by:
+
+        pastes_collection.update_one(
+            {"_id": ObjectId(paste_id)},
+            {
+                "$pull": {
+                    "starred_by": email
+                },
+                "$inc": {
+                    "stars": -1
+                }
+            }
+        )
+
+        return {
+            "starred": False,
+            "stars": max(
+                paste.get("stars", 1) - 1,
+                0
+            )
+        }
+
+    else:
+
+        pastes_collection.update_one(
+            {"_id": ObjectId(paste_id)},
+            {
+                "$push": {
+                    "starred_by": email
+                },
+                "$inc": {
+                    "stars": 1
+                }
+            }
+        )
+
+        return {
+            "starred": True,
+            "stars": paste.get("stars", 0) + 1
+        }
         
 #API KEYS SECTION
 
