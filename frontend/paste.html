@@ -17,6 +17,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
     :root{
       --bg: #0f1115;
@@ -910,7 +912,41 @@ runBtn.addEventListener(
   "click",
   runCode
 )
+function runMarkdown(){
 
+  const previewWrapper =
+    document.getElementById(
+      "htmlPreviewWrapper"
+    )
+
+  const iframe =
+    document.getElementById(
+      "htmlPreview"
+    )
+
+  previewWrapper.style.display =
+    "block"
+
+  const html =
+    marked.parse(
+      codeBlock.textContent
+    )
+
+  iframe.srcdoc = `
+    <html>
+      <body style="
+        font-family:Inter,sans-serif;
+        padding:20px;
+        line-height:1.7;
+      ">
+        ${html}
+      </body>
+    </html>
+  `
+
+    }
+
+  
 function runHtml(){
 
   const previewWrapper =
@@ -971,6 +1007,16 @@ if(language === "html"){
   return
 
 }
+    if(
+  language === "md" ||
+  language === "markdown"
+){
+
+  runMarkdown()
+
+  return
+
+    }
   outputWrapper.style.display = "block"
 setTimeout(() => {
 
