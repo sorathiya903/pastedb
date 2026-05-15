@@ -19,6 +19,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
   <style>
     :root{
       --bg: #0f1115;
@@ -927,10 +928,13 @@ function runMarkdown(){
   previewWrapper.style.display =
     "block"
 
-  const html =
-    marked.parse(
-      codeBlock.textContent
-    )
+  const dirty =
+  marked.parse(codeBlock.textContent)
+
+const clean =
+  DOMPurify.sanitize(dirty)
+
+
 
   iframe.srcdoc = `
     <html>
@@ -939,7 +943,7 @@ function runMarkdown(){
         padding:20px;
         line-height:1.7;
       ">
-        ${html}
+        ${clean}
       </body>
     </html>
   `
@@ -1412,7 +1416,9 @@ if(language === "css"){
 
         json: "json",
 
-        java: "java"
+        java: "java",
+        
+        markdown:"md"
 
       }
 
