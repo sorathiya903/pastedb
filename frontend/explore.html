@@ -138,8 +138,22 @@ justify-content:center;
       box-shadow:var(--shadow);
 
       transition:0.25s ease;
-    }
+    
+  animation:fadeUp .4s ease;
+}
 
+@keyframes fadeUp{
+
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
     .card:hover{
 
       transform:translateY(-4px);
@@ -297,8 +311,44 @@ justify-content:center;
   border: 8px solid;
   border-color: #000 #0000;
   animation: l1 1s infinite;
+
+  margin:auto;
+  
 }
 @keyframes l1 {to{transform: rotate(.5turn)}}
+
+      .star-btn{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  padding:10px 14px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#f7f7f7;
+
+  cursor:pointer;
+
+  transition:.25s ease;
+}
+
+.star-btn:hover{
+
+  transform:translateY(-2px);
+}
+
+.star-btn.active{
+
+  background:#111;
+
+  color:white;
+}
   </style>
 
 </head>
@@ -402,9 +452,8 @@ grid.style.display ="grid"
                 <div>
 
                   <h3>
-                    ${paste.owner_name}
-                  </h3>
-
+  ${escapeHtml(paste.title)}
+</h3>
                   <p>
                     ${formatTimestamp(paste.created_at)|| ""}
                   </p>
@@ -434,12 +483,16 @@ grid.style.display ="grid"
             <div class="stats">
 
               
-              <button class="btn star-btn" id="starBtn">
-
-  <span id="starIcon">☆</span>
-
-  <span id="starCount">0</span>
-
+              <button
+  class="btn star-btn"
+  data-id="${paste.id}"
+>
+  <span class="starIcon">
+  ${paste.starred ? "⭐" : "☆"}
+</span>
+  <span class="starCount">
+  ${paste.stars || 0}
+</span>
 </button>
 
               <span>
@@ -468,23 +521,19 @@ grid.style.display ="grid"
         `;
       });
     }
-
-    const starBtn =
-  document.getElementById("starBtn")
-
-const starIcon =
-  document.getElementById("starIcon")
-
-const starCount =
-  document.getElementById("starCount")
-
-
-
-    starBtn.addEventListener(
+document.addEventListener(
   "click",
-  async () => {
+  async (e) => {
+
+    const btn =
+      e.target.closest(".star-btn")
+
+    if(!btn) return
 
     try{
+
+      const pasteId =
+        btn.dataset.id
 
       const response = await fetch(
 
@@ -500,23 +549,29 @@ const starCount =
       const data =
         await response.json()
 
+      const icon =
+        btn.querySelector(".starIcon")
+
+      const count =
+        btn.querySelector(".starCount")
+
       if(data.starred){
 
-        starBtn.classList.add("active")
+        btn.classList.add("active")
 
-        starIcon.textContent = "⭐"
+        icon.textContent = "⭐"
 
       }
 
       else{
 
-        starBtn.classList.remove("active")
+        btn.classList.remove("active")
 
-        starIcon.textContent = "☆"
+        icon.textContent = "☆"
 
       }
 
-      starCount.textContent =
+      count.textContent =
         data.stars
 
     }
@@ -529,7 +584,7 @@ const starCount =
 
   }
 )
-
+    
         function escapeHtml(text){
 
       const div =
