@@ -1302,7 +1302,12 @@ document.addEventListener("click", (e)=>{
 
 });
 
-  
+  document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', function() {
+        this.blur();
+    });
+});
+
 function openStats(id){
 
   window.location.href =
