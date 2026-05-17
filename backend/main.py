@@ -763,7 +763,7 @@ async def search_pastes(
             }
 
 @app.get("/suggest")
-async def suggest(q: str, user=Depends(get_current_user)):
+async def suggest(q: str ):
 
     results = pastes_collection.find(
         {
