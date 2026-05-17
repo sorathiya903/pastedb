@@ -152,6 +152,80 @@ def home():
     return {"message": "Server running"}
 
 
+@app.post("/fork/{paste_id}")
+async def fork_paste(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+
+    # Validate ID
+    if not ObjectId.is_valid(paste_id):
+
+        raise HTTPException(
+            400,
+            "Invalid paste ID"
+        )
+
+    original = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not original:
+
+        raise HTTPException(
+            404,
+            "Paste not found"
+        )
+
+    # Prevent private fork
+    if original.get("visibility") == "private":
+
+        raise HTTPException(
+            403,
+            "Cannot fork private paste"
+        )
+
+    # Remove old Mongo ID
+    original.pop("_id", None)
+
+    # Remove sensitive data
+    original.pop("password", None)
+
+    # Create new paste
+    fork_data = {
+
+        "title":
+            f"Fork of {original.get('title', 'Untitled')}",
+
+        "content":
+            original.get("content", ""),
+
+        "syntax":
+            original.get("syntax", "text"),
+
+        "expiration":
+            "never",
+
+        "visibility":
+            "public",
+
+        "forked_from":
+            paste_id,
+
+        "is_fork":
+            True
+    }
+
+    db_user = users_collection.find_one({
+        "email": user["email"]
+    })
+
+    return await create_paste_logic(
+        fork_data,
+        db_user
+    )
+
+
 async def create_paste_logic(
     paste_data: dict,
     user_data: dict
@@ -212,6 +286,9 @@ async def create_paste_logic(
 
     # FINAL DOC
     paste_data.update({
+        "forked_from": paste_data.get("forked_from"),
+        
+        "is_fork": paste_data.get("is_fork", False),
 
         "user_email_key": email_key,
 
@@ -244,6 +321,8 @@ async def create_paste_logic(
             "scroll_completion": 0,
 
             "impressions": 0,
+
+            "forks": 0,
 
             "visitors": [],
 
