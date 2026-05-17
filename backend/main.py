@@ -34,6 +34,8 @@ db = client["pasteDB"]
 pastes_collection = db["pastes"]
 users_collection = db["users"]
 api_keys_collection = db["api_keys"]
+collections_collection = db["collections"]
+
 
 pastes_collection.create_index(
     "expire_at",
@@ -1696,7 +1698,7 @@ async def pin_paste(
 
 
 
-@app.post("/render-markdown")
+@app.post("/markdown/render")
 async def render_markdown(data: dict):
 
     import markdown
@@ -1707,4 +1709,137 @@ async def render_markdown(data: dict):
 
     return {
         "html": html
+    }
+
+
+
+@app.get("/run/languages")
+async def supported_languages():
+
+    return {
+        "languages": [
+            "python",
+            "javascript",
+            "c",
+            "cpp",
+            "java",
+            "go",
+            "rust",
+            "typescript",
+            "bash"
+        ]
+    }
+
+
+@app.get("/user/{username}/pastes")
+async def user_pastes(username: str):
+
+    pastes = list(
+        pastes_collection.find({
+            "owner": {
+                "$regex": f"^{username}$",
+                "$options": "i"
+            },
+            "visibility": "public"
+        })
+    )
+
+    for p in pastes:
+        p["_id"] = str(p["_id"])
+
+    return {
+        "count": len(pastes),
+        "results": pastes
+    }
+
+
+@app.get("/user/{username}/starred")
+async def user_starred(username: str):
+
+    user = users_collection.find_one({
+        "name": {
+            "$regex": f"^{username}$",
+            "$options": "i"
+        }
+    })
+
+    if not user:
+        raise HTTPException(404)
+
+    email = user.get("email")
+
+    starred = list(
+        pastes_collection.find({
+            "starred_by": email
+        })
+    )
+
+    for p in starred:
+        p["_id"] = str(p["_id"])
+
+    return starred
+
+
+@app.post("/apikey/create")
+async def create_apikey_alias(
+    user=Depends(get_current_user)
+):
+    return await generate_api_key(user)
+
+
+@app.get("/collections/{collection_id}")
+async def get_collection(collection_id: str):
+
+    collection = collections_collection.find_one({
+        "_id": ObjectId(collection_id)
+    })
+
+    if not collection:
+        raise HTTPException(404)
+
+    collection["_id"] = str(collection["_id"])
+
+    return collection
+
+
+@app.post("/collections/{collection_id}/add")
+async def add_to_collection(
+    collection_id: str,
+    data: dict,
+    user=Depends(get_current_user)
+):
+
+    collections_collection.update_one(
+        {
+            "_id": ObjectId(collection_id)
+        },
+        {
+            "$push": {
+                "pastes": data["paste_id"]
+            }
+        }
+    )
+
+    return {
+        "status": "success"
+    }
+
+@app.post("/collections")
+async def create_collection(
+    data: dict,
+    user=Depends(get_current_user)
+):
+
+    doc = {
+        "name": data.get("name"),
+        "description": data.get("description", ""),
+        "owner": user["email"],
+        "pastes": [],
+        "created_at": datetime.now(timezone.utc).timestamp()
+    }
+
+    result = collections_collection.insert_one(doc)
+
+    return {
+        "id": str(result.inserted_id)
     }
