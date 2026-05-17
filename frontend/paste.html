@@ -770,7 +770,212 @@
 <button class="btn" id="runBtn">
     Run Code
   </button>
+<!-- FORK BUTTON -->
+<button id="forkBtn" class="fork-btn">
+  <span class="fork-icon">⑂</span>
+  <span class="fork-text">Fork Paste</span>
+</button>
 
+<style>
+.fork-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    background:linear-gradient(
+        135deg,
+        #7c3aed,
+        #4f46e5
+    );
+
+    color:white;
+    border:none;
+
+    padding:14px 22px;
+
+    border-radius:16px;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:0.25s ease;
+
+    box-shadow:
+        0 10px 25px rgba(79,70,229,0.25);
+
+    position:relative;
+    overflow:hidden;
+
+    user-select:none;
+}
+
+.fork-btn:hover{
+    transform:translateY(-2px) scale(1.02);
+
+    box-shadow:
+        0 16px 40px rgba(79,70,229,0.35);
+}
+
+.fork-btn:active{
+    transform:scale(0.96);
+}
+
+.fork-btn.loading{
+    opacity:0.8;
+    pointer-events:none;
+}
+
+.fork-btn.success{
+    background:linear-gradient(
+        135deg,
+        #10b981,
+        #059669
+    );
+}
+
+.fork-btn.error{
+    background:linear-gradient(
+        135deg,
+        #ef4444,
+        #dc2626
+    );
+}
+
+.fork-icon{
+    font-size:18px;
+}
+
+.fork-btn::before{
+    content:"";
+
+    position:absolute;
+
+    width:120px;
+    height:120px;
+
+    background:rgba(255,255,255,0.15);
+
+    border-radius:50%;
+
+    top:-40px;
+    left:-40px;
+
+    transition:0.4s;
+}
+
+.fork-btn:hover::before{
+    transform:scale(1.4);
+}
+
+@media(max-width:600px){
+
+    .fork-btn{
+        width:100%;
+        padding:15px;
+        border-radius:14px;
+    }
+
+}
+</style>
+
+<script>
+const forkBtn = document.getElementById("forkBtn")
+
+async function forkPaste(){
+
+    const pasteId = window.location.pathname
+        .split("/")
+        .pop()
+
+    try{
+
+        forkBtn.classList.remove(
+            "success",
+            "error"
+        )
+
+        forkBtn.classList.add("loading")
+
+        forkBtn.innerHTML = `
+            <span class="fork-icon">⏳</span>
+            <span class="fork-text">
+                Forking...
+            </span>
+        `
+
+        const res = await fetch(
+            `https://pastedb.onrender.com/fork/${pasteId}`,
+            {
+                method:"POST",
+                credentials:"include"
+            }
+        )
+
+        const data = await res.json()
+
+        if(!res.ok){
+
+            throw new Error(
+                data.detail || "Fork failed"
+            )
+        }
+
+        forkBtn.classList.remove("loading")
+
+        forkBtn.classList.add("success")
+
+        forkBtn.innerHTML = `
+            <span class="fork-icon">✓</span>
+            <span class="fork-text">
+                Fork Created
+            </span>
+        `
+
+        setTimeout(()=>{
+
+            window.location.href =
+                `/paste/${data.id}`
+
+        },1000)
+
+    }
+
+    catch(err){
+
+        forkBtn.classList.remove("loading")
+
+        forkBtn.classList.add("error")
+
+        forkBtn.innerHTML = `
+            <span class="fork-icon">⚠</span>
+            <span class="fork-text">
+                ${err.message}
+            </span>
+        `
+
+        setTimeout(()=>{
+
+            forkBtn.classList.remove("error")
+
+            forkBtn.innerHTML = `
+                <span class="fork-icon">⑂</span>
+                <span class="fork-text">
+                    Fork Paste
+                </span>
+            `
+
+        },2500)
+    }
+}
+
+forkBtn.addEventListener(
+    "click",
+    forkPaste
+)
+</script>
     </div>
 
   </div>
