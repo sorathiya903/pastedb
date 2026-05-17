@@ -1843,3 +1843,19 @@ async def create_collection(
     return {
         "id": str(result.inserted_id)
     }
+
+
+@app.get("/syntax")
+async def syntax_list():
+
+    return {
+        "syntaxes": [
+            "python",
+            "javascript",
+            "html",
+            "css",
+            "json",
+            "bash",
+            "cpp"
+        ]
+    }
