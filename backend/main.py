@@ -468,6 +468,7 @@ async def get_paste(
         paste["_id"] = str(
             paste["_id"]
         )
+        paste.pop("password", None)
 
         return paste
 
@@ -754,6 +755,9 @@ async def search_pastes(
     for paste in cursor:
 
         paste["_id"] = str(paste["_id"])
+        paste.pop("password", None)
+        "Only public search allowed"
+    )
 
         results.append(paste)
 
@@ -1666,6 +1670,7 @@ async def api_get_paste(
     paste["_id"] = str(
         paste["_id"]
     )
+    paste.pop("password", None)
 
     return paste
 
@@ -1883,6 +1888,7 @@ async def api_user_pastes(
         paste["_id"] = str(
             paste["_id"]
         )
+        paste.pop("password", None)
 
         results.append(paste)
 
