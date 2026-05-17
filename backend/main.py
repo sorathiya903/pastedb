@@ -625,6 +625,8 @@ async def search_pastes(
 
     sort_by: str = "relevance"
 ):
+    if visibility != "public":
+        raise HTTPException( 403,  "Only public search allowed" )
 
     filters = []
 
