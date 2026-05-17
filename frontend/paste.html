@@ -882,13 +882,19 @@
 </style>
 
 <script>
+  function getPasteId(){
+
+    return window.location.pathname
+        .replace(/^\/paste\//, "")
+        .replace(/\/$/, "")
+        .trim()
+
+  }
 const forkBtn = document.getElementById("forkBtn")
 
 async function forkPaste(){
 
-    const pasteId = window.location.pathname
-        .split("/")
-        .pop()
+    const pasteId = getPasteId()
 
     try{
 
