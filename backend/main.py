@@ -1285,10 +1285,7 @@ class RunCode(BaseModel):
 @app.post("/run")
 async def run_code(data: RunCode):
 
-    allowed = [
-        "python",
-        "javascript"
-    ]
+    allowed = [      "python",      "javascript",      "c",      "cpp",      "java",      "go",      "rust",      "typescript",      "bash"  ]
 
     if data.language not in allowed:
 
@@ -1298,15 +1295,7 @@ async def run_code(data: RunCode):
 
 
 
-    language_ids = {
-
-        "python": 71,
-
-        "javascript": 63
-
-    }
-
-
+    language_ids = {      "python": 71,      "javascript": 63,      "c": 50,      "cpp": 54,      "java": 62,      "go": 60,      "rust": 73,      "typescript": 74,      "bash": 46  }
 
     try:
 
@@ -1633,3 +1622,89 @@ async def trending():
     )
 
     return scored[:20]
+
+@app.post("/share/{paste_id}")
+async def share_paste(paste_id: str):
+
+    pastes_collection.update_one(
+        {"_id": ObjectId(paste_id)},
+        {
+            "$inc": {
+                "analytics.shares": 1
+            }
+        }
+    )
+
+    return {
+        "status": "success"
+    }
+
+@app.post("/copy/{paste_id}")
+async def copy_paste(paste_id: str):
+
+    pastes_collection.update_one(
+        {"_id": ObjectId(paste_id)},
+        {
+            "$inc": {
+                "analytics.copies": 1
+            }
+        }
+    )
+
+    return {
+        "status": "success"
+    }
+
+@app.get("/recent")
+async def recent_pastes():
+
+    pastes = list(
+        pastes_collection.find({
+            "visibility": "public"
+        }).sort(
+            "created_at",
+            -1
+        ).limit(20)
+    )
+
+    for p in pastes:
+        p["_id"] = str(p["_id"])
+
+    return pastes
+
+
+
+@app.post("/pin/{paste_id}")
+async def pin_paste(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+
+    pastes_collection.update_one(
+        {"_id": ObjectId(paste_id)},
+        {
+            "$set": {
+                "pinned": True
+            }
+        }
+    )
+
+    return {
+        "status": "pinned"
+    }
+
+
+
+
+@app.post("/render-markdown")
+async def render_markdown(data: dict):
+
+    import markdown
+
+    html = markdown.markdown(
+        data.get("content", "")
+    )
+
+    return {
+        "html": html
+    }
