@@ -158,40 +158,73 @@ async def fork_paste(
     user=Depends(get_current_user)
 ):
 
-    # Validate ID
-    if not ObjectId.is_valid(paste_id):
+    original = None
 
-        raise HTTPException(
-            400,
-            "Invalid paste ID"
-        )
+    # =========================
+    # TRY MONGO OBJECT ID
+    # =========================
+    if ObjectId.is_valid(paste_id):
 
-    original = pastes_collection.find_one({
-        "_id": ObjectId(paste_id)
-    })
+        original = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
 
+    # =========================
+    # TRY CUSTOM ID
+    # =========================
+    if not original:
+
+        original = pastes_collection.find_one({
+            "custom_id": paste_id
+        })
+
+    # =========================
+    # NOT FOUND
+    # =========================
     if not original:
 
         raise HTTPException(
-            404,
-            "Paste not found"
+            status_code=404,
+            detail="Paste not found"
         )
 
-    # Prevent private fork
+    # =========================
+    # PRIVATE CHECK
+    # =========================
     if original.get("visibility") == "private":
 
         raise HTTPException(
-            403,
-            "Cannot fork private paste"
+            status_code=403,
+            detail="Cannot fork private paste"
         )
 
-    # Remove old Mongo ID
-    original.pop("_id", None)
+    # =========================
+    # PASSWORD CHECK
+    # =========================
+    if original.get("password"):
 
-    # Remove sensitive data
-    original.pop("password", None)
+        raise HTTPException(
+            status_code=403,
+            detail="Cannot fork password protected paste"
+        )
 
-    # Create new paste
+    # =========================
+    # GET CURRENT USER
+    # =========================
+    db_user = users_collection.find_one({
+        "email": user["email"]
+    })
+
+    if not db_user:
+
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    # =========================
+    # CREATE FORK DATA
+    # =========================
     fork_data = {
 
         "title":
@@ -210,21 +243,32 @@ async def fork_paste(
             "public",
 
         "forked_from":
-            paste_id,
+            str(original["_id"]),
 
         "is_fork":
             True
     }
 
-    db_user = users_collection.find_one({
-        "email": user["email"]
-    })
+    # =========================
+    # OPTIONAL:
+    # Increase fork count
+    # =========================
+    pastes_collection.update_one(
+        {"_id": original["_id"]},
+        {
+            "$inc": {
+                "analytics.forks": 1
+            }
+        }
+    )
 
+    # =========================
+    # CREATE NEW PASTE
+    # =========================
     return await create_paste_logic(
         fork_data,
         db_user
     )
-
 
 async def create_paste_logic(
     paste_data: dict,
