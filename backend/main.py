@@ -1544,3 +1544,92 @@ async def api_me(
     return {
         "email": api_user["email"]
     }
+
+
+@app.post("/fork/{paste_id}")
+async def fork_paste(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+
+    original = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not original:
+        raise HTTPException(404)
+
+    original.pop("_id")
+
+    original["title"] = (
+        original.get("title", "")
+        + " (Fork)"
+    )
+
+    original["forked_from"] = paste_id
+
+    original["created_at"] = (
+        datetime.now(timezone.utc)
+        .timestamp()
+    )
+
+    result = pastes_collection.insert_one(
+        original
+    )
+
+    return {
+        "id": str(result.inserted_id)
+    }
+
+@app.get("/raw/{paste_id}")
+async def raw_paste(paste_id: str):
+
+    paste = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not paste:
+        raise HTTPException(404)
+
+    return Response(
+        content=paste.get("content", ""),
+        media_type="text/plain"
+    )
+
+
+@app.get("/trending")
+async def trending():
+
+    pastes = list(
+        pastes_collection.find({
+            "visibility": "public"
+        })
+    )
+
+    scored = []
+
+    for p in pastes:
+
+        analytics = p.get(
+            "analytics",
+            {}
+        )
+
+        score = (
+            p.get("stars", 0) * 5 +
+            analytics.get("views", 0) +
+            analytics.get("shares", 0) * 3
+        )
+
+        p["_id"] = str(p["_id"])
+
+        p["score"] = score
+
+        scored.append(p)
+
+    scored.sort(
+        key=lambda x: x["score"],
+        reverse=True
+    )
+
+    return scored[:20]
