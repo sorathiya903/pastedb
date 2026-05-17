@@ -34,8 +34,6 @@ db = client["pasteDB"]
 pastes_collection = db["pastes"]
 users_collection = db["users"]
 api_keys_collection = db["api_keys"]
-collections_collection = db["collections"]
-
 
 pastes_collection.create_index(
     "expire_at",
@@ -1287,7 +1285,10 @@ class RunCode(BaseModel):
 @app.post("/run")
 async def run_code(data: RunCode):
 
-    allowed = [      "python",      "javascript",      "c",      "cpp",      "java",      "go",      "rust",      "typescript",      "bash"  ]
+    allowed = [
+        "python",
+        "javascript"
+    ]
 
     if data.language not in allowed:
 
@@ -1297,7 +1298,15 @@ async def run_code(data: RunCode):
 
 
 
-    language_ids = {      "python": 71,      "javascript": 63,      "c": 50,      "cpp": 54,      "java": 62,      "go": 60,      "rust": 73,      "typescript": 74,      "bash": 46  }
+    language_ids = {
+
+        "python": 71,
+
+        "javascript": 63
+
+    }
+
+
 
     try:
 
@@ -1416,7 +1425,9 @@ async def toggle_star(
             "stars": paste.get("stars", 0) + 1
         }
         
-#API KEYS SECTION
+# =========================
+# API KEYS SECTION
+# =========================
 
 @app.post("/generate-api-key")
 async def generate_api_key(
@@ -1426,12 +1437,15 @@ async def generate_api_key(
     email = user.get("email")
 
     if not email:
-        raise HTTPException(401, "Unauthorized")
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized"
+        )
 
-    # generate secure key
+    # Generate secure API key
     api_key = secrets.token_hex(32)
 
-    # save in db
+    # Save API key
     api_keys_collection.insert_one({
         "email": email,
         "api_key": api_key,
@@ -1442,6 +1456,7 @@ async def generate_api_key(
         "status": "success",
         "api_key": api_key
     }
+
 
 @app.get("/my-api-keys")
 async def my_api_keys(
@@ -1461,6 +1476,7 @@ async def my_api_keys(
         "keys": keys
     }
 
+
 @app.delete("/delete-api-key/{api_key}")
 async def delete_api_key(
     api_key: str,
@@ -1475,7 +1491,11 @@ async def delete_api_key(
     })
 
     if result.deleted_count == 0:
-        raise HTTPException(404, "API key not found")
+
+        raise HTTPException(
+            status_code=404,
+            detail="API key not found"
+        )
 
     return {
         "status": "success",
@@ -1483,379 +1503,376 @@ async def delete_api_key(
     }
 
 
+# =========================
+# API CREATE PASTE
+# =========================
+
 @app.post("/api/create")
 async def api_create_paste(
     request: Request
 ):
 
-    api_key =  request.headers.get("x-api-key")
+    # Get API key
+    api_key = request.headers.get(
+        "x-api-key"
+    )
 
     if not api_key:
 
         raise HTTPException(
-            401,
-            "API key required"
+            status_code=401,
+            detail="API key required"
         )
 
-    key_doc = api_keys_collection.find_one({  "api_key": api_key  })
+    # Find API key
+    key_doc = api_keys_collection.find_one({
+        "api_key": api_key
+    })
 
     if not key_doc:
 
         raise HTTPException(
-            401,
-            "Invalid API key"
+            status_code=401,
+            detail="Invalid API key"
         )
 
-    data =  await request.json()
+    # Get JSON body
+    data = await request.json()
 
+    # Validate using Pydantic
+    try:
+
+        validated = PasteCreate(
+            **data
+        ).model_dump()
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    # Fake authenticated user
     fake_user = {
 
-        "email":  key_doc["email"],
+        "email":
+            key_doc["email"],
 
-        "name": key_doc.get("name", "API User"),
+        "name":
+            key_doc.get(
+                "name",
+                "API User"
+            ),
 
-        "picture": key_doc.get("picture", "")
-
+        "picture":
+            key_doc.get(
+                "picture",
+                ""
+            )
     }
 
+    # Create paste
     return await create_paste_logic(
-        data,
+        validated,
         fake_user
     )
 
 
+# =========================
+# API CURRENT USER
+# =========================
 
 @app.get("/api/me")
 async def api_me(
 
-    api_user = Depends(get_api_user)
+    api_user=Depends(
+        get_api_user
+    )
 
 ):
 
     return {
-        "email": api_user["email"]
+
+        "email":
+            api_user["email"],
+
+        "created_at":
+            api_user["created_at"]
     }
 
 
-@app.post("/fork/{paste_id}")
-async def fork_paste(
+# =========================
+# API GET PASTE
+# =========================
+
+@app.get("/api/paste/{paste_id}")
+async def api_get_paste(
     paste_id: str,
-    user=Depends(get_current_user)
+    api_user=Depends(get_api_user)
 ):
 
-    original = pastes_collection.find_one({
-        "_id": ObjectId(paste_id)
-    })
+    paste = None
 
-    if not original:
-        raise HTTPException(404)
+    # Search by ObjectId
+    if ObjectId.is_valid(paste_id):
 
-    original.pop("_id")
+        paste = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
 
-    original["title"] = (
-        original.get("title", "")
-        + " (Fork)"
+    # Search by custom ID
+    if not paste:
+
+        paste = pastes_collection.find_one({
+            "custom_id": paste_id
+        })
+
+    if not paste:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
+        )
+
+    # Private paste protection
+    if (
+        paste.get("visibility") == "private"
+        and
+        paste.get("user_email_key")
+        !=
+        api_user["email"].replace(".", "_")
+    ):
+
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
+        )
+
+    paste["_id"] = str(
+        paste["_id"]
     )
 
-    original["forked_from"] = paste_id
+    return paste
 
-    original["created_at"] = (
-        datetime.now(timezone.utc)
-        .timestamp()
-    )
 
-    result = pastes_collection.insert_one(
-        original
-    )
+# =========================
+# API DELETE PASTE
+# =========================
 
-    return {
-        "id": str(result.inserted_id)
-    }
-
-@app.get("/raw/{paste_id}")
-async def raw_paste(paste_id: str):
+@app.delete("/api/paste/{paste_id}")
+async def api_delete_paste(
+    paste_id: str,
+    api_user=Depends(get_api_user)
+):
 
     paste = pastes_collection.find_one({
         "_id": ObjectId(paste_id)
     })
 
     if not paste:
-        raise HTTPException(404)
 
-    return Response(
-        content=paste.get("content", ""),
-        media_type="text/plain"
-    )
-
-
-@app.get("/trending")
-async def trending():
-
-    pastes = list(
-        pastes_collection.find({
-            "visibility": "public"
-        })
-    )
-
-    scored = []
-
-    for p in pastes:
-
-        analytics = p.get(
-            "analytics",
-            {}
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
         )
 
-        score = (
-            p.get("stars", 0) * 5 +
-            analytics.get("views", 0) +
-            analytics.get("shares", 0) * 3
-        )
-
-        p["_id"] = str(p["_id"])
-
-        p["score"] = score
-
-        scored.append(p)
-
-    scored.sort(
-        key=lambda x: x["score"],
-        reverse=True
+    email_key = (
+        api_user["email"]
+        .replace(".", "_")
     )
 
-    return scored[:20]
+    if (
+        paste.get("user_email_key")
+        !=
+        email_key
+    ):
 
-@app.post("/share/{paste_id}")
-async def share_paste(paste_id: str):
+        raise HTTPException(
+            status_code=403,
+            detail="Unauthorized"
+        )
 
-    pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
+    pastes_collection.delete_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    users_collection.update_one(
+        {"email_key": email_key},
         {
-            "$inc": {
-                "analytics.shares": 1
+            "$pull": {
+                "pastes": paste_id
             }
         }
     )
 
     return {
-        "status": "success"
+        "status": "success",
+        "message": "Paste deleted"
     }
 
-@app.post("/copy/{paste_id}")
-async def copy_paste(paste_id: str):
 
-    pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
-        {
-            "$inc": {
-                "analytics.copies": 1
-            }
-        }
-    )
+# =========================
+# API UPDATE PASTE
+# =========================
 
-    return {
-        "status": "success"
-    }
-
-@app.get("/recent")
-async def recent_pastes():
-
-    pastes = list(
-        pastes_collection.find({
-            "visibility": "public"
-        }).sort(
-            "created_at",
-            -1
-        ).limit(20)
-    )
-
-    for p in pastes:
-        p["_id"] = str(p["_id"])
-
-    return pastes
-
-
-
-@app.post("/pin/{paste_id}")
-async def pin_paste(
+@app.put("/api/paste/{paste_id}")
+async def api_update_paste(
     paste_id: str,
-    user=Depends(get_current_user)
+    data: dict,
+    api_user=Depends(get_api_user)
 ):
+
+    paste = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not paste:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
+        )
+
+    email_key = (
+        api_user["email"]
+        .replace(".", "_")
+    )
+
+    if (
+        paste.get("user_email_key")
+        !=
+        email_key
+    ):
+
+        raise HTTPException(
+            status_code=403,
+            detail="Unauthorized"
+        )
+
+    now = datetime.now(
+        timezone.utc
+    )
+
+    expire_at = None
+
+    expiration = data.get(
+        "expiration",
+        "never"
+    )
+
+    if expiration in ["10m", "10min"]:
+
+        expire_at = (
+            now +
+            timedelta(minutes=10)
+        )
+
+    elif expiration in ["1h", "1hour"]:
+
+        expire_at = (
+            now +
+            timedelta(hours=1)
+        )
+
+    elif expiration in ["1d", "1day"]:
+
+        expire_at = (
+            now +
+            timedelta(days=1)
+        )
+
+    elif expiration in ["1w", "1week"]:
+
+        expire_at = (
+            now +
+            timedelta(days=7)
+        )
+
+    update_data = {
+
+        "title":
+            data.get("title"),
+
+        "content":
+            data.get("content"),
+
+        "syntax":
+            data.get("syntax"),
+
+        "visibility":
+            data.get("visibility"),
+
+        "expiration":
+            expiration,
+
+        "expire_at":
+            expire_at,
+
+        "updated_at":
+            now.timestamp()
+    }
+
+    # Password handling
+    if "password" in data:
+
+        if data.get("password"):
+
+            update_data["password"] = (
+                hash_password(
+                    data["password"]
+                )
+            )
+
+        else:
+
+            update_data["password"] = None
 
     pastes_collection.update_one(
         {"_id": ObjectId(paste_id)},
         {
-            "$set": {
-                "pinned": True
-            }
+            "$set": update_data
         }
     )
 
     return {
-        "status": "pinned"
+        "status": "success",
+        "message": "Paste updated"
     }
 
 
+# =========================
+# API USER PASTES
+# =========================
 
+@app.get("/api/pastes")
+async def api_user_pastes(
+    api_user=Depends(get_api_user)
+):
 
-@app.post("/markdown/render")
-async def render_markdown(data: dict):
-
-    import markdown
-
-    html = markdown.markdown(
-        data.get("content", "")
+    email_key = (
+        api_user["email"]
+        .replace(".", "_")
     )
-
-    return {
-        "html": html
-    }
-
-
-
-@app.get("/run/languages")
-async def supported_languages():
-
-    return {
-        "languages": [
-            "python",
-            "javascript",
-            "c",
-            "cpp",
-            "java",
-            "go",
-            "rust",
-            "typescript",
-            "bash"
-        ]
-    }
-
-
-@app.get("/user/{username}/pastes")
-async def user_pastes(username: str):
 
     pastes = list(
         pastes_collection.find({
-            "owner": {
-                "$regex": f"^{username}$",
-                "$options": "i"
-            },
-            "visibility": "public"
+            "user_email_key":
+                email_key
         })
     )
 
-    for p in pastes:
-        p["_id"] = str(p["_id"])
+    results = []
+
+    for paste in pastes:
+
+        paste["_id"] = str(
+            paste["_id"]
+        )
+
+        results.append(paste)
 
     return {
-        "count": len(pastes),
-        "results": pastes
-    }
-
-
-@app.get("/user/{username}/starred")
-async def user_starred(username: str):
-
-    user = users_collection.find_one({
-        "name": {
-            "$regex": f"^{username}$",
-            "$options": "i"
-        }
-    })
-
-    if not user:
-        raise HTTPException(404)
-
-    email = user.get("email")
-
-    starred = list(
-        pastes_collection.find({
-            "starred_by": email
-        })
-    )
-
-    for p in starred:
-        p["_id"] = str(p["_id"])
-
-    return starred
-
-
-@app.post("/apikey/create")
-async def create_apikey_alias(
-    user=Depends(get_current_user)
-):
-    return await generate_api_key(user)
-
-
-@app.get("/collections/{collection_id}")
-async def get_collection(collection_id: str):
-
-    collection = collections_collection.find_one({
-        "_id": ObjectId(collection_id)
-    })
-
-    if not collection:
-        raise HTTPException(404)
-
-    collection["_id"] = str(collection["_id"])
-
-    return collection
-
-
-@app.post("/collections/{collection_id}/add")
-async def add_to_collection(
-    collection_id: str,
-    data: dict,
-    user=Depends(get_current_user)
-):
-
-    collections_collection.update_one(
-        {
-            "_id": ObjectId(collection_id)
-        },
-        {
-            "$push": {
-                "pastes": data["paste_id"]
-            }
-        }
-    )
-
-    return {
-        "status": "success"
-    }
-
-@app.post("/collections")
-async def create_collection(
-    data: dict,
-    user=Depends(get_current_user)
-):
-
-    doc = {
-        "name": data.get("name"),
-        "description": data.get("description", ""),
-        "owner": user["email"],
-        "pastes": [],
-        "created_at": datetime.now(timezone.utc).timestamp()
-    }
-
-    result = collections_collection.insert_one(doc)
-
-    return {
-        "id": str(result.inserted_id)
-    }
-
-
-@app.get("/syntax")
-async def syntax_list():
-
-    return {
-        "syntaxes": [
-            "python",
-            "javascript",
-            "html",
-            "css",
-            "json",
-            "bash",
-            "cpp"
-        ]
-    }
+        "count": len(results),
+        "results": results
+                                           }
