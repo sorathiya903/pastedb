@@ -834,12 +834,8 @@ async def search_pastes(
     results = []
 
     for paste in cursor:
-
         paste["_id"] = str(paste["_id"])
         paste.pop("password", None)
-        "Only public search allowed"
-    )
-
         results.append(paste)
 
     return {
@@ -945,6 +941,11 @@ def paste_stats(
             detail="Paste not found"
         )
 
+    email_key = user["email"].replace(".", "_")
+    if paste.get("user_email_key") != email_key:
+        raise HTTPException( 403,  "Unauthorized")
+
+    
     content = paste.get("content", "")
 
     analytics = paste.get("analytics", {})
