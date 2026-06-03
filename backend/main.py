@@ -147,12 +147,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def home():
-    return {"message": "Server running"}
-
-@app.api_route("/health", methods=["GET", "HEAD"])
-async def health_check(response: Response):
+@app.api_route("/", methods=["GET","HEAD"])
+def home(response:Response):
+    
     # Set standard cache-control headers to prevent stale status reports
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     
