@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Query, Cookie, Request 
+from fastapi import FastAPI, HTTPException, Depends, Query, Cookie, Request , status
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
@@ -150,6 +150,14 @@ app.add_middleware(
 @app.get("/")
 def home():
     return {"message": "Server running"}
+
+@app.api_route("/health", methods=["GET", "HEAD"])
+async def health_check(response: Response):
+    # Set standard cache-control headers to prevent stale status reports
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    
+    # Returns 200 OK with empty body for HEAD, or JSON for GET
+    return {"status": "healthy"}
 
 
 @app.post("/fork/{paste_id}")
