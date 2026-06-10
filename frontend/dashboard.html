@@ -1115,6 +1115,18 @@ function highlight(text, query){
         `<mark>$1</mark>`
     );
    }
+
+
+function escapeHTML(str=""){
+    return str
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+}
+
+
 function renderPastes(pastes){
 
   // fallback safety
@@ -1139,7 +1151,7 @@ function renderPastes(pastes){
     <div style="display:flex;flex-direction:row;justify-content:space-between;align-items:center">
     <div>
         <div class="title">
-  ${highlight(p.title || "Untitled", currentSearch)}
+  ${highlight(escapeHTML(p.title) || "Untitled", currentSearch)}
 </div>
    <div class="meta">
           ${p.syntax || "text"} • /${p.custom_id|| ""}
