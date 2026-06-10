@@ -1424,89 +1424,99 @@ def explore_pastes():
 
 
 
+
 class RunCode(BaseModel):
     language: str
     code: str
 
 
-
+LANGUAGE_IDS = {
+    "python": 109,        # Python 3.13.2
+    "javascript": 102,    # Node.js 22.08.0
+    "typescript": 101,    # TypeScript 5.6.2
+    "java": 91,           # Java 17
+    "c": 103,             # GCC 14.1.0
+    "cpp": 105,           # C++ GCC 14.1.0
+    "csharp": 51,         # C#
+    "php": 98,            # PHP 8.3.11
+    "go": 107,            # Go 1.23.5
+    "rust": 108,          # Rust 1.85.0
+    "ruby": 72,           # Ruby
+    "swift": 83,          # Swift
+    "kotlin": 111,        # Kotlin 2.1.10
+    "dart": 90,           # Dart
+    "lua": 64,            # Lua
+    "r": 99,              # R 4.4.1
+    "perl": 85,           # Perl
+    "bash": 46,           # Bash
+    "sql": 82,            # SQLite
+    "scala": 112,         # Scala 3.4.2
+    "haskell": 61,        # Haskell
+    "pascal": 67,         # Pascal
+    "fortran": 59,        # Fortran
+    "clojure": 86,        # Clojure
+    "elixir": 57,         # Elixir
+    "erlang": 58,         # Erlang
+    "fsharp": 87,         # F#
+    "groovy": 88,         # Groovy
+    "lisp": 55,           # Common Lisp
+    "ocaml": 65,          # OCaml
+    "objectivec": 79,     # Objective-C
+    "prolog": 69,         # Prolog
+    "vb": 84,             # Visual Basic
+    "assembly": 45,       # NASM
+    "cobol": 77           # COBOL
+}
 
 
 @app.post("/run")
 async def run_code(data: RunCode):
 
-    allowed = [
-        "python",
-        "javascript"
-    ]
+    language = data.language.lower()
 
-    if data.language not in allowed:
-
+    if language not in LANGUAGE_IDS:
         return {
-            "error": "Language not supported"
+            "success": False,
+            "error": f"Language '{language}' is not supported."
         }
 
-
-
-    language_ids = {
-
-        "python": 71,
-
-        "javascript": 63
-
-    }
-
-
-
     try:
-
-        # CREATE SUBMISSION
-
         response = requests.post(
-
             "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
-
             json={
-
                 "source_code": data.code,
-
-                "language_id":
-                    language_ids[data.language]
-
+                "language_id": LANGUAGE_IDS[language]
             },
-
-            timeout=20
+            timeout=30
         )
-
-
 
         result = response.json()
 
-
-
-        stdout =  result.get("stdout")
-
-        stderr = result.get("stderr")
-
-        compile_output =   result.get("compile_output")
-
-
-
-        output = (  stdout or stderr  or compile_output  or "No output" )
-
-
+        output = (
+            result.get("stdout")
+            or result.get("stderr")
+            or result.get("compile_output")
+            or result.get("message")
+            or "No output"
+        )
 
         return {
-            "output": output
+            "success": True,
+            "language": language,
+            "output": output,
+            "status": result.get("status", {}).get("description"),
+            "execution_time": result.get("time"),
+            "memory": result.get("memory")
         }
-
-
 
     except Exception as e:
-
         return {
+            "success": False,
             "error": str(e)
         }
+    
+
+
 
 
 @app.post("/star/{paste_id}")
