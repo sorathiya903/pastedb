@@ -155,8 +155,10 @@ app.add_middleware(
 
 
 ocr = PaddleOCR(
-    use_angle_cls=True,
-    lang="en"
+    lang="en",
+    use_doc_orientation_classify=False,
+    use_doc_unwarping=False,
+    use_textline_orientation=False
 )
 
 @app.post("/scan")
