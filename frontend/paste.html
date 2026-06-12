@@ -1889,132 +1889,83 @@ console.log(pasteId)
 
 
 <footer class="footer">
-  <div class="footer-content">
+  <p>
+    Made with passion and thousands of lines of code by
+    <span class="shimmer-text">Aditya</span>
+  </p>
 
-    
-
-    <div class="footer-links">
-      <a href="/dashboard.html">Dashboard</a>
-      <a href="/explore">Explore</a>
-      <a href="/terms">Terms</a>
-    </div>
-<div class="footer-brand">
-      <span class="shimmer-text">
-        Made with passion and 1,000+ lines of code by Aditya
-      </span>
-</div>
+  <div class="footer-links">
+    <a href="/dashboard.html">Dashboard</a>
+    <a href="/explore">Explore</a>
+    <a href="/terms">Terms</a>
   </div>
 </footer>
 
 <style>
 .footer{
     width:100%;
-    margin-top:40px;
-    padding:28px 20px;
+    padding:24px 20px;
+    text-align:center;
 
-    border-top:1px solid var(--border);
+    background:#0f1115;
+    border-top:1px solid rgba(255,255,255,0.08);
 
-    background:rgba(255,255,255,0.02);
-
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-
-    transition:all .3s ease;
+    font-family:Inter, system-ui, sans-serif;
 }
 
-body.light .footer{
-    background:rgba(0,0,0,0.03);
-}
-
-.footer-content{
-    max-width:1200px;
-    margin:auto;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:20px;
-    flex-wrap:wrap;
-}
-
-.footer-brand{
-    font-family:"Inter", sans-serif;
-    font-size:15px;
-    font-weight:600;
-    letter-spacing:0.2px;
+.footer p{
+    color:rgba(255,255,255,0.72);
+    font-size:14px;
+    margin-bottom:14px;
 }
 
 .shimmer-text{
-    color:var(--text);
+    font-weight:700;
 
     background:linear-gradient(
         90deg,
-        var(--text) 0%,
-        rgba(255,255,255,0.95) 50%,
-        var(--text) 100%
+        rgba(255,255,255,0.4) 0%,
+        #ffffff 50%,
+        rgba(255,255,255,0.4) 100%
     );
 
-    background-size:200% auto;
+    background-size:200% 100%;
 
     -webkit-background-clip:text;
     background-clip:text;
+
     -webkit-text-fill-color:transparent;
 
-    animation:footerShimmer 2s linear infinite;
-}
-
-body.light .shimmer-text{
-    background:linear-gradient(
-        90deg,
-        var(--text) 0%,
-        rgba(0,0,0,0.95) 50%,
-        var(--text) 100%
-    );
-
-    background-size:200% auto;
+    animation:shimmer 2s linear infinite;
 }
 
 .footer-links{
     display:flex;
+    justify-content:center;
     gap:24px;
     flex-wrap:wrap;
 }
 
 .footer-links a{
-    color:var(--text-secondary);
+    color:rgba(255,255,255,0.55);
     text-decoration:none;
-    font-family:"Inter", sans-serif;
     font-size:14px;
-
-    transition:color .25s ease;
+    transition:.25s;
 }
 
 .footer-links a:hover{
-    color:var(--text);
+    color:#fff;
 }
 
-@keyframes footerShimmer{
+@keyframes shimmer{
     from{
-        background-position:-200% center;
+        background-position:-200% 0;
     }
     to{
-        background-position:200% center;
+        background-position:200% 0;
     }
 }
-
-@media(max-width:600px){
-
-    .footer-content{
-        flex-direction:column;
-        text-align:center;
-    }
-
-    .footer-links{
-        justify-content:center;
-        gap:18px;
-    }
-}
-      </style>
+</style>
 
 <script>
 /* Stop shimmer after 10 seconds */
