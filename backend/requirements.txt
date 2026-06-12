@@ -10,3 +10,8 @@ argon2-cffi
 user-agents
 ua-parser
 pyyaml
+numpy
+opencv-python
+pillow
+paddleocr
+paddlepaddle
