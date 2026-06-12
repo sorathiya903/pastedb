@@ -154,45 +154,119 @@ app.add_middleware(
 )
 
 
-ocr = PaddleOCR(
-    lang="en",
-    use_doc_orientation_classify=False,
-    use_doc_unwarping=False,
-    use_textline_orientation=False
-)
+
+import tempfile
+
+
+# Disable model source checks
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+
+ocr_engine = None
+
+
+def get_ocr():
+    global ocr_engine
+
+    if ocr_engine is None:
+        print("Initializing PaddleOCR...")
+
+        ocr_engine = PaddleOCR(
+            use_doc_orientation_classify=False,
+            use_doc_unwarping=False,
+            use_textline_orientation=False
+        )
+
+        print("PaddleOCR initialized successfully.")
+
+    return ocr_engine
+
 
 @app.post("/scan")
-async def scan_page(image: UploadFile = File(...)):
+async def scan(file: UploadFile = File(...)):
+    temp_path = None
+
     try:
-        contents = await image.read()
+        # Validate file type
+        allowed = {
+            "image/jpeg",
+            "image/png",
+            "image/jpg",
+            "image/webp"
+        }
 
-        pil_img = Image.open(io.BytesIO(contents)).convert("RGB")
-        img = np.array(pil_img)
+        if file.content_type not in allowed:
+            raise HTTPException(
+                status_code=400,
+                detail="Only JPG, PNG and WEBP images are allowed."
+            )
 
-        # RGB → BGR
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        # Read contents
+        contents = await file.read()
 
-        result = ocr.ocr(img, cls=True)
+        # Limit size (10 MB)
+        if len(contents) > 10 * 1024 * 1024:
+            raise HTTPException(
+                status_code=413,
+                detail="Image too large. Maximum 10 MB."
+            )
 
-        extracted_text = []
+        print(
+            f"Received file: {file.filename}, "
+            f"{len(contents)} bytes"
+        )
 
-        for block in result:
-            if block:
-                for line in block:
-                    text = line[1][0]
-                    extracted_text.append(text)
+        # Save temporarily
+        suffix = os.path.splitext(file.filename)[1] or ".jpg"
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=suffix
+        ) as temp:
+            temp.write(contents)
+            temp_path = temp.name
+
+        print("Saved to:", temp_path)
+
+        # OCR
+        ocr = get_ocr()
+
+        result = ocr.predict(temp_path)
+
+        extracted = []
+
+        try:
+            for page in result:
+                if "rec_texts" in page:
+                    extracted.extend(page["rec_texts"])
+        except Exception:
+            print("Could not parse OCR output:")
+            traceback.print_exc()
+
+        text = "\n".join(extracted)
 
         return {
             "success": True,
-            "text": "\n".join(extracted_text),
-            "characters": len("".join(extracted_text))
+            "text": text
         }
 
+    except HTTPException:
+        raise
+
     except Exception as e:
+        print("\n===== OCR ERROR =====")
+        traceback.print_exc()
+        print("=====================\n")
+
         return {
             "success": False,
-            "error": str(e)
+            "error": str(e),
+            "type": type(e).__name__
         }
+
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+            print("Deleted temp file:", temp_path)
         
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health(response: Response):
