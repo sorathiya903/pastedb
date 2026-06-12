@@ -11,6 +11,12 @@ from auth import (
     get_optional_user,
     decode_token
 )
+from fastapi import FastAPI, UploadFile, File
+from paddleocr import PaddleOCR
+from PIL import Image
+import numpy as np
+import cv2
+import io
 
 import os
 import re
@@ -147,6 +153,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+ocr = PaddleOCR(
+    use_angle_cls=True,
+    lang="en"
+)
+
+@app.post("/scan")
+async def scan_page(image: UploadFile = File(...)):
+    try:
+        contents = await image.read()
+
+        pil_img = Image.open(io.BytesIO(contents)).convert("RGB")
+        img = np.array(pil_img)
+
+        # RGB → BGR
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+        result = ocr.ocr(img, cls=True)
+
+        extracted_text = []
+
+        for block in result:
+            if block:
+                for line in block:
+                    text = line[1][0]
+                    extracted_text.append(text)
+
+        return {
+            "success": True,
+            "text": "\n".join(extracted_text),
+            "characters": len("".join(extracted_text))
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+        
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health(response: Response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
