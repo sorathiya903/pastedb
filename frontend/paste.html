@@ -1881,6 +1881,139 @@ console.log(pasteId)
   }
   }
 </script>
+<!-- Elegant Full Width Footer -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<footer class="pastedb-footer">
+
+    <div class="footer-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/explore">Explore</a>
+        <a href="/terms">Terms</a>
+    </div>
+
+    <div class="footer-credit">
+        Made with passion by Aditya
+    </div>
+
+</footer>
+
+<style>
+.pastedb-footer{
+    width:100vw;
+
+    margin-top:60px;
+    margin-left:calc(50% - 50vw);
+
+    padding:28px 20px;
+
+    background:#0b0d12;
+
+    border-top:1px solid rgba(255,255,255,0.08);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    gap:18px;
+
+    font-family:"Manrope", sans-serif;
+}
+
+.footer-links{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+
+    gap:28px;
+}
+
+.footer-links a{
+    color:rgba(255,255,255,0.65);
+
+    text-decoration:none;
+
+    font-size:15px;
+    font-weight:500;
+
+    transition:0.25s ease;
+}
+
+.footer-links a:hover{
+    color:#ffffff;
+}
+
+.footer-credit{
+    font-size:15px;
+    font-weight:600;
+
+    letter-spacing:0.2px;
+
+    color:rgba(255,255,255,0.22);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.22) 0%,
+            rgba(255,255,255,0.22) 35%,
+            rgba(255,255,255,0.95) 50%,
+            rgba(255,255,255,0.22) 65%,
+            rgba(255,255,255,0.22) 100%
+        );
+
+    background-size:250% auto;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+    animation:textShimmer 4s linear infinite;
+}
+
+@keyframes textShimmer{
+    from{
+        background-position:250% center;
+    }
+
+    to{
+        background-position:-250% center;
+    }
+}
+
+@media (max-width:600px){
+
+    .footer-links{
+        gap:20px;
+    }
+
+    .footer-links a{
+        font-size:14px;
+    }
+
+    .footer-credit{
+        font-size:14px;
+        text-align:center;
+    }
+
+}
+</style>
+
+<script>
+/* Stop shimmer after 10 seconds */
+
+setTimeout(() => {
+
+    document
+        .querySelector(".footer-credit")
+        .style.animation = "none";
+
+}, 10000);
+</script>
 </body>
   </html>
