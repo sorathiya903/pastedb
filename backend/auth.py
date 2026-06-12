@@ -280,6 +280,7 @@ async def get_paste(
 
         "content":
             paste.get("content"),
+        "images":paste.get("images"),
 
         "syntax":
             paste.get("syntax"),
