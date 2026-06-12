@@ -1273,6 +1273,77 @@ margin:10px;
 
   border-color:var(--text);
 }
+
+    .image-upload-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+    margin-top:20px;
+}
+
+.upload-label{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    border:2px dashed var(--border);
+    border-radius:16px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.upload-label:hover{
+    border-color:#6366f1;
+}
+
+.upload-icon{
+    font-size:36px;
+}
+
+.upload-title{
+    margin-top:10px;
+    font-weight:600;
+    font-size:18px;
+}
+
+.upload-subtitle{
+    color:var(--muted);
+    margin-top:4px;
+    font-size:14px;
+}
+
+#previewGrid{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+    gap:12px;
+}
+
+.preview-item{
+    position:relative;
+}
+
+.preview-item img{
+    width:100%;
+    height:100px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.remove-image{
+    position:absolute;
+    top:6px;
+    right:6px;
+    width:28px;
+    height:28px;
+    border:none;
+    border-radius:50%;
+    background:rgba(0,0,0,.7);
+    color:white;
+    cursor:pointer;
+  }
   </style>
 </head>
 
@@ -1412,7 +1483,25 @@ margin:10px;
           <textarea id="code" placeholder="// Start writing your paste here..."></textarea>
 <div id="previewPane" class="preview-pane"></div>
         </div>
+<div class="image-upload-card">
+    <label class="upload-label" for="images">
+        <div class="upload-icon">📷</div>
+        <div class="upload-title">Upload Images</div>
+        <div class="upload-subtitle">
+            Optional • Max 6 images
+        </div>
+    </label>
 
+    <input
+        type="file"
+        id="images"
+        accept="image/*"
+        multiple
+        hidden
+    >
+
+    <div id="previewGrid"></div>
+</div>
       </div>
 
       <div class="sidebar">
@@ -1694,6 +1783,76 @@ margin:10px;
   </main>
 
   <script>
+const imageInput =
+    document.getElementById("images");
+
+const previewGrid =
+    document.getElementById("previewGrid");
+
+let selectedImages = [];
+
+imageInput.addEventListener("change", e => {
+
+    const files = Array.from(e.target.files);
+
+    if (
+        selectedImages.length +
+        files.length > 6
+    ){
+        alert("Maximum 6 images allowed.");
+        imageInput.value = "";
+        return;
+    }
+
+    files.forEach(file => {
+
+        selectedImages.push(file);
+
+        const reader = new FileReader();
+
+        reader.onload = ev => {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "preview-item";
+
+            div.innerHTML = `
+                <img src="${ev.target.result}">
+                <button class="remove-image">
+                    ×
+                </button>
+            `;
+
+            div.querySelector(
+                ".remove-image"
+            ).onclick = () => {
+
+                selectedImages =
+                    selectedImages.filter(
+                        f => f !== file
+                    );
+
+                div.remove();
+            };
+
+            previewGrid.appendChild(div);
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    imageInput.value = "";
+});
+    
+    const CLOUD_NAME =
+    "YOUR_CLOUD_NAME";
+
+const UPLOAD_PRESET =
+    "YOUR_UPLOAD_PRESET";
+
+    
     let visibility = "public";
 
 function setVisibility(type){
@@ -1929,6 +2088,59 @@ setVisibility(visibility);
   }
 
 }
+async function uploadImage(file){
+
+    const fd = new FormData();
+
+    fd.append("file", file);
+
+    fd.append(
+        "upload_preset",
+        UPLOAD_PRESET
+    );
+
+    fd.append(
+        "folder",
+        "pastedb"
+    );
+
+    const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+            method:"POST",
+            body:fd
+        }
+    );
+
+    const data = await res.json();
+
+    if(data.secure_url){
+        return data.secure_url;
+    }
+
+    throw new Error(
+        "Upload failed"
+    );
+}
+
+    
+
+async function uploadAllImages(){
+
+    const urls = [];
+
+    for(const file of selectedImages){
+
+        const url =
+            await uploadImage(file);
+
+        urls.push(url);
+    }
+
+    return urls;
+    }
+
+    
 const params =
   new URLSearchParams(window.location.search)
 
@@ -2057,7 +2269,8 @@ const pasteData = {
   content: document.getElementById("code").value,
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
-  visibility:visibility
+  visibility:visibility,
+  images:imageUrls
 };
   
 if (passwordEnabled) {
