@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Images Gallery</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0f1115;
+    --surface:#171b22;
+    --border:rgba(255,255,255,.08);
+    --text:#f5f7fa;
+    --muted:#9ca3af;
+    --accent:#6366f1;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Inter,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-y:auto;
+    padding-top:90px;
+}
+
+/* TOP BAR */
+
+.topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+
+    height:72px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 20px;
+
+    background:rgba(15,17,21,.85);
+
+    backdrop-filter:blur(20px);
+
+    border-bottom:1px solid var(--border);
+
+    z-index:1000;
+}
+
+.topbar-title{
+    font-size:22px;
+    font-weight:700;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+}
+
+.btn{
+    border:none;
+    cursor:pointer;
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:12px 14px;
+
+    font-size:14px;
+
+    transition:.2s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+    background:#222833;
+}
+
+/* GALLERY */
+
+.gallery{
+    width:min(900px,95%);
+    margin:auto;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:28px;
+
+    padding-bottom:30px;
+}
+
+.image-card{
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,.3);
+}
+
+.image-wrapper{
+    overflow:hidden;
+}
+
+.image-wrapper img{
+    width:100%;
+
+    display:block;
+
+    transform:scale(var(--zoom,1));
+
+    transition:transform .25s ease;
+
+    cursor:zoom-in;
+}
+
+.card-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:16px 20px;
+}
+
+.image-name{
+    color:var(--muted);
+    font-size:14px;
+
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.download-btn{
+    text-decoration:none;
+
+    background:var(--accent);
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:12px;
+
+    font-size:14px;
+    font-weight:600;
+
+    transition:.2s;
+}
+
+.download-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .topbar{
+        flex-wrap:wrap;
+        height:auto;
+        padding:15px;
+        gap:12px;
+    }
+
+    .actions{
+        width:100%;
+        justify-content:flex-end;
+    }
+
+    body{
+        padding-top:120px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+
+    <div class="topbar-title">
+        Images Gallery
+    </div>
+
+    <div class="actions">
+
+        <button class="btn" id="zoomOutBtn">
+            − Zoom
+        </button>
+
+        <button class="btn" id="zoomInBtn">
+            + Zoom
+        </button>
+
+        <button class="btn" id="downloadAllBtn">
+            Download All
+        </button>
+
+    </div>
+
+</div>
+
+<div class="gallery" id="gallery">
+</div>
+
+<script>
+const gallery =
+    document.getElementById("gallery")
+
+let zoom = 1
+
+const images = [
+    /*
+    Example:
+
+    {
+        url:"https://...",
+        name:"Image 1"
+    }
+    */
+]
+
+function renderImages(){
+
+    gallery.innerHTML = ""
+
+    images.forEach((img,index)=>{
+
+        gallery.innerHTML += `
+        <div class="image-card">
+
+            <div class="image-wrapper">
+
+                <img
+                    src="${img.url}"
+                    alt="${img.name}"
+                    loading="lazy"
+                    style="--zoom:${zoom}"
+                >
+
+            </div>
+
+            <div class="card-footer">
+
+                <div class="image-name">
+                    ${img.name || `Image ${index+1}`}
+                </div>
+
+                <a
+                    href="${img.url}"
+                    download
+                    target="_blank"
+                    class="download-btn"
+                >
+                    Download
+                </a>
+
+            </div>
+
+        </div>
+        `
+    })
+
+}
+
+document
+.getElementById("zoomInBtn")
+.addEventListener("click",()=>{
+
+    zoom += 0.1
+
+    renderImages()
+
+})
+
+document
+.getElementById("zoomOutBtn")
+.addEventListener("click",()=>{
+
+    zoom = Math.max(
+        0.5,
+        zoom - 0.1
+    )
+
+    renderImages()
+
+})
+
+document
+.getElementById("downloadAllBtn")
+.addEventListener("click",()=>{
+
+    images.forEach((img,i)=>{
+
+        setTimeout(()=>{
+
+            const a =
+                document.createElement("a")
+
+            a.href = img.url
+
+            a.download =
+                img.name ||
+                `image-${i+1}`
+
+            a.target = "_blank"
+
+            a.click()
+
+        },i*500)
+
+    })
+
+})
+
+async function loadImages(){
+
+    const id =
+        new URLSearchParams(
+            location.search
+        ).get("id")
+
+    const res =
+        await fetch(
+            `/images/${encodeURIComponent(id)}`
+        )
+
+    const data =
+        await res.json()
+
+    images.length = 0
+
+    data.images.forEach((url,index)=>{
+
+        images.push({
+
+            url,
+
+            name:`Image ${index+1}`
+
+        })
+
+    })
+
+    renderImages()
+
+}
+
+loadImages()
+</script>
+
+</body>
+          </html>
