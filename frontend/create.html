@@ -1377,7 +1377,17 @@ margin:10px;
             <h2>Create New Paste</h2>
             <p>Write and share beautifully.</p>
           </div>
+<button id="scanBtn" class="btn">
+    📄 Smart Scan
+</button>
 
+<input
+    type="file"
+    id="scanInput"
+    accept="image/*"
+    capture="environment"
+    hidden
+>
           <div class="editor-tabs" id="editorTabs" style="display:none;">
 
   <button
@@ -2271,6 +2281,54 @@ function triggerGoogleLogin(){
 
 }
 
+  const scanBtn = document.getElementById("scanBtn");
+const scanInput = document.getElementById("scanInput");
+
+scanBtn.onclick = () => {
+    scanInput.click();
+};
+
+scanInput.addEventListener("change", async () => {
+    const file = scanInput.files[0];
+
+    if (!file) return;
+
+    scanBtn.disabled = true;
+    scanBtn.textContent = "Scanning...";
+
+    try {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const response = await fetch(
+            "https://your-domain.com/scan",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error);
+        }
+
+        document.getElementById("content").value +=
+            (document.getElementById("content").value ? "\n" : "") +
+            data.text;
+
+        alert(
+            `✓ Extracted ${data.characters} characters`
+        );
+
+    } catch (err) {
+        alert("Scan failed: " + err.message);
+    }
+
+    scanBtn.disabled = false;
+    scanBtn.textContent = "📄 Smart Scan";
+});
 </script>
 </body>
   </html>
