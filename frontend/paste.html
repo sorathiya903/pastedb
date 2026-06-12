@@ -1483,6 +1483,8 @@ if (data.password && !isUnlocked) {
   document.getElementById("passwordModal").style.display = "flex";
   return;
 }
+      console.log(data);
+console.log("images:", data.images);
       if (data.images && data.images.length > 0) {
 
   imagesBtn.style.display = "inline-flex";
