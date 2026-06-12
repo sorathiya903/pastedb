@@ -12,10 +12,7 @@ from auth import (
     decode_token
 )
 from fastapi import FastAPI, UploadFile, File
-from paddleocr import PaddleOCR
-from PIL import Image
-import numpy as np
-import cv2
+
 import io
 
 import os
@@ -155,118 +152,119 @@ app.add_middleware(
 
 
 
-import tempfile
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import HTMLResponse, JSONResponse
+import easyocr
+import numpy as np
+import cv2
+from PIL import Image
+import io
 
 
-# Disable model source checks
-os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+# Load model once during startup
+reader = None
 
-ocr_engine = None
+@app.on_event("startup")
+async def startup():
+    global reader
+    print("Loading EasyOCR model...")
+    reader = easyocr.Reader(
+        ['en'],
+        gpu=False
+    )
+    print("EasyOCR loaded successfully")
 
 
-def get_ocr():
-    global ocr_engine
+@app.get("/scanh", response_class=HTMLResponse)
+async def home():
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EasyOCR Demo</title>
+</head>
+<body>
+    <h2>Upload Image</h2>
 
-    if ocr_engine is None:
-        print("Initializing PaddleOCR...")
+    <input type="file" id="file" accept="image/*">
+    <button onclick="scan()">Scan</button>
 
-        ocr_engine = PaddleOCR(
-            use_doc_orientation_classify=False,
-            use_doc_unwarping=False,
-            use_textline_orientation=False
-        )
+    <pre id="result"></pre>
 
-        print("PaddleOCR initialized successfully.")
+<script>
+async function scan() {
+    const fileInput = document.getElementById("file");
 
-    return ocr_engine
+    if (!fileInput.files.length) {
+        alert("Choose an image");
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append("file", fileInput.files[0]);
+
+    document.getElementById("result").textContent = "Scanning...";
+
+    try {
+        const res = await fetch("/scan", {
+            method: "POST",
+            body: fd
+        });
+
+        const data = await res.json();
+
+        document.getElementById("result").textContent =
+            data.text || data.error;
+    }
+    catch (e) {
+        document.getElementById("result").textContent =
+            "Error: " + e.message;
+    }
+}
+</script>
+
+</body>
+</html>
+"""
 
 
 @app.post("/scan")
 async def scan(file: UploadFile = File(...)):
-    temp_path = None
-
     try:
-        # Validate file type
-        allowed = {
-            "image/jpeg",
-            "image/png",
-            "image/jpg",
-            "image/webp"
-        }
-
-        if file.content_type not in allowed:
-            raise HTTPException(
-                status_code=400,
-                detail="Only JPG, PNG and WEBP images are allowed."
-            )
-
-        # Read contents
         contents = await file.read()
 
-        # Limit size (10 MB)
-        if len(contents) > 10 * 1024 * 1024:
-            raise HTTPException(
-                status_code=413,
-                detail="Image too large. Maximum 10 MB."
-            )
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
+        image = np.array(image)
 
-        print(
-            f"Received file: {file.filename}, "
-            f"{len(contents)} bytes"
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+        results = reader.readtext(
+            image,
+            detail=0,
+            paragraph=True
         )
 
-        # Save temporarily
-        suffix = os.path.splitext(file.filename)[1] or ".jpg"
-
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=suffix
-        ) as temp:
-            temp.write(contents)
-            temp_path = temp.name
-
-        print("Saved to:", temp_path)
-
-        # OCR
-        ocr = get_ocr()
-
-        result = ocr.predict(temp_path)
-
-        extracted = []
-
-        try:
-            for page in result:
-                if "rec_texts" in page:
-                    extracted.extend(page["rec_texts"])
-        except Exception:
-            print("Could not parse OCR output:")
-            traceback.print_exc()
-
-        text = "\n".join(extracted)
+        text = "\n".join(results).strip()
 
         return {
             "success": True,
-            "text": text
+            "text": text,
+            "characters": len(text)
         }
-
-    except HTTPException:
-        raise
 
     except Exception as e:
-        print("\n===== OCR ERROR =====")
-        traceback.print_exc()
-        print("=====================\n")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": str(e)
+            }
+        )
 
-        return {
-            "success": False,
-            "error": str(e),
-            "type": type(e).__name__
-        }
+        
 
-    finally:
-        if temp_path and os.path.exists(temp_path):
-            os.remove(temp_path)
-            print("Deleted temp file:", temp_path)
+        
         
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health(response: Response):
