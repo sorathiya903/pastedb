@@ -159,7 +159,19 @@ app.add_middleware(
     
         
 
-        
+@app.get("/images/{paste_id}")
+async def get_images(paste_id: str):
+
+    paste = pastes_collection.find_one({
+        "custom_id": paste_id
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    return {
+        "images": paste.get("images", [])
+    }  
         
 
         
