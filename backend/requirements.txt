@@ -10,9 +10,3 @@ argon2-cffi
 user-agents
 ua-parser
 pyyaml
-easyocr
-opencv-python-headless
-numpy
-pillow
-torch
-torchvision
