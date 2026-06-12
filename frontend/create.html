@@ -5,6 +5,23 @@
   <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
+<script>
+
+if(
+  location.hostname === "localhost" ||
+
+  location.hostname.includes("127.0.0.1") ||
+
+  location.hostname.includes("netlify") ||
+
+  localStorage.getItem("debug") === "true"
+){
+
+  eruda.init();
+
+}
+
+</script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -2088,6 +2105,9 @@ setVisibility(visibility);
   }
 
 }
+
+    const createBtn =
+    document.getElementById("createBtn");
 async function uploadImage(file){
 
     const fd = new FormData();
@@ -2270,7 +2290,7 @@ const pasteData = {
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
   visibility:visibility,
-  images:imageUrls
+  images:[]
 };
   
 if (passwordEnabled) {
@@ -2313,6 +2333,17 @@ if (passwordEnabled) {
     createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
 }
 try {
+  let imageUrls = [];
+
+    if(selectedImages.length > 0){
+
+        createBtn.innerHTML =
+        `<div class="spinner"></div> Uploading Images...`;
+
+        imageUrls = await uploadAllImages();
+    }
+
+    pasteData.images = imageUrls;
 
   let response
 
