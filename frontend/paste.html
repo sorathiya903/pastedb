@@ -1918,25 +1918,6 @@ console.log(pasteId)
     margin-bottom:14px;
 }
 
-.shimmer-text{
-    font-weight:700;
-
-    background:linear-gradient(
-        90deg,
-        rgba(255,255,255,0.4) 0%,
-        #ffffff 50%,
-        rgba(255,255,255,0.4) 100%
-    );
-
-    background-size:200% 100%;
-
-    -webkit-background-clip:text;
-    background-clip:text;
-
-    -webkit-text-fill-color:transparent;
-
-    animation:shimmer 2s linear infinite;
-}
 
 .footer-links{
     display:flex;
@@ -1956,10 +1937,37 @@ console.log(pasteId)
     color:#fff;
 }
 
+:root{
+    --shimmer-base: rgba(255,255,255,0.45);
+    --shimmer-highlight: #ffffff;
+}
+
+body.light{
+    --shimmer-base: rgba(0,0,0,0.35);
+    --shimmer-highlight: #000000;
+}
+
+.shimmer-text{
+    font-weight:700;
+
+    background:linear-gradient(
+        90deg,
+        var(--shimmer-base) 0%,
+        var(--shimmer-highlight) 50%,
+        var(--shimmer-base) 100%
+    );
+
+    background-size:200% 100%;
+    background-position:-200% 0;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:shimmer 2s linear infinite;
+}
+
 @keyframes shimmer{
-    from{
-        background-position:-200% 0;
-    }
     to{
         background-position:200% 0;
     }
