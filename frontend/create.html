@@ -5,23 +5,7 @@
   <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
-<script>
 
-if(
-  location.hostname === "localhost" ||
-
-  location.hostname.includes("127.0.0.1") ||
-
-  location.hostname.includes("netlify") ||
-
-  localStorage.getItem("debug") === "true"
-){
-
-  eruda.init();
-
-}
-
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -1397,17 +1381,8 @@ margin:10px;
             <h2>Create New Paste</h2>
             <p>Write and share beautifully.</p>
           </div>
-<button id="scanBtn" class="btn">
-    📄 Smart Scan
-</button>
 
-<input
-    type="file"
-    id="scanInput"
-    accept="image/*"
-    capture="environment"
-    hidden
->
+
           <div class="editor-tabs" id="editorTabs" style="display:none;">
 
   <button
@@ -2300,121 +2275,8 @@ function triggerGoogleLogin(){
   google.accounts.id.prompt();
 
 }
-const scanBtn = document.getElementById("scanBtn");
-const scanInput = document.getElementById("scanInput");
 
-let tesseractReady = false;
-let worker = null;
 
-async function initOCR() {
-    const accepted = confirm(
-        "Smart Scan needs to download OCR files (~20 MB) once. Continue?"
-    );
-
-    if (!accepted) {
-        scanBtn.textContent = "OCR Cancelled";
-        return;
-    }
-
-    scanBtn.disabled = true;
-    scanBtn.textContent = "Downloading OCR... 0%";
-
-    try {
-        worker = await Tesseract.createWorker("eng", 1, {
-            logger: m => {
-                if (m.status === "recognizing text") {
-                    scanBtn.textContent =
-                        "Scanning " +
-                        Math.round(m.progress * 100) +
-                        "%";
-                }
-
-                if (
-                    m.status.includes("loading") ||
-                    m.status.includes("initializing")
-                ) {
-                    scanBtn.textContent =
-                        "Preparing OCR " +
-                        Math.round(m.progress * 100) +
-                        "%";
-                }
-            }
-        });
-
-        /*
-         Tesseract caches its files automatically
-         using IndexedDB/browser cache.
-         Next visits usually won't redownload.
-        */
-
-        tesseractReady = true;
-
-        scanBtn.disabled = false;
-        scanBtn.textContent = "📄 Smart Scan";
-
-    } catch (err) {
-        console.error(err);
-
-        scanBtn.textContent = "OCR Failed";
-
-        alert(
-            "Failed to initialize OCR.\n" +
-            err.message
-        );
-    }
-          }
-  
-  
-scanBtn.onclick = () => {
-    if (!tesseractReady) {
-        alert("OCR is still preparing.");
-        return;
-    }
-
-    scanInput.click();
-};
-
-scanInput.addEventListener("change", async () => {
-    const file = scanInput.files[0];
-
-    if (!file) return;
-
-    try {
-        scanBtn.disabled = true;
-
-        const result = await worker.recognize(file);
-
-        const text = result.data.text;
-
-        textarea.value +=
-            (textarea.value ? "\n" : "") +
-            text;
-
-        textarea.dispatchEvent(
-            new Event("input")
-        );
-
-        alert(
-            `✓ Extracted ${text.length} characters`
-        );
-
-    } catch (err) {
-        console.error(err);
-
-        alert(
-            "Scan failed: " + err.message
-        );
-    }
-
-    scanBtn.disabled = false;
-    scanBtn.textContent = "📄 Smart Scan";
-
-    scanInput.value = "";
-});
-
-      window.addEventListener("load", () => {
-    initOCR();
-});
 </script>
 </body>
   </html>
