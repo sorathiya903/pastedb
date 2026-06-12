@@ -767,6 +767,9 @@
       <button id="rawBtn" class="btn">
         Raw View
       </button>
+      <button class="btn" id="imagesBtn" style="display:none;">
+  Images
+      </button>
 <button class="btn" id="runBtn">
     Run Code
   </button>
@@ -882,6 +885,8 @@
 </style>
 
 <script>
+  const imagesBtn =
+  document.getElementById("imagesBtn");
   function getPasteId(){
 
     return window.location.pathname
@@ -1460,6 +1465,23 @@ if (data.password && !isUnlocked) {
   document.getElementById("passwordModal").style.display = "flex";
   return;
 }
+      if (data.images && data.images.length > 0) {
+
+  imagesBtn.style.display = "inline-flex";
+
+  imagesBtn.onclick = () => {
+
+    const id =
+      data.custom_id ||
+      data._id ||
+      pasteId;
+
+    window.location.href =
+      `/images?id=${encodeURIComponent(id)}`;
+
+  };
+
+  }
       // TITLE
       console.log(data.expire_at)
 console.log(new Date(data.expire_at))
