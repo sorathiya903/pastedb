@@ -153,114 +153,14 @@ app.add_middleware(
 
 
 
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import HTMLResponse, JSONResponse
-import easyocr
-import numpy as np
-import cv2
-from PIL import Image
-import io
+ 
+    
 
+    
+        
 
-# Load model once during startup
-reader = None
-
-@app.on_event("startup")
-async def startup():
-    global reader
-    print("Loading EasyOCR model...")
-    reader = easyocr.Reader(
-        ['en'],
-        gpu=False
-    )
-    print("EasyOCR loaded successfully")
-
-
-@app.get("/scanh", response_class=HTMLResponse)
-async def home():
-    return """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>EasyOCR Demo</title>
-</head>
-<body>
-    <h2>Upload Image</h2>
-
-    <input type="file" id="file" accept="image/*">
-    <button onclick="scan()">Scan</button>
-
-    <pre id="result"></pre>
-
-<script>
-async function scan() {
-    const fileInput = document.getElementById("file");
-
-    if (!fileInput.files.length) {
-        alert("Choose an image");
-        return;
-    }
-
-    const fd = new FormData();
-    fd.append("file", fileInput.files[0]);
-
-    document.getElementById("result").textContent = "Scanning...";
-
-    try {
-        const res = await fetch("/scan", {
-            method: "POST",
-            body: fd
-        });
-
-        const data = await res.json();
-
-        document.getElementById("result").textContent =
-            data.text || data.error;
-    }
-    catch (e) {
-        document.getElementById("result").textContent =
-            "Error: " + e.message;
-    }
-}
-</script>
-
-</body>
-</html>
-"""
-
-
-@app.post("/scan")
-async def scan(file: UploadFile = File(...)):
-    try:
-        contents = await file.read()
-
-        image = Image.open(io.BytesIO(contents)).convert("RGB")
-        image = np.array(image)
-
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-        results = reader.readtext(
-            image,
-            detail=0,
-            paragraph=True
-        )
-
-        text = "\n".join(results).strip()
-
-        return {
-            "success": True,
-            "text": text,
-            "characters": len(text)
-        }
-
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={
-                "success": False,
-                "error": str(e)
-            }
-        )
+        
+        
 
         
 
