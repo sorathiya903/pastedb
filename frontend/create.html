@@ -1950,21 +1950,22 @@ if(editId){
 
 const lines = document.getElementById("lines");
 
+let currentLineCount = 0;
+
 function updateLines() {
+    const count = textarea.value.split("\n").length;
 
-  const totalLines =
-    textarea.value.split("\n").length;
+    if (count === currentLineCount) return;
 
-  lines.innerHTML = "";
+    currentLineCount = count;
 
-  for (let i = 1; i <= totalLines; i++) {
+    let html = "";
 
-    const line = document.createElement("div");
+    for (let i = 1; i <= count; i++) {
+        html += `<div>${i}</div>`;
+    }
 
-    line.textContent = i;
-
-    lines.appendChild(line);
-  }
+    lines.innerHTML = html;
 }
 
 // sync scrolling
@@ -1975,8 +1976,13 @@ textarea.addEventListener("scroll", () => {
 });
 
 // update lines live
-textarea.addEventListener("input", updateLines);
+let lineTimeout;
 
+textarea.addEventListener("input", () => {
+    clearTimeout(lineTimeout);
+
+    lineTimeout = setTimeout(updateLines, 100);
+});
 // initial
 updateLines();
 
