@@ -10,3 +10,4 @@ argon2-cffi
 user-agents
 ua-parser
 pyyaml
+httpx
