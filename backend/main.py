@@ -12,7 +12,7 @@ from auth import (
     decode_token
 )
 from fastapi import FastAPI, UploadFile, File
-
+from fastapi.responses import JSONResponse 
 import io
 
 import os
@@ -158,7 +158,75 @@ app.add_middleware(
  
     
 
-    
+
+import httpx
+
+SEARX_URL = "https://searx.be/search"
+
+@app.get("/search")
+async def search(
+    q: str = Query(...)
+):
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            general_task = client.get(
+                SEARX_URL,
+                params={
+                    "q": q,
+                    "format": "json"
+                }
+            )
+
+            image_task = client.get(
+                SEARX_URL,
+                params={
+                    "q": q,
+                    "categories": "images",
+                    "format": "json"
+                }
+            )
+
+            pdf_task = client.get(
+                SEARX_URL,
+                params={
+                    "q": q + " filetype:pdf",
+                    "format": "json"
+                }
+            )
+
+            general_res = await general_task
+            image_res = await image_task
+            pdf_res = await pdf_task
+
+        general = general_res.json().get("results", [])
+        images = image_res.json().get("results", [])
+        pdfs = pdf_res.json().get("results", [])
+
+        pdf_results = []
+
+        for r in pdfs:
+            url = r.get("url", "")
+
+            if ".pdf" in url.lower():
+                pdf_results.append({
+                    "title": r.get("title"),
+                    "url": url,
+                    "content": r.get("content")
+                })
+
+        return JSONResponse({
+            "web": general,
+            "images": images,
+            "pdfs": pdf_results
+        })
+
+    except Exception as e:
+        return JSONResponse(
+            {
+                "error": str(e)
+            },
+            status_code=500
+        )
         
 
 
