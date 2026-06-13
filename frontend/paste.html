@@ -1809,31 +1809,37 @@ console.log(pasteId)
 
 
 
-  document
-    .getElementById("rawBtn")
-    .addEventListener("click", () => {
+document
+  .getElementById("rawBtn")
+  .addEventListener("click", () => {
 
-      // CREATE NEW WINDOW
-      const rawWindow = window.open("", "_blank")
+    const rawWindow = window.open("", "_blank");
 
-      // GET RAW CODE
-      const rawCode = codeBlock.textContent
+    const rawCode = codeBlock.textContent;
 
-      // SHOW RAW CONTENT
-      rawWindow.document.write(`
+    rawWindow.document.write(`
 <!DOCTYPE html>
 <html>
 <head>
   <title>Raw Paste</title>
 
   <style>
+    :root{
+      --bg:#0f1115;
+      --text:#d7dce2;
+    }
+
+    body.light{
+      --bg:#ffffff;
+      --text:#000000;
+    }
 
     body{
       margin:0;
       padding:24px;
 
-      background:#0f1115;
-      color:#d7dce2;
+      background:var(--bg);
+      color:var(--text);
 
       font-family:"JetBrains Mono", monospace;
       font-size:14px;
@@ -1841,20 +1847,77 @@ console.log(pasteId)
 
       white-space:pre-wrap;
       word-break:break-word;
+
+      transition:0.25s;
     }
 
+    .toolbar{
+      position:sticky;
+      top:0;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      padding:12px 20px;
+
+      background:var(--bg);
+
+      border-bottom:1px solid rgba(127,127,127,.2);
+    }
+
+    button{
+      padding:10px 14px;
+
+      border:none;
+      border-radius:10px;
+
+      cursor:pointer;
+
+      background:rgba(127,127,127,.15);
+
+      color:var(--text);
+
+      font-family:inherit;
+    }
+
+    pre{
+      margin:0;
+      padding:20px 0 0 0;
+    }
   </style>
 </head>
 
-<body>${escapeHtml(rawCode)}</body>
+<body>
 
+  <div class="toolbar">
+
+    <strong>Raw View</strong>
+
+    <button id="themeBtn">
+      Toggle Theme
+    </button>
+
+  </div>
+
+  <pre>${escapeHtml(rawCode)}</pre>
+
+  <script>
+    const btn =
+      document.getElementById("themeBtn");
+
+    btn.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+    });
+  <\/script>
+
+</body>
 </html>
-      `)
+    `);
 
-      rawWindow.document.close()
+    rawWindow.document.close();
 
-    })
-
+  });
 
 
   // ESCAPE HTML
