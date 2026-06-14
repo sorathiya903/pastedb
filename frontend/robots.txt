@@ -1,0 +1,17 @@
+User-agent: *
+
+Allow: /
+Allow: /index.html
+Allow: /explore.html
+Allow: /docs.html
+Allow: /search.html
+Allow: /stats.html
+Allow: /terms.html
+Allow: /paste.html
+
+Disallow: /dashboard.html
+Disallow: /create.html
+Disallow: /api-keys.html
+Disallow: /images.html
+
+Sitemap: https://pastedb.netlify.app/sitemap.xml
