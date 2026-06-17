@@ -1575,7 +1575,7 @@ searchInput.addEventListener("input", async (e)=>{
 
     /* SUGGESTION */
     const suggestRes = await fetch(
-      `https://pastedb.onrender.com/suggest?q=${encodeURIComponent(value)}`
+      `${API_URL}/suggest?q=${encodeURIComponent(value)}`
     );
 
     const suggestData = await suggestRes.json();
