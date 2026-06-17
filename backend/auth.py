@@ -124,10 +124,14 @@ async def logout():
         "message": "Logged out"
     })
 
-    response.delete_cookie("session")
+    response.delete_cookie(
+        key="session",
+        httponly=True,
+        secure=True,
+        samesite="none"
+    )
 
     return response
-
 
 def get_optional_user(request: Request):
 
