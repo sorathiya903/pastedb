@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Paste Viewer</title>
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
+<script src="config.js"></script>
 <script>
 
 if(
@@ -1311,7 +1311,7 @@ language =
   languageMap[language] || language
 
     const response = await fetch(
-      "https://pastedb.onrender.com/run",
+      `${API_URL}/run`,
       {
         method:"POST",
 
@@ -1450,7 +1450,7 @@ if(path.startsWith("/paste/")){
     try{
   
       const response = await fetch(
-        `https://pastedb.onrender.com/p/${pasteId}`,
+        `${API_URL}/p/${pasteId}`,
       {
         credentials:"include"
       }
