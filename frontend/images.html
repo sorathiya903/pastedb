@@ -362,7 +362,7 @@ async function loadImages(){
 
     const res =
         await fetch(
-            `https://pastedb.onrender.com/images/${encodeURIComponent(id)}`
+            `${API_URL}/images/${encodeURIComponent(id)}`
         )
 
     const data =
