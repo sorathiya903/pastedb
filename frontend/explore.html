@@ -402,7 +402,7 @@ justify-content:center;
     async function loadPastes(){
 
       const response = await fetch(
-        "https://pastedb.onrender.com/explore"
+        `${API_URL}/explore`
       );
 
       const data = await response.json();
@@ -539,7 +539,7 @@ document.addEventListener(
 
       const response = await fetch(
 
-        `https://pastedb.onrender.com/star/${pasteId}`,
+        `${API_URL}/star/${pasteId}`,
 
         {
           method:"POST",
