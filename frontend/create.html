@@ -2084,7 +2084,7 @@ async function loadPasteForEditing(editId){
   try{
 
     const response = await fetch(
-      `https://pastedb.onrender.com/p/${editId}`,
+      `${API_URL}/p/${editId}`,
       {
         method: "GET",
         credentials: "include"
@@ -2269,7 +2269,7 @@ updateLines();
 async function editPaste(editId, pasteData){
 
   const response = await fetch(
-    `https://pastedb.onrender.com/paste/${editId}`,
+    `${API_URL}/paste/${editId}`,
     {
       method: "PUT",
       credentials: "include",
@@ -2292,7 +2292,7 @@ if (editId) {
 async function createPaste(pasteData){
 
   const response = await fetch(
-    "https://pastedb.onrender.com/create",
+    `${API_URL}/create",
     {
       method: "POST",
       credentials: "include",
@@ -2490,7 +2490,7 @@ if (editId) return;
     try {
 
       const res = await fetch(
-        `https://pastedb.onrender.com/check-id?id=${value}`
+        `${API_URL}/check-id?id=${value}`
       );
 
       const data = await res.json();
@@ -2526,7 +2526,7 @@ async function handleCredentialResponse(response){
     const token = response.credential
 
     const res = await fetch(
-        "https://pastedb.onrender.com/auth/google",
+        `${API_URL}/auth/google`,
         {
             method: "POST",
 
