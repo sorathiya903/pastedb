@@ -936,7 +936,7 @@ alert(pasteId)
         `
 
         const res = await fetch(
-            `https://pastedb.onrender.com/fork/${pasteId}`,
+            `${API_URL}/fork/${pasteId}`,
             {
                 method:"POST",
                 credentials:"include"
@@ -1949,7 +1949,7 @@ document
   try {
 
     const res = await fetch(
-      `https://pastedb.onrender.com/p/${pasteId}/verify-password`,
+      `${API_URL}/p/${pasteId}/verify-password`,
       {
         method: "POST",
         headers: {
@@ -1981,7 +1981,7 @@ document
 
   } finally {
 
-    loadingText.style.display = "none"; // 👈 always hide
+    loadingText.style.display = "none";
 
   }
   }
