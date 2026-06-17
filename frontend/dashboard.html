@@ -1328,7 +1328,7 @@ document.addEventListener("click", (e)=>{
 function openStats(id){
 
   window.location.href =
-    `https://pastedb.netlify.app/stats?id=${id}`;
+    `${API_URL}/stats?id=${id}`;
 }
 
 // CLOSE MENU ON OUTSIDE CLICK
@@ -1415,7 +1415,10 @@ async function loadDashboard() {
   grid.innerHTML = Array(6).fill('<div class="shimmer"></div>').join("");
 
   try {
-    const res = await fetch("https://pastedb.onrender.com/user/dashboard", {
+    const res = await fetch(
+       
+       `${API_URL}/user/dashboard`, 
+       {
       method: "GET",
       credentials: "include", // IMPORTANT for cookie auth
       
@@ -1504,7 +1507,7 @@ document
   try {
 
     const res = await fetch(
-      `https://pastedb.onrender.com/delete/${deletePasteId}`,
+      `${API_URL}/delete/${deletePasteId}`,
       {
         method: "DELETE",
         credentials: "include"
@@ -1563,7 +1566,7 @@ searchInput.addEventListener("input", async (e)=>{
 
     /* SEARCH */
     const res = await fetch(
-      `https://pastedb.onrender.com/search?q=${encodeURIComponent(value)}`
+      `${API_URL}/search?q=${encodeURIComponent(value)}`
     );
 
     const data = await res.json();
@@ -1649,7 +1652,7 @@ async function deleteAccount(){
   try{
 
     const res = await fetch(
-      "https://pastedb.onrender.com/delete-account",
+      `${API_URL}/delete-account`,
       {
         method: "DELETE",
         credentials: "include"
@@ -1678,7 +1681,7 @@ async function logout(){
   try{
 
     await fetch(
-      "https://pastedb.onrender.com/logout",
+      `${API_URL}/logout`,
       {
         method: "POST",
         credentials: "include"
