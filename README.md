@@ -1,6 +1,6 @@
-📋 PasteDB
+# 📋 PasteDB
 
-PasteDB is a modern paste-sharing platform built for quickly sharing code, notes, text snippets, and images through simple links.
+> PasteDB is a modern paste-sharing platform built for quickly sharing code, notes, text snippets, and images through simple links.
 
 🌐 Live Website: https://pastedb.netlify.app
 
