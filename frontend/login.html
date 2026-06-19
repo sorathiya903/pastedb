@@ -365,7 +365,7 @@ display:flex;
       const btnText = document.getElementById("googleBtnText");
       
       btn.disabled = true;
-      btnText.innerHTML = '<div class="spinner"></div> Signing in...';
+      btnText.innerHTML = '<div class="spinner"></div> &nbsp; Signing in...';
 
       try {
         const res = await fetch(`${API_URL}/auth/google`, {
