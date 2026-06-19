@@ -643,7 +643,7 @@ body.dark .footer-links a:hover {
   height: 0;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  transform: translate(-50%, -50%);
+  
   opacity: 0;
   pointer-events: none;
   z-index: 0;
@@ -720,7 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     link.addEventListener("click", function(e) {
       
-      // e.preventDefault(); // uncomment to test animation without leaving page
+       e.preventDefault(); // uncomment to test animation without leaving page
       
       // Add clicked class for animations
       this.classList.add("clicked");
