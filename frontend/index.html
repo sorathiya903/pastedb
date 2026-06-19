@@ -551,6 +551,15 @@ window.addEventListener("scroll", ()=>{
     }
   });
 });
+
+  window.addEventListener("load", ()=>{
+  cards.forEach(c=>{
+    const top = c.getBoundingClientRect().top;
+    if(top < window.innerHeight - 80){
+      c.classList.add("show");
+    }
+  });
+});
 </script>
 <!-- FOOTER -->
 <footer class="footer">
