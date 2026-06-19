@@ -2,23 +2,6 @@
 <html lang="en">
 
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
-<script>
-
-if(
-  location.hostname === "localhost" ||
-
-  location.hostname.includes("127.0.0.1") ||
-
-  location.hostname.includes("netlify") ||
-
-  localStorage.getItem("debug") === "true"
-){
-
-  eruda.init();
-
-}
 
 </script>
   <script src="config.js"></script>
@@ -376,7 +359,7 @@ if(
       const btnText = document.getElementById("googleBtnText");
       
       btn.disabled = true;
-      btnText.innerHTML = '<div class="spinner"></div> Signing in...';
+      btnText.innerHTML = '<div class="spinner"></div> <br> &nbsp; Signing in...';
 
       try {
         const res = await fetch(`${API_URL}/auth/google`, {
