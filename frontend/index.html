@@ -615,5 +615,142 @@ window.addEventListener("scroll", ()=>{
     </span>
   </div>
 </footer>
+  <style>
+/* Base link style for footer */
+.footer-links {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 30px 0;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  position: relative;
+  padding: 12px 20px;
+  border-radius: 14px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+/* Hover state */
+.footer-links a:hover {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--highlight);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+body.dark .footer-links a:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Click animation - gradient wave */
+.footer-links a::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer-links a.clicked::before {
+  animation: gradientWave 0.8s ease-out;
+}
+
+@keyframes gradientWave {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.5;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
+
+/* Bounce effect on click */
+.footer-links a.clicked {
+  animation: bounceClick 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceClick {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.92); }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Glow pulse */
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.footer-links a.clicked::after {
+  animation: glowPulse 0.8s ease-out;
+}
+
+@keyframes glowPulse {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Text stays on top */
+.footer-links a span {
+  position: relative;
+  z-index: 1;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const links = document.querySelectorAll(".footer-links a");
+  
+  links.forEach(link => {
+    
+    link.innerHTML = `<span>${link.textContent}</span>`;
+    
+    link.addEventListener("click", function(e) {
+      
+      // e.preventDefault(); // uncomment to test animation without leaving page
+      
+      // Add clicked class for animations
+      this.classList.add("clicked");
+      
+      // Remove class after animation completes
+      setTimeout(() => {
+        this.classList.remove("clicked");
+      }, 800);
+    });
+  });
+});
+</script>
+
 </body>
   </html>
