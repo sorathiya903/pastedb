@@ -1521,28 +1521,27 @@ async function loadDashboard() {
        `${API_URL}/user/dashboard`, 
        {
       method: "GET",
-      credentials: "include", // IMPORTANT for cookie auth
+      credentials: "include",
       
     });
 if (res.status === 401) {
-  window.location.href = "/";
+  window.location.href = "/login.html";
   return;
 }
-    //  handle HTTP errors properly
+    
     if (!res.ok) {
       throw new Error("HTTP Error: " + res.status);
     }
 
     const data = await res.json();
 
-    // SAFE user access
+   
     document.getElementById("username").innerText =
       data?.user?.name || "User";
 
     document.getElementById("email").innerText =
       data?.user?.email || "";
 
-    //  PROFILE PIC FIX
     const profile = document.querySelector(".profile");
 
     if (data?.user?.picture) {
