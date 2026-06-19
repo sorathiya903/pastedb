@@ -2185,20 +2185,28 @@ async function uploadImage(file){
 
     
 
-async function uploadAllImages(){
-
+ async function uploadAllImages(){
     const urls = [];
+    const total = selectedImages.length;
+    const createBtn = document.getElementById("createBtn");
 
-    for(const file of selectedImages){
+    for(let i = 0; i < total; i++){
+        const file = selectedImages[i];
+        
+        // Update loader with current count
+        createBtn.innerHTML =
+            `<div class="spinner"></div> Uploading Images... (${i + 1}/${total})`;
 
-        const url =
-            await uploadImage(file);
-
+        const url = await uploadImage(file);
         urls.push(url);
     }
 
+    // After all images are done
+    createBtn.innerHTML =
+        `<div class="spinner"></div> Creating Paste...`;
+
     return urls;
-    }
+              }
 
     
 const params =
@@ -2374,15 +2382,11 @@ if (passwordEnabled) {
 }
 try {
   let imageUrls = [];
-
-    if(selectedImages.length > 0){
-
-        createBtn.innerHTML =
-        `<div class="spinner"></div> Uploading Images...`;
-
-        imageUrls = await uploadAllImages();
-    }
-
+if(selectedImages.length > 0){
+    imageUrls = await uploadAllImages();
+}
+  
+    
     pasteData.images = imageUrls;
 
   let response
