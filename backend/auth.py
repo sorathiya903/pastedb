@@ -306,3 +306,21 @@ async def get_paste(
             True if paste.get("password")
             else False
         }
+
+
+@router.get("/auth/me")
+async def get_me(user = Depends(get_current_user)):
+    db_user = users_collection.find_one(
+        {"email": user.get("email")},
+        {"_id": 0, "pastes": 0}  # hide _id and pastes array
+    )
+    
+    if not db_user:
+        raise HTTPException(404, "User not found")
+    
+    return {
+        "email": db_user["email"],
+        "name": db_user["name"],
+        "picture": db_user.get("picture"),
+        "created_at": db_user.get("created_at")
+    }
