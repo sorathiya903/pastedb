@@ -434,7 +434,38 @@ OVERLAY
 /* =========================
 SCROLLBAR
 ========================= */
+.toast{
+  position:fixed;
+  bottom:25px;
+  right:25px;
 
+  background:#151515;
+  color:#fff;
+
+  border:1px solid #252525;
+
+  padding:12px 18px;
+
+  border-radius:12px;
+
+  font-size:14px;
+
+  opacity:0;
+  transform:translateY(20px);
+
+  pointer-events:none;
+
+  transition:.25s ease;
+
+  z-index:9999;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+  
 ::-webkit-scrollbar{
   width:10px;
 }
@@ -952,17 +983,65 @@ overlay.onclick = closeMenu;
 
 function copyCode(id){
 
-  const text =
+  const code =
     document.getElementById(id).innerText;
 
-  navigator.clipboard.writeText(text);
-btn.innerText = "Copied!";
-setTimeout(()=>{
-  btn.innerText = "Copy";
-},2000);
+  const btn =
+    event.target;
+
+  navigator.clipboard.writeText(code);
+
+  const original =
+    btn.innerText;
+
+  btn.innerText = "Copied";
+
+  setTimeout(() => {
+    btn.innerText = original;
+  }, 1000);
+
 }
+function copyCode(id){
 
+  const code =
+    document.getElementById(id).innerText;
+
+  navigator.clipboard.writeText(code)
+    .then(() => {
+
+      const toast =
+        document.getElementById("toast");
+
+      toast.textContent =
+        "Copied to clipboard";
+
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1000);
+
+    })
+    .catch(() => {
+
+      const toast =
+        document.getElementById("toast");
+
+      toast.textContent =
+        "Failed to copy";
+
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2000);
+
+    });
+
+  }
 </script>
-
+<div id="toast" class="toast">
+  Copied to clipboard
+</div>
 </body>
   </html>
