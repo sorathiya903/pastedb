@@ -279,9 +279,24 @@ button{
 
   z-index:99999;
   }
+
+  .fab{position:fixed;
+       right:24px;
+       bottom:24px;
+       width:58px;
+       height:58px;
+       border-radius:50%;
+       border:none;
+       font-size:28px
+      
+  }
+
 </style>
 </head>
 <body>
+  <button class="fab" onclick="openCreateModal()">+</button>
+
+
 <div class="modal" id="createModal">
 
   <div class="modal-card">
@@ -350,9 +365,8 @@ button{
       Generate and manage your PasteDB API keys.
     </p>
 
-    <button onclick="openCreateModal()">
-  + Create API Key
-</button>
+    
+    
 
   </div>
 <div class="stats">
