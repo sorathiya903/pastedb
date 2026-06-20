@@ -124,7 +124,7 @@ button{
 async function generateKey(){
 
   const response = await fetch(
-    "https://pastedb.onrender.com/generate-api-key",
+    `${API_URL}/generate-api-key`,
     {
       method:"POST",
       credentials:"include"
@@ -147,7 +147,7 @@ async function generateKey(){
 async function deleteKey(apiKey){
 
   const response = await fetch(
-    `https://pastedb.onrender.com/delete-api-key/${apiKey}`,
+    `${API_URL}/delete-api-key/${apiKey}`,
     {
       method:"DELETE",
       credentials:"include"
@@ -164,7 +164,7 @@ async function deleteKey(apiKey){
 async function loadKeys(){
 
   const response = await fetch(
-    "https://pastedb.onrender.com/my-api-keys",
+    `${API_URL}/my-api-keys`,
     {
       credentials:"include"
     }
