@@ -98,36 +98,39 @@ button{
 </style>
 </head>
 <body>
-  <div class="api-card">
+<div class="modal" id="createModal">
 
-  <div class="api-header">
-    <div>
-      <h3>Production Server</h3>
-      <span>Created Jun 20, 2026</span>
+  <div class="modal-card">
+
+    <h2>Create API Key</h2>
+
+    <p>
+      Give your key a name so you can identify it later.
+    </p>
+
+    <input
+      type="text"
+      id="keyName"
+      placeholder="Production Server"
+    >
+
+    <div class="modal-actions">
+
+      <button onclick="closeCreateModal()">
+        Cancel
+      </button>
+
+      <button onclick="generateKey()">
+        Create
+      </button>
+
     </div>
-  </div>
-
-  <div class="key-box">
-    pdb_abcd*****...*****xyz1
-  </div>
-
-  <div class="actions">
-
-    <button class="show-btn">
-      Show
-    </button>
-
-    <button class="copy-btn">
-      Copy
-    </button>
-
-    <button class="delete-btn">
-      Delete
-    </button>
 
   </div>
 
-  </div>
+</div>
+
+  
 <div class="modal" id="deleteModal">
 
   <div class="modal-card">
@@ -227,14 +230,20 @@ button{
 
 </footer>
 <script>
-
+let keyName = document.getElementById('keyName').value
 async function generateKey(){
 
   const response = await fetch(
     `${API_URL}/generate-api-key`,
     {
       method:"POST",
-      credentials:"include"
+      credentials:"include",
+      headers:{
+    "Content-Type":"application/json"
+  },
+  body:JSON.stringify({
+    name:keyName
+  })
     }
   )
 
