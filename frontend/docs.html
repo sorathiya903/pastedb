@@ -5,12 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>PasteDB Python SDK Docs</title>
-
+  <link rel="icon" href="/favicon.png">
+<link rel="canonical" href="https://pastedb.netlify.app/docs">
+  
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta name="description" content="Official PasteDB Python SDK documentation. Create, manage and automate pastes using the PasteDB API.">
 
+<meta name="robots" content="index,follow">
+
+<meta property="og:title" content="PasteDB Python SDK Docs">
+<meta property="og:description" content="Official Python SDK documentation for PasteDB.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pastedb.netlify.app/docs">
+<meta property="og:image" content="https://pastedb.netlify.app/og-image.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PasteDB Python SDK Docs">
+<meta name="twitter:description" content="Official Python SDK documentation for PasteDB.">
+<meta name="twitter:image" content="https://pastedb.netlify.app/og-image.png">
+
+  <script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"TechArticle",
+  "headline":"PasteDB Python SDK Documentation",
+  "author":{
+    "@type":"Person",
+    "name":"Aditya Sorathiya"
+  },
+  "publisher":{
+    "@type":"Organization",
+    "name":"PasteDB"
+  },
+  "url":"https://pastedb.netlify.app/docs"
+}
+  </script>
 <style>
 
 :root{
@@ -486,6 +518,11 @@ SCROLLBAR
       Official Python SDK for interacting with the PasteDB API.
       Create pastes, manage your account, and automate workflows
       directly from Python.
+
+      <a href="https://github.com/sorathiya903/pastedb"
+target="_blank">
+View on GitHub
+      </a>
     </p>
 
     <div class="badge">
@@ -881,7 +918,14 @@ except Exception as e:
   </section>
 
 </div>
-
+<footer style="
+margin-top:80px;
+padding:30px;
+border-top:1px solid #1f1f1f;
+text-align:center;
+color:#888;">
+© 2026 PasteDB • Built by Aditya Sorathiya
+</footer>
 <script>
 
 const sidebar =
@@ -912,8 +956,10 @@ function copyCode(id){
     document.getElementById(id).innerText;
 
   navigator.clipboard.writeText(text);
-
-  alert("Copied!");
+btn.innerText = "Copied!";
+setTimeout(()=>{
+  btn.innerText = "Copy";
+},2000);
 }
 
 </script>
