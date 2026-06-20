@@ -553,6 +553,7 @@ button{
   <div class="toast" id="toast"></div>
 <script>
   const sidebar = document.getElementById("sidebar")
+  const overlay = document.getElementById("overlay");
 function openMenu(){
   sidebar.classList.add('open');
   overlay.classList.add('show')
@@ -707,7 +708,7 @@ async function loadKeys(){
 
     div.innerHTML = `
 
-      div.innerHTML = `
+      
 
 <div class="api-card-header">
 
@@ -759,7 +760,7 @@ async function loadKeys(){
 </div>
 
 `;
-    `;
+    
 
     container.appendChild(div);
   });
