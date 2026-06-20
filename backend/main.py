@@ -1704,11 +1704,21 @@ async def toggle_star(
 # API KEYS SECTION
 # =========================
 
+def mask_api_key(key: str):
+    if len(key) <= 16:
+        return key
+
+    return f"{key[:8]}*****...*****{key[-4:]}"
+
+class ApiKeyRequest(BaseModel):
+    name: str
+
+
 @app.post("/generate-api-key")
 async def generate_api_key(
+    data: ApiKeyRequest,
     user=Depends(get_current_user)
 ):
-
     email = user.get("email")
 
     if not email:
@@ -1717,27 +1727,28 @@ async def generate_api_key(
             detail="Unauthorized"
         )
 
-    # Generate secure API key
-    api_key = secrets.token_hex(32)
+    # pdb_ prefix
+    api_key = "pdb_" + secrets.token_hex(32)
 
-    # Save API key
     api_keys_collection.insert_one({
         "email": email,
+        "name": data.name.strip(),
         "api_key": api_key,
         "created_at": datetime.now(timezone.utc)
     })
 
     return {
         "status": "success",
-        "api_key": api_key
+        "api_key": api_key,
+        "name": data.name
     }
+
 
 
 @app.get("/my-api-keys")
 async def my_api_keys(
     user=Depends(get_current_user)
 ):
-
     email = user.get("email")
 
     keys = list(
@@ -1747,9 +1758,22 @@ async def my_api_keys(
         )
     )
 
+    result = []
+
+    for item in keys:
+        result.append({
+            "name": item.get("name", "Untitled Key"),
+            "api_key": mask_api_key(
+                item["api_key"]
+            ),
+            "full_api_key": item["api_key"],
+            "created_at": item["created_at"]
+        })
+
     return {
-        "keys": keys
+        "keys": result
     }
+
 
 
 @app.delete("/delete-api-key/{api_key}")
@@ -1778,7 +1802,7 @@ async def delete_api_key(
     }
 
 
-# =========================
+# ========================
 # API CREATE PASTE
 # =========================
 
