@@ -328,9 +328,23 @@ button{
       
   }
 
+  .sidebar{position:fixed;left:-280px;top:0;width:260px;height:100%;background:#111;border-right:1px solid rgba(255,255,255,.08);transition:.25s;padding:20px}
+.sidebar.open{left:0}
+.sidebar a{display:block;color:#fff;text-decoration:none;padding:12px 0}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5)}
+.overlay.show{display:block}
+
 </style>
 </head>
 <body>
+  <div class="sidebar" id="sidebar">
+<h2>PasteDB</h2>
+<a href="#">API Keys</a>
+<h4>Resources</h4>
+<a href="/docs">API Documentation</a>
+<a href="https://github.com/sorathiya903/pastedb/" target="_blank">GitHub Repository</a>
+</div>
+
   <button class="fab" onclick="openCreateModal()">+</button>
 
 
@@ -462,6 +476,15 @@ button{
 </footer>
   <div class="toast" id="toast"></div>
 <script>
+  const sidebar = document.getElementById("sidebar")
+function openMenu(){
+  sidebar.classList.add('open');
+  overlay.classList.add('show')
+}
+function closeMenu(){
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show')
+}
 
 let deleteTarget = null;
 
