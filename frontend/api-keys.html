@@ -334,6 +334,82 @@ button{
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5)}
 .overlay.show{display:block}
 
+  .card{
+  background:#171a21;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:16px;
+}
+
+.api-card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.api-name{
+  font-size:18px;
+  font-weight:600;
+  color:#fff;
+}
+
+.api-date{
+  margin-top:4px;
+  font-size:13px;
+  color:#888;
+}
+
+.api-badge{
+  background:#122018;
+  color:#65d18a;
+  border:1px solid rgba(101,209,138,.15);
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.api-key-section{
+  margin-top:18px;
+}
+
+.key-label{
+  font-size:12px;
+  color:#888;
+  margin-bottom:8px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.key{
+  background:#101318;
+  border:1px solid rgba(255,255,255,.06);
+  padding:14px;
+  border-radius:12px;
+  font-family:monospace;
+  color:#d5d9e2;
+  word-break:break-all;
+}
+
+.api-card-actions{
+  margin-top:16px;
+  display:flex;
+  gap:10px;
+}
+
+.copy-btn{
+  flex:1;
+  background:#232834;
+  color:white;
+  margin:0;
+}
+
+.delete-btn{
+  background:#ff4d4d;
+  color:white;
+  margin:0;
+  }
 </style>
 </head>
 <body>
@@ -613,43 +689,58 @@ async function loadKeys(){
 
     div.innerHTML = `
 
-      <div class="api-name">
-        ${item.name}
-      </div>
+      div.innerHTML = `
 
-      <div class="api-date">
-        ${new Date(
-          item.created_at
-        ).toLocaleDateString()}
-      </div>
+<div class="api-card-header">
 
-      <div class="key-box">
+  <div>
 
-        <div class="key">
-          ${item.api_key}
-        </div>
+    <div class="api-name">
+      ${item.name}
+    </div>
 
-        <div class="actions">
+    <div class="api-date">
+      Created ${new Date(item.created_at)
+        .toLocaleDateString()}
+    </div>
 
-          <button
-          class="copy-btn"
-          onclick="copyKey(
-          '${item.full_api_key}'
-          )">
-          Copy
-          </button>
+  </div>
 
-          <button
-          class="delete-btn"
-          onclick="openDeleteModal(
-          '${item.full_api_key}'
-          )">
-          Delete
-          </button>
+  <div class="api-badge">
+    Active
+  </div>
 
-        </div>
+</div>
 
-      </div>
+<div class="api-key-section">
+
+  <div class="key-label">
+    API Key
+  </div>
+
+  <div class="key">
+    ${item.api_key}
+  </div>
+
+</div>
+
+<div class="api-card-actions">
+
+  <button
+    class="copy-btn"
+    onclick="copyKey('${item.full_api_key}')">
+    Copy Key
+  </button>
+
+  <button
+    class="delete-btn"
+    onclick="openDeleteModal('${item.full_api_key}')">
+    Delete
+  </button>
+
+</div>
+
+`;
     `;
 
     container.appendChild(div);
