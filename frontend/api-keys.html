@@ -98,7 +98,61 @@ button{
 </style>
 </head>
 <body>
+  <div class="api-card">
 
+  <div class="api-header">
+    <div>
+      <h3>Production Server</h3>
+      <span>Created Jun 20, 2026</span>
+    </div>
+  </div>
+
+  <div class="key-box">
+    pdb_abcd*****...*****xyz1
+  </div>
+
+  <div class="actions">
+
+    <button class="show-btn">
+      Show
+    </button>
+
+    <button class="copy-btn">
+      Copy
+    </button>
+
+    <button class="delete-btn">
+      Delete
+    </button>
+
+  </div>
+
+  </div>
+<div class="modal" id="deleteModal">
+
+  <div class="modal-card">
+
+    <h2>Delete API Key?</h2>
+
+    <p>
+      This action cannot be undone.
+    </p>
+
+    <div class="modal-actions">
+
+      <button onclick="closeDeleteModal()">
+        Cancel
+      </button>
+
+      <button class="danger">
+        Delete
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 <div class="container">
 
   <div class="card">
@@ -118,7 +172,60 @@ button{
   <div id="keysContainer"></div>
 
 </div>
+  <div class="resources">
 
+  <h2>Developer Resources</h2>
+
+  <div class="resource-grid">
+
+    <a href="/docs" class="resource-card">
+      <h3>API Documentation</h3>
+      <p>Learn how to use the PasteDB API.</p>
+    </a>
+
+    <a
+      href="https://github.com/sorathiya903/pastedb"
+      target="_blank"
+      class="resource-card"
+    >
+      <h3>GitHub Repository</h3>
+      <p>View source code and report issues.</p>
+    </a>
+
+  </div>
+
+  </div>
+<footer class="footer">
+
+  <div class="footer-grid">
+
+    <div>
+      <h3>PasteDB</h3>
+      <p>
+        Fast and secure paste sharing platform.
+      </p>
+    </div>
+
+    <div>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/create">Create</a>
+      <a href="/explore">Explore</a>
+    </div>
+
+    <div>
+      <a href="/docs">API Docs</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/contact">Contact</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 PasteDB • Built by Aditya Sorathiya
+  </div>
+
+</footer>
 <script>
 
 async function generateKey(){
