@@ -1,1 +1,1 @@
-const API_URL = "https://pastedb-hd1j.onrender.com"
+const API_URL = "https://pastedb-rw62.onrender.com"
