@@ -678,7 +678,12 @@ document
 .onclick = confirmDelete;
 
 async function loadKeys(){
-
+  const container =
+    document.getElementById(
+      "keysContainer"
+    );
+  
+container.innerHTML = "Loading your API Keys...";
   const response = await fetch(
     `${API_URL}/my-api-keys`,
     {
@@ -692,11 +697,11 @@ async function loadKeys(){
     "totalKeys"
   ).innerText = data.keys.length;
 
-  const container =
-    document.getElementById(
-      "keysContainer"
-    );
-
+  
+if(data.keys===[]){
+container.innerHTML ="No keys found. Make one by clicking on the + icon"
+                          
+}
   container.innerHTML = "";
 
   data.keys.forEach(item=>{
