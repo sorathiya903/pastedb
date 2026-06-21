@@ -468,7 +468,7 @@ button{
         Cancel
       </button>
 
-      <button onclick="generateKey()">
+      <button id="createBtn" onclick="generateKey()">
         Create
       </button>
 
@@ -495,7 +495,7 @@ button{
         Cancel
       </button>
 
-      <button class="danger">
+      <button id="deleteBtn" class="danger">
         Delete
       </button>
 
@@ -620,8 +620,9 @@ async function generateKey(){
     showToast("Enter key name");
     return;
   }
-
-  const response = await fetch(
+const createBtn = document.getElementById("createBtn")
+  createBtn.innerHTML = "Creating..."
+    const response = await fetch(
     `${API_URL}/generate-api-key`,
     {
       method:"POST",
@@ -646,7 +647,7 @@ async function generateKey(){
     .value = "";
 
     showToast("API Key Created");
-
+createBtn.innerHTML ="Create"
     loadKeys();
   }
 }
@@ -654,7 +655,8 @@ async function generateKey(){
 async function confirmDelete(){
 
   if(!deleteTarget) return;
-
+ const deleteBtn = document.getElementById("deleteBtn")
+deleteBtn.innerHTML = "Deleting..."
   const response = await fetch(
     `${API_URL}/delete-api-key/${deleteTarget}`,
     {
@@ -668,7 +670,7 @@ async function confirmDelete(){
     closeDeleteModal();
 
     showToast("API Key Deleted");
-
+deleteBtn.innerHTML = "Delete"
     loadKeys();
   }
 }
