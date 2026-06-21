@@ -64,6 +64,7 @@
   padding:0;
   box-sizing:border-box;
 }
+  html{scroll-behavior:smooth}
 
 body{
 
@@ -98,7 +99,7 @@ SIDEBAR
   border-right:1px solid var(--border);
 
   padding:22px;
-
+overflow-y:scroll;
   transition:.3s ease;
 
   z-index:1000;
@@ -512,7 +513,6 @@ position:fixed;
 
 <a href="#delete">Delete Paste</a>
 
-<a href="#analytics">Analytics</a>
 
 <a href="#errors">Error Handling</a>
 
@@ -715,40 +715,15 @@ HTTP 401 Unauthorized
 
   </section>
 
-  <!-- METHODS -->
-  <section class="section" id="methods">
 
-    <h2>Methods</h2>
-
-    <p>
-      Current supported SDK methods:
-    </p>
-
-    <div class="code-block">
-
-      <div class="code-header">
-
-        <span>python</span>
-
-      </div>
-
-<pre>cl.me()
-
-cl.makePaste(
-    title="Hello",
-    content="My first paste",
-    syntax="python",
-    visibility="public"
-)</pre>
-
-    </div>
-
+  
+    
     
     <!-- =========================
 METHOD : me()
 ========================= -->
 
-<section class="section" id="method-me">
+<section class="section" id="me">
 
   <h2>Client.me()</h2>
 
