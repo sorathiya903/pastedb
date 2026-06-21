@@ -508,7 +508,9 @@ position:fixed;
 <a href="#create">Create Paste</a>
 
 <a href="#get">Get Paste</a>
-
+<a href="#method-api-user-pastes">
+  Get all pastes()
+</a>
 <a href="#update">Update Paste</a>
 
 <a href="#delete">Delete Paste</a>
@@ -950,7 +952,90 @@ print(paste["content"])</pre>
 </div>
 
 </section>
+<!-- =========================
+METHOD : api_user_pastes()
+========================= -->
 
+<section class="section" id="method-api-user-pastes">
+
+  <h2>Client.api_user_pastes()</h2>
+
+  <p>
+    Returns all pastes owned by the authenticated API key.
+    This method sends a GET request to:
+  </p>
+
+  <div class="badge">
+    GET /api/pastes
+  </div>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>python</span>
+
+      <button
+        class="copy-btn"
+        onclick="copyCode('apiUserPastesCode')"
+      >
+        Copy
+      </button>
+
+    </div>
+
+<pre id="apiUserPastesCode">from pastedb import Client
+
+client = Client(
+    api_key="your_api_key"
+)
+
+pastes = client.api_user_pastes()
+
+print(pastes)</pre>
+
+  </div>
+
+  <div class="output">
+{
+  "count": 2,
+  "results": [
+    {
+      "_id": "6856abc123456789abcdef12",
+      "title": "My First Paste",
+      "custom_id": "api",
+      "syntax": "python",
+      "visibility": "public"
+    },
+    {
+      "_id": "6856abc123456789abcdef34",
+      "title": "Documentation",
+      "custom_id": "docs",
+      "syntax": "markdown",
+      "visibility": "public"
+    }
+  ]
+}
+  </div>
+
+  <p style="margin-top:20px;">
+    This method is useful for listing, managing,
+    updating, or deleting your existing pastes.
+  </p>
+
+  <h3 style="margin-top:28px;">
+    Invalid API Key
+  </h3>
+
+  <div class="output">
+HTTP 401 Unauthorized
+
+{
+  "detail": "Invalid API key"
+}
+  </div>
+
+</section>
   <section class="section" id="update">
 
 <h2>Client.update_paste()</h2>
@@ -965,8 +1050,8 @@ PATCH /pastes/{paste_id}
 <span>python</span>
 </div>
 
-<pre>client.update_paste(
-    "abc123",
+<pre>client.api_update_paste(
+    "6a37bd.......9d978c9f", # No custom IDs, only three id provided by Default. Get that id by api_user_pastes method
     {
         "title":"Updated Title",
         "content":"New content here",
