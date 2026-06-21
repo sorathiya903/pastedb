@@ -698,10 +698,24 @@ container.innerHTML = "Loading your API Keys...";
   ).innerText = data.keys.length;
 
   
-if(data.keys===[]){
-container.innerHTML ="No keys found. Make one by clicking on the + icon"
-return                          
+
+
+if (data.keys.length === 0) {
+
+  container.innerHTML = `
+    <div class="card" style="text-align:center">
+      <h3>No API Keys</h3>
+      <p>
+        Create your first API key by clicking
+        the + button.
+      </p>
+    </div>
+  `;
+
+  return;
 }
+
+
   container.innerHTML = "";
 
   data.keys.forEach(item=>{
