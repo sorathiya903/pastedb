@@ -662,7 +662,7 @@ print(paste["id"])</pre>
 
 # initialize client
 cl = p.Client(
-    "your_api_key_here"
+    "pdb_xxxxxxxxxxxxx"
 )
 
 # get account info
@@ -987,7 +987,7 @@ METHOD : api_user_pastes()
 <pre id="apiUserPastesCode">from pastedb import Client
 
 client = Client(
-    api_key="your_api_key"
+    api_key="pdb_xxxxxxxxxxxxx"
 )
 
 pastes = client.api_user_pastes()
@@ -1077,7 +1077,9 @@ DELETE /pastes/{paste_id}
 <span>python</span>
 </div>
 
-<pre>client.api_delete_paste("abc123")</pre>
+<pre>client.api_delete_paste("abc123")
+# No custom IDs, only the id provided by Default. Get that id by api_user_pastes method
+    </pre>
 
 </div>
 
@@ -1095,7 +1097,7 @@ DELETE /pastes/{paste_id}
 <pre>from pastedb import Client
 
 client = Client(
-    api_key="pdb_live_xxx",
+    api_key="pdb_xxx",
     base_url="https://api.pastedb.netlify.app"
 )</pre>
 
