@@ -495,27 +495,36 @@ position:fixed;
 
   <div class="sidebar-links">
 
-    <a href="#installation">
-      Installation
-    </a>
+    
+<a href="#installation">Installation</a>
 
-    <a href="#basic">
-      Basic Usage
-    </a>
+<a href="#authentication">Authentication</a>
 
-    <a href="#authentication">
-      Authentication
-    </a>
+<a href="#me">Me()</a>
 
-    <a href="#errors">
-      Error Handling
-    </a>
+<a href="#quickstart">Quick Start</a>
 
-    <a href="#methods">
-      Methods
-    </a>
+<a href="#create">Create Paste</a>
 
-  </div>
+<a href="#get">Get Paste</a>
+
+<a href="#update">Update Paste</a>
+
+<a href="#delete">Delete Paste</a>
+
+<a href="#analytics">Analytics</a>
+
+<a href="#errors">Error Handling</a>
+
+<a href="#config">Configuration</a>
+
+<a href="#cli">CLI Upload</a>
+
+<a href="#syntax">Supported Syntax</a>
+
+    </div>
+
+  
 
 </div>
 
@@ -546,9 +555,13 @@ position:fixed;
     </h1>
 
     <p>
-      Official Python SDK for interacting with the PasteDB API.
-      Create pastes, manage your account, and automate workflows
-      directly from Python.
+    
+Official Python SDK for PasteDB — a FastAPI powered
+text, code and image sharing platform.
+
+Create, retrieve, update and manage pastes directly
+from Python using a simple developer-friendly API.
+
 
       <a style="color:grey;text-decoration:none" href="https://github.com/sorathiya903/pastedb"
 target="_blank">
@@ -586,6 +599,40 @@ View on GitHub
 <pre id="installCode">pip install pastedb</pre>
 
     </div>
+
+  </section>
+  <section class="section" id="quickstart">
+
+<h2>Quick Start</h2>
+
+<p>
+Create your first paste in seconds.
+</p>
+
+<div class="code-block">
+
+<div class="code-header">
+<span>python</span>
+<button class="copy-btn" onclick="copyCode('quickCode')">
+Copy
+</button>
+</div>
+
+<pre id="quickCode">from pastedb import Client
+
+client = Client(
+    api_key="pdb_xxxxxxxxxxxxx"
+)
+
+paste = client.create_paste({
+    "content": "print('Hello from PasteDB!')",
+    "title": "Hello World",
+    "syntax": "python"
+})
+
+print(paste["id"])</pre>
+
+</div>
 
   </section>
 
@@ -729,21 +776,21 @@ METHOD : me()
 
     </div>
 
-<pre id="meMethodCode">import pastedb as p
+<pre id="meMethodCode">
+  from pastedb import Client
 
-cl = p.Client(
-    "your_api_key"
+client = Client(
+    api_key="pdb_xxxxxxxxxxxxx"
 )
 
-user = cl.me()
-
-print(user)</pre>
+print(client.me())</pre>
 
   </div>
 
   <div class="output">
 {
-  "email": "your@email.com"
+  "email":"your@email.com",
+  "created_at":"2026-06-21T05:26:34.361000"
 }
   </div>
 
@@ -762,13 +809,15 @@ HTTP 401 Unauthorized
 </section>
 
 <!-- =========================
-METHOD : makePaste()
+METHOD : createPaste()
 ========================= -->
 
 <section class="section" id="method-makepaste">
 
-  <h2>Client.makePaste()</h2>
-
+<h2>Client.create_paste()</h2>
+<div class="badge">
+POST /pastes
+</div>
   <p>
     Creates a new paste using a Python dictionary.
     This method internally sends a POST request to:
@@ -813,32 +862,23 @@ METHOD : makePaste()
 
     </div>
 
-<pre id="makePasteCode">import pastedb as p
+<pre id="makePasteCode">from pastedb import Client
 
-cl = p.Client(
-    "your_api_key"
-)
+client = Client()
 
-paste = cl.makePaste({
-
-    "title": "Hello World",
-
-    "content": "My first paste",
-
-    "syntax": "python",
-
-    "visibility": "public"
-})
-
-print(paste)</pre>
+paste = client.create_paste({
+    "content":"Hello World",
+    "title":"My Paste",
+    "syntax":"python"
+})</pre>
 
   </div>
 
   <div class="output">
 {
-  "status": "success",
-  "id": "682dxxxxxxxx",
-  "custom_id": null
+  "status":"success",
+  "id":"6a378ece819c1a9b62472339",
+  "custom_id":null
 }
   </div>
 
@@ -914,6 +954,125 @@ HTTP 401 Unauthorized
 
 </section>
   </section>
+<section class="section" id="get">
+
+<h2>Client.get_paste()</h2>
+
+<div class="badge">
+GET /pastes/{paste_id}
+</div>
+
+<div class="code-block">
+
+<div class="code-header">
+<span>python</span>
+</div>
+
+<pre>paste = client.get_paste("abc123")
+
+print(paste["title"])
+print(paste["content"])</pre>
+
+</div>
+
+</section>
+
+  <section class="section" id="update">
+
+<h2>Client.update_paste()</h2>
+
+<div class="badge">
+PATCH /pastes/{paste_id}
+</div>
+
+<div class="code-block">
+
+<div class="code-header">
+<span>python</span>
+</div>
+
+<pre>client.update_paste(
+    "abc123",
+    {
+        "title":"Updated Title",
+        "content":"New content here",
+        "syntax":"markdown"
+    }
+)</pre>
+
+</div>
+
+  </section>
+
+  <section class="section" id="delete">
+
+<h2>Client.delete_paste()</h2>
+
+<div class="badge">
+DELETE /pastes/{paste_id}
+</div>
+
+<div class="code-block">
+
+<div class="code-header">
+<span>python</span>
+</div>
+
+<pre>client.delete_paste("abc123")</pre>
+
+</div>
+
+  </section>
+  <section class="section" id="config">
+
+<h2>Client Configuration</h2>
+
+<div class="code-block">
+
+<div class="code-header">
+<span>python</span>
+</div>
+
+<pre>from pastedb import Client
+
+client = Client(
+    api_key="pdb_live_xxx",
+    base_url="https://api.pastedb.netlify.app"
+)</pre>
+
+</div>
+
+  </section>
+  
+<section id="syntax" class="card">
+
+<h2>Supported Syntaxes</h2>
+
+<pre><code>
+text
+python
+javascript
+typescript
+json
+yaml
+markdown
+html
+css
+sql
+bash
+c
+cpp
+java
+go
+rust
+php
+ruby
+swift
+kotlin
+  and many more...
+</code></pre>
+
+</section>
 
   <!-- ERRORS -->
   <section class="section" id="errors">
@@ -958,7 +1117,8 @@ padding:30px;
 border-top:1px solid #1f1f1f;
 text-align:center;
 color:#888;">
-© 2026 PasteDB • Built by Aditya Sorathiya
+© 2026 PasteDB • Built by Aditya Sorathiya • Built with ❤️ using FastAPI
+
 </footer>
 <script>
 
