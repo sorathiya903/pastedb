@@ -14,7 +14,7 @@ from auth import (
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse 
 import io
-
+from coolname import generate_slug
 import os
 import re
 from collections import Counter
@@ -2177,3 +2177,94 @@ async def api_user_pastes(
         "count": len(results),
         "results": results
                                            }
+
+
+
+class ExtensionPaste(BaseModel):
+
+    content: str
+
+    title: Optional[str] = None
+
+    syntax: str = "text"
+
+    visibility: str = "public"
+
+    password: Optional[str] = None
+
+    custom_id: Optional[str] = None
+
+
+
+def generate_random_title():
+
+    while True:
+
+        title = generate_slug(3)
+
+        existing = pastes_collection.find_one({
+            "title": title
+        })
+
+        if not existing:
+            return title
+
+
+@app.post("/ext/create")
+async def extension_create(
+    paste: ExtensionPaste,
+    api_user=Depends(get_api_user)
+):
+
+    
+    data = paste.model_dump()
+
+    # Generate title if none supplied
+    if not data.get("title"):
+
+        data["title"] = generate_random_title()
+
+    # Generate custom id from title if none supplied
+    if not data.get("custom_id"):
+
+        custom_id = (
+            data["title"]
+            .lower()
+            .replace(".", "-")
+            .replace("_", "-")
+            .replace(" ", "-")
+        )
+
+        original = custom_id
+        counter = 1
+
+        while pastes_collection.find_one({
+            "custom_id": custom_id
+        }):
+
+            custom_id = f"{original}-{counter}"
+            counter += 1
+
+        data["custom_id"] = custom_id
+
+    user_doc = users_collection.find_one({
+    "email": api_user["email"] })
+
+    if not user_doc:
+        raise HTTPException(
+            404,
+            "User not found"
+        )
+
+    return await create_paste_logic(
+        data,
+        user_doc
+    )
+
+    return {
+        "success": True,
+        "title": data["title"],
+        "custom_id": data["custom_id"],
+        "url": f"https://pastedb.netlify.app/paste/{data['custom_id']}",
+        "paste_id": result["id"]
+    }
