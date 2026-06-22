@@ -11,3 +11,4 @@ user-agents
 ua-parser
 pyyaml
 httpx
+coolname
