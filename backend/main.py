@@ -2256,15 +2256,6 @@ async def extension_create(
             "User not found"
         )
 
-    return await create_paste_logic(
-        data,
-        user_doc
-    )
-
-    return {
-        "success": True,
-        "title": data["title"],
-        "custom_id": data["custom_id"],
-        "url": f"https://pastedb.netlify.app/paste/{data['custom_id']}",
-        "paste_id": result["id"]
-    }
+    result = await create_paste_logic( data, user_doc)
+    return { "success": True,  "title": data["title"],  "custom_id": data["custom_id"],  "url": f"https://pastedb.netlify.app/paste/{data['custom_id']}",  "paste_id": result["id"]
+           }
