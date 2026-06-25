@@ -412,6 +412,21 @@ async def create_paste_logic(
     elif expiration in ["1d", "1day"]:
         expire_at = now + timedelta(days=1)
 
+    elif expiration == "30m":
+    expire_at = now + timedelta(minutes=30)
+
+    elif expiration == "6h":
+        expire_at = now + timedelta(hours=6)
+
+    elif expiration == "12h":
+        expire_at = now + timedelta(hours=12)
+
+    elif expiration == "3d":
+        expire_at = now + timedelta(days=3)
+
+    elif expiration == "30d":
+        expire_at = now + timedelta(days=30)
+
     elif expiration in ["1w", "1week"]:
         expire_at = now + timedelta(days=7)
 
@@ -2190,10 +2205,11 @@ class ExtensionPaste(BaseModel):
 
     visibility: str = "public"
 
+    expiration: str = "never"
+
     password: Optional[str] = None
 
     custom_id: Optional[str] = None
-
 
 
 def generate_random_title():
