@@ -810,24 +810,42 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
 
     now = datetime.now(timezone.utc)
 
-    expiry = None
+    expire_at= None
     expiration = data.get("expiration")
 
     if expiration in ["10m", "10min"]:
-        expiry = now + timedelta(minutes=10)
-    elif expiration in ["1h", "1hour"]:
-        expiry = now + timedelta(hours=1)
-    elif expiration in ["1d", "1day"]:
-        expiry = now + timedelta(days=1)
-    elif expiration in ["1w", "1week"]:
-        expiry = now + timedelta(days=7)
+        expire_at = now + timedelta(minutes=10)
 
+    elif expiration in ["1h", "1hour"]:
+        expire_at = now + timedelta(hours=1)
+
+    elif expiration in ["1d", "1day"]:
+        expire_at = now + timedelta(days=1)
+
+    elif expiration == "30m":
+        expire_at = now + timedelta(minutes=30)
+
+    elif expiration == "6h":
+        expire_at = now + timedelta(hours=6)
+
+    elif expiration == "12h":
+        expire_at = now + timedelta(hours=12)
+
+    elif expiration == "3d":
+        expire_at = now + timedelta(days=3)
+
+    elif expiration == "30d":
+        expire_at = now + timedelta(days=30)
+
+    elif expiration in ["1w", "1week"]:
+        expire_at = now + timedelta(days=7)
+        
     update_data = {
         "title": data.get("title"),
         "content": data.get("content"),
         "syntax": data.get("syntax"),
         "expiration": expiration,
-        "expire_at": expiry,
+        "expire_at": expire_at,
         "visibility":data.get("visibility")
     }
 
