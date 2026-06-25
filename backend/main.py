@@ -413,7 +413,7 @@ async def create_paste_logic(
         expire_at = now + timedelta(days=1)
 
     elif expiration == "30m":
-    expire_at = now + timedelta(minutes=30)
+        expire_at = now + timedelta(minutes=30)
 
     elif expiration == "6h":
         expire_at = now + timedelta(hours=6)
