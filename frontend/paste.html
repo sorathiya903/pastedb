@@ -1574,8 +1574,36 @@ document
   .getElementById("createdSkeleton")
   .style.display = "none";
 
+    
+if(data.burn_after_read){
+  expiration.textContent = "Reloading this paste will expire this paste"
+  const footer = document.querySelector(".footer");
+
+const warning = document.createElement("div");
+
+warning.innerHTML = `
+⚠️ <strong>Burn After Read:</strong>
+This paste is destroyed after it is viewed.
+Reloading or refreshing this page may permanently destroy it.
+`;
+
+warning.style.cssText = `
+margin-top:18px;
+padding:14px 18px;
+background:rgba(255,165,0,.12);
+border:1px solid rgba(255,165,0,.35);
+border-radius:14px;
+color:var(--text);
+font-size:14px;
+line-height:1.6;
+`;
+
+footer.appendChild(warning);
+}
       
 if (data.expire_at) {
+
+  
 
   const now = new Date();
 
