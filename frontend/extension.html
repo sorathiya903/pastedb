@@ -24,7 +24,7 @@ header{position:fixed;top:18px;left:50%;transform:translateX(-50%);width:92%;max
 .hero{text-align:center;padding:150px 20px 70px}
 .hero h1{font-size:50px;animation:up .7s}
 .hero p{color:#999;max-width:700px;margin:20px auto}
-.btn{display:inline-block;background:#fff;color:#000;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;margin:6px;transition:.3s}
+.btn{display:inline-block;background:#fff;color:#000;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;margin:6px;transition:0.3s}
 .btn:hover{transform:translateY(-3px)}
 .section{max-width:1100px;margin:auto;padding:60px 20px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
@@ -48,14 +48,17 @@ footer{margin-top:70px;border-top:1px solid #222;background:#111}
 </script>
 </head>
 <body>
-<header><div class="nav"><div class="logo">PasteDB</div><div><a href="/">Home</a><a href="/docs">Docs</a><a href="/dashboard">Dashboard</a><a href="/extension">Extension</a></div></div></header>
+<header><div class="nav"><div class="logo"><a style="text-decoration:none" href="/">PasteDB</a></div><div><a href="/docs">Docs</a><a href="/dashboard">Dashboard</a><a href="/create">Create</a></div></div></header>
 
 <section class="hero">
 <div class="float" style="font-size:72px">🧩</div>
 <h1>Official VS Code Extension</h1>
 <p>Upload files or selected code to PasteDB directly from VS Code. Secure API key storage, dashboard, recent pastes, progress bar and more.</p>
-<a class="btn" href="#">Install from Marketplace</a>
-<a class="btn" href="/">Open PasteDB</a>
+<a class="btn"
+href="https://marketplace.visualstudio.com/items?itemName=adityasorathiya.pastedb"
+target="_blank">
+Install from Marketplace
+</a><a class="btn" href="/">Open PasteDB</a>
 </section>
 
 <section class="section">
@@ -72,7 +75,7 @@ footer{margin-top:70px;border-top:1px solid #222;background:#111}
 
 <section class="section install">
 <h2>Install</h2><br>
-<pre id="cmd">ext install adityasorathiya.pastedb</pre><br>
+<pre id="cmd"><code>ext install adityasorathiya.pastedb</code></pre><br>
 <button onclick="copyCmd()">Copy VS Code Command</button>
 </section>
 
@@ -80,7 +83,7 @@ footer{margin-top:70px;border-top:1px solid #222;background:#111}
   <section class="section">
 
 <h2>Install from VS Code</h2>
-
+<br>
 <div class="card show">
 
 <h3>🔎 Find it in the Extensions Marketplace</h3>
@@ -129,5 +132,4 @@ View on Marketplace
 function copyCmd(){navigator.clipboard.writeText(cmd.innerText);const b=event.target;b.innerText="Copied ✓";setTimeout(()=>b.innerText="Copy VS Code Command",1500);}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")}),{threshold:.15});
 document.querySelectorAll(".card").forEach(c=>io.observe(c));
-</script>
-</body></html>
+</sc
