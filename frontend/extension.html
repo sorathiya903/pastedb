@@ -244,14 +244,156 @@ threshold:0.2
 });
 
 steps.forEach(step=>observer.observe(step));</script>
+
+<style>
+
+.faq-item{
+margin-bottom:18px;
+border:1px solid rgba(255,255,255,.08);
+border-radius:14px;
+overflow:hidden;
+background:#141414;
+transition:.3s;
+}
+
+.faq-question{
+width:100%;
+padding:22px;
+background:none;
+border:none;
+color:hsl(0,0%,80%);
+font-size:18px;
+font-weight:600;
+display:flex;
+justify-content:space-between;
+align-items:center;
+cursor:pointer;
+}
+
+.faq-question span{
+font-size:24px;
+transition:.35s;
+}
+
+.faq-answer{
+max-height:0;
+overflow:hidden;
+transition:max-height .45s ease,padding .35s ease;
+padding:0 22px;
+}
+
+.faq-answer p{
+color:#9a9a9a;
+line-height:1.8;
+padding-bottom:20px;
+}
+
+.faq-item.active .faq-answer{
+max-height:250px;
+padding-top:10px;
+}
+
+.faq-item.active .faq-question span{
+transform:rotate(45deg);
+}</style>
+
 <section class="section">
-<h2>FAQ</h2>
-<details><summary>Is it free?</summary><p>Yes.</p></details>
-<details><summary>Is my API key secure?</summary><p>Stored securely using VS Code Secret Storage.</p></details>
-<details><summary>Can I upload selected code?</summary><p>Yes.</p></details>
-<details><summary>Does it support every language?</summary><p>It uploads any text and sends the detected language.</p></details>
+<h2>Frequently Asked Questions </h2>
+
+<div class="faq-item">
+<button class="faq-question">Is the PasteDB extension free?<span>+</span></button>
+<div class="faq-answer"><p>Yes. The extension is completely free to install and use.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Do I need a PasteDB account?<span>+</span></button>
+<div class="faq-answer"><p>Yes. You'll need a free PasteDB account to generate an API key for uploading pastes.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Where can I generate my API key?<span>+</span></button>
+<div class="faq-answer"><p>Log in to your PasteDB account and open the Dashboard then go to menu then Generate API Key to generate and manage your API keys. <Br>
+    
+OR Simply go to the <a href="/api-keys" style="text-decoration:none;color:hsl(0,0%,80%)"> My API Keys Page</a></div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Is my API key stored securely?<span>+</span></button>
+<div class="faq-answer"><p>Yes. The extension stores your API key using Visual Studio Code's Secret Storage instead of plain text.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Can I upload only selected text?<span>+</span></button>
+<div class="faq-answer"><p>Yes. Select any text, right-click and choose <strong>PasteDB: Upload Selected Text</strong>.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Can I upload an entire file?<span>+</span></button>
+<div class="faq-answer"><p>Yes. Open any file and choose <strong>PasteDB: Upload Current File</strong>.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Which programming languages are supported?<span>+</span></button>
+<div class="faq-answer"><p>The extension works with any text file. It automatically detects the current file's language and sends it for syntax highlighting.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Can I create private pastes?<span>+</span></button>
+<div class="faq-answer"><p>Yes. You can choose Public or Private visibility from the PasteDB Dashboard inside VS Code.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Can I set paste expiration?<span>+</span></button>
+<div class="faq-answer"><p>Yes. Choose from multiple expiration options including 10 minutes, 1 hour, 1 day, 1 week, 30 days or Never.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Does the extension keep a history of my uploads?<span>+</span></button>
+<div class="faq-answer"><p>Yes. Recent uploads appear in the PasteDB sidebar for quick access.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Can the extension automatically copy the paste URL?<span>+</span></button>
+    <div class="faq-answer"><p> Yes. Enable <strong>Copy Link After Upload</strong> in the dashboard settings.</div></p>
+</div>
+
+
+
+<div class="faq-item">
+<button class="faq-question">What should I do if an upload fails?<span>+</span></button>
+<div class="faq-answer"><p>Check your internet connection, verify your API key, and make sure the PasteDB service is available.</div></p>
+</div>
+
+<div class="faq-item">
+<button class="faq-question">Where can I report bugs or request features?<span>+</span></button>
+<div class="faq-answer"><p>You can contact the developer through the <a href="/contact" style="text-decoration:none;color:white">Contact page</a> or the GitHub repository linked in the footer.</div></p>
+</div>
+
+
+
 </section>
 
+<script>
+
+document.querySelectorAll(".faq-question").forEach(btn=>{
+
+btn.onclick=()=>{
+
+const item=btn.parentElement;
+
+// Close other FAQs
+document.querySelectorAll(".faq-item").forEach(faq=>{
+if(faq!==item){
+faq.classList.remove("active");
+}
+});
+
+// Toggle current FAQ
+item.classList.toggle("active");
+
+};
+
+});</script>
 <footer>
 <div class="footer">
 <div><h3>PasteDB</h3><a href="/">Home</a><a href="/create">Create</a><a href="/explore">Explore</a></div>
