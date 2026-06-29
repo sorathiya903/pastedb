@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PasteDB VS Code Extension – Official Extension</title>
+<meta name="description" content="Official PasteDB VS Code Extension. Upload code snippets directly from VS Code with one click.">
+<meta name="keywords" content="PasteDB, VS Code extension, code sharing, snippets, pastebin">
+<link rel="canonical" href="https://pastedb.netlify.app/extension">
+<meta property="og:title" content="PasteDB VS Code Extension">
+<meta property="og:description" content="Upload code snippets directly from VS Code.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pastedb.netlify.app/extension">
+<meta property="og:image" content="https://pastedb.netlify.app/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+body{background:#0a0a0a;color:#fff;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background-image:radial-gradient(#1c1c1c 1px,transparent 1px);background-size:28px 28px;opacity:.35;z-index:-1}
+header{position:fixed;top:18px;left:50%;transform:translateX(-50%);width:92%;max-width:1100px;background:rgba(30,30,30,.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:18px;z-index:100}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.nav a{text-decoration:none;color:#aaa;margin-left:18px}
+.logo{font-weight:700}
+.hero{text-align:center;padding:150px 20px 70px}
+.hero h1{font-size:50px;animation:up .7s}
+.hero p{color:#999;max-width:700px;margin:20px auto}
+.btn{display:inline-block;background:#fff;color:#000;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;margin:6px;transition:.3s}
+.btn:hover{transform:translateY(-3px)}
+.section{max-width:1100px;margin:auto;padding:60px 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{background:#141414;border:1px solid #222;border-radius:14px;padding:20px;opacity:0;transform:translateY(25px);transition:.6s}
+.card.show{opacity:1;transform:none}
+.install{background:#111;padding:25px;border-radius:14px}
+pre{background:#000;padding:14px;border-radius:8px;overflow:auto}
+button{padding:10px 16px;border:none;border-radius:8px;background:#fff;cursor:pointer}
+details{background:#141414;border:1px solid #222;padding:15px;border-radius:12px;margin:12px 0}
+footer{margin-top:70px;border-top:1px solid #222;background:#111}
+.footer{max-width:1100px;margin:auto;padding:40px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:25px}
+.footer a{display:block;color:#999;text-decoration:none;margin:8px 0}
+.footer a:hover{color:#fff}
+.bottom{text-align:center;color:#777;padding:18px}
+@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.float{display:inline-block;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"PasteDB VS Code Extension","applicationCategory":"DeveloperApplication","operatingSystem":"Windows, Linux, macOS","url":"https://pastedb.netlify.app/extension"}
+</script>
+</head>
+<body>
+<header><div class="nav"><div class="logo">PasteDB</div><div><a href="/">Home</a><a href="/docs">Docs</a><a href="/dashboard">Dashboard</a><a href="/extension">Extension</a></div></div></header>
+
+<section class="hero">
+<div class="float" style="font-size:72px">🧩</div>
+<h1>Official VS Code Extension</h1>
+<p>Upload files or selected code to PasteDB directly from VS Code. Secure API key storage, dashboard, recent pastes, progress bar and more.</p>
+<a class="btn" href="#">Install from Marketplace</a>
+<a class="btn" href="/">Open PasteDB</a>
+</section>
+
+<section class="section">
+<h2>Features</h2><br>
+<div class="grid">
+<div class="card"><h3>⚡ One-click Upload</h3><p>Upload current file or selected text.</p></div>
+<div class="card"><h3>🔐 Secure API Key</h3><p>Stored in VS Code Secret Storage.</p></div>
+<div class="card"><h3>📋 Copy Link</h3><p>Automatically copy paste URL.</p></div>
+<div class="card"><h3>📚 Recent Pastes</h3><p>Quickly access previous uploads.</p></div>
+<div class="card"><h3>⏱ Expiration</h3><p>Choose default expiry.</p></div>
+<div class="card"><h3>🎨 Dashboard</h3><p>Configure all settings visually.</p></div>
+</div>
+</section>
+
+<section class="section install">
+<h2>Install</h2><br>
+<pre id="cmd">ext install adityasorathiya.pastedb</pre><br>
+<button onclick="copyCmd()">Copy VS Code Command</button>
+</section>
+
+<section class="section">
+<h2>FAQ</h2>
+<details><summary>Is it free?</summary><p>Yes.</p></details>
+<details><summary>Is my API key secure?</summary><p>Stored securely using VS Code Secret Storage.</p></details>
+<details><summary>Can I upload selected code?</summary><p>Yes.</p></details>
+<details><summary>Does it support every language?</summary><p>It uploads any text and sends the detected language.</p></details>
+</section>
+
+<footer>
+<div class="footer">
+<div><h3>PasteDB</h3><a href="/">Home</a><a href="/create">Create</a><a href="/explore">Explore</a></div>
+<div><h3>Resources</h3><a href="/docs">API Docs</a><a href="/dashboard">Dashboard</a><a href="/terms">Terms</a></div>
+<div><h3>More</h3><a href="/privacy">Privacy</a><a href="/contact">Contact</a><a href="/about">About</a></div>
+</div>
+<div class="bottom">© 2026 PasteDB • Made by Aditya Sorathiya</div>
+</footer>
+
+<script>
+function copyCmd(){navigator.clipboard.writeText(cmd.innerText);const b=event.target;b.innerText="Copied ✓";setTimeout(()=>b.innerText="Copy VS Code Command",1500);}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")}),{threshold:.15});
+document.querySelectorAll(".card").forEach(c=>io.observe(c));
+</script>
+</body></html>
