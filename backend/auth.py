@@ -277,6 +277,12 @@ async def get_paste(
         }
     )
 
+    if paste.get("burn_after_read"):
+        pastes_collection.delete_one({
+        "_id": paste["_id"]})
+        users_collection.update_one( {
+        "email_key": paste["user_email_key"] }, {    "$pull": {        "pastes": str(paste["_id"])   }  } )
+
     return {
 
         "title":
