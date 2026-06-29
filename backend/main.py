@@ -402,7 +402,12 @@ async def create_paste_logic(
     expire_at = None
 
     expiration = paste_data.get("expiration", "never")
+    burn_after_read = False
 
+    if expiration == "burn":
+        burn_after_read = True
+
+    
     if expiration in ["10m", "10min"]:
         expire_at = now + timedelta(minutes=10)
 
@@ -478,6 +483,7 @@ async def create_paste_logic(
         "owner": user_data.get("name"),
 
         "picture":  user_data.get("picture"),
+        "burn_after_read": burn_after_read,
 
         "created_at":now.timestamp(),
         "images": paste_data.get("images", []),
@@ -728,6 +734,10 @@ async def get_paste(
             paste["_id"]
         )
         paste.pop("password", None)
+        
+        if paste.get("burn_after_read"):
+            pastes_collection.delete_one({"_id": paste["_id"] })
+            users_collection.update_one( {      "email_key": paste["user_email_key"]  },   {  "$pull": {  "pastes": str(paste["_id"])      }   }        )
 
         return paste
 
@@ -812,6 +822,7 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
 
     expire_at= None
     expiration = data.get("expiration")
+    burn_after_read = expiration == "burn"
 
     if expiration in ["10m", "10min"]:
         expire_at = now + timedelta(minutes=10)
@@ -846,6 +857,7 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
         "syntax": data.get("syntax"),
         "expiration": expiration,
         "expire_at": expire_at,
+        "burn_after_read": burn_after_read,
         "visibility":data.get("visibility")
     }
 
@@ -1986,6 +1998,14 @@ async def api_get_paste(
     )
     paste.pop("password", None)
 
+    
+    if paste.get("burn_after_read"):
+        pastes_collection.delete_one({
+        "_id": paste["_id"]})
+        
+        users_collection.update_one(    {
+        "email_key": paste["user_email_key"]  },  {   "$pull": {      "pastes": str(paste["_id"])   }   })
+
     return paste
 
 
@@ -2093,8 +2113,12 @@ async def api_update_paste(
         "expiration",
         "never"
     )
+    burn_after_read = False
 
-    if expiration in ["10m", "10min"]:
+    if expiration == "burn":
+        burn_after_read = True
+
+    elif expiration in ["10m", "10min"]:
 
         expire_at = (
             now +
@@ -2141,6 +2165,7 @@ async def api_update_paste(
 
         "expire_at":
             expire_at,
+        "burn_after_read": burn_after_read,
 
         "updated_at":
             now.timestamp()
