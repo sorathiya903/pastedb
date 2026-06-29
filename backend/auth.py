@@ -281,7 +281,7 @@ async def get_paste(
 
         "title":
             paste.get("title"),
-
+        "burn_after_read":paste.get("burn_after_read"),
         "content":
             paste.get("content"),
         "images":paste.get("images"),
