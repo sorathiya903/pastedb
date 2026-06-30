@@ -16,7 +16,7 @@ if(
 
   location.hostname.includes("127.0.0.1") ||
 
-  location.hostname.includes("netlify") ||
+  location.hostname.includes("netli7fy") ||
 
   localStorage.getItem("debug") === "true"
 ){
@@ -2416,7 +2416,7 @@ if(selectedImages.length > 0){
   if(response.ok){
 
     const pasteUrl =
-      `https://pastedb.netlify.app/paste/${customId}`
+      `https://pastedb.netlify.app/paste/${data.custom_id}`
 
     const pasteLinkBox =
       document.getElementById("pasteLinkBox")
