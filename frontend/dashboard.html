@@ -1642,103 +1642,43 @@ const ghostText = document.getElementById("ghostText");
 
 let currentSuggestion = "";
 
-searchInput.addEventListener("input", async (e)=>{
+searchInput.addEventListener("input", (e) => {
 
-  const value = e.target.value.trim();
+  const value = e.target.value.trim().toLowerCase();
 
   currentSearch = value;
 
-  /* EMPTY INPUT */
-  if(!value){
-
-  currentSearch = "";
-
-  ghostText.innerHTML = "";
-
-  currentSuggestion = "";
-
-  await loadDashboard();
-
-  return;
-  }
-
-  try{
-
-    /* SEARCH */
-    const res = await fetch(
-      `${API_URL}/search?q=${encodeURIComponent(value)}`
-    );
-
-    const data = await res.json();
-
-    renderPastes(data.results || []);
-
-    /* SUGGESTION */
-    const suggestRes = await fetch(
-      `${API_URL}/suggest?q=${encodeURIComponent(value)}`
-    );
-
-    const suggestData = await suggestRes.json();
-
-    const first = suggestData.suggestions?.[0];
-
-    if(
-      first &&
-      first.toLowerCase().startsWith(value.toLowerCase())
-    ){
-
-      currentSuggestion = first;
-
-      const remaining = first.slice(value.length);
-
-      ghostText.innerHTML =
-        value + `<span>${remaining}</span>`;
-
-    }else{
-
-      ghostText.innerHTML = "";
-
-      currentSuggestion = "";
-    }
-
-  }catch(err){
-
-    console.log(err);
-
+  if (!value) {
     renderPastes(allPastes);
-  }
-});
-
-/* TAB / RIGHT ARROW */
-searchInput.addEventListener("keydown", (e)=>{
-
-  if(
-    (e.key === "Tab" || e.key === "ArrowRight")
-    &&
-    currentSuggestion
-  ){
-
-    e.preventDefault();
-
-    searchInput.value = currentSuggestion;
-
-    currentSearch = currentSuggestion;
-
     ghostText.innerHTML = "";
-
     currentSuggestion = "";
-
-    searchInput.dispatchEvent(
-      new Event("input")
-    );
+    return;
   }
 
-  if(e.key === "Enter"){
+  // Search locally
+  const filtered = allPastes.filter(p =>
+    (p.title || "").toLowerCase().includes(value) ||
+    (p.custom_id || "").toLowerCase().includes(value) ||
+    (p.syntax || "").toLowerCase().includes(value)
+  );
 
+  renderPastes(filtered);
+
+  // Local autocomplete
+  const match = allPastes.find(p =>
+    (p.title || "").toLowerCase().startsWith(value)
+  );
+
+  if (match) {
+    currentSuggestion = match.title;
+    ghostText.innerHTML =
+      value +
+      `<span>${match.title.slice(value.length)}</span>`;
+  } else {
+    currentSuggestion = "";
     ghostText.innerHTML = "";
-
-    currentSuggestion = "";
   }
+
 });
 
 async function deleteAccount(){
