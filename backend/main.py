@@ -523,10 +523,19 @@ async def create_paste_logic(
     # INSERT
     result =  pastes_collection.insert_one(  paste_data    )
 
-    if custom_id == None || custom_id == "":
+    
+    
+    if not custom_id or not custom_id.strip():
         custom_id = str(result.inserted_id)
-        pastes_collection.update_one(   {"_id": result.inserted_id},    {    "$set": {      "custom_id": custom_id      }      }  )
 
+        pastes_collection.update_one(
+            {"_id": result.inserted_id},
+             {
+                "$set": {
+                    "custom_id": custom_id
+                }
+             }
+        )
     
 
     # UPDATE USER
