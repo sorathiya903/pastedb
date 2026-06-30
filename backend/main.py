@@ -598,18 +598,19 @@ async def user_dash(user=Depends(get_current_user)):
             "pastes": []
         }
 
-    paste_ids = db_user.get("pastes", [])
+    
 
-    pastes = []
+    paste_ids = [
+    ObjectId(pid)
+    for pid in db_user.get("pastes", [])
+    if ObjectId.is_valid(pid)]
+    
+    pastes = list(
+    pastes_collection.find(
+        {"_id": {"$in": paste_ids}}    ))
 
-    for pid in paste_ids:
-        try:
-            p = pastes_collection.find_one({"_id": ObjectId(pid)})
-            if p:
-                p["_id"] = str(p["_id"])
-                pastes.append(p)
-        except:
-            pass
+    for p in pastes:
+        p["_id"] = str(p["_id"])
 
     return {
         "user": {
