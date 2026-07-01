@@ -14,7 +14,7 @@ if(
 
   location.hostname.includes("127.0.0.1") ||
 
-  location.hostname.includes("netlify") ||
+  location.hostname.includes("ne6tlify") ||
 
   localStorage.getItem("debug") === "true"
 ){
@@ -1820,11 +1820,15 @@ console.log(pasteId)
 
   // COPY
 
-  function copyCode(){
+  async function copyCode() {
 
-    navigator.clipboard.writeText(
-      codeBlock.innerText
-    )
+  await navigator.clipboard.writeText(
+    codeBlock.innerText
+  );
+
+  fetch(`${API_URL}/copy/${pasteId}`, {
+    method: "POST"
+  }).catch(() => {});
 
   }
 
