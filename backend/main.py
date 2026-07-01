@@ -1690,39 +1690,6 @@ LANGUAGE_IDS = {
 }
 
 
-@app.post("/copy/{paste_id}")
-async def increase_copy_count(paste_id: str):
-
-    paste = None
-
-    if ObjectId.is_valid(paste_id):
-        paste = pastes_collection.find_one({
-            "_id": ObjectId(paste_id)
-        })
-
-    if not paste:
-        paste = pastes_collection.find_one({
-            "custom_id": paste_id
-        })
-
-    if not paste:
-        raise HTTPException(
-            status_code=404,
-            detail="Paste not found"
-        )
-
-    pastes_collection.update_one(
-        {"_id": paste["_id"]},
-        {
-            "$inc": {
-                "analytics.copies": 1
-            }
-        }
-    )
-
-    return {
-        "success": True
-    }
 
 @app.post("/run")
 async def run_code(data: RunCode):
