@@ -1682,6 +1682,7 @@ margin:10px;
       🌍 Public
     </button>
 
+    
     <button
       type="button"
       class="visibility-btn"
@@ -1689,6 +1690,15 @@ margin:10px;
       onclick="setVisibility('private')"
     >
       🔒 Private
+    </button>
+
+    <button
+      type="button"
+      class="visibility-btn"
+      id="unlistedBtn"
+      onclick="setVisibility('unlisted')"
+    >
+      🔗 Unlisted
     </button>
 
   </div>
@@ -1931,6 +1941,8 @@ function setVisibility(type){
 
   const privateBtn =
     document.getElementById("privateBtn");
+const unlistedBtn =
+    document.getElementById("unlistedBtn");
 
   const text =
     document.getElementById("visibilityText");
@@ -1944,6 +1956,14 @@ function setVisibility(type){
 
     text.textContent =
       "Anyone with the link can access this paste.";
+
+  } elif(type === "unlisted"){
+
+  unlistedBtn.classList.add("active");
+
+    text.textContent =
+      "Hidden from Explore.
+Share using a secret link.";
 
   }else{
 
@@ -2348,6 +2368,7 @@ const pasteData = {
   syntax: document.getElementById("syntax").value,
   expiration: document.getElementById("expiration").value,
   visibility:visibility,
+  e2ee: visibility === "private" || visibility === "unlisted",
   images:[]
 };
   
