@@ -272,6 +272,51 @@ async def health(response: Response):
     }
 
 
+
+@app.post("/copy/{paste_id}")
+async def copy_paste(paste_id: str):
+
+    paste = None
+
+    # Search by MongoDB ObjectId
+    if ObjectId.is_valid(paste_id):
+        paste = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
+
+    # Search by custom ID
+    if not paste:
+        paste = pastes_collection.find_one({
+            "custom_id": paste_id
+        })
+
+    # Not found
+    if not paste:
+        raise HTTPException(
+            status_code=404,
+            detail="Paste not found"
+        )
+
+    # Increment copy count
+    pastes_collection.update_one(
+        {"_id": paste["_id"]},
+        {
+            "$inc": {
+                "analytics.copies": 1
+            }
+        }
+    )
+
+    return {
+        "success": True,
+        "copies": paste.get("analytics", {}).get("copies", 0) + 1
+    }
+
+
+
+
+
+
 @app.post("/fork/{paste_id}")
 async def fork_paste(
     paste_id: str,
