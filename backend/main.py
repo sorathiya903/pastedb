@@ -70,6 +70,7 @@ def get_api_user(request: Request):
             detail="API key required"
         )
 
+    
     key_doc = api_keys_collection.find_one({
         "api_key": api_key
     })
@@ -105,14 +106,16 @@ class PasswordCheck(BaseModel):
     password: str = Field(min_length=1, max_length=200)
 
 
+class EncryptedField(BaseModel):
+    iv: str
+    data: str
+
 class PasteCreate(BaseModel):
+    title: str | EncryptedField
+    content: str | EncryptedField
+    images: list[str | EncryptedField]
+    encrypted_pek: EncryptedField | None = None
 
-    title: str = Field(
-        default="Untitled Paste",
-        max_length=100
-    )
-
-    content: str
 
     syntax: str = Field(
         default="text"
@@ -129,7 +132,7 @@ class PasteCreate(BaseModel):
     )
     password: Optional[str] = None
     visibility: str = "public"
-    images: list[str] = []
+    
 
 
 
