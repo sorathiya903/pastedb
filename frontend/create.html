@@ -4,7 +4,7 @@
 <head>
 
 <script src="config.js"></script>
-
+<script src="encryption.js"></script>
   
   
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
@@ -2418,6 +2418,13 @@ if(selectedImages.length > 0){
   
     
     pasteData.images = imageUrls;
+
+  if (pasteData.e2ee) {
+    Object.assign(
+        pasteData,
+        await encryptPasteData(pasteData)
+    );
+    }
 
   let response
 
