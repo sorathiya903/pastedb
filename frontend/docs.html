@@ -1205,26 +1205,8 @@ function closeMenu(){
 
 overlay.onclick = closeMenu;
 
-function copyCode(id){
 
-  const code =
-    document.getElementById(id).innerText;
-
-  const btn =
-    event.target;
-
-  navigator.clipboard.writeText(code);
-
-  const original =
-    btn.innerText;
-
-  btn.innerText = "Copied";
-
-  setTimeout(() => {
-    btn.innerText = original;
-  }, 1000);
-
-}
+  
 function copyCode(id){
 
   const code =
