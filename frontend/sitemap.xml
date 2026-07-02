@@ -14,28 +14,47 @@
         <changefreq>daily</changefreq>
     </url>
 
-    <url>
-        <loc>https://pastedb.netlify.app/search</loc>
-        <priority>0.8</priority>
-        <changefreq>weekly</changefreq>
-    </url>
 
     <url>
         <loc>https://pastedb.netlify.app/docs</loc>
-        <priority>0.7</priority>
+        <priority>0.9</priority>
         <changefreq>monthly</changefreq>
     </url>
 
     <url>
-        <loc>https://pastedb.netlify.app/stats</loc>
+        <loc>https://pastedb.netlify.app/about</loc>
         <priority>0.6</priority>
-        <changefreq>weekly</changefreq>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://pastedb.netlify.app/contact</loc>
+        <priority>0.5</priority>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://pastedb.netlify.app/privacy</loc>
+        <priority>0.4</priority>
+        <changefreq>yearly</changefreq>
     </url>
 
     <url>
         <loc>https://pastedb.netlify.app/terms</loc>
         <priority>0.3</priority>
         <changefreq>yearly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://pastedb.netlify.app/login</loc>
+        <priority>0.2</priority>
+        <changefreq>monthly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://pastedb.netlify.app/extension</loc>
+        <priority>0.9</priority>
+        <changefreq>monthly</changefreq>
     </url>
 
 </urlset>
