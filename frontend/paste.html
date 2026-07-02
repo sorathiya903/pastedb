@@ -1785,10 +1785,14 @@ console.log(window.location.pathname)
 console.log(pasteId)
       // VISIBILITY
 
+const visibilityMap = {
+    public: "Public",
+    unlisted: "Unlisted",
+    private: "Private"
+};
+
 visibility.textContent =
-  data.visibility === "private"
-    ? "Private"
-    : "Public"
+    visibilityMap[data.visibility] || "Public";
 
 visibility.style.display = "block"
 
