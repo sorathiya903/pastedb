@@ -24,6 +24,7 @@ if(
 }
 
   </script>
+  <script src="encryption.js"></script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1111,6 +1112,11 @@ id="codeBlock"
 
   </div>
 <script>
+
+  const fragmentKey = location.hash
+    ? decodeURIComponent(location.hash.substring(1))
+    : null;
+  
 let currentPreviewHTML = ""
 
 const runBtn =
@@ -1478,6 +1484,17 @@ if(path.startsWith("/paste/")){
       const data =
         await response.json()
 
+
+    if (data.e2ee) {
+
+    Object.assign(
+        data,
+        await decryptPasteData(data)
+    );
+
+  }
+
+  
 
 if (data.password && !isUnlocked) {
   window._pasteData = data;
