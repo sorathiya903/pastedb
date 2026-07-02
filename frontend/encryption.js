@@ -68,7 +68,7 @@ async function generatePEK(){
 }
 
 
-          async function encryptPasteData(pasteData){
+  async function encryptPasteData(pasteData){
 
     const masterKey =
         await getMasterKey();
@@ -122,5 +122,126 @@ async function generatePEK(){
         encrypted_pek: encryptedPEK
 
     };
+
+}
+
+
+async function encryptWithKey(text, key){
+
+    const iv = crypto.getRandomValues(
+        new Uint8Array(12)
+    );
+
+    const encoded = new TextEncoder().encode(text);
+
+    const encrypted =
+        await crypto.subtle.encrypt(
+            {
+                name: "AES-GCM",
+                iv
+            },
+            key,
+            encoded
+        );
+
+    return {
+        iv: btoa(String.fromCharCode(...iv)),
+        data: btoa(
+            String.fromCharCode(
+                ...new Uint8Array(encrypted)
+            )
+        )
+    };
+
+}
+
+
+async function decryptWithKey(obj, key){
+
+    const iv = Uint8Array.from(
+        atob(obj.iv),
+        c => c.charCodeAt(0)
+    );
+
+    const data = Uint8Array.from(
+        atob(obj.data),
+        c => c.charCodeAt(0)
+    );
+
+    const decrypted =
+        await crypto.subtle.decrypt(
+            {
+                name: "AES-GCM",
+                iv
+            },
+            key,
+            data
+        );
+
+    return new TextDecoder().decode(decrypted);
+
+}
+
+
+async function encryptRawKey(rawPEK, masterKey){
+
+    const iv = crypto.getRandomValues(
+        new Uint8Array(12)
+    );
+
+    const encrypted =
+        await crypto.subtle.encrypt(
+            {
+                name: "AES-GCM",
+                iv
+            },
+            masterKey,
+            rawPEK
+        );
+
+    return {
+        iv: btoa(String.fromCharCode(...iv)),
+        data: btoa(
+            String.fromCharCode(
+                ...new Uint8Array(encrypted)
+            )
+        )
+    };
+
+        }
+
+
+async function decryptRawKey(obj){
+
+    const masterKey =
+        await getMasterKey();
+
+    const iv = Uint8Array.from(
+        atob(obj.iv),
+        c => c.charCodeAt(0)
+    );
+
+    const data = Uint8Array.from(
+        atob(obj.data),
+        c => c.charCodeAt(0)
+    );
+
+    const rawPEK =
+        await crypto.subtle.decrypt(
+            {
+                name: "AES-GCM",
+                iv
+            },
+            masterKey,
+            data
+        );
+
+    return await crypto.subtle.importKey(
+        "raw",
+        rawPEK,
+        "AES-GCM",
+        true,
+        ["encrypt", "decrypt"]
+    );
 
 }
