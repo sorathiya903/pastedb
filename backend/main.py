@@ -120,6 +120,7 @@ class PasteCreate(BaseModel):
     syntax: str = Field(
         default="text"
     )
+    e2ee: bool = False
 
     expiration: str = Field(
         default="never"
@@ -528,9 +529,12 @@ async def create_paste_logic(
 
         "custom_id": custom_id,
 
+        "e2ee":paste_data.get("e2ee", False),
+
         "owner": user_data.get("name"),
 
         "picture":  user_data.get("picture"),
+        
         "burn_after_read": burn_after_read,
 
         "created_at":now.timestamp(),
