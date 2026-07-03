@@ -1196,7 +1196,51 @@ transform:translateY(20px);
   </div>
 
 </div>
- 
+ <div class="delete-dialog" id="shareDialog">
+
+  <div class="delete-box">
+
+    <h3>Share Paste</h3>
+
+    <p>
+      Share this link with others.
+    </p>
+
+    <input
+      id="shareLinkInput"
+      readonly
+      style="
+        width:100%;
+        margin-top:12px;
+        padding:10px;
+        border-radius:10px;
+        border:1px solid var(--border);
+        background:var(--bg);
+        color:var(--text);
+      "
+    >
+
+    <div class="delete-actions">
+
+      <button
+        class="cancel-btn"
+        onclick="closeShareDialog()"
+      >
+        Close
+      </button>
+
+      <button
+        class="delete-btn"
+        onclick="copyShareLink()"
+      >
+        Copy
+      </button>
+
+    </div>
+
+  </div>
+
+ </div>
 
 
 <script>
@@ -1391,6 +1435,12 @@ Stats
     >
       📋 Copy ID
     </button>
+    <button
+  class="dropdown-btn"
+  onclick="showShareLink('${p.custom_id}')"
+>
+  🔗 Share Link
+</button>
 
   </div>
 
@@ -1398,6 +1448,28 @@ Stats
       </div>
   `).join("");
 }
+
+   function showShareLink(customId){
+
+  const paste = allPastes.find(
+    p => p.custom_id === customId
+  );
+
+  let url = `${location.origin}/paste/${customId}`;
+
+  // Only unlisted pastes need the PEK in the URL
+  if (
+    paste &&
+    paste.visibility === "unlisted" &&
+    paste.sharePEK
+  ) {
+    url += "#" + paste.sharePEK;
+  }
+
+  document.getElementById("shareLinkInput").value = url;
+
+  document.getElementById("shareDialog").style.display = "flex";
+   }
 function toggleDropdown(event, id){
 
   event.stopPropagation();
