@@ -1,4 +1,4 @@
-
+let currentPEK = null;
 // Creates and stores a master key if one doesn't exist.
 async function makeMasterKey() {
 
@@ -82,8 +82,10 @@ async function generatePEK(){
 }
 
 
-  async function encryptPasteData(pasteData){
-
+  async function encryptPasteData(pasteData, pek=null){
+if (!pek) {
+        pek = await generatePEK();
+}
     const masterKey =
         await getMasterKey();
 
@@ -358,21 +360,24 @@ async function decryptRawKey(obj){
             data
         );
 
-    let a = await crypto.subtle.importKey(
-        "raw",
-        rawPEK,
-        "AES-GCM",
-        true,
-        ["encrypt", "decrypt"]
-    );
-    const raw = await crypto.subtle.exportKey("raw", a);
+    currentPEK = await crypto.subtle.importKey(
+    "raw",
+    rawPEK,
+    "AES-GCM",
+    true,
+    ["encrypt", "decrypt"]
+);
+
+const raw = await crypto.subtle.exportKey(
+    "raw",
+    currentPEK
+);
 
 console.log(
     btoa(String.fromCharCode(...new Uint8Array(raw)))
 );
 
-return a;
-  
+return currentPEK;
 
 }
 
