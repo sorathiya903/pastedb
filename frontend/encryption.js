@@ -89,8 +89,7 @@ if (!pek) {
     const masterKey =
         await getMasterKey();
 
-    const pek =
-        await generatePEK();
+    
 
     const encryptedTitle =
         await encryptWithKey(
