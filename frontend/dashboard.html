@@ -1567,7 +1567,15 @@ if (res.status === 401) {
     }
 
     // RENDER PASTES
-    allPastes = data.pastes;
+    allPastes = await Promise.all(
+    data.pastes.map(async p => {
+        if (typeof p.title === "object") {
+            return await decryptPasteData(p);
+        }
+        return p;
+    })
+);
+
 renderPastes(allPastes);
 
   } catch (err) {
