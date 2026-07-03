@@ -104,6 +104,9 @@ async function generatePEK(){
             pek
         );
 
+      const sharePEK =
+    bytesToBase64Url(new Uint8Array(rawPEK));
+
     const encryptedPEK =
         await encryptRawKey(
             rawPEK,
@@ -120,7 +123,8 @@ async function generatePEK(){
 
         images: encryptedImages,
 
-        encrypted_pek: encryptedPEK
+        encrypted_pek: encryptedPEK,
+        sharePEK
 
     };
 
