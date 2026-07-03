@@ -2455,9 +2455,22 @@ if (passwordEnabled) {
   }
 
   
-    if (!pasteData.content.trim()) {
-    alert("Please enter some content!");
-    return;
+if (
+  typeof pasteData.content === "string"
+    ? !pasteData.content.trim()
+    : !pasteData.content
+) {
+  alert("Please enter some content!");
+  return;
+}
+
+  if (
+  typeof pasteData.content === "string"
+    ? !pasteData.content.trim()
+    : !pasteData.content?.data
+) {
+  alert("Please enter some content!");
+  return;
   }
 
   createBtn.disabled = true;
