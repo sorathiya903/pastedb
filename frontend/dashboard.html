@@ -1708,6 +1708,24 @@ function openDeleteDialog(id, title) {
   document.getElementById("deleteDialog").style.display = "flex";
 }
 
+
+   
+
+function closeShareDialog(){
+
+  document.getElementById("shareDialog").style.display = "none";
+
+}
+
+function copyShareLink(){
+
+  const input =
+    document.getElementById("shareLinkInput");
+
+  navigator.clipboard.writeText(input.value);
+
+  alert("Link copied.");
+}
 function closeDeleteDialog() {
 
   document.getElementById("deleteDialog").style.display = "none";
