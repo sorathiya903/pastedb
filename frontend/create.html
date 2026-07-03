@@ -2107,7 +2107,7 @@ let customIdForPaste;
 
   document.getElementById("customId").value = result;
     }
-    let originalPaste=null
+    
 
 async function loadPasteForEditing(editId){
 
@@ -2128,60 +2128,13 @@ async function loadPasteForEditing(editId){
     }
 
     const data = await response.json()
-    originalPaste = structuredClone(data)
+    
       if (data.e2ee) {
     Object.assign(data, await decryptPasteData(data));
       delete pasteData.title;
     delete pasteData.content;
     }
-    const wasEncrypted = originalPaste?.e2ee || false;
-
-const shouldEncrypt =
-    visibility === "private" ||
-    visibility === "unlisted";
-
-if (!wasEncrypted && shouldEncrypt) {
-
-    // Public → Private/Unlisted
-    Object.assign(
-        pasteData,
-        await encryptPasteData(pasteData)
-    );
-
-    pasteData.e2ee = true;
-
-}
-
-else if (wasEncrypted && shouldEncrypt) {
-
-    // Private/Unlisted → Private/Unlisted
-    Object.assign(
-        pasteData,
-        await encryptPasteData(pasteData)
-    );
-
-    pasteData.e2ee = true;
-
-}
-
-else if (wasEncrypted && !shouldEncrypt) {
-
-    // Private/Unlisted → Public
-
-    pasteData.e2ee = false;
-
-    delete pasteData.encrypted_pek;
-
-}
-
-else {
-
-    // Public → Public
-
-    pasteData.e2ee = false;
-
-}
-
+    
     // FILL INPUTS
 
     document.getElementById("title").value =
@@ -2424,6 +2377,54 @@ const pasteData = {
   e2ee: visibility === "private" || visibility === "unlisted",
   images:[]
 };
+  const wasEncrypted = originalPaste?.e2ee || false;
+
+const shouldEncrypt =
+    visibility === "private" ||
+    visibility === "unlisted";
+
+if (!wasEncrypted && shouldEncrypt) {
+
+    // Public → Private/Unlisted
+    Object.assign(
+        pasteData,
+        await encryptPasteData(pasteData)
+    );
+
+    pasteData.e2ee = true;
+
+}
+
+else if (wasEncrypted && shouldEncrypt) {
+
+    // Private/Unlisted → Private/Unlisted
+    Object.assign(
+        pasteData,
+        await encryptPasteData(pasteData)
+    );
+
+    pasteData.e2ee = true;
+
+}
+
+else if (wasEncrypted && !shouldEncrypt) {
+
+    // Private/Unlisted → Public
+
+    pasteData.e2ee = false;
+
+    delete pasteData.encrypted_pek;
+
+}
+
+else {
+
+    // Public → Public
+
+    pasteData.e2ee = false;
+
+}
+
   
 if (passwordEnabled) {
 
