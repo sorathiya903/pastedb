@@ -2132,6 +2132,53 @@ async function loadPasteForEditing(editId){
       delete pasteData.title;
     delete pasteData.content;
     }
+    const wasEncrypted = originalPaste?.e2ee || false;
+
+const shouldEncrypt =
+    visibility === "private" ||
+    visibility === "unlisted";
+
+if (!wasEncrypted && shouldEncrypt) {
+
+    // Public → Private/Unlisted
+    Object.assign(
+        pasteData,
+        await encryptPasteData(pasteData)
+    );
+
+    pasteData.e2ee = true;
+
+}
+
+else if (wasEncrypted && shouldEncrypt) {
+
+    // Private/Unlisted → Private/Unlisted
+    Object.assign(
+        pasteData,
+        await encryptPasteData(pasteData)
+    );
+
+    pasteData.e2ee = true;
+
+}
+
+else if (wasEncrypted && !shouldEncrypt) {
+
+    // Private/Unlisted → Public
+
+    pasteData.e2ee = false;
+
+    delete pasteData.encrypted_pek;
+
+}
+
+else {
+
+    // Public → Public
+
+    pasteData.e2ee = false;
+
+}
 
     // FILL INPUTS
 
