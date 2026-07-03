@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1587,14 +1586,37 @@ if (res.status === 401) {
     }
 
     // RENDER PASTES
-    allPastes = await Promise.all(
-    data.pastes.map(async p => {
-        if (typeof p.title === "object") {
-            return await decryptPasteData(p);
-        }
-        return p;
-    })
-);
+    allPastes =[]
+
+for (const paste of data.pastes) {
+
+    if (!paste.e2ee) {
+        allPastes.push(paste);
+        continue;
+    }
+
+    try {
+
+        allPastes.push(
+            await decryptPasteData(paste)
+        );
+
+    } catch (e) {
+
+        console.error(
+            "Couldn't decrypt",
+            paste.custom_id,
+            e
+        );
+
+        allPastes.push({
+            ...paste,
+            title: "[Corrupted Encrypted Paste]",
+            content: ""
+        });
+
+    }
+          }
 
 renderPastes(allPastes);
 
