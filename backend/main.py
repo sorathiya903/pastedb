@@ -960,7 +960,9 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
     if result.matched_count == 0:
         raise HTTPException(404, "Paste not found")
 
-    return {"status": "updated"}
+    return {"status": "updated",
+           "custom_id":paste.get("custom_id")
+           }
 
 
 
