@@ -926,7 +926,7 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
         "expiration": expiration,
         "expire_at": expire_at,
         "burn_after_read": burn_after_read,
-        "visibility":data.get("visibility")
+        "visibility":data.get("visibility"),
         "e2ee": data.get("e2ee", False)
     }
     # Handle encrypted PEK
