@@ -1026,7 +1026,17 @@ transform:translateY(20px);
 
 
 /* OVERLAY */
+/* UNLISTED */
 
+.unlisted-badge{
+  background: rgba(245,158,11,0.08);
+  color: #f6c76b;
+  border-color: rgba(245,158,11,0.14);
+}
+
+.unlisted-badge svg{
+  stroke: #f59e0b;
+   }
 
    .row{display:flex; flex-direction:row}
 </style>
@@ -1279,51 +1289,38 @@ function renderPastes(pastes){
               </div>
         <div class="paste-badges">
 
-      ${
-        p.visibility === "private"
-        ? `
-          <div class="badge private-badge">
-
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="2"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      d="M16 11V8a4 4 0 10-8 0v3m-1 0h10a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6a1 1 0 011-1z"
-    />
-  </svg>
-
-  Private
-
-</div>
-        `
-        : `
-          <div class="badge public-badge">
-
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="2"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      d="M3 12h18M12 3c2.5 2.5 4 5.8 4 9s-1.5 6.5-4 9m0-18c-2.5 2.5-4 5.8-4 9s1.5 6.5 4 9"
-    />
-  </svg>
-
-  Public
-
-</div>
-        `
-      }
+${
+  p.visibility === "private"
+  ? `
+    <div class="badge private-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M16 11V8a4 4 0 10-8 0v3m-1 0h10a1 1 0 011 1v6a1 1 0 01-1 1H7a1 1 0 01-1-1v-6a1 1 0 011-1z"/>
+      </svg>
+      Private
+    </div>
+  `
+  : p.visibility === "unlisted"
+  ? `
+    <div class="badge unlisted-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M3 12h3m12 0h3M12 3v3m0 12v3M5.64 5.64l2.12 2.12m8.48 8.48l2.12 2.12m0-12.72-2.12 2.12m-8.48 8.48-2.12 2.12"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      Unlisted
+    </div>
+  `
+  : `
+    <div class="badge public-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M3 12h18M12 3c2.5 2.5 4 5.8 4 9s-1.5 6.5-4 9m0-18c-2.5 2.5-4 5.8-4 9s1.5 6.5 4 9"/>
+      </svg>
+      Public
+    </div>
+  `
+}
                               </div>
     </div>
         <div class="actions">
