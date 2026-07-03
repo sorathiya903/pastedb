@@ -927,7 +927,13 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
         "expire_at": expire_at,
         "burn_after_read": burn_after_read,
         "visibility":data.get("visibility")
+        "e2ee": data.get("e2ee", False)
     }
+    # Handle encrypted PEK
+    if update_data["e2ee"]:
+        update_data["encrypted_pek"] = data.get("encrypted_pek")
+    else:
+        update_data["encrypted_pek"] = None
 
     #  HANDLE PASSWORD IN EDIT
     if "password" in data:
