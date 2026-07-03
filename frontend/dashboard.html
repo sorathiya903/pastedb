@@ -1454,7 +1454,7 @@ Stats
   const paste = allPastes.find(
     p => p.custom_id === customId
   );
-
+console.log(paste)
   let url = `${location.origin}/paste/${customId}`;
 
   // Only unlisted pastes need the PEK in the URL
