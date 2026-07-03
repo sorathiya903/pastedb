@@ -242,11 +242,12 @@ async function decryptPasteData(paste){
         );
 
     decryptedPaste.images =
-        await Promise.all(
-            paste.images.map(img =>
-                decryptWithKey(img, pek)
-            )
-        );
+    await Promise.all(
+        (paste.images || []).map(img =>
+            decryptWithKey(img, pek)
+        )
+    );
+    
 
     delete decryptedPaste.encrypted_pek;
 console.log(JSON.stringify(decryptedPaste))
@@ -327,11 +328,11 @@ async function decryptPasteWithPEK(paste, sharePEK) {
         );
 
     decryptedPaste.images =
-        await Promise.all(
-            paste.images.map(img =>
-                decryptWithKey(img, pek)
-            )
-        );
+    await Promise.all(
+        (paste.images || []).map(img =>
+            decryptWithKey(img, pek)
+        )
+    );
 
     delete decryptedPaste.encrypted_pek;
 
