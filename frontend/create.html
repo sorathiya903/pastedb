@@ -1929,7 +1929,7 @@ imageInput.addEventListener("change", e => {
 const UPLOAD_PRESET =
     "Chatsun";
 
-    
+    let originalPaste =null    
     let visibility = "public";
 
 function setVisibility(type){
@@ -2120,14 +2120,15 @@ async function loadPasteForEditing(editId){
         credentials: "include"
       }
     )
-
-    if(!response.ok){
+    const data = await response.json()
+    originalPaste =structuredClone(data)
+      if(!response.ok){
 
       alert("Could not load paste")
       return
     }
 
-    const data = await response.json()
+    
     
       if (data.e2ee) {
     Object.assign(data, await decryptPasteData(data));
