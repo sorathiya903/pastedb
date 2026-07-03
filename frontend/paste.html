@@ -1487,12 +1487,29 @@ if(path.startsWith("/paste/")){
 
     if (data.e2ee) {
 
-    Object.assign(
-        data,
-        await decryptPasteData(data)
-    );
+    const sharePEK =
+        decodeURIComponent(location.hash.slice(1));
 
-  }
+    if (sharePEK) {
+
+        Object.assign(
+            data,
+            await decryptPasteWithPEK(
+                data,
+                sharePEK
+            )
+        );
+
+    } else {
+
+        Object.assign(
+            data,
+            await decryptPasteData(data)
+        );
+
+    }
+
+    }
 
   
 
