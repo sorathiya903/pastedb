@@ -2107,6 +2107,7 @@ let customIdForPaste;
 
   document.getElementById("customId").value = result;
     }
+    let originalPaste=null
 
 async function loadPasteForEditing(editId){
 
@@ -2127,7 +2128,8 @@ async function loadPasteForEditing(editId){
     }
 
     const data = await response.json()
-    if (data.e2ee) {
+    originalPaste = structuredClone(data)
+      if (data.e2ee) {
     Object.assign(data, await decryptPasteData(data));
       delete pasteData.title;
     delete pasteData.content;
