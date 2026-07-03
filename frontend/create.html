@@ -1860,6 +1860,7 @@ margin:10px;
   </main>
 
   <script>
+    let sharePEK = null;
 const imageInput =
     document.getElementById("images");
 
@@ -2390,6 +2391,8 @@ if (!wasEncrypted && shouldEncrypt) {
         pasteData,
         await encryptPasteData(pasteData)
     );
+  sharePEK = pasteData.pek;
+delete pasteData.pek;
 
     pasteData.e2ee = true;
 
@@ -2404,6 +2407,8 @@ else if (wasEncrypted && shouldEncrypt) {
     );
 
     pasteData.e2ee = true;
+  sharePEK = pasteData.pek;
+delete pasteData.pek;
 
 }
 
@@ -2505,25 +2510,58 @@ if(selectedImages.length > 0){
 
   const data = await response.json()
 
-  if(response.ok){
+if (response.ok) {
+
+    const pasteId =
+        data.custom_id || data._id || editId;
 
     const pasteUrl =
-      `https://pastedb.netlify.app/paste/${data.custom_id || data._id || editId}`
+        `https://pastedb.netlify.app/paste/${pasteId}`;
 
     const pasteLinkBox =
-      document.getElementById("pasteLinkBox")
+        document.getElementById("pasteLinkBox");
 
     const pasteLink =
-      document.getElementById("pasteLink")
+        document.getElementById("pasteLink");
 
-    pasteLink.href = pasteUrl
+    pasteLink.href = pasteUrl;
+    pasteLink.textContent = pasteUrl;
 
-    pasteLink.textContent = pasteUrl
+    // Remove old share link if it exists
+    document.getElementById("shareLinkContainer")?.remove();
 
-    pasteLinkBox.style.display = "block"
+    // Show share link for unlisted pastes
+    if (visibility === "unlisted" && sharePEK) {
 
-  }
+        const shareUrl =
+            `${pasteUrl}#${encodeURIComponent(sharePEK)}`;
 
+        const div = document.createElement("div");
+        div.id = "shareLinkContainer";
+        div.style.marginTop = "18px";
+
+        div.innerHTML = `
+            <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">
+                Share this link with others
+            </p>
+
+            <a
+                href="${shareUrl}"
+                target="_blank"
+                style="
+                    color:var(--text);
+                    text-decoration:none;
+                    font-weight:600;
+                    word-break:break-all;
+                "
+            >${shareUrl}</a>
+        `;
+
+        pasteLinkBox.appendChild(div);
+    }
+
+    pasteLinkBox.style.display = "block";
+    }
   else{
 
     alert(data.detail || "Something went wrong")
