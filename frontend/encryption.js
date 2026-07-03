@@ -281,6 +281,45 @@ async function encryptRawKey(rawPEK, masterKey){
         }
 
 
+
+async function decryptPasteWithPEK(paste, sharePEK) {
+
+    const pek = await crypto.subtle.importKey(
+        "raw",
+        base64UrlToBytes(sharePEK),
+        "AES-GCM",
+        true,
+        ["encrypt", "decrypt"]
+    );
+
+    const decryptedPaste = {
+        ...paste
+    };
+
+    decryptedPaste.title =
+        await decryptWithKey(
+            paste.title,
+            pek
+        );
+
+    decryptedPaste.content =
+        await decryptWithKey(
+            paste.content,
+            pek
+        );
+
+    decryptedPaste.images =
+        await Promise.all(
+            paste.images.map(img =>
+                decryptWithKey(img, pek)
+            )
+        );
+
+    delete decryptedPaste.encrypted_pek;
+
+    return decryptedPaste;
+                                   }
+
 async function decryptRawKey(obj){
 
     const masterKey = await getMasterKey()
