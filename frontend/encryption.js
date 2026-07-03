@@ -221,10 +221,12 @@ async function decryptWithKey(obj, key){
 async function decryptPasteData(paste){
 
     const pek = await decryptRawKey(paste);
-
+    
     const decryptedPaste = {
         ...paste
     };
+    decryptedPaste.sharePEK = pek.sharePEK;
+
 
     decryptedPaste.title =
         await decryptWithKey(
@@ -372,8 +374,8 @@ const raw = await crypto.subtle.exportKey(
     currentPEK
 );
 
-console.log(
-    btoa(String.fromCharCode(...new Uint8Array(raw)))
+currentPEK.sharePEK = bytesToBase64Url(
+    new Uint8Array(raw)
 );
 
 return currentPEK;
