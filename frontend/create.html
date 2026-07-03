@@ -2132,8 +2132,8 @@ async function loadPasteForEditing(editId){
     
       if (data.e2ee) {
     Object.assign(data, await decryptPasteData(data));
-      delete pasteData.title;
-    delete pasteData.content;
+      delete data.title;
+delete data.content;
     }
     
     // FILL INPUTS
@@ -2488,12 +2488,7 @@ if(selectedImages.length > 0){
     
     pasteData.images = imageUrls;
 
-  if (pasteData.e2ee) {
-    Object.assign(
-        pasteData,
-        await encryptPasteData(pasteData)
-    );
-    }
+  
 
   let response
 
@@ -2514,7 +2509,7 @@ if(selectedImages.length > 0){
   if(response.ok){
 
     const pasteUrl =
-      `https://pastedb.netlify.app/paste/${data.custom_id}`
+      `https://pastedb.netlify.app/paste/${editId}`
 
     const pasteLinkBox =
       document.getElementById("pasteLinkBox")
