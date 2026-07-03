@@ -230,6 +230,8 @@ async function decryptPasteData(paste){
 
     delete decryptedPaste.encrypted_pek;
 console.log(JSON.stringify(decryptedPaste))
+    console.log("Decrypted title:", decryptedPaste.title);
+console.log("Type:", typeof decryptedPaste.title);
     return decryptedPaste;
 }
 
