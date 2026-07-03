@@ -2127,6 +2127,11 @@ async function loadPasteForEditing(editId){
     }
 
     const data = await response.json()
+    if (data.e2ee) {
+    Object.assign(data, await decryptPasteData(data));
+      delete pasteData.title;
+    delete pasteData.content;
+    }
 
     // FILL INPUTS
 
