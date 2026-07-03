@@ -2391,9 +2391,8 @@ if (!wasEncrypted && shouldEncrypt) {
         pasteData,
         await encryptPasteData(pasteData, currentPEK)
     );
-  sharePEK = pasteData.pek;
-delete pasteData.pek;
-
+  sharePEK = pasteData.sharePEK;
+delete pasteData.sharePEK;
     pasteData.e2ee = true;
 
 }
