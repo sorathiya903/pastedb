@@ -613,48 +613,62 @@ async function encryptPasteData(pasteData) {
 
 async function decryptPasteData(paste) {
 
-    const kek = await getKEK();
+    const privateKey =
+        await getFromDB("privateKey");
 
-    if (!kek) {
-        throw new Error("KEK not found on this device.");
+    const deviceId =
+        await getFromDB("deviceId");
+
+    if (!privateKey || !deviceId) {
+        throw new Error("Device keys not found.");
     }
 
-    const pek = await decryptPEK(
-        paste.encrypted_pek,
-        kek
-    );
+    const encryptedPEK =
+        paste.encrypted_peks?.[deviceId];
 
-    currentPEK = pek;
+    if (!encryptedPEK) {
+        throw new Error(
+            "This device cannot decrypt this paste."
+        );
+    }
+
+    const rawPEK =
+        await decryptPEKWithPrivateKey(
+            encryptedPEK,
+            privateKey
+        );
+
+    const pek =
+        await crypto.subtle.importKey(
+            "raw",
+            rawPEK,
+            "AES-GCM",
+            true,
+            ["encrypt", "decrypt"]
+        );
 
     const decrypted = {
         ...paste
     };
 
-    if (paste.title) {
-        decrypted.title = await decryptText(
+    decrypted.title =
+        await decryptWithAES(
             paste.title,
             pek
         );
-    }
 
-    if (paste.content) {
-        decrypted.content = await decryptText(
+    decrypted.content =
+        await decryptWithAES(
             paste.content,
             pek
         );
-    }
 
-    if (Array.isArray(paste.images)) {
-
-        decrypted.images = [];
-
-        for (const image of paste.images) {
-            decrypted.images.push(
-                await decryptText(image, pek)
-            );
-        }
-
-    }
+    decrypted.images =
+        await Promise.all(
+            (paste.images || []).map(img =>
+                decryptWithAES(img, pek)
+            )
+        );
 
     return decrypted;
                 }
