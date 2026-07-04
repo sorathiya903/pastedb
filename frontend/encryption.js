@@ -611,3 +611,50 @@ async function encryptPasteData(pasteData) {
 
 }
 
+async function decryptPasteData(paste) {
+
+    const kek = await getKEK();
+
+    if (!kek) {
+        throw new Error("KEK not found on this device.");
+    }
+
+    const pek = await decryptPEK(
+        paste.encrypted_pek,
+        kek
+    );
+
+    currentPEK = pek;
+
+    const decrypted = {
+        ...paste
+    };
+
+    if (paste.title) {
+        decrypted.title = await decryptText(
+            paste.title,
+            pek
+        );
+    }
+
+    if (paste.content) {
+        decrypted.content = await decryptText(
+            paste.content,
+            pek
+        );
+    }
+
+    if (Array.isArray(paste.images)) {
+
+        decrypted.images = [];
+
+        for (const image of paste.images) {
+            decrypted.images.push(
+                await decryptText(image, pek)
+            );
+        }
+
+    }
+
+    return decrypted;
+                }
