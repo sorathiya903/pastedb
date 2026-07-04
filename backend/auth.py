@@ -398,18 +398,24 @@ async def register_device(
         }
 
 @router.get("/device/keys")
-async def get_device_keys(user=Depends(get_current_user)):
+async def get_device_keys(
+    user=Depends(get_current_user)
+):
 
     email = user["email"]
 
-    devices = list(devices_collection.find(
-        {"email": email},
-        {"_id": 0}
-    ))
+    devices = list(
+        devices_collection.find(
+            {
+                "email": email,
+                "approved": True
+            },
+            {
+                "_id": 0
+            }
+        )
+    )
 
     return {
         "devices": devices
-    }
-
-
-
+        }
