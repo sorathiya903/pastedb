@@ -2383,54 +2383,49 @@ const pasteData = {
 const shouldEncrypt =
     visibility === "private" ||
     visibility === "unlisted";
+  
+const existingPEK =
+    originalPaste?._pek || null;
 
 if (!wasEncrypted && shouldEncrypt) {
 
-    // Public → Private/Unlisted
-  
     Object.assign(
         pasteData,
-        await encryptPasteData(pasteData, originalPaste._pek)
+        await encryptPasteData(
+            pasteData,
+            existingPEK
+        )
     );
-  sharePEK = pasteData.sharePEK;
-delete pasteData.sharePEK;
+
     pasteData.e2ee = true;
 
 }
 
 else if (wasEncrypted && shouldEncrypt) {
 
-    // Private/Unlisted → Private/Unlisted
-   
     Object.assign(
         pasteData,
-        await encryptPasteData(pasteData, originalPaste._pek)
+        await encryptPasteData(
+            pasteData,
+            existingPEK
+        )
     );
 
     pasteData.e2ee = true;
-  sharePEK = pasteData.sharePEK;
-delete pasteData.sharePEK;
 
 }
 
 else if (wasEncrypted && !shouldEncrypt) {
 
-    // Private/Unlisted → Public
-
     pasteData.e2ee = false;
-
-    
 
 }
 
 else {
 
-    // Public → Public
-
     pasteData.e2ee = false;
 
 }
-
   
 if (passwordEnabled) {
 
