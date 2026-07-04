@@ -566,7 +566,7 @@ async function encryptPasteData(pasteData, existingPEK = null) {
     // Get approved devices
     const res =
         await fetch(
-            "/device/keys",
+            "https://pastedb-rw62.onrender.com/device/keys",
             {
                 credentials: "include"
             }
