@@ -496,4 +496,118 @@ async function clearCryptoDB() {
     }
 
 
-            
+async function ensureDeviceKeys() {
+
+    let privateKey = await getFromDB("privateKey");
+    let publicKey = await getFromDB("publicKey");
+    let deviceId = await getFromDB("deviceId");
+
+    if (privateKey && publicKey && deviceId) {
+
+        return {
+            privateKey,
+            publicKey,
+            deviceId
+        };
+
+    }
+
+    const pair = await generateRSAKeyPair();
+
+    deviceId = crypto.randomUUID();
+
+    await saveToDB("privateKey", pair.privateKey);
+    await saveToDB("publicKey", pair.publicKey);
+    await saveToDB("deviceId", deviceId);
+
+    return {
+        privateKey: pair.privateKey,
+        publicKey: pair.publicKey,
+        deviceId
+    };
+
+        }
+
+
+
+async function encryptPasteData(pasteData) {
+
+    // Generate one PEK for this paste
+    const pek = await generatePEK();
+
+    // Encrypt paste
+    const encryptedTitle =
+        await encryptWithAES(
+            pasteData.title,
+            pek
+        );
+
+    const encryptedContent =
+        await encryptWithAES(
+            pasteData.content,
+            pek
+        );
+
+    const encryptedImages =
+        await Promise.all(
+            (pasteData.images || []).map(img =>
+                encryptWithAES(img, pek)
+            )
+        );
+
+    // Export raw PEK
+    const rawPEK =
+        await crypto.subtle.exportKey(
+            "raw",
+            pek
+        );
+
+    // Get approved devices
+    const res =
+        await fetch(
+            "/device/keys",
+            {
+                credentials: "include"
+            }
+        );
+
+    const json =
+        await res.json();
+
+    const encryptedPEKs = {};
+
+    // Encrypt PEK for every device
+    for (const device of json.devices) {
+
+        const publicKey =
+            await importPublicKey(
+                device.public_key
+            );
+
+        encryptedPEKs[
+            device.device_id
+        ] =
+        await encryptPEKWithPublicKey(
+            rawPEK,
+            publicKey
+        );
+
+    }
+
+    return {
+
+        ...pasteData,
+
+        title: encryptedTitle,
+
+        content: encryptedContent,
+
+        images: encryptedImages,
+
+        encrypted_peks:
+            encryptedPEKs
+
+    };
+
+}
+
