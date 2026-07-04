@@ -307,7 +307,7 @@ async def get_paste(
         "content":
             paste.get("content"),
         "images":paste.get("images"),
-        "encrypted_pek": paste.get("encrypted_pek"),
+        "encrypted_peks": paste.get("encrypted_peks"),
         "e2ee":paste.get("e2ee"),
         "syntax":
             paste.get("syntax"),
