@@ -670,5 +670,7 @@ async function decryptPasteData(paste) {
             )
         );
 
-    return decrypted;
+    decrypted._pek = pek;
+
+return decrypted;
                 }
