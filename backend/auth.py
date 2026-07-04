@@ -366,10 +366,16 @@ async def register_device(
         "device_id": data.device_id
     })
 
-if existing:
-    return {
-        "status": "already_registered"
-    }
+    if existing:
+        return {
+            "status": "already_registered"
+        }
+
+    approved = (
+        devices_collection.count_documents(
+            {"email": email}
+        ) == 0
+        )
 
     devices_collection.insert_one({
     "email": email,
@@ -380,11 +386,7 @@ if existing:
     "public_key": data.public_key,
     "encrypted_kek": data.encrypted_kek,
 
-    approved = (
-        devices_collection.count_documents(
-            {"email": email}
-        ) == 0
-        )
+    approved = approved,
     "created_at": datetime.now(timezone.utc),
 
     "last_seen": datetime.now(timezone.utc)
