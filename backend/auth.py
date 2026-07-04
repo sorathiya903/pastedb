@@ -16,6 +16,8 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client["pasteDB"]
 users_collection = db["users"]
 pastes_collection = db["pastes"]
+devices_collection = db["devices"]
+
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -158,6 +160,11 @@ async def delete_account(
     db.pastes.delete_many({
         "user_email_key": email_key
     })
+    
+    db.devices.delete_many({
+    "email": user_email
+})
+
 
     # delete user
     db.users.delete_one({
@@ -331,3 +338,45 @@ async def get_me(user = Depends(get_current_user)):
         "picture": db_user.get("picture"),
         "created_at": db_user.get("created_at")
     }
+
+class DeviceRegister(BaseModel):
+    public_key: str
+
+
+@router.post("/device/register")
+async def register_device(
+    data: DeviceRegister,
+    user=Depends(get_current_user)
+):
+
+    email = user["email"]
+    email_key = email.replace(".", "_")
+
+    devices_collection.insert_one({
+        "email": email,
+        "email_key": email_key,
+        "public_key": data.public_key,
+        "created_at": datetime.now(timezone.utc)
+    })
+
+    return {
+        "status": "success"
+    }
+
+
+@router.get("/device/keys")
+async def get_device_keys(user=Depends(get_current_user)):
+
+    email = user["email"]
+
+    devices = list(devices_collection.find(
+        {"email": email},
+        {"_id": 0}
+    ))
+
+    return {
+        "devices": devices
+    }
+
+
+
