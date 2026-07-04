@@ -362,29 +362,38 @@ async def register_device(
 
     email = user["email"]
     email_key = email.replace(".", "_")
+    existing = devices_collection.find_one({
+        "device_id": data.device_id
+    })
 
-    devices_collection.insert_one{
+if existing:
+    return {
+        "status": "already_registered"
+    }
+
+    devices_collection.insert_one({
     "email": email,
     "email_key": email_key,
 
-    "device_id": "...",
+    "device_id": data.device_id,
+    "device_name": data.device_name,
+    "public_key": data.public_key,
+    "encrypted_kek": data.encrypted_kek,
 
-    "device_name": "Dell Inspiron",
-
-    "public_key": "...",
-
-    "encrypted_kek": None,
-
-    "approved": False,
-
+    approved = (
+        devices_collection.count_documents(
+            {"email": email}
+        ) == 0
+        )
     "created_at": datetime.now(timezone.utc),
 
     "last_seen": datetime.now(timezone.utc)
-    }
+    })
+    
     return {
-        "status": "success"
-    }
-
+    "status": "success",
+    "approved": approved
+        }
 
 @router.get("/device/keys")
 async def get_device_keys(user=Depends(get_current_user)):
