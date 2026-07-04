@@ -55,22 +55,27 @@ async def google_auth(data: GoogleLogin, response: Response):
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     # save/update user
-    users_collection.update_one(
-        {"email_key": email_key},
-        {
-            "$set": {
-                "email": email,
-                "name": name,
-                "picture": picture,
-            },
-            "$setOnInsert": {
-                "pastes": [],
-                "created_at": datetime.now(timezone.utc)
-            }
+    result = users_collection.update_one(
+    {"email_key": email_key},
+    {
+        "$set": {
+            "email": email,
+            "name": name,
+            "picture": picture
         },
-        upsert=True
-    )
+        "$setOnInsert": {
+            "pastes": [],
+            "created_at": datetime.now(timezone.utc)
+        }
+    },    upsert=True)
 
+    new_user = result.upserted_id is not None
+
+    first_device = (
+        devices_collection.count_documents(
+            {"email": email}
+        ) == 0
+        )
     
     response.set_cookie(
         key="session",
@@ -81,7 +86,11 @@ async def google_auth(data: GoogleLogin, response: Response):
         max_age=60 * 60 * 24 * 7
     )
 
-    return {"status": "success"}
+    return {
+        "status": "success",
+        "new_user": new_user,
+        "first_device": first_device
+    }
 
 # ---------------- AUTH DEPENDENCY ----------------
 
@@ -340,8 +349,10 @@ async def get_me(user = Depends(get_current_user)):
     }
 
 class DeviceRegister(BaseModel):
+    device_id: str
+    device_name: str
     public_key: str
-
+    encrypted_kek: dict | None = None
 
 @router.post("/device/register")
 async def register_device(
@@ -352,13 +363,24 @@ async def register_device(
     email = user["email"]
     email_key = email.replace(".", "_")
 
-    devices_collection.insert_one({
-        "email": email,
-        "email_key": email_key,
-        "public_key": data.public_key,
-        "created_at": datetime.now(timezone.utc)
-    })
+    devices_collection.insert_one{
+    "email": email,
+    "email_key": email_key,
 
+    "device_id": "...",
+
+    "device_name": "Dell Inspiron",
+
+    "public_key": "...",
+
+    "encrypted_kek": None,
+
+    "approved": False,
+
+    "created_at": datetime.now(timezone.utc),
+
+    "last_seen": datetime.now(timezone.utc)
+    }
     return {
         "status": "success"
     }
