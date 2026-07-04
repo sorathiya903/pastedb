@@ -530,10 +530,11 @@ async function ensureDeviceKeys() {
 
 
 
-async function encryptPasteData(pasteData) {
+async function encryptPasteData(pasteData, existingPEK = null) {
 
     // Generate one PEK for this paste
-    const pek = await generatePEK();
+    const pek = existingPEK || await generatePEK();
+
 
     // Encrypt paste
     const encryptedTitle =
