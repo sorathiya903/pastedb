@@ -386,7 +386,7 @@ async def register_device(
     "public_key": data.public_key,
     "encrypted_kek": data.encrypted_kek,
 
-    approved = approved,
+    "approved" : approved,
     "created_at": datetime.now(timezone.utc),
 
     "last_seen": datetime.now(timezone.utc)
