@@ -2387,10 +2387,10 @@ const shouldEncrypt =
 if (!wasEncrypted && shouldEncrypt) {
 
     // Public → Private/Unlisted
-  await ensureCurrentPEK();
+  
     Object.assign(
         pasteData,
-        await encryptPasteData(pasteData, currentPEK)
+        await encryptPasteData(pasteData, originalPaste._pek)
     );
   sharePEK = pasteData.sharePEK;
 delete pasteData.sharePEK;
@@ -2401,10 +2401,10 @@ delete pasteData.sharePEK;
 else if (wasEncrypted && shouldEncrypt) {
 
     // Private/Unlisted → Private/Unlisted
-   await ensureCurrentPEK(); 
+   
     Object.assign(
         pasteData,
-        await encryptPasteData(pasteData, currentPEK)
+        await encryptPasteData(pasteData, originalPaste._pek)
     );
 
     pasteData.e2ee = true;
