@@ -1868,6 +1868,8 @@ const previewGrid =
     document.getElementById("previewGrid");
 
 let selectedImages = [];
+    let existingImages = []; // Cloudinary URLs
+
 
 imageInput.addEventListener("change", e => {
 
@@ -2171,6 +2173,27 @@ async function loadPasteForEditing(editId){
 
     }
 visibility = data.visibility || "public";
+    existingImages = data.images || [];
+
+previewGrid.innerHTML = "";
+
+existingImages.forEach((url, index) => {
+
+    const div = document.createElement("div");
+    div.className = "preview-item";
+
+    div.innerHTML = `
+        <img src="${url}">
+        <button class="remove-image">×</button>
+    `;
+
+    div.querySelector(".remove-image").onclick = () => {
+        existingImages.splice(index, 1);
+        div.remove();
+    };
+
+    previewGrid.appendChild(div);
+});
 
 setVisibility(visibility);
   }
@@ -2380,6 +2403,17 @@ const pasteData = {
   e2ee: visibility === "private" || visibility === "unlisted",
   images:[]
 };
+  let newUrls = [];
+
+if (selectedImages.length > 0) {
+    newUrls = await uploadAllImages();
+}
+
+pasteData.images = [
+    ...existingImages,
+    ...newUrls
+];
+
   const wasEncrypted = originalPaste?.e2ee || false;
 
 const shouldEncrypt =
@@ -2482,14 +2516,7 @@ if (
     createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
 }
 try {
-  let imageUrls = [];
-if(selectedImages.length > 0){
-    imageUrls = await uploadAllImages();
-}
   
-    
-    pasteData.images = imageUrls;
-
   
 
   let response
