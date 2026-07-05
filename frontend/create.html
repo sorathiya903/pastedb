@@ -2126,17 +2126,21 @@ async function loadPasteForEditing(editId){
       }
     )
     const data = await response.json()
-    originalPaste =structuredClone(data)
+    
       if(!response.ok){
 
       alert("Could not load paste")
       return
     }
 
-    
+    let originalPEK = null;
     
       if (data.e2ee) {
     Object.assign(data, await decryptPasteData(data));
+        originalPEK = data._pek;
+      }
+
+    originalPaste =structuredClone(data)
       
     }
     
@@ -2420,8 +2424,7 @@ const shouldEncrypt =
     visibility === "private" ||
     visibility === "unlisted";
   
-const existingPEK =
-    originalPaste?._pek || null;
+const existingPEK = originalPEK 
 console.log(existingPEK)
 if (!wasEncrypted && shouldEncrypt) {
 
