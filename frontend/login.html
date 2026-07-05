@@ -5,6 +5,7 @@
 
 </script>
   <script src="config.js"></script>
+  <script src="encryption.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - PasteDB</title>
@@ -378,6 +379,20 @@ display:flex;
         const data = await res.json();
 
         if (data.status === "success") {
+
+          const keys = await ensureDeviceKeys();
+
+await fetch(`${API_URL}/device/register`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        device_id: keys.deviceId,
+        public_key: await exportPublicKey(keys.publicKey)
+    })
+});
           // Redirect to dashboard or create page
           const redirect = new URLSearchParams(window.location.search).get("redirect");
           window.location.href = redirect || "/dashboard.html";
