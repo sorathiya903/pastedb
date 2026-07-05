@@ -363,6 +363,7 @@ async def register_device(
     email = user["email"]
     email_key = email.replace(".", "_")
     existing = devices_collection.find_one({
+        "email": email,
         "device_id": data.device_id
     })
 
