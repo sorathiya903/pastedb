@@ -410,7 +410,7 @@ display:flex;
         public_key: await exportPublicKey(keys.publicKey)
     })
 });
-});
+
           // Redirect to dashboard or create page
           const redirect = new URLSearchParams(window.location.search).get("redirect");
           window.location.href = redirect || "/dashboard.html";
