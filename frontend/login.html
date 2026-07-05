@@ -398,9 +398,7 @@ display:flex;
 
         if (data.status === "success") {
 
-          const keys = await ensureDeviceKeys();
-
-await fetch(`${API_URL}/device/register`, {
+           await fetch(`${API_URL}/device/register`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -408,8 +406,10 @@ await fetch(`${API_URL}/device/register`, {
     },
     body: JSON.stringify({
         device_id: keys.deviceId,
+        device_name: navigator.userAgent,
         public_key: await exportPublicKey(keys.publicKey)
     })
+});
 });
           // Redirect to dashboard or create page
           const redirect = new URLSearchParams(window.location.search).get("redirect");
