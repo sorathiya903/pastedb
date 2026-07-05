@@ -2107,7 +2107,8 @@ let customIdForPaste;
   }
 
   document.getElementById("customId").value = result;
-      input.dispatchEvent(new Event("input"));
+    const inputId = document.getElementById("customId");
+      inputId.dispatchEvent(new Event("input"));
     }
     
 
