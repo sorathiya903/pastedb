@@ -1449,27 +1449,25 @@ Stats
   `).join("");
 }
 
+                    
     async function showShareLink(customId) {
 
     const paste = allPastes.find(
         p => p.custom_id === customId
     );
 
-    const ownerUrl =
-        `${location.origin}/paste/${customId}`;
+    const ownerUrl = `${location.origin}/paste/${customId}`;
 
     let shareUrl = ownerUrl;
 
     if (paste && paste.visibility === "unlisted") {
 
-        const accountKEK =
-            await getFromDB("accountKEK");
+        const accountKEK = await getFromDB("accountKEK");
 
-        const rawPEKBase64 =
-            await decryptWithAES(
-                paste.encrypted_pek,
-                accountKEK
-            );
+        const rawPEKBase64 = await decryptWithAES(
+            paste.encrypted_pek,
+            accountKEK
+        );
 
         shareUrl =
             ownerUrl +
@@ -1477,98 +1475,113 @@ Stats
             encodeURIComponent(rawPEKBase64);
     }
 
-    // Remove old dialog
     document.getElementById("shareDialog")?.remove();
 
     const dialog = document.createElement("div");
 
+    dialog.className = "delete-dialog";
     dialog.id = "shareDialog";
-
-    dialog.style.cssText = `
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,.5);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        z-index:99999;
-    `;
+    dialog.style.display = "flex";
 
     dialog.innerHTML = `
-        <div style="
-            width:min(600px,95%);
-            background:var(--card);
-            color:var(--text);
-            border-radius:20px;
-            padding:24px;
-        ">
+        <div class="delete-box">
 
-            <h2 style="margin-bottom:18px">
-                Share Paste
-            </h2>
+            <h3>Share Paste</h3>
 
             ${
                 paste && paste.visibility === "unlisted"
                 ? `
-                <label>Owner Link</label>
+                <p style="margin-top:10px">Owner Link</p>
 
-                <div style="display:flex;gap:10px;margin-bottom:18px">
+                <input
+                    id="ownerLinkInput"
+                    readonly
+                    value="${ownerUrl}"
+                    style="
+                        width:100%;
+                        margin-top:8px;
+                        padding:10px;
+                        border-radius:10px;
+                        border:1px solid var(--border);
+                        background:var(--bg);
+                        color:var(--text);
+                    "
+                >
 
-                    <input
-                        id="ownerLinkInput"
-                        readonly
-                        value="${ownerUrl}"
-                        style="flex:1"
-                    >
+                <p style="margin-top:18px">
+                    Share Link (for others)
+                </p>
 
-                    <button id="copyOwnerBtn">
-                        Copy
-                    </button>
-
-                </div>
-
-                <label>Share Link (for others)</label>
-
-                <div style="display:flex;gap:10px">
-
-                    <input
-                        id="shareLinkInput"
-                        readonly
-                        value="${shareUrl}"
-                        style="flex:1"
-                    >
-
-                    <button id="copyShareBtn">
-                        Copy
-                    </button>
-
-                </div>
+                <input
+                    id="shareLinkInput"
+                    readonly
+                    value="${shareUrl}"
+                    style="
+                        width:100%;
+                        margin-top:8px;
+                        padding:10px;
+                        border-radius:10px;
+                        border:1px solid var(--border);
+                        background:var(--bg);
+                        color:var(--text);
+                    "
+                >
                 `
                 : `
-                <label>Paste Link</label>
+                <p style="margin-top:10px">Paste Link</p>
 
-                <div style="display:flex;gap:10px">
-
-                    <input
-                        id="shareLinkInput"
-                        readonly
-                        value="${ownerUrl}"
-                        style="flex:1"
-                    >
-
-                    <button id="copyShareBtn">
-                        Copy
-                    </button>
-
-                </div>
+                <input
+                    id="shareLinkInput"
+                    readonly
+                    value="${ownerUrl}"
+                    style="
+                        width:100%;
+                        margin-top:8px;
+                        padding:10px;
+                        border-radius:10px;
+                        border:1px solid var(--border);
+                        background:var(--bg);
+                        color:var(--text);
+                    "
+                >
                 `
             }
 
-            <div style="text-align:right;margin-top:22px">
+            <div class="delete-actions">
 
-                <button id="closeShareDialog">
+                <button
+                    class="cancel-btn"
+                    id="closeShareBtn"
+                >
                     Close
                 </button>
+
+                ${
+                    paste && paste.visibility === "unlisted"
+                    ? `
+                    <button
+                        class="delete-btn"
+                        id="copyOwnerBtn"
+                    >
+                        Copy Owner Link
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        id="copyShareBtn"
+                    >
+                        Copy Share Link
+                    </button>
+                    `
+                    : `
+                    <button
+                        class="delete-btn"
+                        id="copyShareBtn"
+                    >
+                        Copy Link
+                    </button>
+                    `
+                }
 
             </div>
 
@@ -1577,44 +1590,33 @@ Stats
 
     document.body.appendChild(dialog);
 
-    document
-        .getElementById("copyShareBtn")
-        .onclick = async () => {
-
-            await navigator.clipboard.writeText(
-                shareUrl
-            );
-
-            alert("Copied!");
-        };
-
-    if (paste && paste.visibility === "unlisted") {
-
-        document
-            .getElementById("copyOwnerBtn")
-            .onclick = async () => {
-
-                await navigator.clipboard.writeText(
-                    ownerUrl
-                );
-
-                alert("Copied!");
-            };
-    }
-
-    document
-        .getElementById("closeShareDialog")
-        .onclick = () => dialog.remove();
+    document.getElementById("closeShareBtn").onclick = () => {
+        dialog.remove();
+    };
 
     dialog.onclick = e => {
-
         if (e.target === dialog) {
             dialog.remove();
         }
-
     };
-    }
 
+    document.getElementById("copyShareBtn").onclick = async () => {
+
+        await navigator.clipboard.writeText(shareUrl);
+
+        alert("Copied!");
+    };
+
+    if (paste && paste.visibility === "unlisted") {
+
+        document.getElementById("copyOwnerBtn").onclick = async () => {
+
+            await navigator.clipboard.writeText(ownerUrl);
+
+            alert("Copied!");
+        };
+    }
+    }
    
 function toggleDropdown(event, id){
 
