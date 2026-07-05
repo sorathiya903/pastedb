@@ -416,14 +416,17 @@ if (existingKEK) {
 } else {
 
     // First login on this browser
-    const kek = await generatePEK();
+    const accountKEK = await generatePEK();
+  const rawKEK = await crypto.subtle.exportKey("raw", accountKEK);
 
-    await saveToDB("accountKEK", kek);
+encryptedKEK = await encryptPEKWithPublicKey(
+    rawKEK,
+    keys.publicKey
+);
 
-    encryptedKEK = await encryptPEKWithPublicKey(
-        await crypto.subtle.exportKey("raw", kek),
-        keys.publicKey
-    );
+    await saveToDB("accountKEK", accountKEK);
+
+    
 
 }
 
