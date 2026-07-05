@@ -940,18 +940,18 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
     # Handle encrypted PEKs
     if update_data["e2ee"]:
 
-        if not data.get("encrypted_peks"):
+        if not data.get("encrypted_pek"):
             raise HTTPException(
                 400,
-                "encrypted_peks required"
+                "encrypted_pek required"
             )  
 
-        update_data["encrypted_peks"] = data.get(
-            "encrypted_peks"
+        update_data["encrypted_pek"] = data.get(
+            "encrypted_pek"
         )
 
     else:
-        update_data["encrypted_peks"] = None
+        update_data["encrypted_pek"] = None
 
     #  HANDLE PASSWORD IN EDIT
     if "password" in data:
