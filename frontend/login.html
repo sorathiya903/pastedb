@@ -397,7 +397,7 @@ display:flex;
         const data = await res.json();
 
         if (data.status === "success") {
-
+const keys = await ensureDeviceKeys();
            await fetch(`${API_URL}/device/register`, {
     method: "POST",
     credentials: "include",
