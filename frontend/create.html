@@ -2509,12 +2509,7 @@ if(selectedImages.length > 0){
   const data = await response.json()
 
 if (response.ok) {
-if (pasteData.e2ee && sharePEK) {
-    await uploadEncryptedPEK(
-        data._id || editId,
-        sharePEK
-    );
-}
+ 
     const pasteId =
         data.custom_id || data._id || editId;
 
