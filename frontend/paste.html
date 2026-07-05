@@ -1493,13 +1493,12 @@ if(path.startsWith("/paste/")){
     if (sharePEK) {
 
         Object.assign(
-            data,
-            await decryptWithAES(
-                data,
-                sharePEK
-            )
-        );
-
+    data,
+    await decryptPasteWithSharedPEK(
+        data,
+        sharePEK
+    )
+);
     } else {
 
         Object.assign(
