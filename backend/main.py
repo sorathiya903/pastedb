@@ -258,9 +258,10 @@ async def get_images(paste_id: str):
         )
 
     return {
-        "images": paste.get("images", [])
-    }
-        
+    "e2ee": paste.get("e2ee", False),
+    "encrypted_pek": paste.get("encrypted_pek"),
+    "images": paste.get("images", [])}
+
 
         
         
