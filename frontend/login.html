@@ -398,7 +398,36 @@ display:flex;
 
         if (data.status === "success") {
 const keys = await ensureDeviceKeys();
-           await fetch(`${API_URL}/device/register`, {
+
+const publicKey = await exportPublicKey(keys.publicKey);
+
+let encryptedKEK = null;
+
+// Check if this device already has a KEK
+const existingKEK = await getFromDB("accountKEK");
+
+if (existingKEK) {
+
+    encryptedKEK = await encryptPEKWithPublicKey(
+        await crypto.subtle.exportKey("raw", existingKEK),
+        keys.publicKey
+    );
+
+} else {
+
+    // First login on this browser
+    const kek = await generatePEK();
+
+    await saveToDB("accountKEK", kek);
+
+    encryptedKEK = await encryptPEKWithPublicKey(
+        await crypto.subtle.exportKey("raw", kek),
+        keys.publicKey
+    );
+
+}
+
+await fetch(`${API_URL}/device/register`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -407,7 +436,8 @@ const keys = await ensureDeviceKeys();
     body: JSON.stringify({
         device_id: keys.deviceId,
         device_name: navigator.userAgent,
-        public_key: await exportPublicKey(keys.publicKey)
+        public_key: publicKey,
+        encrypted_kek: encryptedKEK
     })
 });
 
