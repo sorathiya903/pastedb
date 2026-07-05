@@ -532,69 +532,24 @@ async function ensureDeviceKeys() {
 
 async function encryptPasteData(pasteData, existingPEK = null) {
 
-    // Generate one PEK for this paste
-    const pek = existingPEK || await generatePEK();
+    
+    const accountKEK = await getFromDB("accountKEK");
 
+if (!accountKEK) {
+    throw new Error("Account KEK not found.");
+}
 
-    // Encrypt paste
-    const encryptedTitle =
-        await encryptWithAES(
-            pasteData.title,
-            pek
-        );
+const rawPEK = await crypto.subtle.exportKey(
+    "raw",
+    pek
+);
 
-    const encryptedContent =
-        await encryptWithAES(
-            pasteData.content,
-            pek
-        );
-
-    const encryptedImages =
-        await Promise.all(
-            (pasteData.images || []).map(img =>
-                encryptWithAES(img, pek)
-            )
-        );
-
-    // Export raw PEK
-    const rawPEK =
-        await crypto.subtle.exportKey(
-            "raw",
-            pek
-        );
-
-    // Get approved devices
-    const res =
-        await fetch(
-            "https://pastedb-rw62.onrender.com/device/keys",
-            {
-                credentials: "include"
-            }
-        );
-
-    const json =
-        await res.json();
-
-    const encryptedPEKs = {};
-
-    // Encrypt PEK for every device
-    for (const device of json.devices) {
-
-        const publicKey =
-            await importPublicKey(
-                device.public_key
-            );
-
-        encryptedPEKs[
-            device.device_id
-        ] =
-        await encryptPEKWithPublicKey(
-            rawPEK,
-            publicKey
-        );
-
-    }
-
+const encryptedPEK =
+    await encryptWithAES(
+        bytesToBase64(new Uint8Array(rawPEK)),
+        accountKEK
+    );
+    
     return {
 
         ...pasteData,
@@ -605,8 +560,7 @@ async function encryptPasteData(pasteData, existingPEK = null) {
 
         images: encryptedImages,
 
-        encrypted_peks:
-            encryptedPEKs
+        encrypted_pek: encryptedPEK
 
     };
 
@@ -614,40 +568,23 @@ async function encryptPasteData(pasteData, existingPEK = null) {
 
 async function decryptPasteData(paste) {
 
-    const privateKey =
-        await getFromDB("privateKey");
+    const accountKEK =
+    await getFromDB("accountKEK");
 
-    const deviceId =
-        await getFromDB("deviceId");
+if (!accountKEK) {
+    throw new Error("Account KEK not found.");
+}
 
-    if (!privateKey || !deviceId) {
-        throw new Error("Device keys not found.");
-    }
+const rawPEKBase64 =
+    await decryptWithAES(
+        paste.encrypted_pek,
+        accountKEK
+    );
 
-    const encryptedPEK =
-        paste.encrypted_peks?.[deviceId];
-
-    if (!encryptedPEK) {
-        throw new Error(
-            "This device cannot decrypt this paste."
-        );
-    }
-
-    const rawPEK =
-        await decryptPEKWithPrivateKey(
-            encryptedPEK,
-            privateKey
-        );
-
-    const pek =
-        await crypto.subtle.importKey(
-            "raw",
-            rawPEK,
-            "AES-GCM",
-            true,
-            ["encrypt", "decrypt"]
-        );
-
+const pek =
+    await importAESKey(
+        rawPEKBase64
+    );
     const decrypted = {
         ...paste
     };
