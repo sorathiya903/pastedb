@@ -14,7 +14,7 @@ if(
 
   location.hostname.includes("127.0.0.1") ||
 
-  location.hostname.includes("n1etlify") ||
+  location.hostname.includes("netlify") ||
 
   localStorage.getItem("debug") === "true"
 ){
@@ -367,6 +367,19 @@ async function loadImages(){
 
     const data =
         await res.json()
+  if (
+    data.e2ee &&
+    Array.isArray(data.images) &&
+    data.images.length &&
+    typeof data.images[0] === "object"
+) {
+
+    Object.assign(
+        data,
+        await decryptPasteData(data)
+    );
+
+              }
 
     images.length = 0
 
