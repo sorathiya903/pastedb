@@ -18,7 +18,25 @@
   
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
+<script>
+
+if(
+  location.hostname === "localhost" ||
+
+  location.hostname.includes("127.0.0.1") ||
+
+  location.hostname.includes("netlify") ||
+
+  localStorage.getItem("debug") === "true"
+){
+
+  eruda.init();
+
+}
+
+</script>
   <style>
     * {
       margin: 0;
