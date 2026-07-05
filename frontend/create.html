@@ -1860,7 +1860,8 @@ margin:10px;
   </main>
 
   <script>
-    let sharePEK = null;
+    let originalPEK =null
+      let sharePEK = null;
 const imageInput =
     document.getElementById("images");
 
@@ -2133,7 +2134,7 @@ async function loadPasteForEditing(editId){
       return
     }
 
-    let originalPEK = null;
+    
     
       if (data.e2ee) {
     Object.assign(data, await decryptPasteData(data));
