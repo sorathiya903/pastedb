@@ -937,7 +937,7 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
         "e2ee": data.get("e2ee", False)
     }
     if "images" in data:
-    update_data["images"] = data["images"]
+        update_data["images"] = data["images"]
     
     # Handle encrypted PEK
     # Handle encrypted PEKs
