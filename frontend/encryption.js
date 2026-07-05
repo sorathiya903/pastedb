@@ -19,6 +19,26 @@ function generateDeviceId() {
 // ===============================
 // BASE64 HELPERS
 // ===============================
+async function decryptPasteWithSharedPEK(paste, rawPEKBase64) {
+
+    const pek = await importAESKey(rawPEKBase64);
+
+    return {
+        ...paste,
+
+        title: await decryptWithAES(paste.title, pek),
+
+        content: await decryptWithAES(paste.content, pek),
+
+        images: await Promise.all(
+            (paste.images || []).map(img =>
+                decryptWithAES(img, pek)
+            )
+        ),
+
+        _pek: pek
+    };
+}
 
 function bytesToBase64(bytes) {
 
