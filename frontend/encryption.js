@@ -532,7 +532,7 @@ async function ensureDeviceKeys() {
 
 async function encryptPasteData(pasteData, existingPEK = null) {
 
-    
+    const pek = existingPEK || await generatePEK();
     const accountKEK = await getFromDB("accountKEK");
 
 if (!accountKEK) {
@@ -543,7 +543,21 @@ const rawPEK = await crypto.subtle.exportKey(
     "raw",
     pek
 );
+const encryptedTitle = await encryptWithAES(
+    pasteData.title,
+    pek
+);
 
+const encryptedContent = await encryptWithAES(
+    pasteData.content,
+    pek
+);
+
+const encryptedImages = await Promise.all(
+    (pasteData.images || []).map(img =>
+        encryptWithAES(img, pek)
+    )
+);
 const encryptedPEK =
     await encryptWithAES(
         bytesToBase64(new Uint8Array(rawPEK)),
