@@ -1526,15 +1526,14 @@ console.log("images:", data.images);
   imagesBtn.onclick = () => {
 
     const id =
-      data.custom_id ||
-      data._id ||
-      pasteId;
+        data.custom_id ||
+        data._id ||
+        pasteId;
 
     window.location.href =
-      `/images?id=${encodeURIComponent(id)}`;
+        `/images?id=${encodeURIComponent(id)}${location.hash}`;
 
-  };
-
+};
   }
       // TITLE
       console.log(data.expire_at)
