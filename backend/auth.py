@@ -352,7 +352,7 @@ class DeviceRegister(BaseModel):
     device_id: str
     device_name: str
     public_key: str
-    encrypted_kek: dict | None = None
+    encrypted_kek: str | None = None
 
 @router.post("/device/register")
 async def register_device(
