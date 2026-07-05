@@ -114,7 +114,7 @@ class PasteCreate(BaseModel):
     title: str | EncryptedField
     content: str | EncryptedField
     images: list[str | EncryptedField]
-    encrypted_pek: Optional[EncryptedData] = None
+    encrypted_pek: Optional[EncryptedField] = None
     
     syntax: str = Field(
         default="text"
