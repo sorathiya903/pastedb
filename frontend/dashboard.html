@@ -1300,7 +1300,69 @@ function escapeHTML(str=""){
       .replace(/'/g,"&#039;");
 }
 
+function showToast(message, type = "success") {
 
+    const old = document.getElementById("toast");
+    if (old) old.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "toast";
+
+    const colors = {
+        success: {
+            bg: "#16a34a",
+            border: "#22c55e"
+        },
+        error: {
+            bg: "#dc2626",
+            border: "#ef4444"
+        },
+        info: {
+            bg: "#2563eb",
+            border: "#3b82f6"
+        }
+    };
+
+    const color = colors[type] || colors.success;
+
+    toast.textContent = message;
+
+    toast.style.cssText = `
+        position:fixed;
+        left:50%;
+        bottom:24px;
+        transform:translate(-50%,100px);
+        background:${color.bg};
+        border:1px solid ${color.border};
+        color:white;
+        padding:14px 20px;
+        border-radius:14px;
+        font-weight:600;
+        font-size:14px;
+        z-index:999999;
+        box-shadow:0 12px 35px rgba(0,0,0,.35);
+        transition:all .28s ease;
+        opacity:0;
+        min-width:220px;
+        text-align:center;
+    `;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.transform = "translate(-50%,0)";
+        toast.style.opacity = "1";
+    });
+
+    setTimeout(() => {
+
+        toast.style.transform = "translate(-50%,100px)";
+        toast.style.opacity = "0";
+
+        setTimeout(() => toast.remove(), 300);
+
+    }, 2200);
+}
 function renderPastes(pastes){
 
   // fallback safety
@@ -1604,7 +1666,7 @@ Stats
 
         await navigator.clipboard.writeText(shareUrl);
 
-        alert("Copied!");
+        showToast("Copied!");
     };
 
     if (paste && paste.visibility === "unlisted") {
@@ -1613,10 +1675,11 @@ Stats
 
             await navigator.clipboard.writeText(ownerUrl);
 
-            alert("Copied!");
+            showToast("Copied!");
         };
     }
     }
+
    
 function toggleDropdown(event, id){
 
@@ -1908,11 +1971,11 @@ document
     closeDeleteDialog();
 
     loadDashboard();
+     showToast("Paste deleted successfully!");
 
   } catch (err) {
-
-    alert(err);
-
+console.log(err)
+    showToast("Unable to delete paste", "error");
   } finally {
 
     btn.disabled = false;
@@ -1992,11 +2055,12 @@ async function deleteAccount(){
       );
     }
 
-    alert("Account deleted");
+    showToast("Account deleted successfully!");
 
     window.location.href = "/";
 
   }catch(err){
+    showToast("Unable to delete account", "error"); 
 
     alert(err.message);
   }
@@ -2016,7 +2080,7 @@ async function logout(){
     window.location.href = "/";
 
   }catch(err){
-alert("Logout Error")
+showToast("Logout Error", "error");
     alert(err);
   }
 }
