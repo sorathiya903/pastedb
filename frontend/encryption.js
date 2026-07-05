@@ -539,10 +539,11 @@ if (!accountKEK) {
     throw new Error("Account KEK not found.");
 }
 
-const rawPEK = await crypto.subtle.exportKey(
-    "raw",
-    pek
-);
+const rawPEK = await crypto.subtle.exportKey("raw", pek);
+
+const rawPEKBase64 =
+    bytesToBase64(new Uint8Array(rawPEK));
+
 const encryptedTitle = await encryptWithAES(
     pasteData.title,
     pek
@@ -563,6 +564,7 @@ const encryptedPEK =
         bytesToBase64(new Uint8Array(rawPEK)),
         accountKEK
     );
+    sharePEK = rawPEKBase64;
     
     return {
 
