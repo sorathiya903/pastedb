@@ -1449,29 +1449,173 @@ Stats
   `).join("");
 }
 
-   async function showShareLink(customId) {
+    async function showShareLink(customId) {
 
     const paste = allPastes.find(
         p => p.custom_id === customId
     );
 
-    let url = `${location.origin}/paste/${customId}`;
+    const ownerUrl =
+        `${location.origin}/paste/${customId}`;
+
+    let shareUrl = ownerUrl;
 
     if (paste && paste.visibility === "unlisted") {
 
-        const accountKEK = await getFromDB("accountKEK");
+        const accountKEK =
+            await getFromDB("accountKEK");
 
-        const rawPEKBase64 = await decryptWithAES(
-            paste.encrypted_pek,
-            accountKEK
-        );
+        const rawPEKBase64 =
+            await decryptWithAES(
+                paste.encrypted_pek,
+                accountKEK
+            );
 
-        url += "#" + encodeURIComponent(rawPEKBase64);
+        shareUrl =
+            ownerUrl +
+            "#" +
+            encodeURIComponent(rawPEKBase64);
     }
 
-    document.getElementById("shareLinkInput").value = url;
-    document.getElementById("shareDialog").style.display = "flex";
-}
+    // Remove old dialog
+    document.getElementById("shareDialog")?.remove();
+
+    const dialog = document.createElement("div");
+
+    dialog.id = "shareDialog";
+
+    dialog.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.5);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:99999;
+    `;
+
+    dialog.innerHTML = `
+        <div style="
+            width:min(600px,95%);
+            background:var(--card);
+            color:var(--text);
+            border-radius:20px;
+            padding:24px;
+        ">
+
+            <h2 style="margin-bottom:18px">
+                Share Paste
+            </h2>
+
+            ${
+                paste && paste.visibility === "unlisted"
+                ? `
+                <label>Owner Link</label>
+
+                <div style="display:flex;gap:10px;margin-bottom:18px">
+
+                    <input
+                        id="ownerLinkInput"
+                        readonly
+                        value="${ownerUrl}"
+                        style="flex:1"
+                    >
+
+                    <button id="copyOwnerBtn">
+                        Copy
+                    </button>
+
+                </div>
+
+                <label>Share Link (for others)</label>
+
+                <div style="display:flex;gap:10px">
+
+                    <input
+                        id="shareLinkInput"
+                        readonly
+                        value="${shareUrl}"
+                        style="flex:1"
+                    >
+
+                    <button id="copyShareBtn">
+                        Copy
+                    </button>
+
+                </div>
+                `
+                : `
+                <label>Paste Link</label>
+
+                <div style="display:flex;gap:10px">
+
+                    <input
+                        id="shareLinkInput"
+                        readonly
+                        value="${ownerUrl}"
+                        style="flex:1"
+                    >
+
+                    <button id="copyShareBtn">
+                        Copy
+                    </button>
+
+                </div>
+                `
+            }
+
+            <div style="text-align:right;margin-top:22px">
+
+                <button id="closeShareDialog">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+
+    document
+        .getElementById("copyShareBtn")
+        .onclick = async () => {
+
+            await navigator.clipboard.writeText(
+                shareUrl
+            );
+
+            alert("Copied!");
+        };
+
+    if (paste && paste.visibility === "unlisted") {
+
+        document
+            .getElementById("copyOwnerBtn")
+            .onclick = async () => {
+
+                await navigator.clipboard.writeText(
+                    ownerUrl
+                );
+
+                alert("Copied!");
+            };
+    }
+
+    document
+        .getElementById("closeShareDialog")
+        .onclick = () => dialog.remove();
+
+    dialog.onclick = e => {
+
+        if (e.target === dialog) {
+            dialog.remove();
+        }
+
+    };
+    }
+
+   
 function toggleDropdown(event, id){
 
   event.stopPropagation();
