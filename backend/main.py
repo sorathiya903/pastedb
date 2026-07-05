@@ -114,8 +114,8 @@ class PasteCreate(BaseModel):
     title: str | EncryptedField
     content: str | EncryptedField
     images: list[str | EncryptedField]
-    encrypted_peks: dict[str, str] | None = None
-
+    encrypted_pek: Optional[EncryptedData] = None
+    
     syntax: str = Field(
         default="text"
     )
@@ -512,12 +512,10 @@ async def create_paste_logic(
             )
 
     if paste_data.get("e2ee"):
-
-        if not paste_data.get("encrypted_peks"):
-
+        if not paste_data.get("encrypted_pek"):
             raise HTTPException(
                 400,
-             "encrypted_peks required for E2EE paste"
+                "encrypted_pek required for E2EE paste"
             )
 
     # PASSWORD HASH
@@ -539,7 +537,7 @@ async def create_paste_logic(
 
         "e2ee": paste_data.get("e2ee", False),
 
-        "encrypted_peks":  paste_data.get("encrypted_peks"),
+        "encrypted_pek": paste_data.get("encrypted_pek"),
         "owner": user_data.get("name"),
 
         "picture":  user_data.get("picture"),
