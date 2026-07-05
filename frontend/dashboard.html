@@ -1449,27 +1449,29 @@ Stats
   `).join("");
 }
 
-   function showShareLink(customId){
+   async function showShareLink(customId) {
 
-  const paste = allPastes.find(
-    p => p.custom_id === customId
-  );
-console.log(paste)
-  let url = `${location.origin}/paste/${customId}`;
+    const paste = allPastes.find(
+        p => p.custom_id === customId
+    );
 
-  // Only unlisted pastes need the PEK in the URL
-  if (
-    paste &&
-    paste.visibility === "unlisted" &&
-    paste.sharePEK
-  ) {
-    url += "#" + paste.sharePEK;
-  }
+    let url = `${location.origin}/paste/${customId}`;
 
-  document.getElementById("shareLinkInput").value = url;
+    if (paste && paste.visibility === "unlisted") {
 
-  document.getElementById("shareDialog").style.display = "flex";
-   }
+        const accountKEK = await getFromDB("accountKEK");
+
+        const rawPEKBase64 = await decryptWithAES(
+            paste.encrypted_pek,
+            accountKEK
+        );
+
+        url += "#" + encodeURIComponent(rawPEKBase64);
+    }
+
+    document.getElementById("shareLinkInput").value = url;
+    document.getElementById("shareDialog").style.display = "flex";
+}
 function toggleDropdown(event, id){
 
   event.stopPropagation();
