@@ -605,46 +605,51 @@ const encryptedPEK =
 async function decryptPasteData(paste) {
 
     const accountKEK =
-    await getFromDB("accountKEK");
+        await getFromDB("accountKEK");
 
-if (!accountKEK) {
-    throw new Error("Account KEK not found.");
-}
+    if (!accountKEK) {
+        throw new Error("Account KEK not found.");
+    }
 
-const rawPEKBase64 =
-    await decryptWithAES(
-        paste.encrypted_pek,
-        accountKEK
-    );
+    const rawPEKBase64 =
+        await decryptWithAES(
+            paste.encrypted_pek,
+            accountKEK
+        );
 
-const pek =
-    await importAESKey(
-        rawPEKBase64
-    );
+    const pek =
+        await importAESKey(rawPEKBase64);
+
     const decrypted = {
         ...paste
     };
 
-    decrypted.title =
-        await decryptWithAES(
-            paste.title,
-            pek
-        );
+    if (paste.title) {
+        decrypted.title =
+            await decryptWithAES(
+                paste.title,
+                pek
+            );
+    }
 
-    decrypted.content =
-        await decryptWithAES(
-            paste.content,
-            pek
-        );
+    if (paste.content) {
+        decrypted.content =
+            await decryptWithAES(
+                paste.content,
+                pek
+            );
+    }
 
-    decrypted.images =
-        await Promise.all(
-            (paste.images || []).map(img =>
-                decryptWithAES(img, pek)
-            )
-        );
+    if (Array.isArray(paste.images)) {
+        decrypted.images =
+            await Promise.all(
+                paste.images.map(img =>
+                    decryptWithAES(img, pek)
+                )
+            );
+    }
 
     decrypted._pek = pek;
 
-return decrypted;
-                }
+    return decrypted;
+}
