@@ -1494,7 +1494,7 @@ if(path.startsWith("/paste/")){
 
         Object.assign(
             data,
-            await decryptPasteWithAES(
+            await decryptPasteAES(
                 data,
                 sharePEK
             )
