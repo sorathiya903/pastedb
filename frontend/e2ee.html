@@ -55,6 +55,18 @@ if(
   <style>
 :root{--bg:#0b0b0b;--card:#151515;--text:#f3f3f3;--muted:#a8a8a8;--border:#2a2a2a;--accent:#22c55e}
 body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+    *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body{
+  background:#0a0a0a;
+  color:#fff;
+  overflow-x:hidden;
+}
 .container{max-width:980px;margin:auto;padding:40px 20px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin:18px 0}
 h1,h2{margin-top:0}.step{color:var(--accent)}
@@ -62,11 +74,7 @@ code{background:#222;padding:2px 6px;border-radius:6px}
 pre{background:#111;border:1px solid var(--border);padding:14px;border-radius:12px;overflow:auto}
 ul{padding-left:22px}
 .good{color:#7ee787}.bad{color:#ff7b72}
-*,
-*::before,
-*::after{
-  box-sizing:border-box;
-}
+
  header{
   position:fixed;
   top:18px;
