@@ -594,7 +594,7 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
         images: encryptedImages,
         guest:false
 
-    };
+    result.guest = !useAccountKEK;
 
     if (useAccountKEK && accountKEK) {
     result.encrypted_pek = await encryptWithAES(
@@ -602,7 +602,7 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
         accountKEK
     );
 }
-     result.guest = !useAccountKEK;
+     
 
     return result;
 }
