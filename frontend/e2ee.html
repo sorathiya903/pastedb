@@ -14,9 +14,77 @@ code{background:#222;padding:2px 6px;border-radius:6px}
 pre{background:#111;border:1px solid var(--border);padding:14px;border-radius:12px;overflow:auto}
 ul{padding-left:22px}
 .good{color:#7ee787}.bad{color:#ff7b72}
+
+ header{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:1100px;
+
+  background:rgba(30,30,30,0.55);
+  backdrop-filter: blur(16px);
+
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+
+  z-index:100;
+
+  transition:0.3s ease;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+}
+
+.logo{
+  font-weight:700;
+  letter-spacing:1px;
+  color:#eaeaea;
+}
+
+/* desktop links */
+.nav-links{
+  display:flex;
+  gap:18px;
+   }
 </style>
 </head>
 <body>
+ <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- NAVBAR -->
+<header id="header">
+  <div class="nav">
+
+    <div class="logo">PasteDB</div>
+
+    <div class="nav-links">
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/terms">Terms</a>
+      <a href="/create">Create</a>
+    </div>
+
+    <a class="btn" href="/create">Get Started</a>
+
+    <div class="menu-btn" id="menuBtn" onclick="toggleMenu(event)">☰</div>
+
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="menu">
+  <a href="/dashboard.html">Dashboard</a>
+  <a href="/login">Login</a>
+  <a href="/create">Create Paste</a>
+     <a href="/explore">Explore</a>
+  <a href="/terms">Terms</a>
+  <a class="btn" href="/create">Get Started</a>
+</div>
 <div class="container">
 <h1>🔐 How PasteDB End-to-End Encryption Works</h1>
 <p>PasteDB performs encryption and decryption entirely in your browser. The server stores encrypted data but never decrypts your paste.</p>
@@ -125,5 +193,32 @@ Display Paste</pre>
 <p>Your browser performs all encryption and decryption. PasteDB stores encrypted data and the metadata required for application features, but never has access to your plaintext title, content or images.</p>
 </div>
 </div>
+
+ <script>
+
+  function toggleMenu(e){
+  e.stopPropagation();
+  menuOpen = !menuOpen;
+
+  document.getElementById("menu").classList.toggle("active", menuOpen);
+  document.getElementById("overlay").classList.toggle("active", menuOpen);
+}
+
+function closeMenu(){
+  menuOpen = false;
+
+  document.getElementById("menu").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+}
+
+/* outside click */
+document.addEventListener("click", () => {
+  if(menuOpen) closeMenu();
+});
+
+document.getElementById("menu").addEventListener("click", e => {
+  e.stopPropagation();
+});
+ </script>
 </body>
 </html>
