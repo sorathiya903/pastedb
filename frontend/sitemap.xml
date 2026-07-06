@@ -50,7 +50,13 @@
         <priority>0.2</priority>
         <changefreq>monthly</changefreq>
     </url>
-
+    
+    <url>
+        <loc>https://pastedb.netlify.app/e2ee</loc>
+        <priority>0.7</priority>
+        <changefreq>monthly</changefreq>
+    </url>
+    
     <url>
         <loc>https://pastedb.netlify.app/extension</loc>
         <priority>0.9</priority>
