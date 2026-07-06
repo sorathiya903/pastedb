@@ -460,6 +460,47 @@ Display Paste</pre>
 <p>Your browser performs all encryption and decryption. PasteDB stores encrypted data and the metadata required for application features, but never has access to your plaintext title, content or images.</p>
 </div>
 </div>
+  <a href="/create" class="create-encrypted-btn">
+  🔐 Create an Encrypted Paste
+</a>
+
+<style>
+.create-encrypted-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  margin-top:20px;
+  padding:14px 22px;
+
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;
+
+  text-decoration:none;
+  font-weight:600;
+  font-size:16px;
+
+  border-radius:14px;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+    0 8px 24px rgba(34,197,94,.25);
+
+  transition:.25s ease;
+}
+
+.create-encrypted-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 12px 32px rgba(34,197,94,.35);
+}
+
+.create-encrypted-btn:active{
+  transform:translateY(0);
+}
+</style>
 <footer class="footer">
   <div class="footer-container">
 
@@ -476,7 +517,7 @@ Display Paste</pre>
 
       <div>
         <h4>Product</h4>
-
+<a href="/">Home</a>a>
         <a href="/create">Create Paste</a>
         <a href="/explore">Explore</a>
         <a href="/dashboard">Dashboard</a>
