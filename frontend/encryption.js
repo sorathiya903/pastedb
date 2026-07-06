@@ -553,46 +553,36 @@ async function ensureDeviceKeys() {
 async function encryptPasteData(pasteData, existingPEK = null) {
 
     const pek = existingPEK || await generatePEK();
-     const accountKEK = await getFromDB("accountKEK");
-const rawPEK = await crypto.subtle.exportKey("raw", pek);
 
-const rawPEKBase64 =
-    bytesToBase64(new Uint8Array(rawPEK));
-if (accountKEK) {
-    const encryptedPEK = await encryptWithAES(
-        rawPEKBase64,
-        accountKEK
-    );
+    const accountKEK = await getFromDB("accountKEK");
 
-    result.encrypted_pek = encryptedPEK;
-}
+    const rawPEK = await crypto.subtle.exportKey("raw", pek);
 
-sharePEK = rawPEKBase64;
+    const rawPEKBase64 =
+        bytesToBase64(new Uint8Array(rawPEK));
 
-
-const encryptedTitle = await encryptWithAES(
-    pasteData.title,
-    pek
-);
-
-const encryptedContent = await encryptWithAES(
-    pasteData.content,
-    pek
-);
-
-const encryptedImages = await Promise.all(
-    (pasteData.images || []).map(img =>
-        encryptWithAES(img, pek)
-    )
-);
-const encryptedPEK =
-    await encryptWithAES(
-        bytesToBase64(new Uint8Array(rawPEK)),
-        accountKEK
-    );
     sharePEK = rawPEKBase64;
-    
-    return {
+
+    const encryptedTitle =
+        await encryptWithAES(
+            pasteData.title,
+            pek
+        );
+
+    const encryptedContent =
+        await encryptWithAES(
+            pasteData.content,
+            pek
+        );
+
+    const encryptedImages =
+        await Promise.all(
+            (pasteData.images || []).map(img =>
+                encryptWithAES(img, pek)
+            )
+        );
+
+    const result = {
 
         ...pasteData,
 
@@ -600,28 +590,50 @@ const encryptedPEK =
 
         content: encryptedContent,
 
-        images: encryptedImages,
-
-        encrypted_pek: encryptedPEK
+        images: encryptedImages
 
     };
 
+    if (accountKEK) {
+
+        result.encrypted_pek =
+            await encryptWithAES(
+                rawPEKBase64,
+                accountKEK
+            );
+
+    }
+
+    return result;
 }
 
 async function decryptPasteData(paste) {
 
+    let rawPEKBase64;
+
     const accountKEK =
         await getFromDB("accountKEK");
 
-    if (!accountKEK) {
-        throw new Error("Account KEK not found.");
-    }
+    if (accountKEK && paste.encrypted_pek) {
 
-    const rawPEKBase64 =
-        await decryptWithAES(
-            paste.encrypted_pek,
-            accountKEK
-        );
+        rawPEKBase64 =
+            await decryptWithAES(
+                paste.encrypted_pek,
+                accountKEK
+            );
+
+    } else {
+
+        rawPEKBase64 =
+            decodeURIComponent(
+                location.hash.substring(1)
+            );
+
+        if (!rawPEKBase64) {
+            throw new Error("Missing PEK in URL.");
+        }
+
+    }
 
     const pek =
         await importAESKey(rawPEKBase64);
@@ -658,4 +670,4 @@ async function decryptPasteData(paste) {
     decrypted._pek = pek;
 
     return decrypted;
-}
+        }
