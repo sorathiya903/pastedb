@@ -2,7 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+<script>
+
+if(
+  location.hostname === "localhost" ||
+
+  location.hostname.includes("127.0.0.1") ||
+
+  location.hostname.includes("netlify") ||
+
+  localStorage.getItem("debug") === "true"
+){
+
+  eruda.init();
+
+}
+
+</script>
+ 
+ <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>How PasteDB End-to-End Encryption Works</title>
 <style>
 :root{--bg:#0b0b0b;--card:#151515;--text:#f3f3f3;--muted:#a8a8a8;--border:#2a2a2a;--accent:#22c55e}
