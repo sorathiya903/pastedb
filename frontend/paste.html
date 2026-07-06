@@ -1486,10 +1486,17 @@ if(path.startsWith("/paste/")){
 
 
     if (data.e2ee) {
-
+      try {
     const sharePEK =
         decodeURIComponent(location.hash.slice(1));
 
+} catch (e) {
+    showMalformedUrlScreen();
+      console.error(e)
+    return;
+  }
+
+    
     if (sharePEK) {
 
         Object.assign(
