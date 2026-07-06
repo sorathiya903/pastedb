@@ -22,9 +22,37 @@ if(
 
 </script>
  
- <meta name="viewport" content="width=device-width,initial-scale=1">
+ <!-- Primary SEO -->
 <title>How PasteDB End-to-End Encryption Works</title>
-<style>
+<meta name="description" content="Learn how PasteDB implements end-to-end encryption using RSA, KEK, and per-paste encryption keys (PEK). Discover how encrypted pastes are created, stored, shared, and decrypted entirely in your browser.">
+<meta name="keywords" content="PasteDB, end-to-end encryption, E2EE, RSA, AES-GCM, KEK, PEK, encrypted paste, client-side encryption, secure pastebin">
+<meta name="author" content="Aditya Sorathiya">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f172a">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://pastedb.netlify.app/e2ee">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="How PasteDB End-to-End Encryption Works">
+<meta property="og:description" content="Understand how PasteDB encrypts your data using RSA, KEK and per-paste encryption keys while keeping plaintext private.">
+<meta property="og:url" content="https://pastedb.netlify.app/e2ee">
+<meta property="og:image" content="https://pastedb.netlify.app/favicon.png">
+<meta property="og:site_name" content="PasteDB">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How PasteDB End-to-End Encryption Works">
+<meta name="twitter:description" content="Learn how PasteDB securely encrypts and decrypts your pastes entirely in the browser.">
+<meta name="twitter:image" content="https://pastedb.netlify.app/favicon.png">
+  
+  
+  <style>
 :root{--bg:#0b0b0b;--card:#151515;--text:#f3f3f3;--muted:#a8a8a8;--border:#2a2a2a;--accent:#22c55e}
 body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
 .container{max-width:980px;margin:auto;padding:40px 20px}
