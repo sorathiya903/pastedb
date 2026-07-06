@@ -52,6 +52,109 @@ ul{padding-left:22px}
   display:flex;
   gap:18px;
    }
+
+ .footer{
+  margin-top:80px;
+
+  border-top:1px solid rgba(255,255,255,0.08);
+
+  background:rgba(15,15,15,0.85);
+
+  backdrop-filter:blur(12px);
+}
+
+.footer-container{
+  max-width:1100px;
+
+  margin:auto;
+
+  padding:60px 20px 40px;
+
+  display:grid;
+
+  grid-template-columns:1.3fr 2fr;
+
+  gap:50px;
+}
+
+.footer-brand h3{
+  font-size:26px;
+  margin-bottom:12px;
+}
+
+.footer-brand p{
+  color:#9a9a9a;
+  line-height:1.7;
+}
+
+.footer-links{
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:30px;
+}
+
+.footer-links h4{
+  margin-bottom:14px;
+
+  font-size:15px;
+}
+
+.footer-links a{
+  display:block;
+
+  color:#8a8a8a;
+
+  text-decoration:none;
+
+  margin-bottom:10px;
+
+  transition:0.25s;
+}
+
+.footer-links a:hover{
+  color:#fff;
+  transform:translateX(3px);
+}
+
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,0.08);
+
+  padding:20px;
+
+  max-width:1100px;
+
+  margin:auto;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  color:#7a7a7a;
+
+  font-size:14px;
+}
+
+@media(max-width:768px){
+
+  .footer-container{
+    grid-template-columns:1fr;
+  }
+
+  .footer-links{
+    grid-template-columns:1fr;
+  }
+
+  .footer-bottom{
+    flex-direction:column;
+    gap:10px;
+    text-align:center;
+  }
+   }
+   
 </style>
 </head>
 <body>
@@ -193,6 +296,64 @@ Display Paste</pre>
 <p>Your browser performs all encryption and decryption. PasteDB stores encrypted data and the metadata required for application features, but never has access to your plaintext title, content or images.</p>
 </div>
 </div>
+<footer class="footer">
+  <div class="footer-container">
+
+    <div class="footer-brand">
+      <h3>PasteDB</h3>
+
+      <p>
+        A fast, secure and developer-first platform
+        for sharing text and code snippets.
+      </p>
+    </div>
+
+    <div class="footer-links">
+
+      <div>
+        <h4>Product</h4>
+
+        <a href="/create">Create Paste</a>
+        <a href="/explore">Explore</a>
+        <a href="/dashboard">Dashboard</a>
+  <a href="/login">Login</a>
+        <a href="/about">About</a>
+<a href="/privacy">Privacy Policy</a>
+<a href="/contact">Contact</a>
+<a href="/docs">API Docs</a>
+ <a href="/extension">View VS Code Extension</a>     
+      </div>
+
+      
+      <div>
+        <h4>Legal</h4>
+
+        <a href="/terms">Terms of Service</a>
+      </div>
+
+      
+      <div>
+      
+        <h4>Source Code</h4>
+        <a href="https://github.com/sorathiya903" target="_blank">
+          GitHub
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>
+      © 2026 PasteDB. Built for developers, teachers and students.
+    </p>
+
+    <span>
+      Made with passion by Aditya Sorathiya
+    </span>
+  </div>
+</footer>
 
  <script>
 
