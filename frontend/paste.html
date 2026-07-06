@@ -609,34 +609,56 @@ if(
 
 <body>
 
+<div id="decryptionFailedScreen" class="malformed-screen" style="display:none;">
 
-  <div id="malformedUrlScreen" class="malformed-screen" style="display:none;">
+  <div class="malformed-card">
 
-    <div class="malformed-card">
+    <div class="icon">🔒</div>
 
-        <div class="icon">🔗</div>
+    <h1>Unable to Decrypt Paste</h1>
 
-        <h1>Invalid Paste Link</h1>
+    <p class="main-text">
+      This paste couldn't be decrypted.
+    </p>
 
-        <p class="main-text">
-            This PasteDB link is corrupted or incomplete.
-        </p>
+    <p class="sub-text">
+      The encryption key is invalid, missing, or doesn't match this paste. This usually happens if the link was modified or the wrong encryption key was used.
+    </p>
 
-        <p class="sub-text">
-            The encrypted key in the URL couldn't be decoded. This usually happens if the link was modified, truncated, or copied incorrectly.
-        </p>
-
-        <div class="actions">
-            <button onclick="location.href='/'">
-                Go to Home
-            </button>
-
-            
-        </div>
-
+    <div class="actions">
+      <button onclick="location.href='/'">
+        Go to Home
+      </button>
     </div>
 
   </div>
+
+</div>
+<div id="malformedUrlScreen" class="malformed-screen" style="display:none;">
+
+  <div class="malformed-card">
+
+    <div class="icon">🔗</div>
+
+    <h1>Invalid Paste Link</h1>
+
+    <p class="main-text">
+      This PasteDB link is invalid or malformed.
+    </p>
+
+    <p class="sub-text">
+      The link contains invalid or corrupted URL data and couldn't be processed. This usually happens if the link was modified, truncated, or copied incorrectly. If this is an encrypted paste, make sure you've copied the entire link, including everything after the <strong>#</strong>.
+    </p>
+
+    <div class="actions">
+      <button onclick="location.href='/'">
+        Go to Home
+      </button>
+    </div>
+
+  </div>
+
+</div>
   <div id="passwordModal"
      style="
        position:fixed;
@@ -1207,6 +1229,24 @@ id="codeBlock"
 
   </div>
 <script>
+
+  function showDecryptionFailedScreen(){
+
+  document.querySelectorAll("body > *").forEach(el => {
+
+    if(el.id !== "decryptionFailedScreen"){
+
+      el.style.display = "none";
+
+    }
+
+  });
+
+  document.getElementById("decryptionFailedScreen").style.display = "flex";
+
+  }
+
+  
 function showMalformedUrlScreen() {
 
     const screen =
@@ -1611,20 +1651,41 @@ if(path.startsWith("/paste/")){
     
     if (sharePEK) {
 
-        Object.assign(
-    data,
-    await decryptPasteWithSharedPEK(
+        try {
+
+    Object.assign(
         data,
-        sharePEK
-    )
+        await decryptPasteWithSharedPEK(data, sharePEK)
+    );
+
+} catch (err) {
+
+    console.error(err);
+
+    showDecryptionFailedScreen();
+
+    return;
+
+  }
 );
     } else {
+try {
 
-        Object.assign(
-            data,
-            await decryptPasteData(data)
-        );
+    Object.assign(
+        data,
+        await decryptPasteData(data)
+    );
 
+} catch (err) {
+
+    console.error(err);
+
+    showDecryptionFailedScreen();
+
+    return;
+
+      }
+        
     }
 
     }
