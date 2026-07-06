@@ -602,9 +602,7 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
         accountKEK
     );
 }
-    if (!loggedIn && shouldEncrypt) {
-    pasteData.guest = true;
-    }
+     pasteData.guest = !useAccountKEK;
 
     return result;
 }
