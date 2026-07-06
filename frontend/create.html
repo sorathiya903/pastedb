@@ -2436,7 +2436,7 @@ if (!loggedIn && shouldEncrypt) {
 
     Object.assign(
         pasteData,
-        await encryptPasteData(pasteData, pek)
+        await encryptPasteData(pasteData, pek, false)
     );
 
     pasteData.e2ee = true;
