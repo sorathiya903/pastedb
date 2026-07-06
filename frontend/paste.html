@@ -1220,10 +1220,17 @@ function showMalformedUrlScreen() {
 
     screen.style.display = "flex";
 }
-  const fragmentKey = location.hash
-    ? decodeURIComponent(location.hash.substring(1))
-    : null;
-  
+  let fragmentKey = null;
+
+try {
+    if (location.hash) {
+        fragmentKey = decodeURIComponent(location.hash.substring(1));
+    }
+} catch (e) {
+    showMalformedUrlScreen();
+  console.error(e);
+  return; // or return if appropriate
+}
 let currentPreviewHTML = ""
 
 const runBtn =
