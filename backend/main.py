@@ -119,6 +119,9 @@ class PasteCreate(BaseModel):
     syntax: str = Field(
         default="text"
     )
+    encrypted_pek: Optional[EncryptedField] = None
+    guest: bool = False
+
     e2ee: bool = False
 
     expiration: str = Field(
