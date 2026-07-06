@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How PasteDB End-to-End Encryption Works</title>
+<style>
+:root{--bg:#0b0b0b;--card:#151515;--text:#f3f3f3;--muted:#a8a8a8;--border:#2a2a2a;--accent:#22c55e}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+.container{max-width:980px;margin:auto;padding:40px 20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin:18px 0}
+h1,h2{margin-top:0}.step{color:var(--accent)}
+code{background:#222;padding:2px 6px;border-radius:6px}
+pre{background:#111;border:1px solid var(--border);padding:14px;border-radius:12px;overflow:auto}
+ul{padding-left:22px}
+.good{color:#7ee787}.bad{color:#ff7b72}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🔐 How PasteDB End-to-End Encryption Works</h1>
+<p>PasteDB performs encryption and decryption entirely in your browser. The server stores encrypted data but never decrypts your paste.</p>
+
+<div class="card">
+<h2><span class="step">1.</span> Account Setup</h2>
+<ul>
+<li>A new RSA key pair is generated in your browser.</li>
+<li>A random <b>KEK (Key Encryption Key)</b> is generated.</li>
+<li>The KEK is encrypted using your RSA public key.</li>
+<li>The server stores:
+<ul>
+<li>RSA public key</li>
+<li>Encrypted KEK</li>
+</ul></li>
+<li>The plaintext KEK is stored locally in IndexedDB as <code>accountKEK</code>.</li>
+</ul>
+<pre>Browser
+ ├─ Generate RSA Key Pair
+ ├─ Generate KEK
+ ├─ Encrypt KEK
+ ├─ Upload Public Key + Encrypted KEK
+ └─ Store accountKEK in IndexedDB</pre>
+</div>
+
+<div class="card">
+<h2><span class="step">2.</span> Creating an Encrypted Paste</h2>
+<ul>
+<li>A random <b>PEK (Paste Encryption Key)</b> is generated.</li>
+<li>The PEK encrypts the paste title, content and images array.</li>
+<li>The PEK itself is encrypted with the account KEK.</li>
+<li>The server receives:
+<ul>
+<li>Encrypted title</li>
+<li>Encrypted content</li>
+<li>Encrypted images array</li>
+<li>Encrypted PEK</li>
+<li>Paste metadata</li>
+</ul></li>
+</ul>
+<pre>Generate PEK
+      │
+Encrypt Title / Content / Images
+      │
+Encrypt PEK using KEK
+      │
+Upload Everything</pre>
+</div>
+
+<div class="card">
+<h2><span class="step">3.</span> Why Metadata Isn't Encrypted</h2>
+<p>Only the title, content and images array are encrypted. Metadata remains readable because the server needs it to provide core functionality such as syntax highlighting, visibility rules, timestamps, ownership, expiration, searching and other application features.</p>
+</div>
+
+<div class="card">
+<h2><span class="step">4.</span> Retrieving an Encrypted Paste</h2>
+<ul>
+<li>Download encrypted paste.</li>
+<li>Load <code>accountKEK</code> from IndexedDB.</li>
+<li>Decrypt the encrypted PEK.</li>
+<li>Use the PEK to decrypt the title, content and images array.</li>
+<li>Display the plaintext in the browser.</li>
+</ul>
+<pre>Download Encrypted Paste
+          │
+Load accountKEK
+          │
+Decrypt PEK
+          │
+Decrypt Title / Content / Images
+          │
+Display Paste</pre>
+</div>
+
+<div class="card">
+<h2><span class="step">5.</span> Sharing Unlisted Encrypted Pastes</h2>
+<p>For unlisted encrypted pastes, the PEK is appended to the URL fragment (<code>#...</code>). URL fragments are processed by the browser and are not sent to the server during HTTP requests.</p>
+<pre>https://example.com/paste/abc123#PEK</pre>
+</div>
+
+<div class="card">
+<h2>What the Server Can See</h2>
+<ul class="good">
+<li>Metadata</li>
+<li>Encrypted title</li>
+<li>Encrypted content</li>
+<li>Encrypted images array</li>
+<li>Encrypted PEK</li>
+<li>RSA public key</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>What the Server Cannot See</h2>
+<ul class="bad">
+<li>Plaintext title</li>
+<li>Plaintext content</li>
+<li>Plaintext images</li>
+<li>KEK</li>
+<li>PEK (unless intentionally shared through the URL fragment)</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Summary</h2>
+<p>Your browser performs all encryption and decryption. PasteDB stores encrypted data and the metadata required for application features, but never has access to your plaintext title, content or images.</p>
+</div>
+</div>
+</body>
+</html>
