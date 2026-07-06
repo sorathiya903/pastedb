@@ -1413,7 +1413,7 @@ setTimeout(() => {
   outputBlock.textContent =
     "Running..."
 
-    
+let sharePEK;   
 const languageMap = {
 
   py: "python",
@@ -1601,7 +1601,7 @@ if(path.startsWith("/paste/")){
 
     if (data.e2ee) {
       try {
-    const sharePEK =
+     sharePEK =
         decodeURIComponent(location.hash.slice(1));
 
 } catch (e) {
