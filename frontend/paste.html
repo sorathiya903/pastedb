@@ -537,11 +537,108 @@ if(
 #outputWrapper{
   animation:fadeUp .5s ease;
 }
+
+      .malformed-screen{
+    position:fixed;
+    inset:0;
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    z-index:99999;
+}
+
+.malformed-card{
+    width:100%;
+    max-width:520px;
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:40px 32px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.35);
+}
+
+.icon{
+    font-size:64px;
+    margin-bottom:18px;
+}
+
+.malformed-card h1{
+    color:#fff;
+    margin:0 0 14px;
+    font-size:30px;
+}
+
+.main-text{
+    color:#e2e8f0;
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.sub-text{
+    color:#94a3b8;
+    line-height:1.6;
+    margin-bottom:28px;
+}
+
+.actions{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.actions button{
+    border:none;
+    border-radius:10px;
+    padding:12px 22px;
+    font-size:16px;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+    transition:.2s;
+}
+
+.actions button:hover{
+    background:#1d4ed8;
+    }
   </style>
 </head>
 
 <body>
 
+
+  <div id="malformedUrlScreen" class="malformed-screen" style="display:none;">
+
+    <div class="malformed-card">
+
+        <div class="icon">🔗</div>
+
+        <h1>Invalid Paste Link</h1>
+
+        <p class="main-text">
+            This PasteDB link is corrupted or incomplete.
+        </p>
+
+        <p class="sub-text">
+            The encrypted key in the URL couldn't be decoded. This usually happens if the link was modified, truncated, or copied incorrectly.
+        </p>
+
+        <div class="actions">
+            <button onclick="location.href='/'">
+                Go to Home
+            </button>
+
+            <button onclick="history.back()">
+                Go Back
+            </button>
+        </div>
+
+    </div>
+
+  </div>
   <div id="passwordModal"
      style="
        position:fixed;
