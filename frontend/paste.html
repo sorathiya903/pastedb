@@ -1209,7 +1209,17 @@ id="codeBlock"
 
   </div>
 <script>
+function showMalformedUrlScreen() {
 
+    const screen =
+        document.getElementById("malformedUrlScreen");
+
+    document.body.innerHTML = "";
+
+    document.body.appendChild(screen);
+
+    screen.style.display = "flex";
+}
   const fragmentKey = location.hash
     ? decodeURIComponent(location.hash.substring(1))
     : null;
