@@ -591,7 +591,8 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
 
         content: encryptedContent,
 
-        images: encryptedImages
+        images: encryptedImages,
+        guest:false
 
     };
 
@@ -601,6 +602,9 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
         accountKEK
     );
 }
+    if (!loggedIn && shouldEncrypt) {
+    pasteData.guest = true;
+    }
 
     return result;
 }
