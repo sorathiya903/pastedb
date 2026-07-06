@@ -2424,7 +2424,7 @@ pasteData.images = [
 const shouldEncrypt =
     visibility === "private" ||
     visibility === "unlisted";
-  const loggedIn = (await fetch(`${API_URL}/me`, {
+  const loggedIn = (await fetch(`${API_URL}/auth/me`, {
     credentials: "include"
 })).ok;
 
