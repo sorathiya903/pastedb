@@ -23,7 +23,7 @@ if(
 
   eruda.init();
 
-}
+} 
 
 </script>
 
@@ -2432,7 +2432,7 @@ if (!loggedIn && shouldEncrypt) {
 
     const pek = await generatePEK();
 
-    sharePEK = await exportPEK(pek);
+    sharePEK = await exportAESKey(pek);
 
     Object.assign(
         pasteData,
