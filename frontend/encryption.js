@@ -553,16 +553,22 @@ async function ensureDeviceKeys() {
 async function encryptPasteData(pasteData, existingPEK = null) {
 
     const pek = existingPEK || await generatePEK();
-    const accountKEK = await getFromDB("accountKEK");
-
-if (!accountKEK) {
-    throw new Error("Account KEK not found.");
-}
-
+     const accountKEK = await getFromDB("accountKEK");
 const rawPEK = await crypto.subtle.exportKey("raw", pek);
 
 const rawPEKBase64 =
     bytesToBase64(new Uint8Array(rawPEK));
+if (accountKEK) {
+    const encryptedPEK = await encryptWithAES(
+        rawPEKBase64,
+        accountKEK
+    );
+
+    result.encrypted_pek = encryptedPEK;
+}
+
+sharePEK = rawPEKBase64;
+
 
 const encryptedTitle = await encryptWithAES(
     pasteData.title,
