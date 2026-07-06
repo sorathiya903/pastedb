@@ -2420,6 +2420,8 @@ pasteData.images = [
 ];
 
   const wasEncrypted = originalPaste?.e2ee || false;
+  createBtn.disabled =true;
+  createBtn.innerHTML = `<div class="spinner"></div> Verifing User...`;
 
 const shouldEncrypt =
     visibility === "private" ||
