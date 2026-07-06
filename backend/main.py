@@ -512,8 +512,8 @@ async def create_paste_logic(
                 "Custom ID already taken"
             )
 
-    if paste.e2ee:
-        if not paste.guest and not paste.encrypted_pek:
+    if paste_data.e2ee:
+        if not paste_data.guest and not paste_data.encrypted_pek:
             raise HTTPException(
                 status_code=400,
                 detail="encrypted_pek required for account E2EE pastes"
