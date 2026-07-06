@@ -443,6 +443,7 @@ async def create_paste_logic(
     paste_data: dict,
     user_data: dict
 ):
+    print(paste_data)
 
     email_key = user_data["email"].replace(".", "_")
 
