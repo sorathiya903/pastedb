@@ -592,9 +592,8 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
         content: encryptedContent,
 
         images: encryptedImages,
-        guest:false
-
-    result.guest = !useAccountKEK;
+        guest: !useAccountKEK
+        }
 
     if (useAccountKEK && accountKEK) {
     result.encrypted_pek = await encryptWithAES(
