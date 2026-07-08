@@ -1,7 +1,29 @@
 <!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Contact - PasteDB</title><meta name="description" content="Contact PasteDB, report bugs, request features, access API documentation, and connect through GitHub."><style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Contact - PasteDB</title>
+   <meta name="description" content="Contact PasteDB, report bugs, request features, access API documentation, and connect through GitHub.">
+   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+<script>
+
+if(
+  location.hostname === "localhost" ||
+
+  location.hostname.includes("127.0.0.1") ||
+
+  location.hostname.includes("netlify") ||
+
+  localStorage.getItem("debug") === "true"
+){
+
+  eruda.init();
+
+}
+
+</script>
+   <style>
 *{
 margin:0;
 padding:0;
