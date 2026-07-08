@@ -25,44 +25,6 @@ opacity:.35;
 z-index:-1;
 }
 
-header{
-position:sticky;
-top:0;
-background:rgba(20,20,20,.8);
-backdrop-filter:blur(14px);
-border-bottom:1px solid rgba(255,255,255,.08);
-z-index:100;
-}
-
-.nav{
-max-width:1100px;
-margin:auto;
-padding:16px 20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-font-size:22px;
-font-weight:700;
-}
-
-.nav-links{
-display:flex;
-gap:18px;
-flex-wrap:wrap;
-}
-
-.nav-links a{
-color:#bdbdbd;
-text-decoration:none;
-transition:.2s;
-}
-
-.nav-links a:hover{
-color:#fff;
-}
 
 .hero{
 max-width:900px;
@@ -197,19 +159,40 @@ gap:12px;
   color:#777;
                             }
 </style></head>
-<body><header>
-<div class="nav">
-<div class="logo">PasteDB</div><div class="nav-links">
-<a href="/">Home</a>
-<a href="/create">Create</a>
-<a href="/explore">Explore</a>
-<a href="/dashboard.html">Dashboard</a>
-<a href="/docs">API Docs</a>
-   <a href="/extension">Extension</a>     
+<body>
+   <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
+<!-- NAVBAR -->
+<header id="header">
+  <div class="nav">
+
+    <div class="logo">PasteDB</div>
+
+    <div class="nav-links">
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/terms">Terms</a>
+      <a href="/create">Create</a>
+    </div>
+
+    <a class="btn" href="/create">Get Started</a>
+
+    <div class="menu-btn" id="menuBtn" onclick="toggleMenu(event)">☰</div>
+
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="menu">
+  <a href="/dashboard.html">Dashboard</a>
+  <a href="/login">Login</a>
+  <a href="/create">Create Paste</a>
+     <a href="/explore">Explore</a>
+  <a href="/terms">Terms</a>
+  <a class="btn" href="/create">Get Started</a>
 </div>
-</div>
-</header><section class="hero">
+   
+   
+   <section class="hero">
 <h1>Contact & Support</h1><p>
 Need help with PasteDB? Found a bug, have a feature request,
 or want to learn more about the project? Use the resources below.
