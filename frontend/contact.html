@@ -9,13 +9,7 @@
 <script>
 
 if(
-  location.hostname === "localhost" ||
-
-  location.hostname.includes("127.0.0.1") ||
-
-  location.hostname.includes("net5lify") ||
-
-  localStorage.getItem("debug") === "true"
+   debug
 ){
 
   eruda.init();
