@@ -38,16 +38,12 @@ line-height:1.6;
 }
 
       
-
-.overlay.active{
-  opacity:1;
-  visibility:visible;
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
 }
-      .mobile-menu.active{
-  opacity:1;
-  visibility:visible;
-  transform:translateX(-50%) scale(1);
-      }
+
+
 body::before{
 content:"";
 position:fixed;
@@ -312,6 +308,15 @@ font-size:32px;
    
    .cta{
   margin-top:28px;
+   }
+      .overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+      .mobile-menu.active{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) scale(1);
    }
 </style></head>
 <body>
