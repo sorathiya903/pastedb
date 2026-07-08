@@ -37,14 +37,17 @@ color:#fff;
 line-height:1.6;
 }
 
-      .mobile-menu.active{
-  display:flex;
-}
+      
 
 .overlay.active{
-  display:block;
+  opacity:1;
+  visibility:visible;
 }
-
+      .mobile-menu.active{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) scale(1);
+      }
 body::before{
 content:"";
 position:fixed;
