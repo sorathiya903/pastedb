@@ -6,7 +6,7 @@
 <script src="config.js"></script>
 <script src="/encryption.js"></script>
   
-  
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
 <script>
@@ -1852,6 +1852,34 @@ margin:10px;
   </main>
 
   <script>
+    function createQR(url, containerId){
+
+    const container = document.getElementById(containerId);
+
+    if(container.dataset.generated){
+        container.style.display =
+            container.style.display === "none"
+                ? "block"
+                : "none";
+        return;
+    }
+
+    container.style.display = "block";
+
+    QRCode.toCanvas(url, {
+        width: 220,
+        margin: 2
+    }, (err, canvas) => {
+
+        if(err){
+            console.error(err);
+            return;
+        }
+
+        container.appendChild(canvas);
+        container.dataset.generated = "true";
+    });
+        }
     let originalPEK =null
       let sharePEK = null;
 const imageInput =
@@ -2603,6 +2631,32 @@ if (response.ok) {
     }
 
     pasteLinkBox.style.display = "block";
+  // Remove old QR if any
+document.getElementById("pasteQRContainer")?.remove();
+
+const qrDiv = document.createElement("div");
+
+qrDiv.id = "pasteQRContainer";
+qrDiv.style.marginTop = "16px";
+
+qrDiv.innerHTML = `
+<button
+    class="generate-btn"
+    onclick="createQR('${pasteUrl}','pasteQR')">
+    Show QR
+</button>
+
+<div
+    id="pasteQR"
+    style="
+        display:none;
+        margin-top:15px;
+        text-align:center;
+    ">
+</div>
+`;
+
+pasteLinkBox.appendChild(qrDiv);
     }
   else{
 
