@@ -135,6 +135,7 @@ if(debug){
       transition: 0.35s ease;
       overflow-x: hidden;
     }
+    
 
     .bg-glow {
       position: fixed;
@@ -934,13 +935,33 @@ display:flex;
 margin:10px;
   font-weight:600;
 }
+    
+  
+    
+.qr-btn{
+  border:none;
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  padding:10px 14px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+
+  font-size:13px;
+margin:0;
+  font-weight:600;
+}
     .generate-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
   filter: grayscale(30%);
-    }
+  }
 
     .password-box input[type="checkbox"] {
   transform: scale(1.1);
@@ -2696,7 +2717,7 @@ qrDiv.style.marginTop = "16px";
 
 qrDiv.innerHTML = `
 <button
-    class="generate-btn"
+    class="qr-btn"
     onclick="createQR('${qrUrl}','pasteQR')">
     Show QR
 </button>
