@@ -173,7 +173,7 @@ if(localStorage.getItem("theme")==="dark"){
       border-bottom: 1px solid var(--border);display:flex;justify-content:center;align-items :center;
     }
 
-    body.dark header {
+    html.dark header {
       background: rgba(20, 20, 20, 0.7);
     }
 
@@ -540,7 +540,7 @@ gap: 16px;
       animation: spin 0.8s linear infinite;
     }
 
-    body.dark .spinner{
+    html.dark .spinner{
       border: 2px solid rgba(0,0,0,0.2);
       border-top: 2px solid black;
     }
@@ -1901,11 +1901,11 @@ container.dataset.qrUrl = url;
             width:220,
         margin:2,
         color:{
-            dark: document.body.classList.contains("dark")
+            dark: document.documentElement.classList.contains("dark")
                 ? "#ffffff"
                 : "#111111",
 
-            light: document.body.classList.contains("dark")
+            light: document.documentElement.classList.contains("dark")
                 ? "#1d1d1d"
                 : "#ffffff"
         }
@@ -2470,10 +2470,11 @@ async function createPaste(pasteData){
 
     function toggleTheme(){
 
-    document.body.classList.toggle("dark");
-      localStorage.setItem(
+    document.documentElement.classList.toggle("dark");
+
+    localStorage.setItem(
         "theme",
-        document.body.classList.contains("dark")
+        document.documentElement.classList.contains("dark")
             ? "dark"
             : "light"
     );
