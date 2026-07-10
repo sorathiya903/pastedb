@@ -2635,14 +2635,18 @@ if (response.ok) {
 document.getElementById("pasteQRContainer")?.remove();
 
 const qrDiv = document.createElement("div");
+let qrUrl = pasteUrl;
 
+if (visibility === "unlisted" && sharePEK) {
+    qrUrl = `${pasteUrl}#${encodeURIComponent(sharePEK)}`;
+      }
 qrDiv.id = "pasteQRContainer";
 qrDiv.style.marginTop = "16px";
 
 qrDiv.innerHTML = `
 <button
     class="generate-btn"
-    onclick="createQR('${pasteUrl}','pasteQR')">
+    onclick="createQR('${qrUrl}','pasteQR')">
     Show QR
 </button>
 
