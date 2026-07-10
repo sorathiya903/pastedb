@@ -1856,7 +1856,7 @@ margin:10px;
 
     const container =
         document.getElementById(containerId);
-
+container.dataset.qrUrl = url;
     if(container.dataset.generated){
 
         container.style.display =
@@ -2444,7 +2444,19 @@ async function createPaste(pasteData){
 
     function toggleTheme(){
 
-      document.body.classList.toggle("dark")
+    document.body.classList.toggle("dark");
+
+    document.querySelectorAll("[data-qr-url]").forEach(container => {
+
+        container.dataset.generated = "";
+
+        container.innerHTML = "";
+
+        createQR(
+            container.dataset.qrUrl,
+            container.id
+        );
+    });
     }
 
     
