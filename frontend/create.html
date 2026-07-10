@@ -1854,32 +1854,71 @@ margin:10px;
   <script>
     function createQR(url, containerId){
 
-    const container = document.getElementById(containerId);
+    const container =
+        document.getElementById(containerId);
 
     if(container.dataset.generated){
+
         container.style.display =
             container.style.display === "none"
                 ? "block"
                 : "none";
+
         return;
     }
 
     container.style.display = "block";
 
-    QRCode.toCanvas(url, {
-        width: 220,
-        margin: 2
-    }, (err, canvas) => {
+    QRCode.toCanvas(
+        url,
+        {
+            width:220,
+        margin:2,
+        color:{
+            dark: document.body.classList.contains("dark")
+                ? "#ffffff"
+                : "#111111",
 
-        if(err){
-            console.error(err);
-            return;
+            light: document.body.classList.contains("dark")
+                ? "#1d1d1d"
+                : "#ffffff"
         }
+        },
+        (err, canvas)=>{
 
-        container.appendChild(canvas);
-        container.dataset.generated = "true";
-    });
+            if(err){
+                console.error(err);
+                return;
+            }
+
+            container.appendChild(canvas);
+
+            // Download button
+            const btn =
+                document.createElement("button");
+
+            btn.className = "generate-btn";
+            btn.textContent = "Download";
+            btn.style.display = "block";
+            btn.style.margin = "15px auto 0";
+
+            btn.onclick = () => {
+
+                const link =
+                    document.createElement("a");
+
+                link.download = "PasteDB-QR.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            };
+
+            container.appendChild(btn);
+
+            container.dataset.generated = "true";
         }
+    );
+    }
+
     let originalPEK =null
       let sharePEK = null;
 const imageInput =
