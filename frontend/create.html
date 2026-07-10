@@ -2294,7 +2294,18 @@ setVisibility(visibility);
 
     alert("Failed to fetch paste")
 
-  }
+  }finally {
+
+    const loader = document.getElementById("pageLoader");
+
+    loader.style.opacity = "0";
+    loader.style.pointerEvents = "none";
+
+    setTimeout(() => {
+        loader.style.display = "none";
+    }, 500);
+
+    }
 
 }
 
@@ -2360,6 +2371,8 @@ async function uploadImage(file){
     return urls;
               }
 
+
+    
     
 const params =
   new URLSearchParams(window.location.search)
@@ -2367,7 +2380,10 @@ const params =
 const editId =
   params.get("edit")
 if(editId){
+document.querySelector("#pageLoader h2").textContent = "Loading Paste";
+    document.querySelector("#pageLoader p").textContent = "Fetching your paste...";
 
+    
   loadPasteForEditing(editId)
 
 }
@@ -2778,20 +2794,22 @@ finally{
   
         window.addEventListener("load", () => {
 
-  const loader = document.getElementById("pageLoader")
+    // Keep loader visible while editing a paste.
+    // It will be hidden after loadPasteForEditing() finishes.
+    if (editId) return;
 
-  loader.style.opacity = "0"
+    const loader = document.getElementById("pageLoader");
 
-  loader.style.pointerEvents = "none"
+    loader.style.opacity = "0";
+    loader.style.pointerEvents = "none";
 
-  setTimeout(() => {
+    setTimeout(() => {
+        loader.style.display = "none";
+    }, 500);
 
-    loader.style.display = "none"
+});
 
-  }, 500)
-
-})
- 
+    
 const customIdInput =
   document.getElementById("customId");
 
