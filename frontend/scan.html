@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Scan PasteDB QR</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:Inter,sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+#reader{
+    width:min(420px,95vw);
+}
+
+#status{
+    margin-top:20px;
+    opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Scan PasteDB QR</h2>
+
+<div id="reader"></div>
+
+<div id="status">
+Point your camera at a PasteDB QR code
+</div>
+  <button id="scanImageBtn">Scan from Image</button>
+
+<input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+    hidden
+>
+
+<script>
+  const imageInput =
+    document.getElementById("imageInput");
+
+document
+.getElementById("scanImageBtn")
+.onclick = () => imageInput.click();
+
+imageInput.onchange = async () => {
+
+    if (!imageInput.files.length) return;
+
+    try {
+
+        const html5QrCode =
+            new Html5Qrcode("reader");
+
+        const result =
+            await html5QrCode.scanFile(
+                imageInput.files[0],
+                true
+            );
+
+        if (navigator.vibrate) {
+            navigator.vibrate(150);
+        }
+
+        document.getElementById("status").textContent =
+            "Opening...";
+      alert(result)
+
+        if (
+            result.startsWith("https://pastedb")
+        ) {
+
+            location.href = result;
+
+        } else {
+
+            alert("Not a PasteDB QR code.");
+
+        }
+
+    } catch (err) {
+alert(err)
+        
+    }
+
+};
+const scanner = new Html5Qrcode("reader");
+
+scanner.start(
+    {
+        facingMode: "environment"
+    },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    async (decodedText)=>{
+
+        await scanner.stop();
+
+        if(navigator.vibrate){
+            navigator.vibrate(150);
+        }
+
+        document.getElementById("status").textContent =
+            "Opening...";
+
+        // Optional: only allow PasteDB URLs
+        if(
+            decodedText.startsWith(location.origin + "/paste/") ||
+            decodedText.startsWith(location.origin + "/")
+        ){
+            location.href = decodedText;
+        }else{
+            alert("This is not a PasteDB QR code.");
+            location.reload();
+        }
+
+    },
+    ()=>{}
+).catch(err=>{
+
+    document.getElementById("status").textContent =
+        "Camera error: " + err;
+
+});
+</script>
+
+</body>
+  </html>
