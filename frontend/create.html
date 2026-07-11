@@ -2535,6 +2535,8 @@ async function createPaste(pasteData){
 
     
 createBtn.addEventListener("click", async () => {
+  const pek = await generatePEK();
+
 const customId =
   document.getElementById("customId").value.trim();
 
@@ -2577,8 +2579,7 @@ const shouldEncrypt =
 
 if (!loggedIn && shouldEncrypt) {
 
-    const pek = await generatePEK();
-
+    
     sharePEK = await exportAESKey(pek);
 
     Object.assign(
