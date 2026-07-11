@@ -695,7 +695,7 @@ async function decryptPasteData(paste) {
     for (const img of paste.images) {
 console.log(img)
         // Decrypt Cloudinary URL
-        const url = await decryptWithAES(img, pek);
+        const url = await decryptWithAES(img.url, pek);
 console.log(JSON.stringify(url));
 
         // Download encrypted binary
