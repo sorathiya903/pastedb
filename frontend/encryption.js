@@ -605,13 +605,13 @@ async function encryptPasteData(pasteData, existingPEK = null, useAccountKEK=tru
             pasteData.content,
             pek
         );
-
-    const encryptedImages =
-        await Promise.all(
-            (pasteData.images || []).map(img =>
-                encryptWithAES(img, pek)
-            )
-        );
+const encryptedImages =
+    await Promise.all(
+        (pasteData.images || []).map(async img => ({
+            url: await encryptWithAES(img.url, pek),
+            type: img.type
+        }))
+    );
 
     const result = {
 
