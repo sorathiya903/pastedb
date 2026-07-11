@@ -760,29 +760,31 @@ async function decryptPasteData(paste) {
     }
 
     
-    if (Array.isArray(paste.images)) {
+    
+if (Array.isArray(paste.images)) {
     decrypted.images = [];
 
     for (const img of paste.images) {
         try {
-            // Decrypt Cloudinary URL
-            const url = await decryptWithAES(img.url, pek);
+            // img.url is already an encrypted object with {iv, data}
+            // decryptWithAES expects this format
+            const encryptedUrl = await decryptWithAES(img.url, pek);
+            console.log("Decrypted URL:", encryptedUrl);
 
-            // Download encrypted binary
-            const res = await fetch(url);
+            // encryptedUrl is now the string URL to the encrypted binary on Cloudinary
+            const res = await fetch(encryptedUrl);
             if (!res.ok) {
-                throw new Error(`Failed to fetch image: ${res.status}`);
+                throw new Error(`Failed to fetch: ${res.status}`);
             }
             
             const buffer = await res.arrayBuffer();
 
-            // Decrypt image binary using the new function
+            // Now decrypt the binary (IV + ciphertext format)
             const imageBlobUrl = await decryptImageBinary(buffer, pek);
             decrypted.images.push(imageBlobUrl);
 
         } catch (error) {
             console.error("Failed to decrypt image:", error);
-            // Optional: push a placeholder or skip
         }
     }
 }
