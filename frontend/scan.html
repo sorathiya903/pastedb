@@ -9,43 +9,150 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
+
+    *{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
-    background:#000;
-    color:#fff;
-    font-family:Inter,sans-serif;
+    min-height:100vh;
     display:flex;
-    flex-direction:column;
-    align-items:center;
     justify-content:center;
-    height:100vh;
+    align-items:center;
+    font-family:Inter,system-ui,sans-serif;
+    background:
+        radial-gradient(circle at top,#262626,#0f0f0f 60%,#000);
+    color:#fff;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:470px;
+}
+
+.card{
+    background:#111;
+    border:1px solid #262626;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.45);
+}
+
+.icon{
+    font-size:42px;
+    text-align:center;
+    margin-bottom:8px;
 }
 
 h2{
-    margin-bottom:20px;
+    margin:0;
+    text-align:center;
+    font-size:28px;
+}
+
+.subtitle{
+    margin:12px 0 24px;
+    text-align:center;
+    color:#9ca3af;
+    line-height:1.5;
+    font-size:15px;
 }
 
 #reader{
-    width:min(420px,95vw);
+    width:100%;
+    overflow:hidden;
+    border-radius:18px;
+    border:2px solid #2f2f2f;
+    background:#000;
 }
 
 #status{
-    margin-top:20px;
-    opacity:.8;
+    margin-top:18px;
+    padding:14px;
+    border-radius:14px;
+    background:#181818;
+    border:1px solid #2d2d2d;
+    color:#d1d5db;
+    text-align:center;
+    font-size:14px;
 }
+
+button{
+    width:100%;
+    margin-top:18px;
+    padding:15px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+video{
+    border-radius:16px;
+}
+
+@media(max-width:480px){
+
+    .card{
+        padding:18px;
+    }
+
+    h2{
+        font-size:24px;
+    }
+
+    #reader{
+        min-height:300px;
+    }
+
+    }
 </style>
 </head>
 
 <body>
 
-<h2>Scan PasteDB QR</h2>
+<body>
 
-<div id="reader"></div>
+<div class="container">
 
-<div id="status">
-Point your camera at a PasteDB QR code
+    <div class="card">
+
+        <div class="icon">📷</div>
+
+        <h2>Scan PasteDB QR</h2>
+
+        <p class="subtitle">
+            Scan a PasteDB QR code or choose an image containing one.
+        </p>
+
+        <div id="reader"></div>
+
+        <div id="status">
+            Point your camera at a PasteDB QR code
+        </div>
+
+        <button id="scanImageBtn">
+            Scan from Image
+        </button>
+
+    </div>
+
 </div>
-  <button id="scanImageBtn">Scan from Image</button>
 
 <input
     type="file"
