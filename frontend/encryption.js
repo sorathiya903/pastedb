@@ -692,10 +692,10 @@ async function decryptPasteData(paste) {
     decrypted.images = [];
 
     for (const img of paste.images) {
-
+console.log(img)
         // Decrypt Cloudinary URL
         const url = await decryptWithAES(img, pek);
-console.log("URL:", url);
+console.log("URL:", JSON.stringify(url));
 
         // Download encrypted binary
         const res = await fetch(url);
