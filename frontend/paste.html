@@ -9,7 +9,15 @@
 
 <script>
 
-if(debug){
+if(
+  location.hostname === "localhost" ||
+
+  location.hostname.includes("127.0.0.1") ||
+
+  location.hostname.includes("netlify") ||
+
+  localStorage.getItem("debug") === "true"
+){
 
   eruda.init();
 
@@ -529,133 +537,11 @@ if(debug){
 #outputWrapper{
   animation:fadeUp .5s ease;
 }
-
-      .malformed-screen{
-    position:fixed;
-    inset:0;
-    background:#0f172a;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-    z-index:99999;
-}
-
-.malformed-card{
-    width:100%;
-    max-width:520px;
-    background:#1e293b;
-    border:1px solid #334155;
-    border-radius:18px;
-    padding:40px 32px;
-    text-align:center;
-    box-shadow:0 20px 50px rgba(0,0,0,.35);
-}
-
-.icon{
-    font-size:64px;
-    margin-bottom:18px;
-}
-
-.malformed-card h1{
-    color:#fff;
-    margin:0 0 14px;
-    font-size:30px;
-}
-
-.main-text{
-    color:#e2e8f0;
-    font-size:18px;
-    margin-bottom:10px;
-}
-
-.sub-text{
-    color:#94a3b8;
-    line-height:1.6;
-    margin-bottom:28px;
-}
-
-.actions{
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    flex-wrap:wrap;
-}
-
-.actions button{
-    border:none;
-    border-radius:10px;
-    padding:12px 22px;
-    font-size:16px;
-    cursor:pointer;
-    background:#2563eb;
-    color:white;
-    transition:.2s;
-}
-
-.actions button:hover{
-    background:#1d4ed8;
-    }
   </style>
 </head>
 
 <body>
 
-<div id="decryptionFailedScreen" class="malformed-screen" style="display:none;">
-
-  <div class="malformed-card">
-
-    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="50" width="50">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-</svg>
-</div>
-
-    <h1>Unable to Decrypt Paste</h1>
-
-    <p class="main-text">
-      This paste couldn't be decrypted.
-    </p>
-
-    <p class="sub-text">
-      The encryption key is invalid, missing, or doesn't match this paste. This usually happens if the link was modified or the wrong encryption key was used.
-    </p>
-
-    <div class="actions">
-      <button onclick="location.href='/'">
-        Go to Home
-      </button>
-    </div>
-
-  </div>
-
-</div>
-<div id="malformedUrlScreen" class="malformed-screen" style="display:none;">
-
-  <div class="malformed-card">
-    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="50" width="50">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-</svg>
-</div>
-
-    <h1>Invalid Paste Link</h1>
-
-    <p class="main-text">
-      This PasteDB link is invalid or malformed.
-    </p>
-
-    <p class="sub-text">
-      The link contains invalid or corrupted URL data and couldn't be processed. This usually happens if the link was modified, truncated, or copied incorrectly. If this is an encrypted paste, make sure you've copied the entire link, including everything after the <strong>#</strong>.
-    </p>
-
-    <div class="actions">
-      <button onclick="location.href='/'">
-        Go to Home
-      </button>
-    </div>
-
-  </div>
-
-</div>
   <div id="passwordModal"
      style="
        position:fixed;
@@ -1227,45 +1113,10 @@ id="codeBlock"
   </div>
 <script>
 
-  function showDecryptionFailedScreen(){
-
-  document.querySelectorAll("body > *").forEach(el => {
-
-    if(el.id !== "decryptionFailedScreen"){
-
-      el.style.display = "none";
-
-    }
-
-  });
-
-  document.getElementById("decryptionFailedScreen").style.display = "flex";
-
-  }
-
+  const fragmentKey = location.hash
+    ? decodeURIComponent(location.hash.substring(1))
+    : null;
   
-function showMalformedUrlScreen() {
-
-    const screen =
-        document.getElementById("malformedUrlScreen");
-
-    document.body.innerHTML = "";
-
-    document.body.appendChild(screen);
-
-    screen.style.display = "flex";
-}
-  let fragmentKey = null;
-
-try {
-    if (location.hash) {
-        fragmentKey = decodeURIComponent(location.hash.substring(1));
-    }
-} catch (e) {
-    showMalformedUrlScreen();
-  console.error(e);
-   // or return if appropriate
-}
 let currentPreviewHTML = ""
 
 const runBtn =
@@ -1448,7 +1299,7 @@ setTimeout(() => {
   outputBlock.textContent =
     "Running..."
 
-let sharePEK;   
+    
 const languageMap = {
 
   py: "python",
@@ -1635,54 +1486,26 @@ if(path.startsWith("/paste/")){
 
 
     if (data.e2ee) {
-      try {
-     sharePEK =
+
+    const sharePEK =
         decodeURIComponent(location.hash.slice(1));
 
-} catch (e) {
-    showMalformedUrlScreen();
-      console.error(e)
-    return;
-  }
-
-    
     if (sharePEK) {
 
-        try {
-
-    Object.assign(
+        Object.assign(
+    data,
+    await decryptPasteWithSharedPEK(
         data,
-        await decryptPasteWithSharedPEK(data, sharePEK)
-    );
-
-} catch (err) {
-
-    console.error(err);
-
-    showDecryptionFailedScreen();
-
-    return;
-
-  }
-
+        sharePEK
+    )
+);
     } else {
-try {
 
-    Object.assign(
-        data,
-        await decryptPasteData(data)
-    );
+        Object.assign(
+            data,
+            await decryptPasteData(data)
+        );
 
-} catch (err) {
-
-    console.error(err);
-
-    showDecryptionFailedScreen();
-
-    return;
-
-      }
-        
     }
 
     }
@@ -2337,4 +2160,4 @@ setTimeout(() => {
 }, 10000);
 </script>
 </body>
-  </html>
+      </html>
