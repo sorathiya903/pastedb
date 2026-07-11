@@ -374,7 +374,7 @@ ul{padding-left:22px}
 <h2><span class="step">2.</span> Creating an Encrypted Paste</h2>
 <ul>
 <li>A random <b>PEK (Paste Encryption Key)</b> is generated.</li>
-<li>The PEK encrypts the paste title, content and images array.</li>
+<li>The PEK encrypts the paste title, content and images URL array.</li>
 <li>The PEK itself is encrypted with the account KEK.</li>
 <li>The server receives:
 <ul>
@@ -405,7 +405,7 @@ Upload Everything</pre>
 <li>Download encrypted paste.</li>
 <li>Load <code>accountKEK</code> from IndexedDB.</li>
 <li>Decrypt the encrypted PEK.</li>
-<li>Use the PEK to decrypt the title, content and images array.</li>
+<li>Use the PEK to decrypt the title, content and images URL array.</li>
 <li>Display the plaintext in the browser.</li>
 </ul>
 <pre>Download Encrypted Paste
@@ -442,7 +442,7 @@ Display Paste</pre>
 <ul class="bad">
 <li>Plaintext title</li>
 <li>Plaintext content</li>
-<li>Plaintext URLd of images</li>
+<li>Plaintext URLs of images</li>
 <li>KEK</li>
 <li>PEK (unless intentionally shared through the URL fragment)</li>
 </ul>
