@@ -6,24 +6,27 @@
 <script src="config.js"></script>
 <script src="/encryption.js"></script>
   
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
 <script>
 
-if(debug){
+if(
+  location.hostname === "localhost" ||
+
+  location.hostname.includes("127.0.0.1") ||
+
+  location.hostname.includes("netlify") ||
+
+  localStorage.getItem("debug") === "true"
+){
 
   eruda.init();
 
 } 
 
 </script>
-<script>
-if(localStorage.getItem("theme")==="dark"){
-    document.documentElement.classList.add("dark");
-}
-</script>
-  
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -105,7 +108,7 @@ if(localStorage.getItem("theme")==="dark"){
         #b3b3b3;
     }
 
- html.dark,   body.dark {
+    body.dark {
 
       --bg: #161616;
       --card: #1d1d1d;
@@ -140,7 +143,6 @@ if(localStorage.getItem("theme")==="dark"){
       transition: 0.35s ease;
       overflow-x: hidden;
     }
-    
 
     .bg-glow {
       position: fixed;
@@ -173,7 +175,7 @@ if(localStorage.getItem("theme")==="dark"){
       border-bottom: 1px solid var(--border);display:flex;justify-content:center;align-items :center;
     }
 
-    html.dark header {
+    body.dark header {
       background: rgba(20, 20, 20, 0.7);
     }
 
@@ -540,7 +542,7 @@ gap: 16px;
       animation: spin 0.8s linear infinite;
     }
 
-    html.dark .spinner{
+    body.dark .spinner{
       border: 2px solid rgba(0,0,0,0.2);
       border-top: 2px solid black;
     }
@@ -940,33 +942,13 @@ display:flex;
 margin:10px;
   font-weight:600;
 }
-    
-  
-    
-.qr-btn{
-  border:none;
-
-  background:var(--text);
-
-  color:var(--bg);
-
-  padding:10px 14px;
-
-  border-radius:10px;
-
-  cursor:pointer;
-
-  font-size:13px;
-margin:0;
-  font-weight:600;
-}
     .generate-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
   filter: grayscale(30%);
-  }
+    }
 
     .password-box input[type="checkbox"] {
   transform: scale(1.1);
@@ -1878,73 +1860,6 @@ margin:0;
   </main>
 
   <script>
-    function createQR(url, containerId){
-
-    const container =
-        document.getElementById(containerId);
-container.dataset.qrUrl = url;
-    if(container.dataset.generated){
-
-        container.style.display =
-            container.style.display === "none"
-                ? "block"
-                : "none";
-
-        return;
-    }
-
-    container.style.display = "block";
-
-    QRCode.toCanvas(
-        url,
-        {
-            width:220,
-        margin:2,
-        color:{
-            dark: document.documentElement.classList.contains("dark")
-                ? "#ffffff"
-                : "#111111",
-
-            light: document.documentElement.classList.contains("dark")
-                ? "#1d1d1d"
-                : "#ffffff"
-        }
-        },
-        (err, canvas)=>{
-
-            if(err){
-                console.error(err);
-                return;
-            }
-
-            container.appendChild(canvas);
-
-            // Download button
-            const btn =
-                document.createElement("button");
-
-            btn.className = "generate-btn";
-            btn.textContent = "Download";
-            btn.style.display = "block";
-            btn.style.margin = "15px auto 0";
-
-            btn.onclick = () => {
-
-                const link =
-                    document.createElement("a");
-
-                link.download = "PasteDB-QR.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            };
-
-            container.appendChild(btn);
-
-            container.dataset.generated = "true";
-        }
-    );
-    }
-
     let originalPEK =null
       let sharePEK = null;
 const imageInput =
@@ -2294,47 +2209,17 @@ setVisibility(visibility);
 
     alert("Failed to fetch paste")
 
-  }finally {
-
-    const loader = document.getElementById("pageLoader");
-
-    loader.style.opacity = "0";
-    loader.style.pointerEvents = "none";
-
-    setTimeout(() => {
-        loader.style.display = "none";
-    }, 500);
-
-    }
+  }
 
 }
 
     const createBtn =
     document.getElementById("createBtn");
-
-    async function uploadImage(file, pek){
-
-    // Read original image
-    const buffer = await file.arrayBuffer();
-
-    // Encrypt
-    const encrypted = await encryptBinary(buffer, pek);
-
-    // Combine IV + encrypted bytes
-    const encryptedBlob = new Blob(
-        [encrypted.iv, encrypted.data],
-        {
-            type: "application/octet-stream"
-        }
-    );
+async function uploadImage(file){
 
     const fd = new FormData();
 
-    fd.append(
-        "file",
-        encryptedBlob,
-        file.name
-    );
+    fd.append("file", file);
 
     fd.append(
         "upload_preset",
@@ -2345,59 +2230,51 @@ setVisibility(visibility);
         "folder",
         "pastedb"
     );
-try{
+
     const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
         {
-            method: "POST",
-            body: fd
+            method:"POST",
+            body:fd
         }
     );
 
     const data = await res.json();
 
     if(data.secure_url){
-
-        return {
-            url: data.secure_url,
-            type: file.type
-        };
-
+        return data.secure_url;
     }
-}catch(e){
-    console.error(e);}
-    }
- 
-        async function uploadAllImages(pek){
 
-    const images = [];
+    throw new Error(
+        "Upload failed"
+    );
+}
 
+    
+
+ async function uploadAllImages(){
+    const urls = [];
     const total = selectedImages.length;
-
-    const createBtn =
-        document.getElementById("createBtn");
+    const createBtn = document.getElementById("createBtn");
 
     for(let i = 0; i < total; i++){
-
         const file = selectedImages[i];
-
+        
+        // Update loader with current count
         createBtn.innerHTML =
             `<div class="spinner"></div> Uploading Images... (${i + 1}/${total})`;
 
-        const image =
-            await uploadImage(file, pek);
-
-        images.push(image);
-
+        const url = await uploadImage(file);
+        urls.push(url);
     }
 
+    // After all images are done
     createBtn.innerHTML =
         `<div class="spinner"></div> Creating Paste...`;
 
-    return images;
-                                }
+    return urls;
+              }
 
-    
     
 const params =
   new URLSearchParams(window.location.search)
@@ -2405,10 +2282,7 @@ const params =
 const editId =
   params.get("edit")
 if(editId){
-document.querySelector("#pageLoader h2").textContent = "Loading Paste";
-    document.querySelector("#pageLoader p").textContent = "Fetching your paste...";
 
-    
   loadPasteForEditing(editId)
 
 }
@@ -2511,32 +2385,11 @@ async function createPaste(pasteData){
 
     function toggleTheme(){
 
-    document.documentElement.classList.toggle("dark");
-
-    localStorage.setItem(
-        "theme",
-        document.documentElement.classList.contains("dark")
-            ? "dark"
-            : "light"
-    );
-
-    document.querySelectorAll("[data-qr-url]").forEach(container => {
-
-        container.dataset.generated = "";
-
-        container.innerHTML = "";
-
-        createQR(
-            container.dataset.qrUrl,
-            container.id
-        );
-    });
+      document.body.classList.toggle("dark")
     }
 
     
 createBtn.addEventListener("click", async () => {
-  const pek = await generatePEK();
-
 const customId =
   document.getElementById("customId").value.trim();
 
@@ -2558,7 +2411,7 @@ const pasteData = {
   let newUrls = [];
 
 if (selectedImages.length > 0) {
-    newUrls = await await uploadAllImages(pek);
+    newUrls = await uploadAllImages();
 }
 
 pasteData.images = [
@@ -2567,19 +2420,18 @@ pasteData.images = [
 ];
 
   const wasEncrypted = originalPaste?.e2ee || false;
-  createBtn.disabled =true;
-  createBtn.innerHTML = `<div class="spinner"></div> Verifing User...`;
 
 const shouldEncrypt =
     visibility === "private" ||
     visibility === "unlisted";
-  const loggedIn = (await fetch(`${API_URL}/auth/me`, {
+  const loggedIn = (await fetch(`${API_URL}/me`, {
     credentials: "include"
 })).ok;
 
 if (!loggedIn && shouldEncrypt) {
 
-    
+    const pek = await generatePEK();
+
     sharePEK = await exportAESKey(pek);
 
     Object.assign(
@@ -2757,36 +2609,6 @@ if (response.ok) {
     }
 
     pasteLinkBox.style.display = "block";
-  // Remove old QR if any
-document.getElementById("pasteQRContainer")?.remove();
-
-const qrDiv = document.createElement("div");
-let qrUrl = pasteUrl;
-
-if (visibility === "unlisted" && sharePEK) {
-    qrUrl = `${pasteUrl}#${encodeURIComponent(sharePEK)}`;
-      }
-qrDiv.id = "pasteQRContainer";
-qrDiv.style.marginTop = "16px";
-
-qrDiv.innerHTML = `
-<button
-    class="qr-btn"
-    onclick="createQR('${qrUrl}','pasteQR')">
-    Show QR
-</button>
-
-<div
-    id="pasteQR"
-    style="
-        display:none;
-        margin-top:15px;
-        text-align:center;
-    ">
-</div>
-`;
-
-pasteLinkBox.appendChild(qrDiv);
     }
   else{
 
@@ -2820,22 +2642,20 @@ finally{
   
         window.addEventListener("load", () => {
 
-    // Keep loader visible while editing a paste.
-    // It will be hidden after loadPasteForEditing() finishes.
-    if (editId) return;
+  const loader = document.getElementById("pageLoader")
 
-    const loader = document.getElementById("pageLoader");
+  loader.style.opacity = "0"
 
-    loader.style.opacity = "0";
-    loader.style.pointerEvents = "none";
+  loader.style.pointerEvents = "none"
 
-    setTimeout(() => {
-        loader.style.display = "none";
-    }, 500);
+  setTimeout(() => {
 
-});
+    loader.style.display = "none"
 
-    
+  }, 500)
+
+})
+ 
 const customIdInput =
   document.getElementById("customId");
 
