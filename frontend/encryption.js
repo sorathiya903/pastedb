@@ -688,14 +688,41 @@ async function decryptPasteData(paste) {
     }
 
     if (Array.isArray(paste.images)) {
-        decrypted.images =
-            await Promise.all(
-                paste.images.map(img =>
-                    decryptWithAES(img, pek)
-                )
-            );
-    }
 
+    decrypted.images = [];
+
+    for (const img of paste.images) {
+
+        // Decrypt Cloudinary URL
+        const url = await decryptWithAES(img, pek);
+
+        // Download encrypted binary
+        const res = await fetch(url);
+        const buffer = await res.arrayBuffer();
+
+        const bytes = new Uint8Array(buffer);
+
+        // First 12 bytes = IV
+        const iv = bytes.slice(0, 12);
+
+        // Remaining = ciphertext
+        const encryptedData = bytes.slice(12);
+
+        // Decrypt image
+        const plain = await decryptBinary(
+            iv,
+            encryptedData,
+            pek
+        );
+
+        // Blob URL
+        const blob = new Blob([plain]);
+
+        decrypted.images.push(
+            URL.createObjectURL(blob)
+        );
+    }
+    }
     decrypted._pek = pek;
 
     return decrypted;
