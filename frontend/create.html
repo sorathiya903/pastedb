@@ -2321,12 +2321,19 @@ setVisibility(visibility);
     const encrypted = await encryptBinary(buffer, pek);
 
     // Combine IV + encrypted bytes
-    const encryptedBlob = new Blob(
-        [encrypted.iv, encrypted.data],
-        {
-            type: "application/octet-stream"
-        }
-    );
+    const combined = new Uint8Array(
+    encrypted.iv.length + encrypted.data.length
+);
+
+combined.set(encrypted.iv, 0);
+combined.set(encrypted.data, encrypted.iv.length);
+
+const encryptedBlob = new Blob(
+    [combined],
+    {
+        type: "application/octet-stream"
+    }
+);
 
     const fd = new FormData();
 
