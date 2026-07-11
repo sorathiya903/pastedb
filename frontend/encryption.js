@@ -19,6 +19,28 @@ function generateDeviceId() {
 // ===============================
 // BASE64 HELPERS
 // ===============================
+async function decryptBinary(encryptedBase64, key) {
+    // Convert base64 back to bytes
+    const combined = base64ToBytes(encryptedBase64);
+
+    // Extract IV (first 12 bytes)
+    const iv = combined.slice(0, 12);
+
+    // Extract ciphertext with auth tag (remaining bytes)
+    const encryptedData = combined.slice(12);
+
+    return await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv
+        },
+        key,
+        encryptedData
+    );
+}// ===============================
+// BINARY ENCRYPTION (For Images)
+// ===============================
+
 async function encryptBinary(buffer, key) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -31,23 +53,23 @@ async function encryptBinary(buffer, key) {
         buffer
     );
 
+    // IMPORTANT: Concatenate IV + encrypted data as raw bytes
+    // This ensures decryption can extract IV from first 12 bytes
+    const ivBytes = new Uint8Array(iv);
+    const encryptedBytes = new Uint8Array(encrypted);
+    
+    // Combine: IV (12 bytes) + ciphertext with auth tag
+    const combined = new Uint8Array(ivBytes.length + encryptedBytes.length);
+    combined.set(ivBytes, 0);
+    combined.set(encryptedBytes, ivBytes.length);
+
+    // Convert to base64 for storage/transmission
     return {
-        iv,
-        data: new Uint8Array(encrypted)
+        data: bytesToBase64(combined),
+        // Store as base64URL for safe URL transmission
+        dataUrl: bytesToBase64Url(combined)
     };
-}
-
-async function decryptBinary(iv, data, key) {
-    return await crypto.subtle.decrypt(
-        {
-            name: "AES-GCM",
-            iv
-        },
-        key,
-        data
-    );
-}
-
+                                  }
 
 async function decryptPasteWithSharedPEK(paste, rawPEKBase64) {
 
@@ -693,43 +715,44 @@ async function decryptPasteData(paste) {
             );
     }
 
+    
     if (Array.isArray(paste.images)) {
-
     decrypted.images = [];
 
     for (const img of paste.images) {
-console.log(img)
-        // Decrypt Cloudinary URL
-        const url = await decryptWithAES(img.url, pek);
-console.log(JSON.stringify(url));
+        try {
+            // Decrypt Cloudinary URL
+            const url = await decryptWithAES(img.url, pek);
 
-        // Download encrypted binary
-        const res = await fetch(url);
-        const buffer = await res.arrayBuffer();
+            // Download encrypted binary
+            const res = await fetch(url);
+            const buffer = await res.arrayBuffer();
+            const bytes = new Uint8Array(buffer);
 
-        const bytes = new Uint8Array(buffer);
+            // Extract IV (first 12 bytes) and encrypted data (rest)
+            const iv = bytes.slice(0, 12);
+            const encryptedData = bytes.slice(12);
 
-        // First 12 bytes = IV
-        const iv = bytes.slice(0, 12);
+            // Decrypt image
+            const plain = await crypto.subtle.decrypt(
+                {
+                    name: "AES-GCM",
+                    iv
+                },
+                pek,
+                encryptedData
+            );
 
-        // Remaining = ciphertext
-        const encryptedData = bytes.slice(12);
-
-        // Decrypt image
-        const plain = await decryptBinary(
-            iv,
-            encryptedData,
-            pek
-        );
-
-        // Blob URL
-        const blob = new Blob([plain]);
-
-        decrypted.images.push(
-            URL.createObjectURL(blob)
-        );
+            // Create blob URL
+            const blob = new Blob([plain]);
+            decrypted.images.push(URL.createObjectURL(blob));
+        } catch (error) {
+            console.error("Failed to decrypt image:", error);
+            // Optional: fallback to encrypted URL
+            decrypted.images.push(url);
+        }
     }
-    }
+}
     decrypted._pek = pek;
 
     return decrypted;
