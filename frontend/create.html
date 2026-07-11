@@ -2345,7 +2345,7 @@ setVisibility(visibility);
         "folder",
         "pastedb"
     );
-
+try{
     const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
         {
@@ -2364,8 +2364,8 @@ setVisibility(visibility);
         };
 
     }
-
-    throw new Error("Upload failed");
+}catch(e){
+    console.error(e);}
     }
  
         async function uploadAllImages(pek){
