@@ -365,9 +365,7 @@ console.log("working...")
 
     const data =
         await res.json()
-  console.log(data.images);
-console.log(data.images[0]);
-console.log(data.images[0].url);
+  
   if (
     data.e2ee &&
     Array.isArray(data.images) &&
@@ -382,7 +380,7 @@ console.log(data.images[0].url);
 
               }
 
-    images.length = 0;
+    
 
 images.length = 0;
 
