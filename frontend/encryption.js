@@ -692,7 +692,7 @@ async function decryptPasteData(paste) {
                 pek
             );
     }
-/*
+
     if (Array.isArray(paste.images)) {
 
     decrypted.images = [];
@@ -729,7 +729,7 @@ console.log(JSON.stringify(url));
             URL.createObjectURL(blob)
         );
     }
-    }*/
+    }
     decrypted._pek = pek;
 
     return decrypted;
