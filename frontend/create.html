@@ -2311,11 +2311,30 @@ setVisibility(visibility);
 
     const createBtn =
     document.getElementById("createBtn");
-async function uploadImage(file){
+
+    async function uploadImage(file, pek){
+
+    // Read original image
+    const buffer = await file.arrayBuffer();
+
+    // Encrypt
+    const encrypted = await encryptBinary(buffer, pek);
+
+    // Combine IV + encrypted bytes
+    const encryptedBlob = new Blob(
+        [encrypted.iv, encrypted.data],
+        {
+            type: "application/octet-stream"
+        }
+    );
 
     const fd = new FormData();
 
-    fd.append("file", file);
+    fd.append(
+        "file",
+        encryptedBlob,
+        file.name + ".bin"
+    );
 
     fd.append(
         "upload_preset",
@@ -2330,47 +2349,53 @@ async function uploadImage(file){
     const res = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
         {
-            method:"POST",
-            body:fd
+            method: "POST",
+            body: fd
         }
     );
 
     const data = await res.json();
 
     if(data.secure_url){
-        return data.secure_url;
+
+        return {
+            url: data.secure_url,
+            type: file.type
+        };
+
     }
 
-    throw new Error(
-        "Upload failed"
-    );
-}
+    throw new Error("Upload failed");
+    }
+ 
+        async function uploadAllImages(pek){
 
-    
+    const images = [];
 
- async function uploadAllImages(){
-    const urls = [];
     const total = selectedImages.length;
-    const createBtn = document.getElementById("createBtn");
+
+    const createBtn =
+        document.getElementById("createBtn");
 
     for(let i = 0; i < total; i++){
+
         const file = selectedImages[i];
-        
-        // Update loader with current count
+
         createBtn.innerHTML =
             `<div class="spinner"></div> Uploading Images... (${i + 1}/${total})`;
 
-        const url = await uploadImage(file);
-        urls.push(url);
+        const image =
+            await uploadImage(file, pek);
+
+        images.push(image);
+
     }
 
-    // After all images are done
     createBtn.innerHTML =
         `<div class="spinner"></div> Creating Paste...`;
 
-    return urls;
-              }
-
+    return images;
+                                }
 
     
     
