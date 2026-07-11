@@ -7,7 +7,7 @@
 <script src="/encryption.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="config.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
 <script>
@@ -1236,7 +1236,78 @@ transform:translateY(20px);
 
 
 <script>
+async function showQRCode(customId) {
 
+    const paste = allPastes.find(
+        p => p.custom_id === customId
+    );
+
+    let url = `${location.origin}/paste/${customId}`;
+
+    if (paste && paste.visibility === "unlisted") {
+
+        const accountKEK = await getFromDB("accountKEK");
+
+        const rawPEKBase64 = await decryptWithAES(
+            paste.encrypted_pek,
+            accountKEK
+        );
+
+        url += "#" + encodeURIComponent(rawPEKBase64);
+    }
+
+    document.getElementById("qrDialog")?.remove();
+
+    const dialog = document.createElement("div");
+
+    dialog.id = "qrDialog";
+    dialog.className = "delete-dialog";
+    dialog.style.display = "flex";
+
+    dialog.innerHTML = `
+        <div class="delete-box">
+
+            <h3>Scan QR Code</h3>
+
+            <canvas id="qrCanvas"
+                style="
+                    display:block;
+                    margin:20px auto;
+                    background:white;
+                    padding:10px;
+                    border-radius:12px;
+                ">
+            </canvas>
+
+            <div class="delete-actions">
+
+                <button class="cancel-btn">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+
+    await QRCode.toCanvas(
+        document.getElementById("qrCanvas"),
+        url,
+        {
+            width: 260,
+            margin: 2
+        }
+    );
+
+    dialog.querySelector(".cancel-btn").onclick = () => dialog.remove();
+
+    dialog.onclick = e => {
+        if (e.target === dialog)
+            dialog.remove();
+    };
+}
    const menuBtn =
   document.getElementById("menuBtn");
 
@@ -1495,7 +1566,12 @@ Stats
 >
   🔗 Share Link
 </button>
-
+<button
+  class="dropdown-btn"
+  onclick="showQRCode('${p.custom_id}')"
+>
+Show QR 
+</button>
   </div>
 
 </div>
