@@ -384,48 +384,15 @@ console.log(data.images[0].url);
 
     images.length = 0;
 
-for (let index = 0; index < data.images.length; index++) {
+images.length = 0;
 
-    const img = data.images[index];
-
-    // Download encrypted binary
-    const res = await fetch(img.url);
-
-    const buffer = await res.arrayBuffer();
-
-    const bytes = new Uint8Array(buffer);
-
-    // First 12 bytes = IV
-    const iv = bytes.slice(0, 12);
-
-    // Remaining bytes = ciphertext
-    const encrypted = bytes.slice(12);
-
-    // Decrypt
-    const plain = await decryptBinary(
-        iv,
-        encrypted,
-        currentPEK   // Your decrypted AES key
-    );
-
-    // Create image blob
-    const blob = new Blob(
-        [plain],
-        {
-            type: img.type
-        }
-    );
-
-    const objectUrl = URL.createObjectURL(blob);
-
+for (let i = 0; i < data.images.length; i++) {
     images.push({
-        url: objectUrl,
-        name: `Image ${index + 1}`
+        url: data.images[i],
+        name: `Image ${i + 1}`
     });
 }
-console.log(data.images);
-console.log(data.images[0]);
-console.log(data.images[0].url);
+
 renderImages();
 
 }
