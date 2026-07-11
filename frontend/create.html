@@ -2556,7 +2556,7 @@ const pasteData = {
   let newUrls = [];
 
 if (selectedImages.length > 0) {
-    newUrls = await uploadAllImages();
+    newUrls = await await uploadAllImages(pek);
 }
 
 pasteData.images = [
