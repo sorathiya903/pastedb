@@ -19,28 +19,6 @@ function generateDeviceId() {
 // ===============================
 // BASE64 HELPERS
 // ===============================
-async function decryptBinary(encryptedBase64, key) {
-    // Convert base64 back to bytes
-    const combined = base64ToBytes(encryptedBase64);
-
-    // Extract IV (first 12 bytes)
-    const iv = combined.slice(0, 12);
-
-    // Extract ciphertext with auth tag (remaining bytes)
-    const encryptedData = combined.slice(12);
-
-    return await crypto.subtle.decrypt(
-        {
-            name: "AES-GCM",
-            iv
-        },
-        key,
-        encryptedData
-    );
-}// ===============================
-// BINARY ENCRYPTION (For Images)
-// ===============================
-
 async function encryptBinary(buffer, key) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -53,67 +31,82 @@ async function encryptBinary(buffer, key) {
         buffer
     );
 
-    // IMPORTANT: Concatenate IV + encrypted data as raw bytes
-    // This ensures decryption can extract IV from first 12 bytes
+    // Combine: IV (12 bytes) + ciphertext with auth tag
     const ivBytes = new Uint8Array(iv);
     const encryptedBytes = new Uint8Array(encrypted);
     
-    // Combine: IV (12 bytes) + ciphertext with auth tag
     const combined = new Uint8Array(ivBytes.length + encryptedBytes.length);
     combined.set(ivBytes, 0);
     combined.set(encryptedBytes, ivBytes.length);
 
-    // Convert to base64 for storage/transmission
-    return {
-        data: bytesToBase64(combined),
-        // Store as base64URL for safe URL transmission
-        dataUrl: bytesToBase64Url(combined)
-    };
-                                  }
+    // Return the combined bytes (IV + encrypted data)
+    return combined;
+}
 
-// ===============================
-// DECRYPT IMAGE BINARY
-// ===============================
+async function decryptBinary(iv, data, key) {
+    return await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv
+        },
+        key,
+        data
+    );
+}
 
-async function decryptImageBinary(encryptedBinary, pek) {
+/**
+ * Decrypt encrypted image binary from ArrayBuffer
+ * Format: [IV (12 bytes)] [Encrypted Data]
+ * @param {ArrayBuffer} encryptedBuffer - Raw encrypted data with IV prepended
+ * @param {CryptoKey} key - The decryption key (PEK)
+ * @returns {Promise<Blob>} - Blob object with decrypted image data
+ */
+async function decryptImageBinary(encryptedBuffer, key) {
     try {
-        // If encryptedBinary is a string (base64), convert to bytes
         let bytes;
-        if (typeof encryptedBinary === 'string') {
-            bytes = base64ToBytes(encryptedBinary);
-        } else if (encryptedBinary instanceof Uint8Array) {
-            bytes = encryptedBinary;
-        } else if (encryptedBinary instanceof ArrayBuffer) {
-            bytes = new Uint8Array(encryptedBinary);
+        
+        // Handle different input types
+        if (encryptedBuffer instanceof ArrayBuffer) {
+            bytes = new Uint8Array(encryptedBuffer);
+        } else if (encryptedBuffer instanceof Uint8Array) {
+            bytes = encryptedBuffer;
+        } else if (typeof encryptedBuffer === 'string') {
+            // If base64 string, convert to bytes
+            bytes = base64ToBytes(encryptedBuffer);
         } else {
             throw new Error("Invalid encrypted binary format");
+        }
+
+        // Validate minimum size (IV is 12 bytes)
+        if (bytes.length < 12) {
+            throw new Error(`Encrypted data too short (${bytes.length} bytes, need at least 12 for IV)`);
         }
 
         // Extract IV (first 12 bytes)
         const iv = bytes.slice(0, 12);
 
-        // Extract ciphertext with auth tag (remaining bytes)
+        // Extract ciphertext (remaining bytes)
         const encryptedData = bytes.slice(12);
 
-        // Decrypt image
-        const plain = await crypto.subtle.decrypt(
+        // Decrypt
+        const decrypted = await crypto.subtle.decrypt(
             {
                 name: "AES-GCM",
-                iv
+                iv: iv
             },
-            pek,
+            key,
             encryptedData
         );
 
-        // Create blob URL from decrypted data
-        const blob = new Blob([plain]);
-        return URL.createObjectURL(blob);
+        // Return as Blob
+        return new Blob([decrypted]);
 
     } catch (error) {
         console.error("Failed to decrypt image binary:", error);
-        throw error;
+        throw new Error(`Image decryption failed: ${error.message}`);
     }
 }
+
 
 async function decryptPasteWithSharedPEK(paste, rawPEKBase64) {
 
@@ -759,36 +752,42 @@ async function decryptPasteData(paste) {
             );
     }
 
-    
-    
-if (Array.isArray(paste.images)) {
-    decrypted.images = [];
+    if (Array.isArray(paste.images)) {
+        decrypted.images = [];
 
-    for (const img of paste.images) {
-        try {
-            // img.url is already an encrypted object with {iv, data}
-            // decryptWithAES expects this format
-            const encryptedUrl = await decryptWithAES(img.url, pek);
-            console.log("Decrypted URL:", encryptedUrl);
+        for (const img of paste.images) {
+            try {
+                // Decrypt the Cloudinary URL (it's encrypted as {iv, data})
+                const url = await decryptWithAES(img.url, pek);
 
-            // encryptedUrl is now the string URL to the encrypted binary on Cloudinary
-            const res = await fetch(encryptedUrl);
-            if (!res.ok) {
-                throw new Error(`Failed to fetch: ${res.status}`);
+                // Fetch the encrypted binary from Cloudinary
+                const res = await fetch(url);
+                
+                if (!res.ok) {
+                    console.error(`Failed to fetch image: ${res.status}`);
+                    continue;
+                }
+
+                const buffer = await res.arrayBuffer();
+
+                // Decrypt the binary data using decryptImageBinary
+                const blob = await decryptImageBinary(buffer, pek);
+
+                // Create object URL from blob
+                const blobUrl = URL.createObjectURL(blob);
+
+                decrypted.images.push({
+                    url: blobUrl,
+                    type: img.type
+                });
+
+            } catch (error) {
+                console.error("Failed to decrypt image:", error);
             }
-            
-            const buffer = await res.arrayBuffer();
-
-            // Now decrypt the binary (IV + ciphertext format)
-            const imageBlobUrl = await decryptImageBinary(buffer, pek);
-            decrypted.images.push(imageBlobUrl);
-
-        } catch (error) {
-            console.error("Failed to decrypt image:", error);
         }
     }
-}
+
     decrypted._pek = pek;
 
     return decrypted;
-        }
+}
