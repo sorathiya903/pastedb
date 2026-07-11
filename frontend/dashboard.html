@@ -1284,7 +1284,13 @@ async function showQRCode(customId) {
                 <button class="cancel-btn">
                     Close
                 </button>
-
+<button
+    class="delete-btn"
+    id="downloadQrBtn"
+    style="width:100%;margin-top:10px;"
+>
+    Download QR
+</button>
             </div>
 
         </div>
@@ -1300,6 +1306,18 @@ async function showQRCode(customId) {
             margin: 2
         }
     );
+   document.getElementById("downloadQrBtn").onclick = () => {
+
+    const canvas = document.getElementById("qrCanvas");
+
+    const a = document.createElement("a");
+
+    a.href = canvas.toDataURL("image/png");
+
+    a.download = `${customId}.png`;
+
+    a.click();
+};
 
     dialog.querySelector(".cancel-btn").onclick = () => dialog.remove();
 
