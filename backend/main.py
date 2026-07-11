@@ -110,10 +110,15 @@ class EncryptedField(BaseModel):
     iv: str
     data: str
 
+class EncryptedImage(BaseModel):
+    url: EncryptedField
+    type: str
+
+
 class PasteCreate(BaseModel):
     title: str | EncryptedField
     content: str | EncryptedField
-    images: list[str | EncryptedField]
+    images: list[str | EncryptedField | EncryptedImage]
     encrypted_pek: Optional[EncryptedField] = None
     
     syntax: str = Field(
