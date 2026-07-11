@@ -61,10 +61,15 @@ async function decryptPasteWithSharedPEK(paste, rawPEKBase64) {
         content: await decryptWithAES(paste.content, pek),
 
         images: await Promise.all(
-    (paste.images || []).map(async img => ({
-        url: await decryptWithAES(img.url, pek),
-        type: img.type
-    }))
+    (paste.images || []).map(async img => {
+
+        const encryptedUrl = img.url || img;
+
+        return {
+            url: await decryptWithAES(encryptedUrl, pek),
+            type: img.type
+        };
+    })
 ),
 
         _pek: pek
