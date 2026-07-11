@@ -19,6 +19,36 @@ function generateDeviceId() {
 // ===============================
 // BASE64 HELPERS
 // ===============================
+async function encryptBinary(buffer, key) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const encrypted = await crypto.subtle.encrypt(
+        {
+            name: "AES-GCM",
+            iv
+        },
+        key,
+        buffer
+    );
+
+    return {
+        iv,
+        data: new Uint8Array(encrypted)
+    };
+}
+
+async function decryptBinary(iv, data, key) {
+    return await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv
+        },
+        key,
+        data
+    );
+}
+
+
 async function decryptPasteWithSharedPEK(paste, rawPEKBase64) {
 
     const pek = await importAESKey(rawPEKBase64);
