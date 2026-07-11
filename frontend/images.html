@@ -365,6 +365,9 @@ async function loadImages(){
 
     const data =
         await res.json()
+  console.log(data.images);
+console.log(data.images[0]);
+console.log(data.images[0].url);
   if (
     data.e2ee &&
     Array.isArray(data.images) &&
@@ -420,7 +423,9 @@ for (let index = 0; index < data.images.length; index++) {
         name: `Image ${index + 1}`
     });
 }
-
+console.log(data.images);
+console.log(data.images[0]);
+console.log(data.images[0].url);
 renderImages();
 
 }
