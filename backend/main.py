@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Query, Cookie, Request , status, Response 
+from fastapi import FastAPI, HTTPException, Depends, Query, Cookie, Request , status, Response, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
@@ -24,9 +24,15 @@ import logging
 #ogging.basicConfig(level=logging.DEBUG)
 import traceback
 import requests
-import time
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
+from fastapi import 
+import asyncio
+import json
+import time
+import uuid
+from math import radians, sin, cos, sqrt, atan2
+
 
 ph = PasswordHasher()
 
@@ -328,6 +334,194 @@ async def copy_paste(paste_id: str):
 
 
 
+
+
+
+
+
+receivers = {}
+
+MAX_RECEIVERS = 5
+TIMEOUT = 10
+
+
+def distance(lat1, lon1, lat2, lon2):
+    R = 6371000
+
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+
+    a = (
+        sin(dlat/2)**2 +
+        cos(radians(lat1)) *
+        cos(radians(lat2)) *
+        sin(dlon/2)**2
+    )
+
+    return R * 2 * atan2(sqrt(a), sqrt(1-a))
+
+
+def device_name(ua: str):
+    ua = ua.lower()
+
+    phone = "Desktop"
+
+    if "iphone" in ua:
+        phone = "iPhone"
+    elif "ipad" in ua:
+        phone = "iPad"
+    elif "android" in ua:
+        phone = "Android"
+
+    browser = "Browser"
+
+    if "edg" in ua:
+        browser = "Edge"
+    elif "chrome" in ua and "edg" not in ua:
+        browser = "Chrome"
+    elif "firefox" in ua:
+        browser = "Firefox"
+    elif "safari" in ua and "chrome" not in ua:
+        browser = "Safari"
+
+    return f"{browser} on {phone}"
+
+
+async def cleaner():
+    while True:
+
+        now = time.time()
+
+        remove = []
+
+        for rid, info in receivers.items():
+            if now - info["joined"] > TIMEOUT:
+                try:
+                    await info["ws"].close()
+                except:
+                    pass
+
+                remove.append(rid)
+
+        for rid in remove:
+            receivers.pop(rid, None)
+
+        await asyncio.sleep(1)
+
+
+@app.on_event("startup")
+async def startup():
+    asyncio.create_task(cleaner())
+
+
+@app.websocket("/ws/nearby")
+async def nearby(ws: WebSocket):
+
+    await ws.accept()
+
+    my_id = None
+
+    try:
+
+        while True:
+
+            msg = json.loads(await ws.receive_text())
+
+            action = msg["action"]
+
+            if action == "register":
+
+                if len(receivers) >= MAX_RECEIVERS:
+
+                    await ws.send_text(json.dumps({
+                        "type": "full"
+                    }))
+
+                    continue
+
+                my_id = str(uuid.uuid4())
+
+                receivers[my_id] = {
+                    "ws": ws,
+                    "joined": time.time(),
+                    "lat": msg.get("lat"),
+                    "lon": msg.get("lon"),
+                    "device": device_name(
+                        ws.headers.get("user-agent", "")
+                    )
+                }
+
+                await ws.send_text(json.dumps({
+                    "type": "registered"
+                }))
+
+            elif action == "find":
+
+                sender_lat = msg.get("lat")
+                sender_lon = msg.get("lon")
+
+                found = []
+
+                for rid, info in receivers.items():
+
+                    if sender_lat is not None and info["lat"] is not None:
+
+                        d = distance(
+                            sender_lat,
+                            sender_lon,
+                            info["lat"],
+                            info["lon"]
+                        )
+
+                        if d <= 50:
+                            found.append({
+                                "id": rid,
+                                "name": info["device"],
+                                "distance": round(d)
+                            })
+
+                    else:
+
+                        found.append({
+                            "id": rid,
+                            "name": info["device"]
+                        })
+
+                await ws.send_text(json.dumps({
+                    "type": "devices",
+                    "devices": found
+                }))
+
+            elif action == "send":
+
+                rid = msg["receiver"]
+
+                url = msg["url"]
+
+                if rid in receivers:
+
+                    rws = receivers[rid]["ws"]
+
+                    await rws.send_text(json.dumps({
+                        "type": "incoming",
+                        "url": url
+                    }))
+
+                    try:
+                        await rws.close()
+                    except:
+                        pass
+
+                    receivers.pop(rid, None)
+
+                    await ws.send_text(json.dumps({
+                        "type": "sent"
+                    }))
+
+    except WebSocketDisconnect:
+
+        if my_id:
+            receivers.pop(my_id, None)
 
 @app.post("/fork/{paste_id}")
 async def fork_paste(
