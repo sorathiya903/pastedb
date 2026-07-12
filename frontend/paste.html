@@ -2440,7 +2440,7 @@ async function openNearbyShare(){
     nearbySocket.onmessage = e => {
 
         const msg = JSON.parse(e.data);
-
+      console.log(msg)
         if(msg.type === "devices"){
 
             if(msg.devices.length === 0){
