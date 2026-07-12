@@ -463,7 +463,9 @@ async def nearby(ws: WebSocket):
                 sender_lon = msg.get("lon")
 
                 found = []
-
+                
+                print(receivers.items())
+                
                 for rid, info in receivers.items():
 
                     if sender_lat is not None and info["lat"] is not None:
