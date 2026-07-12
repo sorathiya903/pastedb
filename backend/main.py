@@ -425,6 +425,7 @@ async def nearby(ws: WebSocket):
         while True:
 
             msg = json.loads(await ws.receive_text())
+            print(msg)
 
             action = msg["action"]
 
@@ -456,7 +457,8 @@ async def nearby(ws: WebSocket):
                 }))
 
             elif action == "find":
-
+                print("action find called ")
+                
                 sender_lat = msg.get("lat")
                 sender_lon = msg.get("lon")
 
@@ -472,6 +474,7 @@ async def nearby(ws: WebSocket):
                             info["lat"],
                             info["lon"]
                         )
+                        print('dist :',d)
 
                         if d <= 50:
                             found.append({
@@ -527,6 +530,7 @@ async def nearby(ws: WebSocket):
             receivers.pop(my_id, None)
 
     except Exception as e:
+        print(e)
         import traceback
 
         traceback.print_exc()
