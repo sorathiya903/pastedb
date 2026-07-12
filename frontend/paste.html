@@ -596,6 +596,306 @@ if(debug){
 .actions button:hover{
     background:#1d4ed8;
     }
+
+    .nearby-modal{
+
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(12px);
+justify-content:center;
+align-items:center;
+z-index:99999;
+padding:20px;
+
+}
+
+.nearby-card{
+
+width:100%;
+max-width:420px;
+background:#171a21;
+border-radius:24px;
+overflow:hidden;
+border:1px solid rgba(255,255,255,.08);
+box-shadow:0 20px 60px rgba(0,0,0,.45);
+animation:nearbyShow .25s ease;
+
+}
+
+@keyframes nearbyShow{
+
+from{
+
+opacity:0;
+transform:translateY(25px) scale(.96);
+
+}
+
+to{
+
+opacity:1;
+transform:none;
+
+}
+
+}
+
+.nearby-header{
+
+padding:22px;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.nearby-header h2{
+
+margin:0;
+font-size:22px;
+
+}
+
+#nearbyStatus{
+
+margin-top:6px;
+font-size:14px;
+color:#9ca3af;
+
+}
+
+.nearby-close{
+
+width:40px;
+height:40px;
+border:none;
+border-radius:50%;
+background:#232833;
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.nearby-close:hover{
+
+background:#303848;
+transform:rotate(90deg);
+
+}
+
+.nearby-list{
+
+padding:18px;
+min-height:240px;
+max-height:340px;
+overflow-y:auto;
+
+}
+
+.nearby-search{
+
+display:flex;
+align-items:center;
+gap:18px;
+padding:25px 0;
+
+}
+
+.nearby-loader{
+
+width:42px;
+height:42px;
+border-radius:50%;
+border:4px solid rgba(255,255,255,.15);
+border-top-color:#fff;
+animation:spin .8s linear infinite;
+
+}
+
+@keyframes spin{
+
+to{
+
+transform:rotate(360deg);
+
+}
+
+}
+
+.nearby-title{
+
+font-size:17px;
+font-weight:600;
+
+}
+
+.nearby-sub{
+
+margin-top:5px;
+font-size:13px;
+color:#8b95a7;
+
+}
+
+.deviceCard{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px;
+border-radius:18px;
+margin-bottom:12px;
+background:#20252f;
+cursor:pointer;
+transition:.25s;
+border:1px solid rgba(255,255,255,.05);
+
+}
+
+.deviceCard:hover{
+
+background:#2a303b;
+transform:translateY(-2px);
+
+}
+
+.deviceLeft{
+
+display:flex;
+align-items:center;
+gap:14px;
+
+}
+
+.deviceIcon{
+
+width:52px;
+height:52px;
+border-radius:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+background:#2d3442;
+
+}
+
+.deviceName{
+
+font-size:16px;
+font-weight:600;
+
+}
+
+.deviceDistance{
+
+margin-top:4px;
+font-size:13px;
+color:#8b95a7;
+
+}
+
+.sendArrow{
+
+font-size:24px;
+opacity:.6;
+transition:.2s;
+
+}
+
+.deviceCard:hover .sendArrow{
+
+transform:translateX(5px);
+opacity:1;
+
+}
+
+.nearby-empty{
+
+text-align:center;
+padding:40px 10px;
+
+}
+
+.nearby-empty .icon{
+
+font-size:55px;
+margin-bottom:12px;
+
+}
+
+.nearby-empty h3{
+
+margin-bottom:10px;
+
+}
+
+.nearby-empty p{
+
+color:#9ca3af;
+line-height:1.6;
+font-size:14px;
+
+}
+
+.nearby-success{
+
+text-align:center;
+padding:40px;
+
+}
+
+.nearby-success .icon{
+
+font-size:60px;
+margin-bottom:12px;
+
+}
+
+.nearby-success h3{
+
+margin-bottom:8px;
+
+}
+
+.nearby-success p{
+
+color:#9ca3af;
+
+}
+
+.nearby-footer{
+
+padding:18px;
+border-top:1px solid rgba(255,255,255,.06);
+
+}
+
+.nearby-cancel{
+
+width:100%;
+padding:14px;
+border:none;
+border-radius:16px;
+background:#2d3442;
+color:white;
+font-size:15px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.nearby-cancel:hover{
+
+background:#384152;
+
+    }
+    
   </style>
 </head>
 
@@ -1228,41 +1528,70 @@ id="codeBlock"
   ></iframe>
 
   </div>
-  <div id="nearbyModal"
-style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.55);
-justify-content:center;
-align-items:center;
-z-index:9999;
-">
+  <div id="nearbyModal" class="nearby-modal">
 
-<div style="
-width:340px;
-background:#171a21;
-padding:20px;
-border-radius:18px;
-">
+<div class="nearby-card">
 
-<h3>Nearby devices</h3>
+<div class="nearby-header">
 
-<div id="nearbyDevices">
+<div>
 
-Searching...
+<h2>Nearby Share</h2>
+
+<p id="nearbyStatus">
+Searching for nearby devices...
+</p>
 
 </div>
 
 <button
-class="btn"
-onclick="closeNearbyShare()"
-style="margin-top:18px;width:100%">
-Cancel
+class="nearby-close"
+onclick="closeNearbyShare()">
+✕
 </button>
 
 </div>
+
+<div
+id="nearbyDevices"
+class="nearby-list">
+
+<div class="nearby-search">
+
+<div class="nearby-loader"></div>
+
+<div>
+
+<div class="nearby-title">
+Searching...
+</div>
+
+<div class="nearby-sub">
+Looking for nearby devices
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="nearby-footer">
+
+<button
+class="nearby-cancel"
+onclick="closeNearbyShare()">
+
+Cancel
+
+</button>
+
+</div>
+
+</div>
+
   </div>
+  
 <script>
 
   function showDecryptionFailedScreen(){
