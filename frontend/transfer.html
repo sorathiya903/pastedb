@@ -99,16 +99,15 @@ ws = new WebSocket(
 
         }
 
-        if(data.type==="incoming_paste"){
+        if(data.type==="incoming"){
 
-            navigator.vibrate?.([200,100,200]);
+    navigator.vibrate?.([200,100,200]);
 
-            url=data.url;
+    url = data.url;
 
-            startCountdown();
+    startCountdown();
 
-        }
-
+  }
     };
 
 }
@@ -124,10 +123,10 @@ document.addEventListener("touchstart",e=>{
         timer=setTimeout(()=>{
 
             ws.send(JSON.stringify({
-
-                action:"register_receiver"
-
-            }));
+    action: "register",
+    lat: myLatitude,   // null if permission denied
+    lon: myLongitude
+}));
 
         },3000);
 
