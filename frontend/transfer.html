@@ -81,9 +81,7 @@ let url="";
 
 function connect(){
 ws = new WebSocket(
-    (
-        location.protocol === "https:" ? "wss://" : "ws://"
-    ) +
+    
     WS_URL +
     "/ws/nearby?role=receiver"
 );
