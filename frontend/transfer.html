@@ -77,34 +77,7 @@ let connected=false;
 
 let url="";
   
-timer = setTimeout(() => {
-
-    navigator.geolocation.getCurrentPosition(
-
-        pos => {
-
-            ws.send(JSON.stringify({
-                action: "register",
-                lat: pos.coords.latitude,
-                lon: pos.coords.longitude
-            }));
-
-        },
-
-        () => {
-
-            ws.send(JSON.stringify({
-                action: "register",
-                lat: null,
-                lon: null
-            }));
-
-        }
-
-    );
-
-}, 3000);
-
+ 
 
 function connect(){
 ws = new WebSocket(
@@ -149,15 +122,33 @@ document.addEventListener("touchstart",e=>{
 
     if(e.touches.length===3 && !connected){
 
-        timer=setTimeout(()=>{
+        timer = setTimeout(() => {
+
+    navigator.geolocation.getCurrentPosition(
+
+        pos => {
 
             ws.send(JSON.stringify({
-    action: "register",
-    lat: myLatitude,   // null if permission denied
-    lon: myLongitude
-}));
+                action: "register",
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude
+            }));
 
-        },3000);
+        },
+
+        () => {
+
+            ws.send(JSON.stringify({
+                action: "register",
+                lat: null,
+                lon: null
+            }));
+
+        }
+
+    );
+
+}, 3000);
 
     }
 
