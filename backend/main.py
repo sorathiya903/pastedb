@@ -518,9 +518,23 @@ async def nearby(ws: WebSocket):
                     }))
 
     except WebSocketDisconnect:
+        print("WebSocket disconnected")
 
         if my_id:
             receivers.pop(my_id, None)
+
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+
+        if my_id:
+            receivers.pop(my_id, None)
+
+        try:
+            await ws.close()
+        except:
+            pass
 
 @app.post("/fork/{paste_id}")
 async def fork_paste(
