@@ -328,115 +328,156 @@ Only public pastes can be received.
 
   let ws;
 
-let timer=null;
+let timer = null;
+let connected = false;
+let url = "";
 
-let connected=false;
+const discoverBtn = document.getElementById("discoverBtn");
+const status = document.getElementById("status");
+const statusDot = document.querySelector(".statusDot");
+const statusTitle = document.querySelector(".statusTitle");
 
-let url="";
-  
- 
+const timerBox =
+document.getElementById("discoverTimer");
+
+const timerValue =
+timerBox.querySelector(".timerValue");
+
+let visibleInterval;
 
 function connect(){
-ws = new WebSocket(
-    
-    WS_URL +
-    "/ws/nearby?role=receiver"
-);
 
-ws.onopen = () => {
-    console.log("WebSocket connected");
-};
+    ws = new WebSocket(
+        WS_URL + "/ws/nearby?role=receiver"
+    );
 
-ws.onerror = (e) => {
-    console.log("WebSocket error", e);
-};
+    ws.onopen = () => {
 
-ws.onclose = (e) => {
-    console.log("WebSocket closed", e.code, e.reason);
-};
+        console.log("Connected");
 
-ws.onmessage = (e) => {
-    console.log("Received:", e.data);
+        status.textContent =
+        "Ready to become discoverable";
 
-    const data = JSON.parse(e.data);
+    };
 
-    if(data.type==="registered"){
+    ws.onerror = e => {
 
-    connected=true;
+        console.error(e);
 
-    document.querySelector(".statusDot").style.background="#22c55e";
+    };
 
-    document.querySelector(".statusTitle").textContent=
-    "Discoverable";
+    ws.onclose = () => {
 
-    document.getElementById("status").textContent=
-    "Waiting for nearby sender...";
+        connected = false;
 
-    discoverBtn.style.display="none";
+        statusDot.style.background = "#ef4444";
 
-    const timerBox=
-    document.getElementById("discoverTimer");
+        statusTitle.textContent =
+        "Disconnected";
 
-    timerBox.style.display="block";
+        status.textContent =
+        "Reconnecting...";
 
-    visibleTime=10;
+        discoverBtn.disabled = true;
 
-    timerBox.querySelector(".timerValue").textContent=
-    visibleTime+"s";
+        setTimeout(connect,2000);
 
-    clearInterval(visibleInterval);
+    };
 
-    visibleInterval=setInterval(()=>{
+    ws.onmessage = e => {
 
-        visibleTime--;
+        const data =
+        JSON.parse(e.data);
 
-        timerBox.querySelector(".timerValue").textContent=
-        visibleTime+"s";
+        if(data.type==="registered"){
 
-        if(visibleTime<=0){
+            connected = true;
+
+            discoverBtn.disabled = false;
+
+            discoverBtn.style.display="none";
+
+            statusDot.style.background="#22c55e";
+
+            statusTitle.textContent=
+            "Discoverable";
+
+            status.textContent=
+            "Waiting for nearby sender...";
+
+            timerBox.style.display="block";
+
+            let sec=10;
+
+            timerValue.textContent=
+            sec+"s";
 
             clearInterval(visibleInterval);
 
-            timerBox.style.display="none";
+            visibleInterval=
+            setInterval(()=>{
 
-            connected=false;
+                sec--;
 
-            discoverBtn.style.display="block";
+                timerValue.textContent=
+                sec+"s";
 
-            document.querySelector(".statusDot").style.background="#888";
+                if(sec<=0){
 
-            document.querySelector(".statusTitle").textContent=
-            "Ready";
+                    clearInterval(
+                        visibleInterval
+                    );
 
-            document.getElementById("status").textContent=
-            "Waiting to become discoverable";
+                    timerBox.style.display=
+                    "none";
+
+                    connected=false;
+
+                    discoverBtn.style.display=
+                    "block";
+
+                    discoverBtn.textContent=
+                    "📡 Become Discoverable";
+
+                    statusDot.style.background=
+                    "#888";
+
+                    statusTitle.textContent=
+                    "Ready";
+
+                    status.textContent=
+                    "Waiting to become discoverable";
+
+                }
+
+            },1000);
 
         }
 
-    },1000);
+        else if(data.type==="incoming"){
 
-    }
-    if (data.type === "incoming") {
-        navigator.vibrate?.([200,100,200]);
-        url = data.url;
-        startCountdown();
-    }
-}
+            navigator.vibrate?.(
+                [200,100,200]
+            );
+
+            url=data.url;
+
+            startCountdown();
+
+        }
+
+    };
 
 }
 
 connect();
 
-
-
-
-const discoverBtn =
-document.getElementById("discoverBtn");
-
-let visibleInterval;
-let visibleTime = 10;
-
 function registerReceiver(){
+
+    discoverBtn.textContent=
+    "Registering...";
+
+    discoverBtn.disabled=true;
 
     navigator.geolocation.getCurrentPosition(
 
@@ -472,11 +513,37 @@ function registerReceiver(){
 
 }
 
+let holdInterval;
+
 function startHold(){
 
     if(connected) return;
 
-    timer = setTimeout(registerReceiver,3000);
+    let sec=3;
+
+    discoverBtn.textContent=
+    "Hold "+sec+"s";
+
+    holdInterval=setInterval(()=>{
+
+        sec--;
+
+        if(sec>0){
+
+            discoverBtn.textContent=
+            "Hold "+sec+"s";
+
+        }
+
+    },1000);
+
+    timer=setTimeout(()=>{
+
+        clearInterval(holdInterval);
+
+        registerReceiver();
+
+    },3000);
 
 }
 
@@ -484,66 +551,87 @@ function stopHold(){
 
     clearTimeout(timer);
 
-}
+    clearInterval(holdInterval);
 
-// Desktop
+    if(!connected){
 
-discoverBtn.addEventListener(
-    "mousedown",
-    startHold
-);
-
-discoverBtn.addEventListener(
-    "mouseup",
-    stopHold
-);
-
-discoverBtn.addEventListener(
-    "mouseleave",
-    stopHold
-);
-
-// Mobile button
-
-discoverBtn.addEventListener(
-    "touchstart",
-    startHold
-);
-
-discoverBtn.addEventListener(
-    "touchend",
-    stopHold
-);
-
-// 3-finger gesture
-
-document.addEventListener(
-    "touchstart",
-    e=>{
-
-        if(e.touches.length===3){
-
-            startHold();
-
-        }
+        discoverBtn.textContent=
+        "📡 Become Discoverable";
 
     }
+
+}
+
+discoverBtn.addEventListener(
+"mousedown",
+startHold
+);
+
+discoverBtn.addEventListener(
+"mouseup",
+stopHold
+);
+
+discoverBtn.addEventListener(
+"mouseleave",
+stopHold
+);
+
+discoverBtn.addEventListener(
+"touchstart",
+e=>{
+
+    e.preventDefault();
+
+    startHold();
+
+},
+{passive:false}
+);
+
+discoverBtn.addEventListener(
+"touchend",
+stopHold
+);
+
+discoverBtn.addEventListener(
+"contextmenu",
+e=>e.preventDefault()
 );
 
 document.addEventListener(
-    "touchend",
-    stopHold
+"touchstart",
+e=>{
+
+    if(e.touches.length===3){
+
+        startHold();
+
+    }
+
+},
+{passive:false}
 );
+
+document.addEventListener(
+"touchend",
+stopHold
+);
+
 function startCountdown(){
 
     let n=3;
 
-    const el=document.getElementById("countdown");
+    const el=
+    document.getElementById("countdown");
 
     el.style.display="block";
 
-    document.getElementById("status").textContent=
-    "Incoming paste";
+    statusTitle.textContent=
+    "Incoming Paste";
+
+    status.textContent=
+    "Opening...";
 
     el.textContent=n;
 
@@ -553,7 +641,7 @@ function startCountdown(){
 
         el.textContent=n;
 
-        if(n===0){
+        if(n<=0){
 
             clearInterval(i);
 
@@ -563,8 +651,7 @@ function startCountdown(){
 
     },1000);
 
-}
-
+      }
 </script>
 
 </body>
