@@ -68,7 +68,33 @@ Not Connected
 </div>
 
 <script>
+timer = setTimeout(() => {
 
+    navigator.geolocation.getCurrentPosition(
+
+        pos => {
+
+            ws.send(JSON.stringify({
+                action: "register",
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude
+            }));
+
+        },
+
+        () => {
+
+            ws.send(JSON.stringify({
+                action: "register",
+                lat: null,
+                lon: null
+            }));
+
+        }
+
+    );
+
+}, 3000);
 let ws;
 
 let timer=null;
