@@ -907,6 +907,9 @@ if(debug){
 <button class="btn" id="runBtn">
     Run Code
   </button>
+      <button class="btn" id="nearbyShareBtn" style="display:none">
+    NS
+      </button>
 <!-- FORK BUTTON -->
 <button id="forkBtn" style="display:none" class="">
   <span class="fork-icon">⑂</span>
@@ -1224,6 +1227,41 @@ id="codeBlock"
     "
   ></iframe>
 
+  </div>
+  <div id="nearbyModal"
+style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div style="
+width:340px;
+background:#171a21;
+padding:20px;
+border-radius:18px;
+">
+
+<h3>Nearby devices</h3>
+
+<div id="nearbyDevices">
+
+Searching...
+
+</div>
+
+<button
+class="btn"
+onclick="closeNearbyShare()"
+style="margin-top:18px;width:100%">
+Cancel
+</button>
+
+</div>
   </div>
 <script>
 
@@ -2002,6 +2040,15 @@ const visibilityMap = {
 
 visibility.textContent =
     visibilityMap[data.visibility] || "Public";
+  
+      const nearbyBtn =
+    document.getElementById("nearbyShareBtn");
+
+if(data.visibility === "public"){
+    nearbyBtn.style.display = "inline-flex";
+}else{
+    nearbyBtn.style.display = "none";
+  }
 
 visibility.style.display = "block"
 
@@ -2335,6 +2382,107 @@ setTimeout(() => {
         .style.animation = "none";
 
 }, 10000);
+
+
+  
+
+let nearbySocket;
+
+async function openNearbyShare(){
+
+document.getElementById("nearbyModal").style.display="flex";
+
+const list=document.getElementById("nearbyDevices");
+
+list.innerHTML="Searching...";
+
+nearbySocket=new WebSocket(
+WS_URL+"/ws/sender"
+);
+
+nearbySocket.onopen=()=>{
+
+nearbySocket.send(JSON.stringify({
+
+type:"sender"
+
+}));
+
+};
+
+nearbySocket.onmessage=e=>{
+
+const msg=JSON.parse(e.data);
+
+if(msg.type==="devices"){
+
+if(msg.devices.length===0){
+
+list.innerHTML="No nearby receivers";
+
+return;
+
+}
+
+list.innerHTML="";
+
+msg.devices.forEach(device=>{
+
+const btn=document.createElement("button");
+
+btn.className="btn";
+
+btn.style.width="100%";
+
+btn.style.marginTop="10px";
+
+btn.innerHTML=
+device.icon+" "+device.name;
+
+btn.onclick=()=>{
+
+nearbySocket.send(JSON.stringify({
+
+type:"share",
+
+receiver:device.id,
+
+url:location.href
+
+}));
+
+closeNearbyShare();
+
+};
+
+list.appendChild(btn);
+
+});
+
+}
+
+};
+
+      }
+
+
+  function closeNearbyShare(){
+
+document.getElementById("nearbyModal").style.display="none";
+
+if(nearbySocket){
+
+nearbySocket.close();
+
+}
+
+  }
+
+
+  
+  document
+.getElementById("nearbyShareBtn")
+.addEventListener("click", openNearbyShare);
 </script>
 </body>
                         </html>
