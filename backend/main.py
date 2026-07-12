@@ -478,7 +478,7 @@ async def nearby(ws: WebSocket):
                         )
                         print('dist :',d)
 
-                        if d <= 50:
+                        if d <= 110:
                             found.append({
                                 "id": rid,
                                 "name": info["device"],
