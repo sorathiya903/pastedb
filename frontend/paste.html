@@ -2473,7 +2473,8 @@ async function openNearbyShare(){
                     }`;
 
                 btn.onclick = () => {
-
+                  console.log("btn clicked ")
+                  try{
                     nearbySocket.send(JSON.stringify({
 
                         action: "send",
@@ -2483,6 +2484,7 @@ async function openNearbyShare(){
                         url: location.href
 
                     }));
+                  }catch(e){console.error(e)}
 
                 };
 
