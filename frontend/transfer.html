@@ -78,15 +78,13 @@ let connected=false;
 let url="";
 
 function connect(){
-
-    ws=new WebSocket(
-        (
-            location.protocol==="https:"?
-            "wss://":"ws://"
-        )+
-        location.host+
-        "/ws/nearby"
-    );
+ws = new WebSocket(
+    (
+        location.protocol === "https:" ? "wss://" : "ws://"
+    ) +
+    location.host +
+    "/ws/nearby?role=receiver"
+);
 
     ws.onmessage=e=>{
 
