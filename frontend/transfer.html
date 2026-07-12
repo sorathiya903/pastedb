@@ -84,7 +84,7 @@ ws = new WebSocket(
     (
         location.protocol === "https:" ? "wss://" : "ws://"
     ) +
-    location.host +
+    WS_URL +
     "/ws/nearby?role=receiver"
 );
 
