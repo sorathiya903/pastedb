@@ -32,18 +32,180 @@ body{
 }
 
 .box{
-    max-width:350px;
+max-width:420px;
+width:92%;
+background:#1a1a1a;
+border:1px solid #333;
+border-radius:28px;
+padding:28px;
+box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+
+.hero{
+text-align:center;
+margin-bottom:24px;
+}
+
+.phone{
+position:relative;
+width:90px;
+height:90px;
+margin:auto;
+font-size:55px;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.ripple{
+position:absolute;
+border:2px solid #3b82f6;
+border-radius:50%;
+opacity:0;
+animation:ripple 2.5s infinite;
+}
+
+.ripple1{
+width:90px;
+height:90px;
+}
+
+.ripple2{
+width:90px;
+height:90px;
+animation-delay:.8s;
+}
+
+.ripple3{
+width:90px;
+height:90px;
+animation-delay:1.6s;
+}
+
+@keyframes ripple{
+
+0%{
+transform:scale(1);
+opacity:.7;
+}
+
+100%{
+transform:scale(2.2);
+opacity:0;
+}
+
+}
+
+h1{
+margin:18px 0 8px;
+font-size:30px;
+}
+
+.subtitle{
+color:#aaa;
+line-height:1.6;
+margin-bottom:10px;
+}
+
+.instruction{
+background:#202020;
+border-radius:18px;
+padding:18px;
+margin:20px 0;
+}
+
+.step{
+display:flex;
+gap:14px;
+align-items:center;
+margin-bottom:16px;
+text-align:left;
+}
+
+.step:last-child{
+margin-bottom:0;
+}
+
+.step span{
+font-size:28px;
+}
+
+.discoverBtn{
+width:100%;
+padding:16px;
+border:none;
+border-radius:16px;
+background:#2563eb;
+color:white;
+font-size:17px;
+font-weight:600;
+cursor:pointer;
+transition:.25s;
+margin-bottom:18px;
+}
+
+.discoverBtn:hover{
+transform:translateY(-2px);
+background:#1d4ed8;
+}
+
+#statusCard{
+display:flex;
+align-items:center;
+gap:14px;
+background:#202020;
+padding:18px;
+border-radius:18px;
+text-align:left;
+}
+
+.statusDot{
+width:14px;
+height:14px;
+border-radius:50%;
+background:#888;
+}
+
+.statusTitle{
+font-weight:bold;
+margin-bottom:4px;
 }
 
 #status{
-    margin-top:20px;
-    color:#aaa;
+color:#bbb;
+margin:0;
+}
+
+#discoverTimer{
+margin-top:18px;
+padding:14px;
+background:#202020;
+border-radius:16px;
+}
+
+.timerTitle{
+font-size:14px;
+color:#999;
+}
+
+.timerValue{
+font-size:30px;
+font-weight:bold;
+margin-top:4px;
 }
 
 #countdown{
-    font-size:60px;
-    margin-top:20px;
-    display:none;
+font-size:72px;
+font-weight:bold;
+margin-top:24px;
+display:none;
+}
+
+.footer{
+margin-top:24px;
+color:#777;
+font-size:13px;
+line-height:1.5;
 }
 </style>
 
@@ -52,21 +214,116 @@ body{
 
 <div class="box">
 
-<h2>Nearby Transfer</h2>
+<div class="hero">
 
-<p>
-Hold <b>3 fingers</b> on the screen for <b>3 seconds</b>
-to become discoverable.
+<div class="phone">
+
+📱
+
+<div class="ripple ripple1"></div>
+<div class="ripple ripple2"></div>
+<div class="ripple ripple3"></div>
+
+</div>
+
+<h1>Nearby Transfer</h1>
+
+<p class="subtitle">
+
+Receive public PasteDB pastes from nearby devices.
+
 </p>
 
+</div>
+
+<div class="instruction">
+
+<div class="step">
+
+<span>👆</span>
+
+<div>
+
+<b>Touch devices</b><br>
+
+Hold <b>3 fingers</b> for <b>3 seconds</b>
+
+</div>
+
+</div>
+
+<div class="step">
+
+<span>🖱️</span>
+
+<div>
+
+<b>Desktop</b><br>
+
+Hold the Discover button
+
+</div>
+
+</div>
+
+</div>
+
+<button
+id="discoverBtn"
+class="discoverBtn">
+
+📡 Become Discoverable
+
+</button>
+
+<div id="statusCard">
+
+<div class="statusDot"></div>
+
+<div>
+
+<div class="statusTitle">
+
+Ready
+
+</div>
+
 <div id="status">
-Not Connected
+
+Waiting to become discoverable
+
+</div>
+
+</div>
+
+</div>
+
+<div id="discoverTimer"
+style="display:none">
+
+<div class="timerTitle">
+
+Visible for
+
+</div>
+
+<div class="timerValue">
+
+10s
+
+</div>
+
 </div>
 
 <div id="countdown"></div>
 
+<div class="footer">
+
+Only public pastes can be received.
+
 </div>
 
+</div>
 <script>
 
   let ws;
