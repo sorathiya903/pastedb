@@ -2385,83 +2385,135 @@ setTimeout(() => {
 
 
   
-
 let nearbySocket;
 
 async function openNearbyShare(){
 
-document.getElementById("nearbyModal").style.display="flex";
+    document.getElementById("nearbyModal").style.display = "flex";
 
-const list=document.getElementById("nearbyDevices");
+    const list =
+        document.getElementById("nearbyDevices");
 
-list.innerHTML="Searching...";
+    list.innerHTML = "Searching...";
 
-nearbySocket=new WebSocket(
-WS_URL+"/ws/sender"
-);
+    nearbySocket = new WebSocket(
+        WS_URL + "/ws/nearby"
+    );
 
-nearbySocket.onopen=()=>{
+    nearbySocket.onopen = () => {
 
-nearbySocket.send(JSON.stringify({
+        navigator.geolocation.getCurrentPosition(
 
-type:"sender"
+            pos => {
 
-}));
+                nearbySocket.send(JSON.stringify({
 
-};
+                    action: "find",
 
-nearbySocket.onmessage=e=>{
+                    lat: pos.coords.latitude,
 
-const msg=JSON.parse(e.data);
+                    lon: pos.coords.longitude
 
-if(msg.type==="devices"){
+                }));
 
-if(msg.devices.length===0){
+            },
 
-list.innerHTML="No nearby receivers";
+            () => {
 
-return;
+                // Location denied
+                nearbySocket.send(JSON.stringify({
 
-}
+                    action: "find",
 
-list.innerHTML="";
+                    lat: null,
 
-msg.devices.forEach(device=>{
+                    lon: null
 
-const btn=document.createElement("button");
+                }));
 
-btn.className="btn";
+            }
 
-btn.style.width="100%";
+        );
 
-btn.style.marginTop="10px";
+    };
 
-btn.innerHTML=
-device.icon+" "+device.name;
+    nearbySocket.onmessage = e => {
 
-btn.onclick=()=>{
+        const msg = JSON.parse(e.data);
 
-nearbySocket.send(JSON.stringify({
+        if(msg.type === "devices"){
 
-type:"share",
+            if(msg.devices.length === 0){
 
-receiver:device.id,
+                list.innerHTML =
+                    "No nearby receivers";
 
-url:location.href
+                return;
 
-}));
+            }
 
-closeNearbyShare();
+            list.innerHTML = "";
 
-};
+            msg.devices.forEach(device => {
 
-list.appendChild(btn);
+                const btn =
+                    document.createElement("button");
 
-});
+                btn.className = "btn";
 
-}
+                btn.style.width = "100%";
 
-};
+                btn.style.marginTop = "10px";
+
+                btn.innerHTML =
+                    `${device.name}${
+                        device.distance != null
+                        ? ` (${device.distance} m)`
+                        : ""
+                    }`;
+
+                btn.onclick = () => {
+
+                    nearbySocket.send(JSON.stringify({
+
+                        action: "send",
+
+                        receiver: device.id,
+
+                        url: location.href
+
+                    }));
+
+                };
+
+                list.appendChild(btn);
+
+            });
+
+        }
+
+        else if(msg.type === "sent"){
+
+            closeNearbyShare();
+
+            alert("Paste sent successfully.");
+
+        }
+
+        else if(msg.type === "full"){
+
+            list.innerHTML =
+                "Receiver list is full.";
+
+        }
+
+    };
+
+    nearbySocket.onclose = () => {
+
+        console.log("Nearby socket closed");
+
+    };
 
       }
 
