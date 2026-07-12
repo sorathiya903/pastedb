@@ -478,6 +478,7 @@ async def nearby(ws: WebSocket):
                                 "name": info["device"],
                                 "distance": round(d)
                             })
+                            print(found)
 
                     else:
 
@@ -485,6 +486,7 @@ async def nearby(ws: WebSocket):
                             "id": rid,
                             "name": info["device"]
                         })
+                        print(found)
 
                 await ws.send_text(json.dumps({
                     "type": "devices",
