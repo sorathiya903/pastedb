@@ -1,4 +1,5 @@
 uvicorn
+websockets
 fastapi
 pydantic
 pymongo
