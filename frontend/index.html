@@ -466,8 +466,10 @@ header{
 
     <div class="nav-links">
       <a href="/dashboard.html">Dashboard</a>
-      <a href="/terms">Terms</a>
+      
       <a href="/create">Create</a>
+      <a href="/scan">Scan QR</a>
+      <a href="/terms">Terms</a>
     </div>
 
     <a class="btn" href="/create">Get Started</a>
@@ -482,6 +484,7 @@ header{
   <a href="/dashboard.html">Dashboard</a>
   <a href="/login">Login</a>
   <a href="/create">Create Paste</a>
+  <a href="/scan">Scan QR</a>
      <a href="/explore">Explore</a>
   <a href="/terms">Terms</a>
   <a class="btn" href="/create">Get Started</a>
@@ -537,6 +540,44 @@ header{
       <h3>Custom URLs</h3>
       <p>Create memorable links for sharing.</p>
   </div>  
+    <section class="section" style="padding-top:0">
+
+  <div class="card" style="
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:25px;
+      flex-wrap:wrap;
+  ">
+
+    <div>
+
+      <h2 style="margin-bottom:10px">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="20px" width="20px">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+</svg>
+Open a Paste with QR
+      </h2>
+
+      <p style="max-width:650px">
+        Scan a PasteDB QR code using your camera or upload a screenshot
+        containing a QR code. Public and encrypted share links are
+        supported automatically.
+      </p>
+
+    </div>
+
+    <a
+      href="/scan"
+      class="btn"
+      style="white-space:nowrap"
+    >
+      Open Scanner
+    </a>
+
+  </div>
+
+    </section>
     
     <div class="card">
       <h3>Analytics</h3>
@@ -641,9 +682,9 @@ window.addEventListener("scroll", ()=>{
     <a href="/explore">Explore Public Pastes</a>
     <a href="/dashboard">Dashboard</a>
     <a href="/login">Sign In</a>
+        <a href="/scan">QR Scanner</a>
     <a href="/extension">VS Code Extension</a>
-    <a href="/docs">API Documentation</a>
-    <a href="/e2ee">End-to-End Encryption</a>
+     
     <a href="/about">About PasteDB</a>
   
 
@@ -656,6 +697,9 @@ window.addEventListener("scroll", ()=>{
         <a href="/terms">Terms of Service</a>
         <a href="/privacy">Privacy Policy</a>
 <a href="/contact">Contact</a>
+        <a href="/docs">API Documentation</a>
+        <a href="/e2ee">End-to-End Encryption</a>
+   
       </div>
 
       
