@@ -360,12 +360,62 @@ ws.onmessage = (e) => {
 
     const data = JSON.parse(e.data);
 
-    if (data.type === "registered") {
-        connected = true;
-        document.getElementById("status").textContent =
-            "Waiting for sender...";
-    }
+    if(data.type==="registered"){
 
+    connected=true;
+
+    document.querySelector(".statusDot").style.background="#22c55e";
+
+    document.querySelector(".statusTitle").textContent=
+    "Discoverable";
+
+    document.getElementById("status").textContent=
+    "Waiting for nearby sender...";
+
+    discoverBtn.style.display="none";
+
+    const timerBox=
+    document.getElementById("discoverTimer");
+
+    timerBox.style.display="block";
+
+    visibleTime=10;
+
+    timerBox.querySelector(".timerValue").textContent=
+    visibleTime+"s";
+
+    clearInterval(visibleInterval);
+
+    visibleInterval=setInterval(()=>{
+
+        visibleTime--;
+
+        timerBox.querySelector(".timerValue").textContent=
+        visibleTime+"s";
+
+        if(visibleTime<=0){
+
+            clearInterval(visibleInterval);
+
+            timerBox.style.display="none";
+
+            connected=false;
+
+            discoverBtn.style.display="block";
+
+            document.querySelector(".statusDot").style.background="#888";
+
+            document.querySelector(".statusTitle").textContent=
+            "Ready";
+
+            document.getElementById("status").textContent=
+            "Waiting to become discoverable";
+
+        }
+
+    },1000);
+
+    }
     if (data.type === "incoming") {
         navigator.vibrate?.([200,100,200]);
         url = data.url;
@@ -377,52 +427,113 @@ ws.onmessage = (e) => {
 
 connect();
 
-let touches=[];
 
-document.addEventListener("touchstart",e=>{
 
-    if(e.touches.length===3 && !connected){
 
-        timer = setTimeout(() => {
+const discoverBtn =
+document.getElementById("discoverBtn");
+
+let visibleInterval;
+let visibleTime = 10;
+
+function registerReceiver(){
 
     navigator.geolocation.getCurrentPosition(
 
-        pos => {
+        pos=>{
 
-            console.log("Sending register");
+            ws.send(JSON.stringify({
 
-ws.send(JSON.stringify({
-    action: "register",
-    lat: pos.coords.latitude,
-    lon: pos.coords.longitude
-}));
+                action:"register",
+
+                lat:pos.coords.latitude,
+
+                lon:pos.coords.longitude
+
+            }));
 
         },
 
-        () => {
+        ()=>{
 
             ws.send(JSON.stringify({
-                action: "register",
-                lat: null,
-                lon: null
+
+                action:"register",
+
+                lat:null,
+
+                lon:null
+
             }));
 
         }
 
     );
 
-}, 3000);
+}
 
-    }
+function startHold(){
 
-});
+    if(connected) return;
 
-document.addEventListener("touchend",()=>{
+    timer = setTimeout(registerReceiver,3000);
+
+}
+
+function stopHold(){
 
     clearTimeout(timer);
 
-});
+}
 
+// Desktop
+
+discoverBtn.addEventListener(
+    "mousedown",
+    startHold
+);
+
+discoverBtn.addEventListener(
+    "mouseup",
+    stopHold
+);
+
+discoverBtn.addEventListener(
+    "mouseleave",
+    stopHold
+);
+
+// Mobile button
+
+discoverBtn.addEventListener(
+    "touchstart",
+    startHold
+);
+
+discoverBtn.addEventListener(
+    "touchend",
+    stopHold
+);
+
+// 3-finger gesture
+
+document.addEventListener(
+    "touchstart",
+    e=>{
+
+        if(e.touches.length===3){
+
+            startHold();
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "touchend",
+    stopHold
+);
 function startCountdown(){
 
     let n=3;
