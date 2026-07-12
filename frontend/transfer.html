@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>PasteDB Transfer</title>
+
+<style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#111;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    text-align:center;
+}
+
+.box{
+    max-width:350px;
+}
+
+#status{
+    margin-top:20px;
+    color:#aaa;
+}
+
+#countdown{
+    font-size:60px;
+    margin-top:20px;
+    display:none;
+}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+<h2>Nearby Transfer</h2>
+
+<p>
+Hold <b>3 fingers</b> on the screen for <b>3 seconds</b>
+to become discoverable.
+</p>
+
+<div id="status">
+Not Connected
+</div>
+
+<div id="countdown"></div>
+
+</div>
+
+<script>
+
+let ws;
+
+let timer=null;
+
+let connected=false;
+
+let url="";
+
+function connect(){
+
+    ws=new WebSocket(
+        (
+            location.protocol==="https:"?
+            "wss://":"ws://"
+        )+
+        location.host+
+        "/ws/nearby"
+    );
+
+    ws.onmessage=e=>{
+
+        const data=JSON.parse(e.data);
+
+        if(data.type==="registered"){
+
+            connected=true;
+
+            document.getElementById("status").textContent=
+            "Waiting for sender...";
+
+        }
+
+        if(data.type==="incoming_paste"){
+
+            navigator.vibrate?.([200,100,200]);
+
+            url=data.url;
+
+            startCountdown();
+
+        }
+
+    };
+
+}
+
+connect();
+
+let touches=[];
+
+document.addEventListener("touchstart",e=>{
+
+    if(e.touches.length===3 && !connected){
+
+        timer=setTimeout(()=>{
+
+            ws.send(JSON.stringify({
+
+                action:"register_receiver"
+
+            }));
+
+        },3000);
+
+    }
+
+});
+
+document.addEventListener("touchend",()=>{
+
+    clearTimeout(timer);
+
+});
+
+function startCountdown(){
+
+    let n=3;
+
+    const el=document.getElementById("countdown");
+
+    el.style.display="block";
+
+    document.getElementById("status").textContent=
+    "Incoming paste";
+
+    el.textContent=n;
+
+    const i=setInterval(()=>{
+
+        n--;
+
+        el.textContent=n;
+
+        if(n===0){
+
+            clearInterval(i);
+
+            location.href=url;
+
+        }
+
+    },1000);
+
+}
+
+</script>
+
+</body>
+</html>
