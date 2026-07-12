@@ -449,6 +449,7 @@ async def nearby(ws: WebSocket):
                         ws.headers.get("user-agent", "")
                     )
                 }
+                print(receivers[my_id])
 
                 await ws.send_text(json.dumps({
                     "type": "registered"
