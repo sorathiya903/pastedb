@@ -114,17 +114,17 @@
 
       font-size:15px;
     }
+.grid{
+    column-width:340px;
+    column-gap:24px;
+}
 
-    .grid{
-
-      display:flex ;
-justify-content:center;
-      align-items:center;
-      grid-template-columns:
-        repeat(auto-fit,minmax(340px,1fr));
-
-      gap:24px;
-    }
+.card{
+    display:inline-block;
+    width:100%;
+    margin-bottom:24px;
+    break-inside:avoid;
+}
 
     .card{
 
@@ -435,7 +435,7 @@ justify-content:center;
         document.getElementById("grid");
 
       grid.innerHTML = "";
-grid.style.display ="grid"
+
       pastes.forEach(paste => {
 
         grid.innerHTML += `
