@@ -350,6 +350,14 @@
 
   color:white;
 }
+
+      .loader-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:60px 0;
+      }
+    
   </style>
 
 </head>
@@ -390,13 +398,20 @@
       id="grid"
     >
 
-      <div class="load"></div>
+      
     </div>
+
+    
+    <div id="loader" class="loader-wrap">
+    <div class="load"></div>
+</div>
+
+
 
   </div>
 
   <script>
-
+const loader = document.getElementById("loader");
     let allPastes = [];
 
     async function loadPastes(){
@@ -435,6 +450,7 @@
         document.getElementById("grid");
 
       grid.innerHTML = "";
+      loader.style.display = "none";
 
       pastes.forEach(paste => {
 
