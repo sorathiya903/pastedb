@@ -10,47 +10,60 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
 }
 
 body{
-    background:#0f1117;
+    min-height:100vh;
+    background:
+    radial-gradient(circle at top left,#4f7cff33,transparent 40%),
+    radial-gradient(circle at bottom right,#7b5cff33,transparent 40%),
+    #0b1020;
     color:#fff;
-    padding:30px;
+    padding:40px 20px;
 }
 
 .container{
-    max-width:1100px;
+    max-width:1200px;
     margin:auto;
 }
 
 h1{
-    margin-bottom:20px;
+    font-size:34px;
+    margin-bottom:25px;
+    font-weight:700;
 }
 
 .request{
-    background:#1b1e27;
-    padding:20px;
-    border-radius:12px;
+    background:rgba(25,31,48,.85);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 15px 35px rgba(0,0,0,.35);
 }
 
 .row{
     display:flex;
-    gap:10px;
-    margin-bottom:15px;
+    gap:15px;
+    margin-bottom:18px;
 }
 
-select,input,textarea{
-    background:#252935;
-    color:white;
-    border:1px solid #3b4150;
-    border-radius:8px;
-    padding:10px;
+select,
+input,
+textarea{
+    background:#141b2d;
+    border:1px solid #2d3958;
+    color:#fff;
+    border-radius:12px;
+    padding:14px;
     font-size:15px;
+    transition:.25s;
+    outline:none;
 }
 
 select{
-    width:120px;
+    width:130px;
 }
 
 input{
@@ -59,55 +72,122 @@ input{
 
 textarea{
     width:100%;
-    min-height:180px;
+    min-height:220px;
     resize:vertical;
+    font-family:Consolas,monospace;
+}
+
+select:focus,
+input:focus,
+textarea:focus{
+    border-color:#5c8dff;
+    box-shadow:0 0 15px rgba(92,141,255,.3);
 }
 
 button{
-    margin-top:15px;
-    padding:12px 25px;
-    background:#4f7cff;
-    color:white;
+    margin-top:18px;
     border:none;
-    border-radius:8px;
-    cursor:pointer;
+    border-radius:12px;
+    padding:14px 28px;
     font-size:16px;
+    cursor:pointer;
+    transition:.25s;
 }
 
 button:hover{
-    background:#3f68d8;
+    transform:translateY(-2px);
+}
+
+.request button{
+    background:linear-gradient(135deg,#4f7cff,#7b5cff);
+    color:white;
+    font-weight:600;
+}
+
+.request button:hover{
+    box-shadow:0 8px 25px rgba(79,124,255,.45);
 }
 
 .info{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:18px;
     margin-top:25px;
-    display:flex;
-    gap:20px;
 }
 
 .info div{
-    background:#1b1e27;
-    padding:10px 15px;
-    border-radius:8px;
+    background:rgba(25,31,48,.85);
+    border:1px solid rgba(255,255,255,.08);
+    padding:18px;
+    border-radius:16px;
+    font-size:15px;
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+
+.response-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:30px;
+    margin-bottom:10px;
+}
+
+.response-header h3{
+    font-size:22px;
+}
+
+.copy-btn{
+    background:#2e8bff;
+    color:white;
+    padding:10px 18px;
+    border-radius:10px;
+    font-size:14px;
+}
+
+.copy-btn:hover{
+    background:#1d74e7;
 }
 
 pre{
-    margin-top:20px;
-    background:#1b1e27;
-    padding:20px;
-    border-radius:12px;
+    background:#111827;
+    border:1px solid #2d3958;
+    border-radius:16px;
+    padding:22px;
+    min-height:320px;
     overflow:auto;
     white-space:pre-wrap;
     word-break:break-word;
-    min-height:300px;
+    font-family:Consolas,monospace;
+    line-height:1.6;
+    box-shadow:0 12px 30px rgba(0,0,0,.3);
 }
-  
-  .success{
-    color:#38d26e;
+
+.success{
+    color:#30d158;
+    font-weight:600;
 }
 
 .error{
-    color:#ff5d5d;
+    color:#ff4d6d;
+    font-weight:600;
 }
+
+@media(max-width:700px){
+
+.row{
+    flex-direction:column;
+}
+
+select{
+    width:100%;
+}
+
+h1{
+    font-size:28px;
+}
+
+}
+
 </style>
 
 </head>
@@ -148,6 +228,14 @@ placeholder='JSON Body (Optional)
     <div>Status: <span id="status">-</span></div>
     <div>Time: <span id="time">-</span></div>
     <div>Size: <span id="size">-</span></div>
+</div>
+
+<div class="response-header">
+    <h3>Response</h3>
+    <button id="copyBtn" class="copy-btn" style="display:none;"
+    onclick="navigator.clipboard.writeText(document.getElementById('response').textContent)">
+        📋 Copy
+    </button>
 </div>
 
 <pre id="response">Response will appear here...</pre>
@@ -223,6 +311,8 @@ if(res.ok){
         }
 
         responseBox.textContent = formatted;
+        document.getElementById("copyBtn").style.display = "block";
+
 
     } catch (err) {
 
@@ -238,6 +328,8 @@ if(res.ok){
             message: err.message,
             hint: "Possible CORS issue, invalid URL, or server is offline."
         }, null, 4);
+        document.getElementById("copyBtn").style.display = "block";
+
 
     }
 
@@ -245,4 +337,4 @@ if(res.ok){
 </script>
 
 </body>
-  </html>
+</html>
