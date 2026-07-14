@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PasteDB API Tester</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#0f1117;
+    color:#fff;
+    padding:30px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.request{
+    background:#1b1e27;
+    padding:20px;
+    border-radius:12px;
+}
+
+.row{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+select,input,textarea{
+    background:#252935;
+    color:white;
+    border:1px solid #3b4150;
+    border-radius:8px;
+    padding:10px;
+    font-size:15px;
+}
+
+select{
+    width:120px;
+}
+
+input{
+    flex:1;
+}
+
+textarea{
+    width:100%;
+    min-height:180px;
+    resize:vertical;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 25px;
+    background:#4f7cff;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#3f68d8;
+}
+
+.info{
+    margin-top:25px;
+    display:flex;
+    gap:20px;
+}
+
+.info div{
+    background:#1b1e27;
+    padding:10px 15px;
+    border-radius:8px;
+}
+
+pre{
+    margin-top:20px;
+    background:#1b1e27;
+    padding:20px;
+    border-radius:12px;
+    overflow:auto;
+    white-space:pre-wrap;
+    word-break:break-word;
+    min-height:300px;
+}
+  
+  .success{
+    color:#38d26e;
+}
+
+.error{
+    color:#ff5d5d;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>🚀 PasteDB API Tester</h1>
+
+<div class="request">
+
+<div class="row">
+<select id="method">
+<option>GET</option>
+<option>POST</option>
+<option>PUT</option>
+<option>PATCH</option>
+<option>DELETE</option>
+</select>
+
+<input
+id="url"
+placeholder="https://api.example.com/users">
+</div>
+
+<textarea
+id="body"
+placeholder='JSON Body (Optional)
+{
+    "name":"John"
+}'></textarea>
+
+<button onclick="sendRequest()">Send Request</button>
+
+</div>
+
+<div class="info">
+    <div>Status: <span id="status">-</span></div>
+    <div>Time: <span id="time">-</span></div>
+    <div>Size: <span id="size">-</span></div>
+</div>
+
+<pre id="response">Response will appear here...</pre>
+
+</div>
+
+<script>
+async function sendRequest() {
+
+    const method = document.getElementById("method").value;
+    const url = document.getElementById("url").value.trim();
+    const body = document.getElementById("body").value.trim();
+
+    if (!url) {
+        alert("Please enter a URL.");
+        return;
+    }
+
+    const responseBox = document.getElementById("response");
+
+    responseBox.textContent = "Sending request...";
+
+    const options = {
+        method,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
+
+    if (method !== "GET" && body) {
+        try {
+            options.body = JSON.stringify(JSON.parse(body));
+        } catch {
+            responseBox.textContent = "❌ Invalid JSON Body";
+            return;
+        }
+    }
+
+    const start = performance.now();
+
+    try {
+
+        const res = await fetch(url, options);
+
+        const end = performance.now();
+
+        const text = await res.text();
+      const status = document.getElementById("status");
+
+status.textContent = `${res.status} ${res.statusText}`;
+
+if(res.ok){
+    status.className = "success";
+}else{
+    status.className = "error";
+}
+
+        document.getElementById("status").textContent =
+            `${res.status} ${res.statusText}`;
+
+        document.getElementById("time").textContent =
+            `${Math.round(end - start)} ms`;
+
+        document.getElementById("size").textContent =
+            `${new Blob([text]).size} bytes`;
+
+        let formatted;
+
+        try {
+            formatted = JSON.stringify(JSON.parse(text), null, 4);
+        } catch {
+            formatted = text || "(Empty Response)";
+        }
+
+        responseBox.textContent = formatted;
+
+    } catch (err) {
+
+        const end = performance.now();
+
+        document.getElementById("status").textContent = "Network Error";
+        document.getElementById("time").textContent =
+            `${Math.round(end - start)} ms`;
+        document.getElementById("size").textContent = "-";
+
+        responseBox.textContent = JSON.stringify({
+            error: err.name,
+            message: err.message,
+            hint: "Possible CORS issue, invalid URL, or server is offline."
+        }, null, 4);
+
+    }
+
+}
+</script>
+
+</body>
+  </html>
