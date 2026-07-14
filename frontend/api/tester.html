@@ -6,184 +6,381 @@
 <title>PasteDB API Tester</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Inter,Segoe UI,Arial,sans-serif;
 }
 
 body{
-    min-height:100vh;
-    background:
-    radial-gradient(circle at top left,#4f7cff33,transparent 40%),
-    radial-gradient(circle at bottom right,#7b5cff33,transparent 40%),
-    #0b1020;
-    color:#fff;
-    padding:40px 20px;
+    font-family:Inter,Segoe UI,sans-serif;
+    background:#0d1117;
+    color:#e6edf3;
 }
 
 .container{
-    max-width:1200px;
-    margin:auto;
+    width:min(1200px,95%);
+    margin:40px auto;
 }
 
 h1{
-    font-size:34px;
-    margin-bottom:25px;
-    font-weight:700;
+    font-size:32px;
+    margin-bottom:6px;
 }
 
-.request{
-    background:rgba(25,31,48,.85);
-    backdrop-filter:blur(15px);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:18px;
-    padding:25px;
-    box-shadow:0 15px 35px rgba(0,0,0,.35);
+.subtitle{
+    color:#8b949e;
+    margin-bottom:35px;
+}
+
+.card{
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:25px;
 }
 
 .row{
     display:flex;
-    gap:15px;
+    gap:12px;
     margin-bottom:18px;
 }
 
-select,
-input,
-textarea{
-    background:#141b2d;
-    border:1px solid #2d3958;
-    color:#fff;
-    border-radius:12px;
-    padding:14px;
-    font-size:15px;
-    transition:.25s;
-    outline:none;
-}
+.method{
 
-select{
     width:130px;
-}
 
-input{
-    flex:1;
-}
-
-textarea{
-    width:100%;
-    min-height:220px;
-    resize:vertical;
-    font-family:Consolas,monospace;
-}
-
-select:focus,
-input:focus,
-textarea:focus{
-    border-color:#5c8dff;
-    box-shadow:0 0 15px rgba(92,141,255,.3);
-}
-
-button{
-    margin-top:18px;
-    border:none;
-    border-radius:12px;
-    padding:14px 28px;
-    font-size:16px;
-    cursor:pointer;
-    transition:.25s;
-}
-
-button:hover{
-    transform:translateY(-2px);
-}
-
-.request button{
-    background:linear-gradient(135deg,#4f7cff,#7b5cff);
+    background:#21262d;
     color:white;
-    font-weight:600;
-}
 
-.request button:hover{
-    box-shadow:0 8px 25px rgba(79,124,255,.45);
-}
+    border:1px solid #30363d;
 
-.info{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:18px;
-    margin-top:25px;
-}
+    border-radius:10px;
 
-.info div{
-    background:rgba(25,31,48,.85);
-    border:1px solid rgba(255,255,255,.08);
-    padding:18px;
-    border-radius:16px;
+    padding:12px;
+
     font-size:15px;
-    box-shadow:0 8px 20px rgba(0,0,0,.25);
+
+    outline:none;
+
 }
 
-.response-header{
+.url{
+
+    flex:1;
+
+    background:#0d1117;
+
+    color:white;
+
+    border:1px solid #30363d;
+
+    border-radius:10px;
+
+    padding:12px 16px;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+.url:focus,
+.method:focus,
+textarea:focus{
+
+    border-color:#2f81f7;
+
+}
+
+.section-title{
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
-    margin-top:30px;
-    margin-bottom:10px;
+
+    margin-bottom:12px;
+
 }
 
-.response-header h3{
-    font-size:22px;
+.section-title h3{
+
+    font-size:18px;
+
 }
 
 .copy-btn{
-    background:#2e8bff;
+
+    background:#21262d;
+
     color:white;
-    padding:10px 18px;
-    border-radius:10px;
-    font-size:14px;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:8px 15px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
 }
 
 .copy-btn:hover{
-    background:#1d74e7;
+
+    background:#2f81f7;
+
 }
 
-pre{
-    background:#111827;
-    border:1px solid #2d3958;
-    border-radius:16px;
-    padding:22px;
-    min-height:320px;
-    overflow:auto;
-    white-space:pre-wrap;
-    word-break:break-word;
+textarea{
+
+    width:100%;
+
+    min-height:240px;
+
+    background:#0d1117;
+
+    color:#79c0ff;
+
+    border:1px solid #30363d;
+
+    border-radius:10px;
+
+    padding:16px;
+
+    resize:vertical;
+
+    font-size:14px;
+
     font-family:Consolas,monospace;
-    line-height:1.6;
-    box-shadow:0 12px 30px rgba(0,0,0,.3);
+
+    outline:none;
+
+}
+
+.actions{
+
+    margin-top:18px;
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.send{
+
+    background:#238636;
+
+    color:white;
+
+    border:none;
+
+    padding:13px 30px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.send:hover{
+
+    background:#2ea043;
+
+}
+
+.clear{
+
+    background:#30363d;
+
+    color:white;
+
+    border:none;
+
+    padding:13px 25px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+}
+
+.clear:hover{
+
+    background:#484f58;
+
+}
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+
+    margin-bottom:22px;
+
+}
+
+.stat{
+
+    background:#161b22;
+
+    border:1px solid #30363d;
+
+    border-radius:12px;
+
+    padding:18px;
+
+}
+
+.label{
+
+    color:#8b949e;
+
+    font-size:13px;
+
+    margin-bottom:6px;
+
+}
+
+.value{
+
+    font-size:19px;
+
+    font-weight:600;
+
+}
+
+.response{
+
+    background:#0d1117;
+
+    border:1px solid #30363d;
+
+    border-radius:10px;
+
+    padding:18px;
+
+    overflow:auto;
+
+    min-height:320px;
+
+    color:#79c0ff;
+
+    font-family:Consolas,monospace;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
 }
 
 .success{
-    color:#30d158;
-    font-weight:600;
+
+    color:#3fb950;
+
 }
 
 .error{
-    color:#ff4d6d;
-    font-weight:600;
+
+    color:#f85149;
+
 }
 
-@media(max-width:700px){
+.loading{
+
+    color:#58a6ff;
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.green{
+
+    background:#16331f;
+
+    color:#3fb950;
+
+}
+
+.red{
+
+    background:#3d1718;
+
+    color:#ff7b72;
+
+}
+
+.blue{
+
+    background:#132f4c;
+
+    color:#58a6ff;
+
+}
+
+.orange{
+
+    background:#4d2d14;
+
+    color:#ffa657;
+
+}
+
+footer{
+
+    text-align:center;
+
+    color:#8b949e;
+
+    margin:35px 0;
+
+    font-size:14px;
+
+}
+
+@media(max-width:800px){
 
 .row{
-    flex-direction:column;
+
+flex-direction:column;
+
 }
 
-select{
-    width:100%;
+.stats{
+
+grid-template-columns:1fr;
+
 }
 
-h1{
-    font-size:28px;
+.method{
+
+width:100%;
+
 }
 
 }
@@ -197,144 +394,392 @@ h1{
 
 <h1>🚀 PasteDB API Tester</h1>
 
-<div class="request">
+<p class="subtitle">
+Fast, lightweight REST API testing directly from your browser.
+</p>
+
+<div class="card">
 
 <div class="row">
-<select id="method">
+
+<select class="method" id="method">
+
 <option>GET</option>
 <option>POST</option>
 <option>PUT</option>
 <option>PATCH</option>
 <option>DELETE</option>
+
 </select>
 
 <input
+class="url"
 id="url"
 placeholder="https://api.example.com/users">
+
+</div>
+
+<div class="section-title">
+
+<h3>Request Body</h3>
+
+<button class="copy-btn">
+📋 Copy JSON
+</button>
+
 </div>
 
 <textarea
 id="body"
-placeholder='JSON Body (Optional)
-{
-    "name":"John"
+placeholder='{
+    "name":"John",
+    "age":20
 }'></textarea>
 
-<button onclick="sendRequest()">Send Request</button>
+<div class="actions">
+
+<button class="send">
+🚀 Send Request
+</button>
+
+<button class="clear">
+Clear
+</button>
 
 </div>
 
-<div class="info">
-    <div>Status: <span id="status">-</span></div>
-    <div>Time: <span id="time">-</span></div>
-    <div>Size: <span id="size">-</span></div>
 </div>
 
-<div class="response-header">
-    <h3>Response</h3>
-    <button id="copyBtn" class="copy-btn" style="display:none;"
-    onclick="navigator.clipboard.writeText(document.getElementById('response').textContent)">
-        📋 Copy
-    </button>
+<div class="stats">
+
+<div class="stat">
+
+<div class="label">
+Status
 </div>
 
-<pre id="response">Response will appear here...</pre>
+<div class="value success">
+--
+</div>
 
 </div>
 
-<script>
-async function sendRequest() {
+<div class="stat">
 
-    const method = document.getElementById("method").value;
-    const url = document.getElementById("url").value.trim();
-    const body = document.getElementById("body").value.trim();
+<div class="label">
+Response Time
+</div>
 
-    if (!url) {
-        alert("Please enter a URL.");
+<div class="value">
+-- ms
+</div>
+
+</div>
+
+<div class="stat">
+
+<div class="label">
+Response Size
+</div>
+
+<div class="value">
+--
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+
+<h3>Response</h3>
+
+<button class="copy-btn">
+📋 Copy Response
+</button>
+
+</div>
+
+<pre class="response">
+{
+    "message":"Response will appear here..."
+}
+</pre>
+
+</div>
+
+<footer>
+
+Built with ❤️ for developers • PasteDB API Tester
+
+</footer>
+
+</div>
+    <script>
+    
+    const sendBtn = document.querySelector(".send");
+const clearBtn = document.querySelector(".clear");
+const copyBtns = document.querySelectorAll(".copy-btn");
+
+const method = document.getElementById("method");
+const url = document.getElementById("url");
+const body = document.getElementById("body");
+
+const responseBox = document.querySelector(".response");
+
+const statusValue = document.querySelectorAll(".value")[0];
+const timeValue = document.querySelectorAll(".value")[1];
+const sizeValue = document.querySelectorAll(".value")[2];
+
+
+
+sendBtn.onclick = sendRequest;
+
+
+
+copyBtns[0].onclick = () => {
+
+    navigator.clipboard.writeText(body.value);
+
+    copyBtns[0].innerText = "✓ Copied";
+
+    setTimeout(() => {
+
+        copyBtns[0].innerText = "📋 Copy JSON";
+
+    },1500);
+
+};
+
+
+
+copyBtns[1].onclick = () => {
+
+    navigator.clipboard.writeText(responseBox.textContent);
+
+    copyBtns[1].innerText = "✓ Copied";
+
+    setTimeout(() => {
+
+        copyBtns[1].innerText = "📋 Copy Response";
+
+    },1500);
+
+};
+
+
+
+clearBtn.onclick = ()=>{
+
+    body.value="";
+
+};
+
+
+
+async function sendRequest(){
+
+    let api=url.value.trim();
+
+    if(!api){
+
+        alert("Enter API URL");
+
         return;
+
     }
 
-    const responseBox = document.getElementById("response");
+    if(!/^https?:\/\//i.test(api)){
 
-    responseBox.textContent = "Sending request...";
+        api="https://"+api;
 
-    const options = {
-        method,
-        headers: {
-            "Content-Type": "application/json"
-        }
+    }
+
+    const options={
+
+        method:method.value,
+
+        headers:{}
+
     };
 
-    if (method !== "GET" && body) {
-        try {
-            options.body = JSON.stringify(JSON.parse(body));
-        } catch {
-            responseBox.textContent = "❌ Invalid JSON Body";
+
+
+    if(method.value!="GET" && body.value.trim()){
+
+        try{
+
+            options.headers["Content-Type"]="application/json";
+
+            options.body=JSON.stringify(JSON.parse(body.value));
+
+        }
+
+        catch{
+
+            alert("Invalid JSON");
+
             return;
+
         }
-    }
-
-    const start = performance.now();
-
-    try {
-
-        const res = await fetch(url, options);
-
-        const end = performance.now();
-
-        const text = await res.text();
-      const status = document.getElementById("status");
-
-status.textContent = `${res.status} ${res.statusText}`;
-
-if(res.ok){
-    status.className = "success";
-}else{
-    status.className = "error";
-}
-
-        document.getElementById("status").textContent =
-            `${res.status} ${res.statusText}`;
-
-        document.getElementById("time").textContent =
-            `${Math.round(end - start)} ms`;
-
-        document.getElementById("size").textContent =
-            `${new Blob([text]).size} bytes`;
-
-        let formatted;
-
-        try {
-            formatted = JSON.stringify(JSON.parse(text), null, 4);
-        } catch {
-            formatted = text || "(Empty Response)";
-        }
-
-        responseBox.textContent = formatted;
-        document.getElementById("copyBtn").style.display = "block";
-
-
-    } catch (err) {
-
-        const end = performance.now();
-
-        document.getElementById("status").textContent = "Network Error";
-        document.getElementById("time").textContent =
-            `${Math.round(end - start)} ms`;
-        document.getElementById("size").textContent = "-";
-
-        responseBox.textContent = JSON.stringify({
-            error: err.name,
-            message: err.message,
-            hint: "Possible CORS issue, invalid URL, or server is offline."
-        }, null, 4);
-        document.getElementById("copyBtn").style.display = "block";
-
 
     }
 
-}
-</script>
+    sendBtn.disabled=true;
 
+    sendBtn.innerHTML="⏳ Sending...";
+
+    responseBox.textContent="Waiting for response...";
+
+    responseBox.style.color="#58a6ff";
+
+
+
+    statusValue.innerHTML="-";
+
+    timeValue.innerHTML="-";
+
+    sizeValue.innerHTML="-";
+
+
+
+    const start=performance.now();
+
+
+
+    try{
+
+        const res=await fetch(api,options);
+
+        const end=performance.now();
+
+
+
+        const text=await res.text();
+
+
+
+        statusValue.innerHTML=res.status+" "+res.statusText;
+
+        statusValue.className="value "+(res.ok?"success":"error");
+
+
+
+        timeValue.innerHTML=Math.round(end-start)+" ms";
+
+
+
+        sizeValue.innerHTML=
+
+        new Blob([text]).size+" bytes";
+
+
+
+        const type=res.headers.get("content-type")||"";
+
+
+
+        if(type.includes("application/json")){
+
+            try{
+
+                responseBox.textContent=
+
+                JSON.stringify(JSON.parse(text),null,4);
+
+            }
+
+            catch{
+
+                responseBox.textContent=text;
+
+            }
+
+        }
+
+        else{
+
+            responseBox.textContent=text;
+
+        }
+
+
+
+        responseBox.style.color="#79c0ff";
+
+
+
+    }
+
+    catch(err){
+
+        const end=performance.now();
+
+
+
+        statusValue.innerHTML="Network Error";
+
+        statusValue.className="value error";
+
+
+
+        timeValue.innerHTML=Math.round(end-start)+" ms";
+
+
+
+        responseBox.textContent=
+
+JSON.stringify({
+
+error:err.name,
+
+message:err.message,
+
+hint:"Possible CORS issue, invalid URL, DNS failure, SSL issue or server offline."
+
+},null,4);
+
+
+
+        responseBox.style.color="#ff7b72";
+
+    }
+
+
+
+    sendBtn.disabled=false;
+
+    sendBtn.innerHTML="🚀 Send Request";
+
+}
+
+
+
+url.addEventListener("keydown",e=>{
+
+    if(e.key==="Enter"){
+
+        sendRequest();
+
+    }
+
+});
+
+
+
+body.addEventListener("keydown",e=>{
+
+    if(e.ctrlKey && e.key==="Enter"){
+
+        sendRequest();
+
+    }
+
+});
+    
+    
+    </script>
 </body>
-</html>
+    </html>
