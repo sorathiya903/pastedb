@@ -355,5 +355,112 @@ urlpatterns = [
     email VARCHAR(100),
     created_at TIMESTAMP
 );`
+        },
+    {
+    id: "go-basic",
+    title: "Go Program",
+    category: "Go",
+    language: "go",
+    description: "Basic Go application",
+    code: `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}`
+},
+{
+    id: "toml-basic",
+    title: "TOML Configuration",
+    category: "Config",
+    language: "toml",
+    description: "Basic TOML configuration",
+    code: `title = "My Application"
+
+[server]
+host = "127.0.0.1"
+port = 8080
+
+[database]
+driver = "sqlite"
+name = "app.db"`
+},
+{
+    id: "yaml-basic",
+    title: "YAML Configuration",
+    category: "Config",
+    language: "yaml",
+    description: "Basic YAML configuration",
+    code: `app:
+  name: My Application
+  version: 1.0
+
+server:
+  host: localhost
+  port: 8080
+
+database:
+  driver: sqlite
+  name: app.db`
+},
+{
+    id: "swift-basic",
+    title: "Swift Program",
+    category: "Swift",
+    language: "swift",
+    description: "Basic Swift application",
+    code: `import Foundation
+
+print("Hello, World!")`
+},
+{
+    id: "kotlin-basic",
+    title: "Kotlin Program",
+    category: "Kotlin",
+    language: "kotlin",
+    description: "Basic Kotlin application",
+    code: `fun main() {
+    println("Hello, World!")
+}`
+},
+{
+    id: "php-basic",
+    title: "PHP Script",
+    category: "PHP",
+    language: "php",
+    description: "Basic PHP page",
+    code: `<?php
+
+echo "Hello, World!";
+
+?>`
+},
+{
+    id: "ruby-basic",
+    title: "Ruby Script",
+    category: "Ruby",
+    language: "ruby",
+    description: "Basic Ruby program",
+    code: `puts "Hello, World!"`
+},
+{
+    id: "r-basic",
+    title: "R Script",
+    category: "R",
+    language: "r",
+    description: "Basic R program",
+    code: `message <- "Hello, World!"
+print(message)`
+},
+{
+    id: "rust-basic",
+    title: "Rust Program",
+    category: "Rust",
+    language: "rust",
+    description: "Basic Rust application",
+    code: `fn main() {
+    println!("Hello, World!");
+}`
         }
 ];
