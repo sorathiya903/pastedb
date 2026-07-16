@@ -130,7 +130,7 @@ def my_app():
     },
     {
     id: "django-basic",
-    name: "Django Basic Project",
+    title: "Django Basic Project",
     language: "django",
     category: "Python",
     description: "Minimal Django project structure with a Hello World view.",
