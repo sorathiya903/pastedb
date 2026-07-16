@@ -2460,6 +2460,7 @@ async function loadPasteForEditing(editId){
 
     document.getElementById("code").value =
       data.content || ""
+    updateHint()
 
     document.getElementById("syntax").value =
       data.syntax || "plain"
