@@ -64,5 +64,39 @@ app = FastAPI()
 def my_app():
     return {"message": "Hello World"}
 `
+    },
+    {
+    id: "django-basic",
+    name: "Django Basic Project",
+    language: "django",
+    category: "Python",
+    description: "Minimal Django project structure with a Hello World view.",
+    code: `# Install Django
+pip install django
+
+# Create a new project
+django-admin startproject myproject
+
+cd myproject
+
+# Start the development server
+python manage.py runserver
+
+# myproject/views.py
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Hello, Django!")
+
+# myproject/urls.py
+from django.contrib import admin
+from django.urls import path
+from .views import home
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", home),
+]
+`
     }
 ];
