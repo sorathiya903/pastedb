@@ -81,6 +81,187 @@ const TEMPLATES = [
 
 `
 },
+    {
+    id: "react-component",
+    title: "React Component",
+    category: "React",
+    language: "javascript",
+    description: "Basic React functional component",
+    code: `export default function App() {
+    return (
+        <div>
+            <h1>Hello React!</h1>
+        </div>
+    );
+}`
+    },
+    {
+    id: "express-basic",
+    title: "Express Server",
+    category: "Node.js",
+    language: "javascript",
+    description: "Basic Express server",
+    code: `const express = require("express");
+
+const app = express();
+
+app.get("/", (req, res) => {
+    res.send("Hello World!");
+});
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});`
+    },
+    {
+    id: "node-basic",
+    title: "Node.js Script",
+    category: "Node.js",
+    language: "javascript",
+    description: "Basic Node.js script",
+    code: `console.log("Hello World!");`
+    },
+
+    {
+    id: "java-basic",
+    title: "Java Program",
+    category: "Java",
+    language: "java",
+    description: "Basic Java program",
+    code: `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}`
+    },
+    {
+    id: "cpp-basic",
+    title: "C++ Program",
+    category: "C++",
+    language: "cpp",
+    description: "Basic C++ program",
+    code: `#include <iostream>
+
+int main() {
+    std::cout << "Hello World!" << std::endl;
+    return 0;
+}`
+    },
+
+    {
+    id: "c-basic",
+    title: "C Program",
+    category: "C",
+    language: "c",
+    description: "Basic C program",
+    code: `#include <stdio.h>
+
+int main() {
+    printf("Hello World!\\n");
+    return 0;
+}`
+    },
+
+    {
+    id: "dockerfile-basic",
+    title: "Dockerfile",
+    category: "DevOps",
+    language: "dockerfile",
+    description: "Basic Dockerfile",
+    code: `FROM python:3.12
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "main.py"]`
+    },
+    
+    {
+    id: "docker-compose",
+    title: "Docker Compose",
+    category: "DevOps",
+    language: "yaml",
+    description: "Docker Compose file",
+    code: `version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"`
+    },
+
+    {
+    id: "readme",
+    title: "README.md",
+    category: "Documentation",
+    language: "markdown",
+    description: "Project README template",
+    code: `# Project Name
+
+## Features
+
+- Feature 1
+- Feature 2
+
+## Installation
+
+\`\`\`bash
+npm install
+\`\`\`
+
+## Usage
+
+\`\`\`bash
+npm start
+\`\`\`
+
+## License
+
+MIT`
+    },
+
+    {
+    id: "github-actions",
+    title: "GitHub Actions",
+    category: "DevOps",
+    language: "yaml",
+    description: "Basic CI workflow",
+    code: `name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - run: npm install
+
+      - run: npm test`
+    },
+    {
+    id: "json-basic",
+    title: "JSON",
+    category: "Data",
+    language: "json",
+    description: "Basic JSON object",
+    code: `{
+    "name": "PasteDB",
+    "version": "1.0.0"
+}`
+    },
+    
+    
+    
+    
 
 {
     id: "python-basic",
@@ -161,5 +342,18 @@ urlpatterns = [
     path("", home),
 ]
 `
-    }
+    },
+    {
+    id: "sql-basic",
+    title: "SQL Table",
+    category: "Database",
+    language: "sql",
+    description: "Create users table",
+    code: `CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username VARCHAR(50),
+    email VARCHAR(100),
+    created_at TIMESTAMP
+);`
+        }
 ];
