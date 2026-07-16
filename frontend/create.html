@@ -1422,6 +1422,28 @@ margin:0;
     color:white;
     cursor:pointer;
   }
+
+
+    .editor-hint{
+    position:absolute;
+    top:16px;
+    left:16px;
+    color:#6e7681;
+    pointer-events:none;
+    font-size:15px;
+    user-select:none;
+}
+
+.editor-hint span{
+    color:#2f81f7;
+    cursor:pointer;
+    pointer-events:auto;
+    font-weight:600;
+}
+
+.editor-hint span:hover{
+    text-decoration:underline;
+}
   </style>
 </head>
 
@@ -1558,8 +1580,15 @@ margin:0;
 
           <div class="lines" id="lines"></div>
 
-          <textarea id="code" placeholder="// Start writing your paste here..."></textarea>
-<div id="previewPane" class="preview-pane"></div>
+    <textarea id="code"></textarea>
+
+    <div id="editorHint" class="editor-hint">
+        Start writing your paste or
+        <span id="templateLink">Start with a template</span>
+    </div>
+
+          
+          <div id="previewPane" class="preview-pane"></div>
         </div>
 <div class="image-upload-card">
     <label class="upload-label" for="images">
@@ -2866,7 +2895,19 @@ if (editId) return;
   }, 400);
 
 });
-   
+   const Textcode = document.getElementById("code");
+const hint = document.getElementById("editorHint");
+
+function updateHint(){
+    hint.style.display = Textcode.value.length ? "none" : "block";
+}
+
+code.addEventListener("input", updateHint);
+updateHint();
+
+document.getElementById("templateLink").onclick = () => {
+    openTemplateDialog(); // your dialog function
+};
   </script>
 <script>
 
