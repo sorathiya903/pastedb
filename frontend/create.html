@@ -75,6 +75,122 @@ if(localStorage.getItem("theme")==="dark"){
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+
+    .template-dialog{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+.template-dialog.show{
+    display:flex;
+}
+
+.template-box{
+
+    width:650px;
+    max-width:95vw;
+
+    max-height:80vh;
+
+    overflow:hidden;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:24px;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.template-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:22px;
+}
+
+#templateSearch{
+
+    margin:0 22px 18px;
+
+    width:calc(100% - 44px);
+}
+
+#templateList{
+
+    overflow:auto;
+
+    padding:0 22px 22px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+}
+
+.template-card{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    background:var(--editor);
+}
+
+.template-card h3{
+
+    font-size:16px;
+
+    margin-bottom:5px;
+}
+
+.template-card p{
+
+    color:var(--muted);
+
+    font-size:14px;
+}
+
+.template-card button{
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--text);
+
+    color:var(--bg);
+
+    cursor:pointer;
+}
+    
     .editor-wrapper{
     position:relative;
     flex:1;
@@ -1480,6 +1596,28 @@ margin:0;
 </head>
 
 <body class="">
+<div id="templateDialog" class="template-dialog">
+
+    <div class="template-box">
+
+        <div class="template-header">
+            <h2>Templates</h2>
+
+            <button onclick="closeTemplateDialog()">✕</button>
+        </div>
+
+        <input
+            id="templateSearch"
+            type="text"
+            placeholder="Search templates..."
+        >
+
+        <div id="templateList"></div>
+
+    </div>
+
+</div>
+  
 <div class="page-loader" id="pageLoader">
 
   <div class="loader-box">
