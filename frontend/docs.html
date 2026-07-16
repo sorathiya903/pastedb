@@ -798,7 +798,9 @@ METHOD : createPaste()
 POST /pastes
 </div>
   <p>
-    Creates a new paste using a Python dictionary.
+    Creates a new guest paste using a Python dictionary.
+    Doesn't uses api key, also if provided.
+    To make pastes by api keys use api_create_paste().
     This method internally sends a POST request to:
   </p>
 
@@ -843,7 +845,7 @@ POST /pastes
 
 <pre id="makePasteCode">from pastedb import Client
 
-client = Client()
+client = Client() #No api mey required for create_paste 
 
 paste = client.create_paste({
     "content":"Hello World",
@@ -911,10 +913,16 @@ private → only owner can access
   </h3>
 
   <div class="output">
-10m   → 10 minutes
-    <br>
-1h    → 1 hour
- <br>
+10m → Paste expires after <strong>10 minutes</strong>.<br>
+30m → Paste expires after <strong>30 minutes</strong>.<br>
+1h → Paste expires after <strong>1 hour</strong>.<br>
+6h → Paste expires after <strong>6 hours</strong>.<br>
+12h → Paste expires after <strong>12 hours</strong>.<br>
+1d → Paste expires after <strong>1 day</strong>.<br>
+3d → Paste expires after <strong>3 days</strong>.<br>
+1w → Paste expires after <strong>1 week</strong>.<br>
+30d → Paste expires after <strong>30 days</strong>.<br>
+burn → <strong>Burn After Read</strong> – the paste is permanently deleted immediately after it is opened.
 
 never → no expiration
   </div>
