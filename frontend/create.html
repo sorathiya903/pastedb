@@ -75,16 +75,37 @@ if(localStorage.getItem("theme")==="dark"){
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    .editor{
+    .editor-wrapper{
     position:relative;
-    width:100%;
+    flex:1;
 }
 
 #code{
     width:100%;
-    min-height:450px;
-    padding:16px;
+    height:100%;
 }
+
+.editor-hint{
+    position:absolute;
+    top:24px;
+    left:24px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px;
+    color:#8b949e;
+    pointer-events:none;
+    user-select:none;
+}
+
+.editor-hint span{
+    color:#2f81f7;
+    pointer-events:auto;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.editor-hint span:hover{
+    text-decoration:underline;
+  }
     * {
       margin: 0;
       padding: 0;
@@ -1589,13 +1610,15 @@ margin:0;
         <div class="editor-body">
 
           <div class="lines" id="lines"></div>
-
+<div class="editor-wrapper">
     <textarea id="code"></textarea>
 
     <div id="editorHint" class="editor-hint">
         Start writing your paste or
         <span id="templateLink">Start with a template</span>
     </div>
+
+</div>
 
           
           <div id="previewPane" class="preview-pane"></div>
