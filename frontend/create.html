@@ -75,7 +75,26 @@ if(localStorage.getItem("theme")==="dark"){
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+.close{
 
+width:40px;
+height:40px;
+border:none;
+border-radius:50%;
+background:#232833;
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.close:hover{
+
+background:#303848;
+transform:rotate(90deg);
+
+}
     .template-dialog{
 
     position:fixed;
@@ -1603,7 +1622,7 @@ margin:0;
         <div class="template-header">
             <h2>Templates</h2>
 
-            <button onclick="closeTemplateDialog()">✕</button>
+            <button class="close" onclick="closeTemplateDialog()">✕</button>
         </div>
 
         <input
