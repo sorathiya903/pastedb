@@ -507,7 +507,8 @@ position:fixed;
 <a href="#me">Me()</a>
 
 <a href="#quickstart">Quick Start</a>
-
+<a href="#api-create">API Create Paste</a>
+    
 <a href="#create">Create Paste</a>
 
 <a href="#get">Get Paste</a>
@@ -786,7 +787,138 @@ HTTP 401 Unauthorized
   </div>
 
 </section>
+<!-- =========================
+METHOD : api_create_paste()
+========================= -->
 
+<section class="section" id="api-create">
+
+  <h2>Client.api_create_paste()</h2>
+
+  <p>
+    Creates a new paste using your API key. The created paste is linked
+    to your account, allowing you to edit, delete, and manage it later
+    from your dashboard or using other SDK methods.
+  </p>
+
+  <div class="badge">
+    POST /api/create
+  </div>
+
+  <p style="margin-top:20px;">
+    The method accepts a single dictionary containing the paste details.
+  </p>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>python</span>
+
+      <button
+        class="copy-btn"
+        onclick="copyCode('apiCreatePasteCode')"
+      >
+        Copy
+      </button>
+
+    </div>
+
+<pre id="apiCreatePasteCode">from pastedb import Client
+
+client = Client(
+    api_key="pdb_xxxxxxxxxxxxx"
+)
+
+paste = client.api_create_paste({
+    "title": "Hello API",
+    "content": "print('Hello World')",
+    "syntax": "python",
+    "visibility": "public",
+    "expiration": "1h"
+})
+
+print(paste)</pre>
+
+  </div>
+
+  <div class="output">
+{
+  "status": "success",
+  "id": "6a378ece819c1a9b62472339",
+  "custom_id": null
+}
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Supported Fields
+  </h3>
+
+  <div class="code-block">
+
+    <div class="code-header">
+
+      <span>dict structure</span>
+
+      <button
+        class="copy-btn"
+        onclick="copyCode('apiCreateFields')"
+      >
+        Copy
+      </button>
+
+    </div>
+
+<pre id="apiCreateFields">{
+  "title": "Paste title",
+
+  "content": "Paste content",
+
+  "syntax": "python",
+
+  "visibility": "public",
+
+  "custom_id": "optional-id",
+
+  "expiration": "1h",
+
+  "password": "optional-password"
+}</pre>
+
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Difference from create_paste()
+  </h3>
+
+  <div class="output">
+create_paste()
+• Does NOT require an API key.
+• Creates a guest paste.
+• Paste is not linked to an account.
+
+api_create_paste()
+• Requires a valid API key.
+• Paste is owned by your account.
+• Can later be listed, updated and deleted using:
+  - api_user_pastes()
+  - api_update_paste()
+  - api_delete_paste()
+  </div>
+
+  <h3 style="margin-top:28px;">
+    Invalid API Key
+  </h3>
+
+  <div class="output">
+HTTP 401 Unauthorized
+
+{
+  "detail": "Invalid API key"
+}
+  </div>
+
+</section>
 <!-- =========================
 METHOD : createPaste()
 ========================= -->
