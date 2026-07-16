@@ -2936,7 +2936,7 @@ function updateHint(){
     hint.style.display = Textcode.value.length ? "none" : "block";
 }
 
-code.addEventListener("input", updateHint);
+Textcode.addEventListener("input", updateHint);
 updateHint();
 
 document.getElementById("templateLink").onclick = () => {
