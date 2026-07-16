@@ -10,9 +10,10 @@ const TEMPLATES = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>PasteDB HTML Boilerplate Document</title>
 </head>
 <body>
+<h1>Hello World</h1>
 
 </body>
 </html>`
@@ -47,5 +48,21 @@ def home():
 
 if __name__ == "__main__":
     app.run(debug=True)`
-}
+},
+    
+{
+    id: "fastapi-basic",
+    title: "FastAPI App",
+    category: "Python",
+    language: "python",
+    description: "Basic  FastAPI App",
+    code: `from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def my_app():
+    return {"message": "Hello World"}
+`
+    }
 ];
