@@ -97,20 +97,20 @@ Deployment
 
 ---
 ## 🚀 Advanced Features
-🔥 Burn after read pastes
-📅 Custom expiration (10 min, 1 hour, 1 day, 1 week, 30 days, never)
-📂 Image uploads alongside text and code
-🎨 40+ syntax highlighting languages
-🏷️ Ready-made code templates (HTML, Flask, FastAPI, Django, Tailwind CSS, etc.)
-🔍 Public paste exploration and search
-📱 QR code generation for quick sharing
-🔗 Custom paste IDs
-📊 Paste analytics (views, creation date)
-🔑 API key management
-🌐 REST API for creating and managing pastes
-🖥️ Official VS Code extension
-📄 One-click HTML preview
-⚡ Code execution for supported languages
+- 🔥 Burn after read pastes
+- 📅 Custom expiration (10 min, 1 hour, 1 day, 1 week, 30 days, never)
+- 📂 Image uploads alongside text and code
+- 🎨 40+ syntax highlighting languages
+- 🏷️ Ready-made code templates (HTML, Flask, FastAPI, Django, Tailwind CSS, etc.)
+- 🔍 Public paste exploration and search
+- 📱 QR code generation for quick sharing
+- 🔗 Custom paste IDs
+- 📊 Paste analytics (views, creation date)
+- 🔑 API key management
+- 🌐 Official Python SDK for creating and managing pastes programmatically 
+- 🖥️ Official VS Code extension
+- 📄 One-click HTML preview
+- ⚡ Code execution for supported languages
 
 ---
 
