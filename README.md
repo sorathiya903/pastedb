@@ -89,7 +89,7 @@ Backend
 Database
 
 - MongoDB
-- Cloudinary(For Images)
+- Cloudinary (For Images)
 
 Deployment
 
