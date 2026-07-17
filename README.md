@@ -131,13 +131,23 @@ https://marketplace.visualstudio.com/items?itemName=adityasorathiya.pastedb
 
 ---
 
+## 🌍 OFFICIAL PYTHON SDK
+
+PasteDB provides a Official Python SDK for creating and managing pastes programmatically.
+
+Read the documentation:
+
+https://pastedb.netlify.app/docs
+
+---
+
 ## 📡 Nearby Transfer
 
-Share pastes instantly with nearby devices—no links or QR codes required.
+Share pastes instantly with nearby devices — no links or QR codes required.
 
 ### 🚀 How to Use
 
-1. Open the **Transfer** page from the PasteDB **Home** or **Landing** page (`/transfer`).
+1. Open the **Transfer** page from the PasteDB **Home** or **Landing** page (`(Transfer)[pastedb.netlify.app/transfer]`).
 
 2. Make the receiving device discoverable:
    - **📱 Mobile:** Hold **three fingers on the screen for 3 seconds** or **press and hold the "Be Discoverable" button for 3 seconds**.
@@ -165,7 +175,7 @@ Nearby Transfer requires **location permission on both the sender and receiver**
 
 ---
 
-🎯 Why PasteDB?
+## 🎯 Why PasteDB?
 
 PasteDB was created as a learning project to explore real-world web development concepts such as:
 
