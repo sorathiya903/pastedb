@@ -12,3 +12,17 @@ const debug=false
   gtag('config', 'G-H8NDTL7KT9');
 
 
+function trackEvent(name, params = {}) {
+    if (typeof gtag === "function") {
+        gtag("event", name, params);
+    }
+}
+
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-ga-event]");
+    if (!btn) return;
+
+    trackEvent(btn.dataset.gaEvent);
+});
+
+
