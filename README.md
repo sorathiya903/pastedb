@@ -147,7 +147,7 @@ Share pastes instantly with nearby devices — no links or QR codes required.
 
 ### 🚀 How to Use
 
-1. Open the **Transfer** page from the PasteDB **Home** or **Landing** page (`(Transfer)[pastedb.netlify.app/transfer]`).
+1. Open the **Transfer** page from the PasteDB **Home** or **Landing** page ([Transfer](pastedb.netlify.app/transfer)).
 
 2. Make the receiving device discoverable:
    - **📱 Mobile:** Hold **three fingers on the screen for 3 seconds** or **press and hold the "Be Discoverable" button for 3 seconds**.
