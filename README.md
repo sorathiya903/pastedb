@@ -135,9 +135,7 @@ https://marketplace.visualstudio.com/items?itemName=adityasorathiya.pastedb
 
 PasteDB provides a Official Python SDK for creating and managing pastes programmatically.
 
-Read the documentation:
-
-https://pastedb.netlify.app/docs
+Read the documentation [here](https://pastedb.netlify.app/docs)
 
 ---
 
