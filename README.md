@@ -175,18 +175,26 @@ Nearby Transfer requires **location permission on both the sender and receiver**
 
 ## 🎯 Why PasteDB?
 
-PasteDB was created as a learning project to explore real-world web development concepts such as:
+PasteDB began as a personal learning project with a simple goal: build a modern, production-style web application while exploring real-world software development.
 
-- Authentication
-- Database integration
-- File handling
-- API development
-- Responsive UI design
-- Frontend-backend communication
-- Secure content sharing
+Instead of creating another basic CRUD project, I wanted to build something that people could actually use every day. Along the way, PasteDB became a platform for experimenting with new ideas, improving my development skills, and solving practical problems.
 
-The goal was to build something genuinely useful while learning modern web technologies.
+Through this project, I gained hands-on experience with:
 
+- 🔐 Authentication and authorization
+- 🌐 Official Python SDK
+- 🍃 MongoDB database integration
+- 📁 Image uploads
+- 🛡️ Secure content sharing and privacy features
+- 🔒 End-to-End Encryption (E2EE)
+- 📡 Nearby device transfer
+- ⚡ Code execution and syntax highlighting
+- 🎨 Responsive UI/UX design
+- ☁️ Cloud deployment with Netlify and Render
+- 🔗 Frontend-backend communication
+- 📊 Analytics, SEO, and performance optimization
+
+PasteDB continues to evolve as I learn new technologies and build features that make sharing code, notes, and files faster, simpler, and more secure.
 ---
 
 📄 License
