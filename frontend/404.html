@@ -3,11 +3,20 @@
 <head>
 <meta charset="utf-8">
 <script>
-(function () {
-  var path = location.pathname + location.search + location.hash;
-  sessionStorage.setItem("redirect", path);
-  location.replace("/pastedb/");
-})();
+const path = location.pathname.replace(/^\/pastedb/, "");
+
+if (path.startsWith("/paste/")) {
+    const id = path.split("/")[2];
+
+    location.replace("/pastedb/paste.html?id=" + encodeURIComponent(id));
+} else {
+    sessionStorage.setItem(
+        "redirect",
+        location.pathname + location.search + location.hash
+    );
+
+    location.replace("/pastedb/");
+}
 </script>
 </head>
 <body></body>
