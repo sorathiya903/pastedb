@@ -2,7 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+ <script>
+const redirect = sessionStorage.getItem("redirect");
+
+if (redirect) {
+    sessionStorage.removeItem("redirect");
+    history.replaceState(null, "", redirect);
+}
+</script> 
 <script src="config.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 
   <!-- Google tag (gtag.js) -->
@@ -84,14 +93,7 @@ if(debug){
 
 </script>
 
-  <script>
-const redirect = sessionStorage.getItem("redirect");
 
-if (redirect) {
-    sessionStorage.removeItem("redirect");
-    history.replaceState(null, "", redirect);
-}
-  </script>
 
 <style>
 /* =========================
