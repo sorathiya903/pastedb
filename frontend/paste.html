@@ -1353,12 +1353,19 @@ background:#384152;
 <script>
   const imagesBtn =
   document.getElementById("imagesBtn");
-  function getPasteId(){
+  function getPasteId() {
+
+    const params = new URLSearchParams(window.location.search);
+
+    const id = params.get("id");
+
+    if (id) return id.trim();
 
     return window.location.pathname
+        .replace(/^\/pastedb/, "")
         .replace(/^\/paste\//, "")
         .replace(/\/$/, "")
-        .trim()
+        .trim();
 
   }
 const forkBtn = document.getElementById("forkBtn")
