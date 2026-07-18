@@ -1945,16 +1945,7 @@ language =
   // GET ID
 
   
-let pasteId;
-
-
-const path = window.location.pathname
-
-if(path.startsWith("/paste/")){
-
-  pasteId = path.split("/paste/")[1]
-
-}
+const pasteId = getPasteId();
 
   // ELEMENTS
   const visibility =
