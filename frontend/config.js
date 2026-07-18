@@ -25,4 +25,12 @@ document.addEventListener("click", (e) => {
     trackEvent(btn.dataset.gaEvent);
 });
 
+const base = document.createElement("base");
+
+base.href = location.hostname === "sorathiya903.github.io"
+  ? "https://sorathiya903.github.io/pastedb/"
+  : "https://pastedb.netlify.app/";
+
+document.head.prepend(base);
+
 
