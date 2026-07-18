@@ -1834,7 +1834,8 @@ def explore_pastes():
 
             "id":
                 str(paste["_id"]),
-
+            
+            "custom_id":str(paste["custom_id"]),
             "title":
                 paste.get(
                     "title",
