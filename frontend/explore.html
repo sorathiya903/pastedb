@@ -502,18 +502,7 @@ const loader = document.getElementById("loader");
             <div class="stats">
 
               
-              <button
-  class="btn star-btn"
-  data-id="${paste.id}"
->
-  <span class="starIcon">
-  ${paste.starred ?  "★"
-   : "☆"}
-</span>
-  <span class="starCount">
-  ${paste.stars || 0}
-</span>
-</button>
+              
 
               <span>
                 👁 ${paste.views}
@@ -531,7 +520,7 @@ const loader = document.getElementById("loader");
 
             <a
               href="/paste/${paste.id}"
-              class="open-btn"
+              class="open-btn" data-ga-event="paste_open_explore"
             >
               Open Paste
             </a>
