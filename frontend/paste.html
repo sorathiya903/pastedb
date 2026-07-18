@@ -1218,7 +1218,7 @@ background:#384152;
         </svg>
       </button>
 
-      <button id="rawBtn" class="btn">
+      <button data-ga-event="raw_click" id="rawBtn" class="btn">
        <b>Raw</b>
       </button>
       <button class="btn" id="imagesBtn" style="display:none;">
@@ -2644,7 +2644,7 @@ document
 
   // RESET UI
   errorText.textContent = "";
-  loadingText.style.display = "block";   // 👈 show spinner text
+  loadingText.style.display = "block";
 
   try {
 
@@ -2699,9 +2699,9 @@ document
   </p>
 
   <div class="footer-links">
-    <a href="/dashboard.html">Dashboard</a>
-    <a href="/explore">Explore</a>
-    <a href="/terms">Terms</a>
+    <a href="/dashboard.html" data-ga-event="dash_opened_viewer">Dashboard</a>
+    <a href="/explore" data-ga-event="explore_opened_viewer">Explore</a>
+    <a href="/terms" data-ga-event="term_opened_viewer">Terms</a>
   </div>
 </footer>
 
