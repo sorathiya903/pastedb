@@ -1355,13 +1355,12 @@ background:#384152;
   document.getElementById("imagesBtn");
   function getPasteId() {
 
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
 
     const id = params.get("id");
-
     if (id) return id.trim();
 
-    return window.location.pathname
+    return location.pathname
         .replace(/^\/pastedb/, "")
         .replace(/^\/paste\//, "")
         .replace(/\/$/, "")
