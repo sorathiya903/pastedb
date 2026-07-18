@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+(function () {
+  var path = location.pathname + location.search + location.hash;
+  sessionStorage.setItem("redirect", path);
+  location.replace("/pastedb/");
+})();
+</script>
+</head>
+<body></body>
+</html>
