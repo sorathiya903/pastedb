@@ -4,39 +4,13 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8NDTL7KT9"></script>
 
   <script>
-(function () {
-    function load(src, next) {
-        const s = document.createElement("script");
-        s.src = src;
-
-        s.onload = () => {
-            if (typeof API_URL !== "undefined") {
-                next(true);
-            } else {
-                s.remove();
-                next(false);
-            }
-        };
-
-        s.onerror = () => {
-            s.remove();
-            next(false);
-        };
-
-        document.head.appendChild(s);
-    }
-
-    load("/config.js", ok => {
-        if (ok) return;
-
-        load("config.js", ok => {
-            if (!ok) {
-                alert("config.js could not be loaded.");
-            }
-        });
-    });
-})();
+if (location.hostname.includes("netlify")) {
+    document.write('<script src="/config.js"><\/script>');
+} else {
+    document.write('<script src="config.js"><\/script>');
+}
   </script>
+    
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Paste Viewer</title>
