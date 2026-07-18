@@ -359,7 +359,190 @@
     align-items:center;
     padding:60px 0;
       }
-    
+
+
+      .navbar{
+
+    position:sticky;
+    top:18px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:14px 22px;
+
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(18px);
+
+    border:1px solid var(--border);
+    border-radius:22px;
+
+    margin-bottom:45px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+    z-index:100;
+}
+
+.logo{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    font-size:22px;
+    font-weight:700;
+}
+
+.logo span{
+
+    letter-spacing:-0.5px;
+}
+
+.nav-links{
+
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.nav-links a{
+
+    text-decoration:none;
+
+    color:#555;
+
+    padding:10px 16px;
+
+    border-radius:12px;
+
+    transition:.25s;
+}
+
+.nav-links a:hover{
+
+    background:#f2f2f2;
+}
+
+.nav-links a.active{
+
+    background:#111;
+
+    color:white;
+}
+
+.hero{
+
+    margin-bottom:40px;
+}
+
+.hero-badge{
+
+    display:inline-block;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:#efefef;
+
+    color:#555;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin-bottom:18px;
+}
+
+.hero h1{
+
+    font-size:56px;
+
+    line-height:1.05;
+
+    margin-bottom:16px;
+}
+
+.hero p{
+
+    max-width:700px;
+
+    color:#666;
+
+    font-size:18px;
+
+    line-height:1.7;
+
+    margin-bottom:30px;
+}
+
+.tabs{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    margin-top:24px;
+}
+
+.tab{
+
+    border:none;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    padding:12px 18px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    transition:.25s;
+}
+
+.tab:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+.tab.active{
+
+    background:#111;
+
+    color:white;
+}
+
+@media(max-width:700px){
+
+.navbar{
+
+    flex-direction:column;
+
+    gap:18px;
+
+    padding:18px;
+}
+
+.hero h1{
+
+    font-size:40px;
+}
+
+.nav-links{
+
+    justify-content:center;
+}
+  }
   </style>
 
 </head>
@@ -368,32 +551,65 @@
 
   <div class="container">
 
-    <div class="hero">
+    <header class="navbar">
+  <div class="logo">
+    📋 <span>PasteDB</span>
+  </div>
 
-      <h1>
-        Explore Pastes
-      </h1>
+  <nav class="nav-links">
+    <a href="/" data-ga-event="home_opened">Home</a>
+    <a href="/create" data-ga-event="create_opened">Create</a>
+    <a href="/explore" class="active" data-ga-event="explore_opened">Explore</a>
+    <a href="/dashboard" data-ga-event="dashboard_opened">Dashboard</a>
+  </nav>
+</header>
 
-      <p>
-        Discover trending snippets,
-        ideas and code shared by developers.
-      </p>
+<div class="hero">
 
-      <div class="topbar">
+  <span class="hero-badge">
+    🌎 Community
+  </span>
 
-        <div class="search">
+  <h1>Explore Public Pastes</h1>
 
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Search pastes..."
-          >
+  <p>
+    Discover code snippets, notes, images and projects shared by the
+    PasteDB community.
+  </p>
 
-        </div>
+  <div class="topbar">
 
-      </div>
-
+    <div class="search">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search title, author or content..."
+      >
     </div>
+
+  </div>
+
+  <div class="tabs">
+
+    <button class="tab active">
+      Latest
+    </button>
+
+    <button class="tab">
+      🔥 Trending
+    </button>
+
+    <button class="tab">
+      ⭐ Most Starred
+    </button>
+
+    <button class="tab">
+      📋 Most Copied
+    </button>
+
+  </div>
+
+</div>
 
     <div
       class="grid"
