@@ -158,7 +158,8 @@ app.add_middleware(
     CORSMiddleware,
 
     allow_origins=[
-        "https://pastedb.netlify.app"
+    "https://pastedb.netlify.app",
+    "https://sorathiya903.github.io"
     ],
 
     allow_credentials=True,
