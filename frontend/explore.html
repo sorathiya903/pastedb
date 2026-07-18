@@ -370,20 +370,124 @@
     justify-content:space-between;
     align-items:center;
 
-    padding:14px 22px;
+    padding:16px 20px;
 
-    background:rgba(255,255,255,.85);
-    backdrop-filter:blur(18px);
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(16px);
 
     border:1px solid var(--border);
-    border-radius:22px;
-
-    margin-bottom:45px;
+    border-radius:20px;
 
     box-shadow:0 10px 30px rgba(0,0,0,.05);
 
-    z-index:100;
+    margin-bottom:40px;
+
+    z-index:999;
 }
+
+.logo{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    text-decoration:none;
+    color:#111;
+
+    font-size:24px;
+    font-weight:700;
+}
+
+.menu-btn{
+
+    width:46px;
+    height:46px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#f5f5f5;
+
+    cursor:pointer;
+
+    font-size:24px;
+
+    transition:.25s;
+}
+
+.menu-btn:hover{
+
+    background:#111;
+    color:white;
+}
+
+.menu{
+
+    position:absolute;
+
+    top:75px;
+    right:0;
+
+    width:230px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    box-shadow:0 18px 45px rgba(0,0,0,.12);
+
+    display:none;
+
+    overflow:hidden;
+}
+
+.menu.show{
+
+    display:block;
+
+    animation:menuIn .18s ease;
+}
+
+.menu a{
+
+    display:block;
+
+    padding:15px 18px;
+
+    color:#111;
+
+    text-decoration:none;
+
+    transition:.2s;
+}
+
+.menu a:hover{
+
+    background:#f5f5f5;
+}
+
+@keyframes menuIn{
+
+from{
+
+    opacity:0;
+    transform:translateY(-10px) scale(.98);
+
+}
+
+to{
+
+    opacity:1;
+    transform:none;
+
+}
+
+  }
+
+    
 
 .logo{
 
@@ -552,17 +656,32 @@
   <div class="container">
 
     <header class="navbar">
-  <div class="logo">
+
+  <a href="/" class="logo">
     📋 <span>PasteDB</span>
+  </a>
+
+  <button class="menu-btn" onclick="toggleMenu()">
+    ☰
+  </button>
+
+  <div class="menu" id="menu">
+
+    <a href="/">🏠 Home</a>
+
+    <a href="/create">➕ Create</a>
+
+    <a href="/explore">🌍 Explore</a>
+
+    <a href="/dashboard">📊 Dashboard</a>
+
+    <a href="/docs">📖 API Docs</a>
+
+    <a href="/about">ℹ️ About</a>
+
   </div>
 
-  <nav class="nav-links">
-    <a href="/" data-ga-event="home_opened">Home</a>
-    <a href="/create" data-ga-event="create_opened">Create</a>
-    <a href="/explore" class="active" data-ga-event="explore_opened">Explore</a>
-    <a href="/dashboard" data-ga-event="dashboard_opened">Dashboard</a>
-  </nav>
-</header>
+    </header>
 
 <div class="hero">
 
@@ -629,6 +748,31 @@
   </div>
 
   <script>
+
+    function toggleMenu(){
+
+    document
+        .getElementById("menu")
+        .classList.toggle("show");
+
+}
+
+document.addEventListener("click", e=>{
+
+    const menu=document.getElementById("menu");
+
+    if(
+        !e.target.closest(".menu") &&
+        !e.target.closest(".menu-btn")
+    ){
+
+        menu.classList.remove("show");
+
+    }
+
+});
+
+    
 const loader = document.getElementById("loader");
     let allPastes = [];
 
