@@ -64,39 +64,34 @@ pastes_collection.create_index([
 
 def get_api_user(request: Request):
 
-    api_key = request.headers.get(
-        "x-api-key"
-    )
+    api_key = request.headers.get("x-api-key")
 
     if not api_key:
-
         raise HTTPException(
             status_code=401,
             detail="API key required"
         )
 
-    
+    # Guest mode
+    if api_key.lower() == "guest":
+        return None
+
     key_doc = api_keys_collection.find_one({
         "api_key": api_key
     })
 
     if not key_doc:
-
         raise HTTPException(
             status_code=401,
             detail="Invalid API key"
         )
 
     return {
-
         "email": key_doc.get("email"),
-
         "api_key": api_key,
-
-        "created_at": key_doc.get(
-            "created_at"
-        )
+        "created_at": key_doc.get("created_at")
     }
+
 
 def hash_password(password: str):
     return ph.hash(password)
@@ -2602,6 +2597,17 @@ async def extension_create(
     paste: ExtensionPaste,
     api_user=Depends(get_api_user)
 ):
+    if api_user is None:
+        user_doc = None
+    else:
+        user_doc = users_collection.find_one({
+            "email": api_user["email"]
+        })
+        if not user_doc:
+            raise HTTPException(
+                404,
+                 "User not found"
+            )
 
     
     data = paste.model_dump()
