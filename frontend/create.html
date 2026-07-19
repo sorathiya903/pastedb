@@ -3697,20 +3697,21 @@ function saveDraft(){
     if(json===lastDraft)return;
 
     lastDraft=json;
+updateDraftStatus("saving");
 
-    updateDraftStatus("saving");
+requestAnimationFrame(() => {
 
-    requestAnimationFrame(()=>{
+    localStorage.setItem(
+        DRAFT_KEY,
+        json
+    );
 
-        localStorage.setItem(
-            DRAFT_KEY,
-            json
-        );
-
+    setTimeout(() => {
         updateDraftStatus("saved");
+    }, 250); // 200–300ms feels good
 
-    });
-
+});
+    
 }
 
 function scheduleDraft(){
