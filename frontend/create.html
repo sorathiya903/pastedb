@@ -3245,7 +3245,19 @@ await fetch(`${API_URL}/device/register`, {
 
           // Redirect to dashboard or create page
           const redirect = new URLSearchParams(window.location.search).get("redirect");
-
+window.location.href = redirect || "/dashboard.html";
+        } else {
+          showError(data.detail || "Login failed. Please try again.");
+          btn.disabled = false;
+          btnText.textContent = "Continue with Google";
+        }
+      } catch (err) {
+        console.error(err);
+        showError("Could not connect to server. Please try again.");
+        btn.disabled = false;
+        btnText.textContent = "Continue with Google";
+      }
+    
 }
   
   
