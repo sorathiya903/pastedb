@@ -2310,6 +2310,7 @@ const unlistedBtn =
 
     text.textContent =
       "Anyone with the link can access this paste.";
+    scheduleDraft();
 
   } else if(type === "unlisted"){
 
@@ -2317,13 +2318,14 @@ const unlistedBtn =
 
     text.textContent =
       "Hidden from Explore. Share using a secret link.";
-
+scheduleDraft();
   }else{
 
     privateBtn.classList.add("active");
 
     text.textContent =
       "Only you can access this paste after login.";
+    scheduleDraft();
 
   }
     }
@@ -3346,36 +3348,20 @@ function triggerGoogleLogin() {
 
       }
 
-  const title = document.getElementById("title");
-const code = document.getElementById("code");
-const syntax = document.getElementById("syntax");
-const expiration = document.getElementById("expiration");
-const customId = document.getElementById("customId");
-const passwordInput = document.getElementById("passwordInput");
-const enablePassword = document.getElementById("enablePassword");
-  
-  [
-title,
-code,
-syntax,
-expiration,
-customId,
-passwordInput,
-enablePassword
-].forEach(el=>{
+  const draftInputs = [
+    document.getElementById("title"),
+    document.getElementById("code"),
+    document.getElementById("syntax"),
+    document.getElementById("expiration"),
+    document.getElementById("customId"),
+    document.getElementById("passwordInput"),
+    document.getElementById("enablePassword")
+];
 
-el.addEventListener(
-"input",
-scheduleDraft
-);
-
-el.addEventListener(
-"change",
-scheduleDraft
-);
-
+draftInputs.forEach(el => {
+    el.addEventListener("input", scheduleDraft);
+    el.addEventListener("change", scheduleDraft);
 });
-
 
 
 
