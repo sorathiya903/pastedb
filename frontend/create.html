@@ -3192,13 +3192,59 @@ async function handleCredentialResponse(response){
         }
     )
 
-    const data = await res.json()
+    
+        const data = await res.json();
 
-    if(data.status === "success"){
+        if (data.status === "success") {
+const keys = await ensureDeviceKeys();
 
-        window.location.href = "/dashboard.html"
+const publicKey = await exportPublicKey(keys.publicKey);
 
-    }
+let encryptedKEK = null;
+
+// Check if this device already has a KEK
+const existingKEK = await getFromDB("accountKEK");
+
+if (existingKEK) {
+
+    encryptedKEK = await encryptPEKWithPublicKey(
+        await crypto.subtle.exportKey("raw", existingKEK),
+        keys.publicKey
+    );
+
+} else {
+
+    // First login on this browser
+    const accountKEK = await generatePEK();
+  const rawKEK = await crypto.subtle.exportKey("raw", accountKEK);
+
+encryptedKEK = await encryptPEKWithPublicKey(
+    rawKEK,
+    keys.publicKey
+);
+
+    await saveToDB("accountKEK", accountKEK);
+
+    
+
+}
+
+await fetch(`${API_URL}/device/register`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        device_id: keys.deviceId,
+        device_name: navigator.userAgent,
+        public_key: publicKey,
+        encrypted_kek: encryptedKEK
+    })
+});
+
+          // Redirect to dashboard or create page
+          const redirect = new URLSearchParams(window.location.search).get("redirect");
 
 }
   
