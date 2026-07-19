@@ -1770,6 +1770,9 @@ background:#22c55e;
 #draftDot.error{
 background:#ef4444;
   }
+    #draftDot.cleared{
+    background:#a3a3a3;
+    }
   </style>
 </head>
 
@@ -2285,7 +2288,9 @@ background:#ef4444;
   </main>
 
   <script>
-    const DRAFT_KEY = "pastedb_create_draft";
+    let draftTimer;
+    let toSave=true; 
+      const DRAFT_KEY = "pastedb_create_draft";
 
 
     
@@ -2384,6 +2389,12 @@ case "error":
 
 draftDot.classList.add("error");
 draftStatus.title="Failed to save";
+break;
+
+case "error":
+
+draftDot.classList.add("cleared");
+draftStatus.title="Cleared";
 break;
 
 }
@@ -3129,7 +3140,10 @@ try {
   const data = await response.json()
 
 if (response.ok) {
-  localStorage.removeItem(DRAFT_KEY);
+  toSave = false;
+clearTimeout(draftTimer);
+localStorage.removeItem(DRAFT_KEY);
+updateDraftStatus("cleared");;
  
     const pasteId =
         data.custom_id || data._id || editId;
@@ -3656,7 +3670,7 @@ window.addEventListener("load", () => {
 });
 
   
-let draftTimer;
+
 let lastDraft = "";
 
 const draftText =
@@ -3715,16 +3729,17 @@ requestAnimationFrame(() => {
     
 }
 
-function scheduleDraft(){
+
+function scheduleSave() {
+    if (!toSave) return;
 
     clearTimeout(draftTimer);
 
-    updateDraftStatus("typing");
-
-    draftTimer=
-    setTimeout(saveDraft,1500);
-
-  }
+    draftTimer = setTimeout(() => {
+        if (!toSave) return;
+        saveDraft();
+    }, 1500);
+}
 </script>
 </body>
   </html>
