@@ -1611,40 +1611,8 @@ margin:0;
 .editor-hint span:hover{
     text-decoration:underline;
 }
-    .draft-status{
+    
 
-display:flex;
-align-items:center;
-gap:8px;
-
-padding:8px 14px;
-
-border-radius:12px;
-
-background:var(--card);
-
-border:1px solid var(--border);
-
-font-size:13px;
-
-color:var(--muted);
-
-transition:.25s;
-
-}
-
-#draftDot{
-
-width:8px;
-height:8px;
-
-border-radius:50%;
-
-background:#22c55e;
-
-transition:.25s;
-
-}
 
     .draft-toast{
 
@@ -1760,6 +1728,47 @@ transform:none;
 }
 
 }
+    .draft-status{
+
+width:18px;
+height:18px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+cursor:default;
+
+}
+
+#draftDot{
+
+width:8px;
+height:8px;
+
+border-radius:50%;
+
+background:#22c55e;
+
+transition:.25s;
+
+}
+
+#draftDot.typing{
+background:#3b82f6;
+}
+
+#draftDot.saving{
+background:#f59e0b;
+}
+
+#draftDot.saved{
+background:#22c55e;
+}
+
+#draftDot.error{
+background:#ef4444;
+  }
   </style>
 </head>
 
@@ -1906,14 +1915,14 @@ transform:none;
       <div class="editor">
 
         <div class="editor-top">
-          <div id="draftStatus" class="draft-status">
-    <span id="draftDot"></span>
-    <span id="draftText">All changes saved</span>
-          </div>
+          
 
           <div>
             <h2>Create New Paste</h2>
             <p>Write and share beautifully.</p>
+          </div>
+          <div id="draftStatus" class="draft-status" title="All changes saved">
+    <span id="draftDot"></span>
           </div>
 
 
@@ -2344,6 +2353,40 @@ container.dataset.qrUrl = url;
             container.dataset.generated = "true";
         }
     );
+    }
+
+    function updateDraftStatus(state){
+
+draftDot.className="";
+
+switch(state){
+
+case "typing":
+
+draftDot.classList.add("typing");
+draftStatus.title="Typing...";
+break;
+
+case "saving":
+
+draftDot.classList.add("saving");
+draftStatus.title="Saving draft...";
+break;
+
+case "saved":
+
+draftDot.classList.add("saved");
+draftStatus.title="All changes saved";
+break;
+
+case "error":
+
+draftDot.classList.add("error");
+draftStatus.title="Failed to save";
+break;
+
+}
+
     }
 
     let originalPEK =null
@@ -3621,13 +3664,6 @@ document.getElementById("draftText");
 const draftDot =
 document.getElementById("draftDot");
 
-function updateDraftStatus(text,color){
-
-    draftText.textContent = text;
-
-    draftDot.style.background = color;
-
-}
 
 function saveDraft(){
 
@@ -3662,10 +3698,7 @@ function saveDraft(){
 
     lastDraft=json;
 
-    updateDraftStatus(
-        "Saving...",
-        "#f59e0b"
-    );
+    updateDraftStatus("saving");
 
     requestAnimationFrame(()=>{
 
@@ -3674,10 +3707,7 @@ function saveDraft(){
             json
         );
 
-        updateDraftStatus(
-            "All changes saved",
-            "#22c55e"
-        );
+        updateDraftStatus("saved");
 
     });
 
@@ -3687,10 +3717,7 @@ function scheduleDraft(){
 
     clearTimeout(draftTimer);
 
-    updateDraftStatus(
-        "Typing...",
-        "#3b82f6"
-    );
+    updateDraftStatus("typing");
 
     draftTimer=
     setTimeout(saveDraft,1500);
