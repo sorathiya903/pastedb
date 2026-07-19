@@ -3172,7 +3172,7 @@ document.getElementById("templateLink").onclick = () => {
 <script>
 
 async function handleCredentialResponse(response){
-
+try{
     const token = response.credential
 
     const res = await fetch(
@@ -3247,16 +3247,13 @@ await fetch(`${API_URL}/device/register`, {
           const redirect = new URLSearchParams(window.location.search).get("redirect");
 window.location.href = redirect || "/dashboard.html";
         } else {
-          showError(data.detail || "Login failed. Please try again.");
-          btn.disabled = false;
-          btnText.textContent = "Continue with Google";
+          alert(data.detail || "Login failed. Please try again.");
+             
         }
       } catch (err) {
         console.error(err);
-        showError("Could not connect to server. Please try again.");
-        btn.disabled = false;
-        btnText.textContent = "Continue with Google";
-      }
+        alert("Could not connect to server. Please try again.");
+         }
     
 }
   
