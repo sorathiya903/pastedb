@@ -1611,6 +1611,40 @@ margin:0;
 .editor-hint span:hover{
     text-decoration:underline;
 }
+    .draft-status{
+
+display:flex;
+align-items:center;
+gap:8px;
+
+padding:8px 14px;
+
+border-radius:12px;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+font-size:13px;
+
+color:var(--muted);
+
+transition:.25s;
+
+}
+
+#draftDot{
+
+width:8px;
+height:8px;
+
+border-radius:50%;
+
+background:#22c55e;
+
+transition:.25s;
+
+}
   </style>
 </head>
 
@@ -1736,6 +1770,10 @@ margin:0;
       <div class="editor">
 
         <div class="editor-top">
+          <div id="draftStatus" class="draft-status">
+    <span id="draftDot"></span>
+    <span id="draftText">All changes saved</span>
+          </div>
 
           <div>
             <h2>Create New Paste</h2>
@@ -2101,6 +2139,10 @@ margin:0;
   </main>
 
   <script>
+    const DRAFT_KEY = "pastedb_create_draft";
+
+
+    
     function createQR(url, containerId){
 
     const container =
@@ -2905,6 +2947,7 @@ try {
   const data = await response.json()
 
 if (response.ok) {
+  localStorage.removeItem(DRAFT_KEY);
  
     const pasteId =
         data.custom_id || data._id || editId;
@@ -3303,7 +3346,181 @@ function triggerGoogleLogin() {
 
       }
 
+  const title = document.getElementById("title");
+const code = document.getElementById("code");
+const syntax = document.getElementById("syntax");
+const expiration = document.getElementById("expiration");
+const customId = document.getElementById("customId");
+const passwordInput = document.getElementById("passwordInput");
+const enablePassword = document.getElementById("enablePassword");
+  
+  [
+title,
+code,
+syntax,
+expiration,
+customId,
+passwordInput,
+enablePassword
+].forEach(el=>{
 
+el.addEventListener(
+"input",
+scheduleDraft
+);
+
+el.addEventListener(
+"change",
+scheduleDraft
+);
+
+});
+
+
+
+
+        (function(){
+
+const raw=
+localStorage.getItem(DRAFT_KEY);
+
+if(!raw)return;
+
+const draft=
+JSON.parse(raw);
+
+title.value=
+draft.title||"";
+
+code.value=
+draft.content||"";
+
+syntax.value=
+draft.syntax||"plaintext";
+
+expiration.value=
+draft.expiration||"never";
+
+customId.value=
+draft.customId||"";
+
+passwordInput.value=
+draft.password||"";
+
+enablePassword.checked=
+draft.passwordEnabled||false;
+
+if(enablePassword.checked){
+
+passwordContainer.classList.add("show");
+
+pwdTick.textContent=
+"Enabled";
+
+}
+
+visibility=
+draft.visibility||"public";
+
+setVisibility(visibility);
+
+updateLines();
+
+updateHint();
+
+updateDraftStatus(
+"Draft restored",
+"#3b82f6"
+);
+
+})();
+
+
+  
+let draftTimer;
+let lastDraft = "";
+
+const draftText =
+document.getElementById("draftText");
+
+const draftDot =
+document.getElementById("draftDot");
+
+function updateDraftStatus(text,color){
+
+    draftText.textContent = text;
+
+    draftDot.style.background = color;
+
+}
+
+function saveDraft(){
+
+    const draft = {
+
+        title:title.value,
+
+        content:code.value,
+
+        syntax:syntax.value,
+
+        expiration:expiration.value,
+
+        visibility,
+
+        customId:customId.value,
+
+        passwordEnabled:
+        enablePassword.checked,
+
+        password:
+        passwordInput.value,
+
+        savedAt:Date.now()
+
+    };
+
+    const json =
+    JSON.stringify(draft);
+
+    if(json===lastDraft)return;
+
+    lastDraft=json;
+
+    updateDraftStatus(
+        "Saving...",
+        "#f59e0b"
+    );
+
+    requestAnimationFrame(()=>{
+
+        localStorage.setItem(
+            DRAFT_KEY,
+            json
+        );
+
+        updateDraftStatus(
+            "All changes saved",
+            "#22c55e"
+        );
+
+    });
+
+}
+
+function scheduleDraft(){
+
+    clearTimeout(draftTimer);
+
+    updateDraftStatus(
+        "Typing...",
+        "#3b82f6"
+    );
+
+    draftTimer=
+    setTimeout(saveDraft,1500);
+
+  }
 </script>
 </body>
   </html>
