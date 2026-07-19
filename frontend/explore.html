@@ -706,7 +706,7 @@ to{
     📋 <span>PasteDB</span>
   </a>
 
-  <button class="menu-btn" onclick="toggleMenu()">
+  <button data-ga-event="menu_explore" class="menu-btn" onclick="toggleMenu()">
     ☰
   </button>
 
@@ -745,6 +745,7 @@ to{
 
     <div class="search">
       <input
+        data-ga-event="explore_search_click"
         type="text"
         id="searchInput"
         placeholder="🔍 Search title, author or content..."
@@ -920,6 +921,7 @@ const loader = document.getElementById("loader");
               </span>
 
               <button
+              data-ga-event="copy_code_explore"
   class="copy-btn-card"
   data-id="${paste.custom_id}"
   data-content="${encodeURIComponent(paste.content)}"
