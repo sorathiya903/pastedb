@@ -3541,6 +3541,16 @@ function triggerGoogleLogin() {
   google.accounts.id.prompt();
 
       }
+  function scheduleSave() {
+    if (!toSave) return;
+
+    clearTimeout(draftTimer);
+
+    draftTimer = setTimeout(() => {
+        if (!toSave) return;
+        saveDraft();
+    }, 1500);
+  }
 
   const draftInputs = [
     document.getElementById("title"),
@@ -3730,16 +3740,7 @@ requestAnimationFrame(() => {
 }
 
 
-function scheduleSave() {
-    if (!toSave) return;
 
-    clearTimeout(draftTimer);
-
-    draftTimer = setTimeout(() => {
-        if (!toSave) return;
-        saveDraft();
-    }, 1500);
-}
 </script>
 </body>
   </html>
