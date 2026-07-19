@@ -3171,99 +3171,137 @@ document.getElementById("templateLink").onclick = () => {
   </script>
 <script>
 
-async function handleCredentialResponse(response){
-try{
-    const token = response.credential
+async function handleCredentialResponse(response) {
 
-    const res = await fetch(
-        `${API_URL}/auth/google`,
-        {
-            method: "POST",
+  try {
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+    const token = response.credential;
 
-            credentials: "include",
-
-            body: JSON.stringify({
-                token: token
-            })
-        }
-    )
-
-    
-        const data = await res.json();
-
-        if (data.status === "success") {
-const keys = await ensureDeviceKeys();
-
-const publicKey = await exportPublicKey(keys.publicKey);
-
-let encryptedKEK = null;
-
-// Check if this device already has a KEK
-const existingKEK = await getFromDB("accountKEK");
-
-if (existingKEK) {
-
-    encryptedKEK = await encryptPEKWithPublicKey(
-        await crypto.subtle.exportKey("raw", existingKEK),
-        keys.publicKey
+    // -------------------------------
+    // Google Login
+    // -------------------------------
+    const authRes = await fetch(
+      `${API_URL}/auth/google`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          token
+        })
+      }
     );
 
-} else {
+    if (!authRes.ok) {
+      throw new Error("Authentication failed");
+    }
 
-    // First login on this browser
-    const accountKEK = await generatePEK();
-  const rawKEK = await crypto.subtle.exportKey("raw", accountKEK);
+    const data = await authRes.json();
 
-encryptedKEK = await encryptPEKWithPublicKey(
-    rawKEK,
-    keys.publicKey
-);
+    if (data.status !== "success") {
+      alert(data.detail || "Login failed.");
+      return;
+    }
 
-    await saveToDB("accountKEK", accountKEK);
+    // -------------------------------
+    // Device Keys
+    // -------------------------------
+    const keys = await ensureDeviceKeys();
 
-    
+    const publicKey = await exportPublicKey(
+      keys.publicKey
+    );
+
+    let accountKEK = await getFromDB("accountKEK");
+
+    let encryptedKEK;
+
+    if (!accountKEK) {
+
+      // First login on this browser
+      accountKEK = await generatePEK();
+
+      await saveToDB(
+        "accountKEK",
+        accountKEK
+      );
+
+    }
+
+    const rawKEK =
+      await crypto.subtle.exportKey(
+        "raw",
+        accountKEK
+      );
+
+    encryptedKEK =
+      await encryptPEKWithPublicKey(
+        rawKEK,
+        keys.publicKey
+      );
+
+    // -------------------------------
+    // Register Device
+    // -------------------------------
+    const registerRes = await fetch(
+      `${API_URL}/device/register`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          device_id: keys.deviceId,
+          device_name: navigator.userAgent,
+          public_key: publicKey,
+          encrypted_kek: encryptedKEK
+        })
+      }
+    );
+
+    if (!registerRes.ok) {
+      throw new Error(
+        "Failed to register device."
+      );
+    }
+
+    // -------------------------------
+    // Safe Redirect
+    // -------------------------------
+    const redirect =
+      new URLSearchParams(
+        window.location.search
+      ).get("redirect");
+
+    if (redirect && redirect.startsWith("/")) {
+      window.location.href = redirect;
+    } else {
+      window.location.href = "/dashboard";
+    }
+
+  }
+
+  catch (err) {
+
+    console.error(err);
+
+    alert(
+      err.message ||
+      "Could not connect to server."
+    );
+
+  }
 
 }
 
-await fetch(`${API_URL}/device/register`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        device_id: keys.deviceId,
-        device_name: navigator.userAgent,
-        public_key: publicKey,
-        encrypted_kek: encryptedKEK
-    })
-});
-
-          // Redirect to dashboard or create page
-          const redirect = new URLSearchParams(window.location.search).get("redirect");
-window.location.href = redirect || "/dashboard.html";
-        } else {
-          alert(data.detail || "Login failed. Please try again.");
-             
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Could not connect to server. Please try again.");
-         }
-    
-}
-  
-  
-
-function triggerGoogleLogin(){
+function triggerGoogleLogin() {
 
   google.accounts.id.prompt();
 
-}
+      }
 
 
 </script>
