@@ -1645,10 +1645,146 @@ background:#22c55e;
 transition:.25s;
 
 }
+
+    .draft-toast{
+
+position:fixed;
+
+right:22px;
+bottom:22px;
+
+width:320px;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+border-radius:18px;
+
+padding:18px;
+
+box-shadow:var(--shadow);
+
+display:none;
+
+z-index:99999;
+
+animation:slideUp .25s ease;
+
+}
+
+.draft-toast.show{
+
+display:block;
+
+}
+
+.draft-toast h3{
+
+margin-bottom:6px;
+
+font-size:18px;
+
+}
+
+.draft-toast p{
+
+font-weight:600;
+
+margin-bottom:4px;
+
+}
+
+.draft-toast small{
+
+color:var(--muted);
+
+display:block;
+
+margin-bottom:16px;
+
+}
+
+.draft-actions{
+
+display:flex;
+
+gap:10px;
+
+}
+
+.draft-actions button{
+
+flex:1;
+
+padding:12px;
+
+border:none;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-weight:600;
+
+background:var(--text);
+
+color:var(--bg);
+
+}
+
+.draft-actions .discard{
+
+background:#ef4444;
+
+color:white;
+
+}
+
+@keyframes slideUp{
+
+from{
+
+opacity:0;
+
+transform:translateY(20px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:none;
+
+}
+
+}
   </style>
 </head>
 
 <body class="">
+  <div id="draftToast" class="draft-toast">
+
+    <h3>Draft found</h3>
+
+    <p id="draftToastTitle"></p>
+
+    <small id="draftToastTime"></small>
+
+    <div class="draft-actions">
+
+        <button onclick="restoreDraft()">Restore</button>
+
+        <button class="discard" onclick="discardDraft()">
+            Discard
+        </button>
+
+    </div>
+
+  </div>
+
+  
 <div id="templateDialog" class="template-dialog">
 
     <div class="template-box">
@@ -3363,47 +3499,79 @@ draftInputs.forEach(el => {
     el.addEventListener("change", scheduleDraft);
 });
 
+  function timeAgo(time){
 
+const diff =
+Math.floor((Date.now()-time)/1000);
 
-        (function(){
+if(diff<60)
+return "Saved just now";
 
-const raw=
-localStorage.getItem(DRAFT_KEY);
+const m=Math.floor(diff/60);
 
-if(!raw)return;
+if(m<60)
+return `Saved ${m} minute${m>1?"s":""} ago`;
 
-const draft=
-JSON.parse(raw);
+const h=Math.floor(m/60);
 
-title.value=
-draft.title||"";
+if(h<24)
+return `Saved ${h} hour${h>1?"s":""} ago`;
 
-code.value=
-draft.content||"";
+const d=Math.floor(h/24);
 
-syntax.value=
-draft.syntax||"plaintext";
+return `Saved ${d} day${d>1?"s":""} ago`;
 
-expiration.value=
-draft.expiration||"never";
+  }
 
-customId.value=
-draft.customId||"";
+  
 
-passwordInput.value=
-draft.password||"";
+  function discardDraft(){
+
+localStorage.removeItem(DRAFT_KEY);
+
+document
+.getElementById("draftToast")
+.classList.remove("show");
+
+updateDraftStatus(
+"No draft",
+"#6b7280"
+);
+
+  }
+
+  
+function restoreDraft(){
+
+const draft =
+JSON.parse(localStorage.getItem(DRAFT_KEY));
+
+if(!draft) return;
+
+title.value=draft.title||"";
+
+code.value=draft.content||"";
+
+syntax.value=draft.syntax||"plaintext";
+
+expiration.value=draft.expiration||"never";
+
+customId.value=draft.customId||"";
+
+passwordInput.value=draft.password||"";
 
 enablePassword.checked=
 draft.passwordEnabled||false;
 
-if(enablePassword.checked){
-
-passwordContainer.classList.add("show");
+container.classList.toggle(
+"show",
+enablePassword.checked
+);
 
 pwdTick.textContent=
-"Enabled";
-
-}
+enablePassword.checked
+? "Enabled"
+: "Disabled";
 
 visibility=
 draft.visibility||"public";
@@ -3414,13 +3582,34 @@ updateLines();
 
 updateHint();
 
+document
+.getElementById("draftToast")
+.classList.remove("show");
+
 updateDraftStatus(
 "Draft restored",
 "#3b82f6"
 );
 
-})();
+  }
+  
+window.addEventListener("load", () => {
 
+    const raw = localStorage.getItem(DRAFT_KEY);
+
+    if (!raw) return;
+
+    const draft = JSON.parse(raw);
+
+    document.getElementById("draftToastTitle").textContent =
+        draft.title || "Untitled Paste";
+
+    document.getElementById("draftToastTime").textContent =
+        timeAgo(draft.savedAt);
+
+    document.getElementById("draftToast").classList.add("show");
+
+});
 
   
 let draftTimer;
