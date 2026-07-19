@@ -639,6 +639,59 @@ to{
     justify-content:center;
 }
   }
+
+  .toast{
+
+  position:fixed;
+
+  bottom:25px;
+  left:50%;
+
+  transform:translateX(-50%) translateY(20px);
+
+  background:#111;
+  color:#fff;
+
+  padding:12px 20px;
+
+  border-radius:14px;
+
+  opacity:0;
+
+  transition:.25s;
+
+  pointer-events:none;
+
+  z-index:99999;
+}
+
+.toast.show{
+
+  opacity:1;
+
+  transform:translateX(-50%) translateY(0);
+    }
+
+    .copy-btn-card{
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  border:none;
+  background:none;
+
+  cursor:pointer;
+
+  color:var(--muted);
+
+  font-size:14px;
+}
+
+.copy-btn-card:hover{
+
+  color:#111;
+  }
   </style>
 
 </head>
@@ -738,7 +791,9 @@ to{
 
 
   </div>
-
+<div id="toast" class="toast">
+Copied!
+</div>
   <script>
 
     function toggleMenu(){
@@ -864,11 +919,17 @@ const loader = document.getElementById("loader");
  ${paste.views}
               </span>
 
-              <span style="display:flex;align-items:center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 408 480">
+              <button
+  class="copy-btn-card"
+  data-id="${paste.custom_id}"
+  data-content="${encodeURIComponent(paste.content)}"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 408 480">
     <path fill="currentColor" d="M299 5v43H43v299H0V48q0-18 12.5-30.5T43 5h256zm64 86q17 0 29.5 12.5T405 133v299q0 18-12.5 30.5T363 475H128q-18 0-30.5-12.5T85 432V133q0-17 12.5-29.5T128 91h235zm0 341V133H128v299h235z"/>
-        </svg> &nbsp; ${paste.copies}
-              </span>
+  </svg>
+
+  <span class="copy-count">${paste.copies}</span>
+</button>
 
               
 
@@ -950,6 +1011,48 @@ document.addEventListener(
 
   }
 )
+
+
+    document.addEventListener("click", async (e)=>{
+
+    const btn = e.target.closest(".copy-btn-card");
+
+    if(!btn) return;
+
+    const content = decodeURIComponent(btn.dataset.content);
+
+    await navigator.clipboard.writeText(content);
+
+    const toast = document.getElementById("toast");
+
+    toast.textContent = "Copied to clipboard";
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+    },1500);
+
+    try{
+
+        const res = await fetch(
+            `${API_URL}/copy/${btn.dataset.id}`,
+            {
+                method:"POST"
+            }
+        );
+
+        const data = await res.json();
+
+        btn.querySelector(".copy-count").textContent = data.copies;
+
+    }catch(err){
+        console.error(err);
+    }
+
+});
+
+    
     
         function escapeHtml(text){
 
