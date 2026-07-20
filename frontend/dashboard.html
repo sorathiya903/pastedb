@@ -1093,18 +1093,18 @@ transform:translateY(20px);
     </button>
 
    
-    <button onclick="window.location.href='/api-keys'" class="sidebar-item">
+    <button data-ga-event="gen_api_dash" onclick="window.location.href='/api-keys'" class="sidebar-item">
       Generate API Key
     </button>
 
-    <button onclick="window.location.href='/api-keys'" class="sidebar-item">
+    <button data-ga-event="my_api_dash" onclick="window.location.href='/api-keys'" class="sidebar-item">
       My API Keys
     </button>
 
-    <button onclick="window.location.href='/docs'" class="sidebar-item">
+    <button data-ga-event="apiDocsDash" onclick="window.location.href='/docs'" class="sidebar-item">
       API Docs
     </button>
-     <button class="btn" onclick="toggleTheme()">
+     <button data-ga-event="tt_dash" class="btn" onclick="toggleTheme()">
      Toggle Theme
 
   </button>
@@ -1120,8 +1120,8 @@ transform:translateY(20px);
  <div class="popup" id="popup">
     <h4 id="username">User</h4>
     <p id="email">Email</p>
-    <button class="btn" onclick="logout()" style="margin-top:10px;width:100%">Logout</button>
-     <button
+    <button data-ga-event="logout_dash" class="btn" onclick="logout()" style="margin-top:10px;width:100%">Logout</button>
+     <button data-ga-event="accDel_dash"
   class="btn"
   onclick="deleteAccount()"
   style="margin-top:10px;width:100%;border-color:#5a1d1d"
@@ -1140,7 +1140,7 @@ transform:translateY(20px);
     autocomplete="off"
     placeholder="Search pastes..."
   />
-<button
+<button data-ga-event="refreshBtn_dashClick"
     class="refresh-btn"
     onclick="loadDashboard()"
   >
@@ -1191,7 +1191,7 @@ transform:translateY(20px);
         Cancel
       </button>
 
-      <button
+      <button data-ga-event="pasteDel_dash"
         class="delete-btn"
         id="confirmDeleteBtn"
       >
@@ -1301,7 +1301,7 @@ async function showQRCode(customId) {
                     Close
                 </button>
 
-            </div><button
+            </div><button data-ga-event="qr_downloaded"
     class="delete-btn"
     id="downloadQrBtn"
     style="width:100%;margin-top:10px;"
@@ -1531,7 +1531,7 @@ ${
     </div>
         <div class="actions">
         <button class="action-btn" onclick="window.location.href='/paste/${p.custom_id}'">View</button>
-          <button
+          <button data-ga-event="pasteEdit_dash"
   class="action-btn"
   onclick="window.location.href='/create.html?edit=${p._id}'"
 >
@@ -1581,7 +1581,7 @@ ${
     id="dropdown-${p._id}"
   >
 
-    <button
+    <button data-ga-event="statClick"
       class="dropdown-btn"
       onclick="openStats('${p._id}')"
     >
