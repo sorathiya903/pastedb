@@ -3083,7 +3083,7 @@ if (passwordEnabled) {
 
 } else {
 
-  // disabled
+  
   pasteData.password = null;
 
 }
@@ -3194,7 +3194,7 @@ updateDraftStatus("cleared");;
     }
 
     pasteLinkBox.style.display = "block";
-  // Remove old QR if any
+
 document.getElementById("pasteQRContainer")?.remove();
 
 const qrDiv = document.createElement("div");
@@ -3405,7 +3405,7 @@ Textcode.addEventListener("input", updateHint);
 updateHint();
 
 document.getElementById("templateLink").onclick = () => {
-    openTemplateDialog(); // your dialog function
+    openTemplateDialog();
 };
   </script>
 <script>
@@ -3733,7 +3733,7 @@ requestAnimationFrame(() => {
 
     setTimeout(() => {
         updateDraftStatus("saved");
-    }, 250); // 200–300ms feels good
+    }, 250);
 
 });
     
