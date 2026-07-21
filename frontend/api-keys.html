@@ -431,17 +431,17 @@ button{
 <body>
   <div class="sidebar" id="sidebar">
 <h2>PasteDB</h2>
-<a href="#">API Keys</a>
+
 <h4>Resources</h4>
-<a href="/docs">API Documentation</a>
-<a href="https://github.com/sorathiya903/pastedb/" target="_blank">GitHub Repository</a>
+<a  data-ga-event="doc_api_m" href="/docs">API Documentation</a>
+<a href="https://github.com/sorathiya903/pastedb" target="_blank">GitHub Repository</a>
 </div>
 
   <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 
 
-  <button class="fab" onclick="openCreateModal()">+</button>
+  <button data-ga-event="createApiOpen" class="fab" onclick="openCreateModal()">+</button>
 
 
 <div class="modal" id="createModal">
@@ -466,7 +466,7 @@ button{
         Cancel
       </button>
 
-      <button id="createBtn" onclick="generateKey()">
+      <button data-ga-event="APIcreated" id="createBtn" onclick="generateKey()">
         Create
       </button>
 
@@ -493,7 +493,7 @@ button{
         Cancel
       </button>
 
-      <button id="deleteBtn" class="danger">
+      <button  data-ga-event="apiDel" id="deleteBtn" class="danger">
         Delete
       </button>
 
@@ -529,16 +529,16 @@ button{
     </div>
 
     <div>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/create">Create</a>
-      <a href="/explore">Explore</a>
+      <a data-ga-event="dash_api_f" href="/dashboard">Dashboard</a>
+      <a data-ga-event="cp_api_f" href="/create">Create</a>
+      <a data-ga-event="explore_api_f" href="/explore">Explore</a>
     </div>
 
     <div>
-      <a href="/docs">API Docs</a>
-      <a href="/privacy">Privacy</a>
-      <a href="/terms">Terms</a>
-      <a href="/contact">Contact</a>
+      <a  data-ga-event="doc_api_f" href="/docs">API Docs</a>
+      <a data-ga-event="propol_apif" href="/privacy">Privacy</a>
+      <a  data-ga-event="termAPI_f" href="/terms">Terms</a>
+      <a  data-ga-event="contact_api_f" href="/contact">Contact</a>
     </div>
    <br>
    <h4>Open Source</h4>
@@ -773,7 +773,7 @@ if (data.keys.length === 0) {
 
 <div class="api-card-actions">
 
-  <button
+  <button data-ga-event="api_copied"
     class="copy-btn"
     onclick="copyKey('${item.full_api_key}')">
     Copy Key
