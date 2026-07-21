@@ -518,6 +518,32 @@ header{
     transform:translateY(-4px);
     border-color:#333;
 }
+ .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+@media (max-width:900px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    /* Last card becomes full width if odd */
+    .grid > .card:last-child:nth-child(odd){
+        grid-column:1 / -1;
+    }
+}
+
+@media (max-width:600px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .grid > .card:last-child{
+        grid-column:auto;
+    }
+}
 </style>
 </head>
 
