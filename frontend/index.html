@@ -485,6 +485,39 @@ header{
   color:#22c55e;
   font-weight:700;
   }
+
+ .feature-category{
+    margin-top:55px;
+    margin-bottom:22px;
+    font-size:24px;
+    font-weight:700;
+    color:#fff;
+    padding-left:14px;
+    border-left:4px solid #22c55e;
+}
+
+.feature-category:first-of-type{
+    margin-top:0;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:#141414;
+    border:1px solid #242424;
+    border-radius:16px;
+    padding:20px;
+    transition:.25s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    border-color:#333;
+}
 </style>
 </head>
 
@@ -663,156 +696,147 @@ header{
 <!-- FEATURES -->
  <section class="section">
 
-  <div style="text-align:center;margin-bottom:40px;">
+<div style="text-align:center;margin-bottom:50px;">
     <h2 style="font-size:34px;">
-      Powerful Features for Developers, Students & Teachers
+        Everything You Need in One Paste Platform
     </h2>
 
-    <p style="color:#9a9a9a;max-width:700px;margin:12px auto 0;">
-      Everything you need to create, manage, secure and share code,
-      notes, images and documents online.
+    <p style="color:#8a8a8a;max-width:760px;margin:14px auto 0;">
+        PasteDB combines secure sharing, developer tools, collaboration,
+        automation and productivity features in one place.
     </p>
-  </div>
-
-  <div class="grid">
+</div>
 
 
-    <div class="card">
-      <h3>Instant Paste</h3>
-      <p>Create and share code snippets in seconds.</p>
-    </div>
+<!-- ================= DEVELOPMENT ================= -->
+
+<h2 class="feature-category">🚀 Development</h2>
+
+<div class="grid">
 
 <div class="card">
-    <h3><span class="highlight">End-to-End Encryption</span></h3>
-  <p>Supported in the web interface for private and unlisted pastes. Your content is encrypted in your browser before upload, and only people with the decryption key can read it.</p><p>
-  Want to understand how your data stays private?
-  <a href="/e2ee" style="color:hsl(0,0%,70%);font-weight:600;text-decoration:none;">
-    Learn more about End-to-End Encryption
-  </a>
-  </p>
+<h3>Instant Paste</h3>
+<p>Create and share code, notes or text within seconds.</p>
 </div>
-        <div class="card">
-      <h3>Public by Default</h3>
-      <p>Every paste is accessible via link.</p>
-        </div>
 
-        <div class="card">
-      <h3>API Access</h3>
-      <p>Generate API keys and create pastes programmatically.</p>
-  </div>  
-    <div class="card">
-  <h3>Python SDK</h3>
-  <p>The official <strong>PasteDB Python SDK</strong> lets you create and manage pastes with a simple API. It supports both authenticated requests and <strong>guest paste creation without requiring an API key</strong>. Full documentation and examples are available at <strong><a href="/docs" style="text-decoration:none;color:hsl(0,0%,80%)">Docs Page</a></strong>.</p>
-    </div>
-    <div class="card">
-  <h3>VS Code Extension</h3>
-  <p>Create, upload, and manage your PasteDB snippets directly from Visual Studio Code without leaving your editor.</p>
-    </div>
-    <div class="card">
-      <h3>Custom URLs</h3>
-      <p>Create memorable links for sharing.</p>
-  </div>  
-   <div class="card">
-  <h3>Auto Save Drafts</h3>
-  <p>Never lose your work again. PasteDB automatically saves your unfinished paste as a <strong>local draft</strong> while you type. If you accidentally close the tab or refresh the page, your draft is restored the next time you return.</p>
-   </div>
-    
-
-  <div class="card">
-
-    <div>
-
-      <h3 style="display:flex;align-items:center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="20px" width="20px">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
-  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
-</svg>
-&nbsp;
-<div>Open a Paste with QR</div> 
-      </h3>
-
-      <p>
-        Scan a PasteDB QR code using your camera or upload a screenshot
-        containing a QR code. Public and encrypted share links are
-        supported automatically.
-      </p>
-
-    </div>
-
-    <a
-      href="scan"
-      
-      style="text-decoration:none;color:hsl(0,0%,80%)"
-    >
-      Open Scanner
-    </a>
-
-  </div>
-
-    
-    
-    <div class="card">
-      <h3 
-        style="display:flex;align-items:center"
-><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="20" width="20">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-</svg>&nbsp;
-Analytics</h3>
-      <p>Track views and visitors for your pastes.
-</p>
-  </div>  
-    <div class="card">
-  <h3>📡 Nearby Share</h3>
-  <p>Instantly send <strong>public pastes</strong> to nearby devices. Simply make the receiving device discoverable from the <strong><a href="transfer" style="text-decoration:none;color:hsl(0,0%,80%)">Transfer Page</a></strong>, then tap <strong>Nearby Share</strong> on the paste to transfer it with a single tap.</p>
-    </div>
-    
-    <div class="card">
-      <h3>Image support</h3>
-      <p>Upload and share images alongside text.</p>
-  </div>
-    <div class="card">
-  <h3><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" height="20" width="20">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
-  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
-</svg>
- Burn After Read</h3>
-  <p>
-    Create one-time secret pastes that automatically delete themselves
-    after the first successful view. Perfect for sharing passwords,
-    tokens, or sensitive information securely.
-  </p>
-    </div>
 <div class="card">
-  <h3 style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="20" width="20">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
-</svg>&nbsp;
- Code Templates</h3>
-  <p>
-    Kickstart your work with built-in templates for
-    <strong>HTML</strong>, <strong>Python</strong>,
-    <strong>Flask</strong>, <strong>FastAPI</strong>,
-    <strong>Django</strong>, <strong>React</strong>, and many more.
-    Click "<strong style="  color:#2f81f7;
-    pointer-events:auto;
-    cursor:pointer;
-    font-weight:600;" onlclick="location.href='/create'">Start with a Template</strong>" in the editor to instantly
-    load a ready-to-use boilerplate and start coding in seconds.
-  </p>
+<h3>Run Code</h3>
+<p>Execute supported programming languages directly from the paste viewer.</p>
 </div>
-    <div class="card">
-      <h3>Google Login Control</h3>
-      <p>Login to edit or delete your pastes anytime.</p>
-    </div>
-<div class="card">
-  <h3 style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" height="20" width="20">
-  <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
-</svg>&nbsp;
- Run Code</h3>
-  <p>The paste viewer includes a built-in <strong>Run Code</strong> button for supported languages, letting you execute code instantly without leaving PasteDB.</p>
-</div>
-  </div>
-</section>
 
+<div class="card">
+<h3>Code Templates</h3>
+<p>Start instantly with templates for HTML, Python, Flask, FastAPI, React, Django and more.</p>
+</div>
+
+<div class="card">
+<h3>Python SDK</h3>
+<p>Official SDK supporting authenticated and guest paste creation.</p>
+</div>
+
+<div class="card">
+<h3>REST API</h3>
+<p>Create and manage pastes programmatically using API keys.</p>
+</div>
+
+<div class="card">
+<h3>VS Code Extension</h3>
+<p>Upload and manage pastes directly inside Visual Studio Code.</p>
+</div>
+
+</div>
+
+
+
+<!-- ================= SECURITY ================= -->
+
+<h2 class="feature-category">🔒 Security & Privacy</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>End-to-End Encryption</h3>
+<p>Private and unlisted pastes are encrypted inside your browser before upload.</p>
+</div>
+
+<div class="card">
+<h3>Burn After Read</h3>
+<p>Automatically destroy sensitive pastes after the first successful view.</p>
+</div>
+
+<div class="card">
+<h3>Google Login</h3>
+<p>Sign in securely to manage your personal pastes.</p>
+</div>
+
+</div>
+
+
+
+<!-- ================= SHARING ================= -->
+
+<h2 class="feature-category">📤 Sharing & Collaboration</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Public Sharing</h3>
+<p>Every public paste is instantly accessible through a shareable link.</p>
+</div>
+
+<div class="card">
+<h3>Custom URLs</h3>
+<p>Create memorable links for your most important pastes.</p>
+</div>
+
+<div class="card">
+<h3>QR Code Scanner</h3>
+<p>Open any PasteDB QR instantly using your camera or gallery.</p>
+</div>
+
+<div class="card">
+<h3>Nearby Share</h3>
+<p>Transfer public pastes between nearby devices without copying links.</p>
+</div>
+
+</div>
+
+
+
+<!-- ================= PRODUCTIVITY ================= -->
+
+<h2 class="feature-category">⚡ Productivity</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Auto Save Drafts</h3>
+<p>Your unfinished work is automatically saved locally while typing.</p>
+</div>
+
+<div class="card">
+<h3>Image Support</h3>
+<p>Upload images together with your text and code snippets.</p>
+</div>
+
+</div>
+
+
+
+<!-- ================= MANAGEMENT ================= -->
+
+<h2 class="feature-category">📊 Management & Analytics</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Analytics</h3>
+<p>Track views, visitors and engagement for every paste.</p>
+</div>
+
+</div>
+
+ </section>
 <script>
 let menuOpen = false;
 
