@@ -540,19 +540,28 @@ Upload Everything</pre>
 <ul>
 <li>Download encrypted paste.</li>
 <li>Load <code>accountKEK</code> from IndexedDB (or obtain the PEK from the URL fragment for guest/shared pastes).</li>
-<li>Decrypt the encrypted PEK using the account KEK.</li>
 
+  
+  <li>Registered users: Decrypt the encrypted PEK using the locally stored account KEK.</li>
+<li>Guest/shared pastes: Read the PEK from the URL fragment (<code>#</code>), then use it to decrypt the paste.</li>
   
 <li>Use the PEK to decrypt the title, content and images URL array.</li>
 <li>Display the plaintext in the browser.</li>
 </ul>
 <pre>Download Encrypted Paste
           │
-Load accountKEK
+     Registered?
+     /          \
+   Yes          No
+   │            │
+   |             \
+  Load accountKEK  Read PEK from URL #
+     │          │
+Decrypt PEK     │
+      \        /
+       Use PEK
           │
-Decrypt PEK
-          │
-Decrypt Title / Content / Images URL
+Decrypt Title / Content / Images
           │
 Display Paste</pre>
 </div>
