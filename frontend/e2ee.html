@@ -477,6 +477,29 @@ The PEK is encrypted with the account KEK before upload.
 </ul>
 
   </div>
+<div class="card">
+
+<h2>Supported Cryptography</h2>
+
+<ul>
+
+<li><b>RSA-OAEP (4096-bit)</b> — Protects the Account Key Encryption Key (KEK) for registered users.</li>
+
+<li><b>SHA-256</b> — Hash function used by the RSA-OAEP encryption scheme.</li>
+
+<li><b>AES-256-GCM</b> — Encrypts paste titles, content, image URL arrays and the per-paste encryption key (PEK).</li>
+
+<li><b>Per-Paste Encryption Keys (PEK)</b> — Every encrypted paste uses a newly generated random 256-bit AES key.</li>
+
+<li><b>Account Key Encryption Key (KEK)</b> — A random symmetric key used to encrypt PEKs for registered users.</li>
+
+<li><b>Web Crypto API</b> — All cryptographic operations are performed locally using the browser's native Web Crypto API.</li>
+
+<li><b>Cryptographically Secure Random Numbers</b> — Keys and initialization vectors are generated using the browser's secure random number generator.</li>
+
+</ul>
+
+</div>
 
 <div class="card">
 <h2><span class="step">2.</span> Creating an Encrypted Paste</h2>
