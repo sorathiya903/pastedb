@@ -444,13 +444,16 @@ ul{padding-left:22px}
 <li>Encrypted KEK</li>
 </ul></li>
 <li>The plaintext KEK is stored locally in IndexedDB as <code>accountKEK</code>.</li>
+<li>The RSA private key is also stored locally in IndexedDB so the browser can recover the KEK when needed.</li>
+
 </ul>
 <pre>Browser
  ├─ Generate RSA Key Pair
- ├─ Generate KEK
- ├─ Encrypt KEK
+ ├─ Generate Account KEK
+ ├─ Encrypt KEK with RSA Public Key
  ├─ Upload Public Key + Encrypted KEK
- └─ Store accountKEK in IndexedDB</pre>
+ ├─ Store RSA Private Key
+ └─ Store accountKEK in IndexedDB
 </div>
 
   <div class="card">
@@ -483,12 +486,14 @@ The PEK is encrypted with the account KEK before upload.
 
 <ul>
 
-<li><b>RSA-OAEP (4096-bit)</b> — Protects the Account Key Encryption Key (KEK) for registered users.</li>
+<li><b>RSA-OAEP (4096-bit)</b> — Encrypts the Account Key Encryption Key (KEK) during account setup.</li>
 
+  
 <li><b>SHA-256</b> — Hash function used by the RSA-OAEP encryption scheme.</li>
 
-<li><b>AES-256-GCM</b> — Encrypts paste titles, content, image URL arrays and the per-paste encryption key (PEK).</li>
+<li><b>AES-256-GCM</b> — Encrypts paste titles, content, image URL arrays, and encrypts the PEK using the account KEK.</li>
 
+  
 <li><b>Per-Paste Encryption Keys (PEK)</b> — Every encrypted paste uses a newly generated random 256-bit AES key.</li>
 
 <li><b>Account Key Encryption Key (KEK)</b> — A random symmetric key used to encrypt PEKs for registered users.</li>
@@ -534,8 +539,10 @@ Upload Everything</pre>
 <h2><span class="step">4.</span> Retrieving an Encrypted Paste</h2>
 <ul>
 <li>Download encrypted paste.</li>
-<li>Load <code>accountKEK</code> from IndexedDB.</li>
-<li>Decrypt the encrypted PEK.</li>
+<li>Load <code>accountKEK</code> from IndexedDB (or obtain the PEK from the URL fragment for guest/shared pastes).</li>
+<li>Decrypt the encrypted PEK using the account KEK.</li>
+
+  
 <li>Use the PEK to decrypt the title, content and images URL array.</li>
 <li>Display the plaintext in the browser.</li>
 </ul>
@@ -565,6 +572,7 @@ Display Paste</pre>
 <li>Encrypted images URL array</li>
 <li>Encrypted PEK</li>
 <li>RSA public key</li>
+  <li>Encrypted Account KEK (for registered users)</li>
 </ul>
 </div>
 
@@ -576,6 +584,8 @@ Display Paste</pre>
 <li>Plaintext URLs of images</li>
 <li>KEK</li>
 <li>PEK (unless intentionally shared through the URL fragment)</li>
+<li>RSA private key</li>
+
 </ul>
 </div>
 <div class="card">
@@ -591,7 +601,7 @@ Display Paste</pre>
 <li>Anyone with access to the URL fragment (#) can decrypt that shared encrypted paste.</li>
 
 <li>If local encryption keys are lost, encrypted data cannot be recovered.</li>
-
+<li>A fresh random 256-bit PEK is generated for every encrypted paste.</li>
 </ul>
 
 </div>
