@@ -37,8 +37,12 @@ if(localStorage.getItem("theme")==="dark"){
   <title>PasteDB - Create a Paste</title>
 <meta name="description"
       content="Create and share code snippets, notes, text, and images instantly with PasteDB. Customize visibility, expiration, and manage your pastes easily.">
-<link rel="canonical"
+
+  
+  <link rel="canonical"
       href="https://pastedb.netlify.app/create">
+
+  
   <meta property="og:type" content="website">
 
 <meta property="og:title"
@@ -48,7 +52,7 @@ if(localStorage.getItem("theme")==="dark"){
       content="Create and share code snippets, notes, text, and images instantly with PasteDB.">
 
 <meta property="og:url"
-      content="https://pastedb.netlify.app/create.html">
+      content="https://pastedb.netlify.app/create">
 
 <meta property="og:image"
       content="https://pastedb.netlify.app/og-image.png">
@@ -66,7 +70,47 @@ if(localStorage.getItem("theme")==="dark"){
       content="https://pastedb.netlify.app/og-image.png">
   
 
-
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Create a Paste - PasteDB",
+  "url": "https://pastedb.netlify.app/create",
+  "description": "Create and share code snippets, notes, text and images instantly with PasteDB.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteDB",
+    "url": "https://pastedb.netlify.app"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PasteDB",
+    "url": "https://pastedb.netlify.app"
+  },
+  "potentialAction": {
+  "@type": "CreateAction",
+  "target": "https://pastedb.netlify.app/create"
+},
+  "inLanguage": "en"
+}
+</script>
+  
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PasteDB",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "url": "https://pastedb.netlify.app",
+  "description": "PasteDB is an online pastebin for sharing code snippets, notes, markdown, images and text with syntax highlighting, password protection, expiration, analytics and more.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
