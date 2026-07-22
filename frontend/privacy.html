@@ -281,6 +281,36 @@ Application servers process requests but are not intended
 to act as long-term storage for user content.
 </p>
 
+  <h2>End-to-End Encryption (E2EE)</h2>
+
+<p>
+PasteDB offers optional end-to-end encryption for private and
+unlisted pastes. Public pastes are not end-to-end encrypted.
+</p>
+
+<p>
+For guest users, encrypted pastes use a symmetric encryption
+key. The decryption key is included only in the URL fragment
+(the portion after <code>#</code>) and is never sent to the
+PasteDB servers during normal requests.
+</p>
+
+<p>
+For registered users, PasteDB uses a hybrid encryption system.
+Each account has its own cryptographic keys generated during
+registration. Paste content is encrypted using a unique
+symmetric key, while account keys are used to securely protect
+that encryption key. This allows encrypted pastes to be
+accessed across the user's signed-in devices without exposing
+their contents to the server.
+</p>
+
+<p>
+PasteDB stores encrypted data but does not store the plaintext
+content of end-to-end encrypted pastes. Users are responsible
+for safeguarding access to their encrypted data.
+</p>
+
 <h2>Cookies</h2>
 
 <p>
