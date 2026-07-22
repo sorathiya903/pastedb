@@ -71,7 +71,59 @@ if(debug){
  ]
 }
   </script>
-  
+  <script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"FAQPage",
+ "mainEntity":[
+  {
+   "@type":"Question",
+   "name":"Can PasteDB read my encrypted paste?",
+   "acceptedAnswer":{
+    "@type":"Answer",
+    "text":"No. Encryption and decryption occur in your browser. The server stores encrypted data."
+   }
+  },
+  {
+   "@type":"Question",
+   "name":"How are encrypted pastes shared?",
+   "acceptedAnswer":{
+    "@type":"Answer",
+    "text":"For guest and unlisted encrypted pastes, the encryption key is stored in the URL fragment (#), which is not sent to the server."
+   }
+  },
+  {
+   "@type":"Question",
+   "name":"Which data is encrypted?",
+   "acceptedAnswer":{
+    "@type":"Answer",
+    "text":"Paste title, content and image URL array are encrypted before upload."
+   }
+  }
+ ]
+}
+  </script>
+
+  <script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"BreadcrumbList",
+ "itemListElement":[
+  {
+   "@type":"ListItem",
+   "position":1,
+   "name":"Home",
+   "item":"https://pastedb.netlify.app/"
+  },
+  {
+   "@type":"ListItem",
+   "position":2,
+   "name":"End-to-End Encryption",
+   "item":"https://pastedb.netlify.app/e2ee"
+  }
+ ]
+}
+  </script>
   
   <style>
 :root{--bg:#0b0b0b;--card:#151515;--text:#f3f3f3;--muted:#a8a8a8;--border:#2a2a2a;--accent:#22c55e}
@@ -90,6 +142,7 @@ body{
   background:#0a0a0a;
   color:#fff;
   overflow-x:hidden;
+}
 .nav-links a{
   color:#9a9a9a;
   text-decoration:none;
@@ -375,33 +428,9 @@ ul{padding-left:22px}
 <div class="container">
 <h1>🔐 How PasteDB End-to-End Encryption Works</h1>
 <p>PasteDB performs encryption and decryption entirely in your browser. The server stores encrypted data but never decrypts your paste.</p>
-<div class="card">
-<h2>Guest Encryption</h2>
 
-<p>
-Guests can also create end-to-end encrypted private or unlisted
-pastes without creating an account.
-</p>
-
-<ul>
-<li>A random Paste Encryption Key (PEK) is generated.</li>
-<li>The PEK encrypts the paste data.</li>
-<li>The PEK is stored only in the URL fragment (<code>#...</code>).</li>
-<li>The server never receives the PEK.</li>
-<li>Anyone with the complete URL can decrypt the paste.</li>
-</ul>
-
-<pre>
-Generate PEK
-      │
-Encrypt Paste
-      │
-Upload Ciphertext to Server
-      │
-Share URL with #PEK
-</pre>
-</div>
-
+  
+  
   
 <div class="card">
 <h2><span class="step">1.</span> Account Setup</h2>
@@ -423,6 +452,31 @@ Share URL with #PEK
  ├─ Upload Public Key + Encrypted KEK
  └─ Store accountKEK in IndexedDB</pre>
 </div>
+
+  <div class="card">
+<h2>Encryption Modes</h2>
+
+<ul>
+
+<li>
+<b>Guest Users</b><br>
+A random PEK encrypts the paste.
+The PEK is placed inside the URL fragment (<code>#</code>) so recipients can decrypt the paste locally.
+No account keys are required.
+</li>
+
+<br>
+
+<li>
+<b>Registered Users</b><br>
+PasteDB generates an RSA key pair and an account KEK during registration.
+Each encrypted paste receives its own PEK.
+The PEK is encrypted with the account KEK before upload.
+</li>
+
+</ul>
+
+  </div>
 
 <div class="card">
 <h2><span class="step">2.</span> Creating an Encrypted Paste</h2>
@@ -501,7 +555,24 @@ Display Paste</pre>
 <li>PEK (unless intentionally shared through the URL fragment)</li>
 </ul>
 </div>
+<div class="card">
 
+<h2>Security Notes</h2>
+
+<ul>
+
+<li>Encryption and decryption happen entirely in your browser.</li>
+
+<li>The server never receives plaintext encryption keys.</li>
+
+<li>Anyone with access to the URL fragment (#) can decrypt that shared encrypted paste.</li>
+
+<li>If local encryption keys are lost, encrypted data cannot be recovered.</li>
+
+</ul>
+
+</div>
+  
 <div class="card">
 <h2>Summary</h2>
 <p>Your browser performs all encryption and decryption. PasteDB stores encrypted data and the metadata required for application features, but never has access to your plaintext title, content or images URL.</p>
