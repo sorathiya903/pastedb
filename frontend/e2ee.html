@@ -47,6 +47,30 @@ if(debug){
 <meta name="twitter:title" content="How PasteDB End-to-End Encryption Works">
 <meta name="twitter:description" content="Learn how PasteDB securely encrypts and decrypts your pastes entirely in the browser.">
 <meta name="twitter:image" content="https://pastedb.netlify.app/favicon.png">
+
+
+  <script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"TechArticle",
+ "headline":"How PasteDB End-to-End Encryption Works",
+ "author":{
+   "@type":"Person",
+   "name":"Aditya Sorathiya"
+ },
+ "publisher":{
+   "@type":"Organization",
+   "name":"PasteDB"
+ },
+ "url":"https://pastedb.netlify.app/e2ee",
+ "about":[
+   "End-to-End Encryption",
+   "RSA",
+   "AES-GCM",
+   "Web Crypto API"
+ ]
+}
+  </script>
   
   
   <style>
@@ -351,7 +375,34 @@ ul{padding-left:22px}
 <div class="container">
 <h1>🔐 How PasteDB End-to-End Encryption Works</h1>
 <p>PasteDB performs encryption and decryption entirely in your browser. The server stores encrypted data but never decrypts your paste.</p>
+<div class="card">
+<h2>Guest Encryption</h2>
 
+<p>
+Guests can also create end-to-end encrypted private or unlisted
+pastes without creating an account.
+</p>
+
+<ul>
+<li>A random Paste Encryption Key (PEK) is generated.</li>
+<li>The PEK encrypts the paste data.</li>
+<li>The PEK is stored only in the URL fragment (<code>#...</code>).</li>
+<li>The server never receives the PEK.</li>
+<li>Anyone with the complete URL can decrypt the paste.</li>
+</ul>
+
+<pre>
+Generate PEK
+      │
+Encrypt Paste
+      │
+Upload Ciphertext to Server
+      │
+Share URL with #PEK
+</pre>
+</div>
+
+  
 <div class="card">
 <h2><span class="step">1.</span> Account Setup</h2>
 <ul>
@@ -520,7 +571,7 @@ Display Paste</pre>
         <a data-ga-event="dashE2ee_f" href="/dashboard">Dashboard</a>
   <a href="/login" data-ga-event="signinE2eef">Sign In</a>
         <a href="/about" data-ga-event="aboutfromE2ee_f">About</a>
-<a href="/privacy" data-ga-event="scanE2eef">Open Scanner</a>
+<a href="/scan" data-ga-event="scanE2eef">Open Scanner</a>
 </div>
 
       
