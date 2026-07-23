@@ -246,10 +246,94 @@ color:#777;
 font-size:13px;
 line-height:1.5;
 }
+
+    .loading-screen{
+    position:fixed;
+    inset:0;
+    background:#111;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:9999;
+}
+
+.loading-logo{
+    font-size:58px;
+    font-weight:900;
+    letter-spacing:2px;
+
+    background:linear-gradient(
+        90deg,
+        #666 0%,
+        #fff 50%,
+        #666 100%
+    );
+
+    background-size:220% auto;
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:shimmer 2s linear infinite;
+}
+
+.loading-screen p{
+    color:#aaa;
+    margin:16px 0 30px;
+    font-size:18px;
+}
+
+.loader{
+    width:220px;
+    height:6px;
+    background:#222;
+    border-radius:100px;
+    overflow:hidden;
+}
+
+.loader-fill{
+    width:100%;
+    height:100%;
+    background:#3b82f6;
+    transform:translateX(-100%);
+    animation:loadBar 2.8s linear forwards;
+}
+
+@keyframes shimmer{
+    from{
+        background-position:-220%;
+    }
+    to{
+        background-position:220%;
+    }
+}
+
+@keyframes loadBar{
+    from{
+        transform:translateX(-100%);
+    }
+    to{
+        transform:translateX(0%);
+    }
+    }
 </style>
 
 </head>
 <body>
+    <div id="loadingScreen" class="loading-screen">
+
+  <div class="loading-logo">
+    PasteDB
+  </div>
+
+  <p>Receiving your paste...</p>
+
+  <div class="loader">
+    <div class="loader-fill"></div>
+  </div>
+
+    </div>
 
 <div class="box">
 
@@ -659,38 +743,16 @@ stopHold
 
 function startCountdown(){
 
-    let n=3;
+    document.getElementById("loadingScreen").style.display="flex";
 
-    const el=
-    document.getElementById("countdown");
+    statusTitle.textContent = "Incoming Paste";
+    status.textContent = "Opening...";
 
-    el.style.display="block";
+    setTimeout(()=>{
+        location.href = url;
+    },2800);
 
-    statusTitle.textContent=
-    "Incoming Paste";
-
-    status.textContent=
-    "Opening...";
-
-    el.textContent=n;
-
-    const i=setInterval(()=>{
-
-        n--;
-
-        el.textContent=n;
-
-        if(n<=0){
-
-            clearInterval(i);
-
-            location.href=url;
-
-        }
-
-    },1000);
-
-      }
+}
 </script>
 
 </body>
