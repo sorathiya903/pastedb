@@ -8,6 +8,15 @@
 <script src="config.js"></script>
 <script src="/encryption.js"></script>
 <script src="templates.js"></script>
+
+<script>
+if(localStorage.getItem("theme")==="dark"){
+    document.documentElement.classList.add("dark");
+}
+</script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>
 
 if(debug){
@@ -17,15 +26,6 @@ if(debug){
 } 
 
 </script>
-<script>
-if(localStorage.getItem("theme")==="dark"){
-    document.documentElement.classList.add("dark");
-}
-</script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
