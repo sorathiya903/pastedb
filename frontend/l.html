@@ -1449,9 +1449,13 @@ function showMalformedUrlScreen() {
     document.getElementById("pasteTitle").textContent =
         json.title || "Untitled";
 
-    document.getElementById("createdAt").textContent =
-        json.created_at || "Local Paste";
+    const created = new Date(paste.createdAt);
 
+document.getElementById("createdAt").textContent =
+    created.toLocaleDateString() +
+    " " +
+    created.toLocaleTimeString();
+    
     document.getElementById("fileName").textContent =
         json.file_name || "text.txt";
 
