@@ -1326,7 +1326,7 @@ Cancel
     width:100%;
     padding:24px 20px;
     text-align:center;
-
+    border:none;
     background:var(--bg);
     border-top:1px solid rgba(255,255,255,0.08);
 
@@ -1466,6 +1466,16 @@ function showMalformedUrlScreen() {
     hljs.highlightElement(document.getElementById("codeBlock"));
 
 })();
+
+    setTimeout(() => {
+
+    document
+        .getElementById("credit")
+        .style.animation = "none";
+
+}, 10000);
+
+
 </script>
 </body>
   </html>
