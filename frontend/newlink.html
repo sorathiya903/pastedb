@@ -2670,6 +2670,32 @@ requestAnimationFrame(() => {
     
 }
 
+  
+
+    function toggleTheme(){
+
+    document.documentElement.classList.toggle("dark");
+
+    localStorage.setItem(
+        "theme",
+        document.documentElement.classList.contains("dark")
+            ? "dark"
+            : "light"
+    );
+
+    document.querySelectorAll("[data-qr-url]").forEach(container => {
+
+        container.dataset.generated = "";
+
+        container.innerHTML = "";
+
+        createQR(
+            container.dataset.qrUrl,
+            container.id
+        );
+    });
+  }
+
 </script>
 </body>
   </html>
