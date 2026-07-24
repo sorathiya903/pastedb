@@ -2518,6 +2518,174 @@ function triggerGoogleLogin() {
   google.accounts.id.prompt();
 
       }
+
+  
+      }
+  function scheduleDraft() {
+    if (!toSave) return;
+
+    clearTimeout(draftTimer);
+
+    draftTimer = setTimeout(() => {
+        if (!toSave) return;
+        saveDraft();
+    }, 1500);
+  }
+
+  const draftInputs = [
+    document.getElementById("title"),
+    document.getElementById("code"),
+    document.getElementById("syntax"),
+    ];
+
+draftInputs.forEach(el => {
+    el.addEventListener("input", scheduleDraft);
+    el.addEventListener("change", scheduleDraft);
+});
+
+  function timeAgo(time){
+
+const diff =
+Math.floor((Date.now()-time)/1000);
+
+if(diff<60)
+return "Saved just now";
+
+const m=Math.floor(diff/60);
+
+if(m<60)
+return `Saved ${m} minute${m>1?"s":""} ago`;
+
+const h=Math.floor(m/60);
+
+if(h<24)
+return `Saved ${h} hour${h>1?"s":""} ago`;
+
+const d=Math.floor(h/24);
+
+return `Saved ${d} day${d>1?"s":""} ago`;
+
+  }
+
+  
+
+  function discardDraft(){
+
+localStorage.removeItem(DRAFT_KEY);
+
+document
+.getElementById("draftToast")
+.classList.remove("show");
+
+updateDraftStatus(
+"No draft",
+"#6b7280"
+);
+
+  }
+
+  
+function restoreDraft(){
+
+const draft =
+JSON.parse(localStorage.getItem(DRAFT_KEY));
+
+if(!draft) return;
+
+title.value=draft.title||"";
+
+code.value=draft.content||"";
+
+syntax.value=draft.syntax||"plaintext";
+
+
+
+updateLines();
+
+updateHint();
+
+document
+.getElementById("draftToast")
+.classList.remove("show");
+
+updateDraftStatus(
+"Draft restored",
+"#3b82f6"
+);
+
+  }
+  
+window.addEventListener("load", () => {
+
+    const raw = localStorage.getItem(DRAFT_KEY);
+
+    if (!raw) return;
+
+    const draft = JSON.parse(raw);
+
+    document.getElementById("draftToastTitle").textContent =
+        draft.title || "Untitled Paste";
+
+    document.getElementById("draftToastTime").textContent =
+        timeAgo(draft.savedAt);
+
+    document.getElementById("draftToast").classList.add("show");
+
+});
+
+  
+
+let lastDraft = "";
+
+const draftText =
+document.getElementById("draftText");
+
+const draftDot =
+document.getElementById("draftDot");
+
+
+function saveDraft(){
+
+    const draft = {
+
+        title:title.value,
+
+        content:code.value,
+
+        syntax:syntax.value,
+
+        
+
+        
+
+        
+        savedAt:Date.now()
+
+    };
+
+    const json =
+    JSON.stringify(draft);
+
+    if(json===lastDraft)return;
+
+    lastDraft=json;
+updateDraftStatus("saving");
+
+requestAnimationFrame(() => {
+
+    localStorage.setItem(
+        DRAFT_KEY,
+        json
+    );
+
+    setTimeout(() => {
+        updateDraftStatus("saved");
+    }, 250);
+
+});
+    
+}
+
 </script>
 </body>
   </html>
