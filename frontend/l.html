@@ -43,6 +43,40 @@ if(debug){
 
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
   <style>
+      /* Only apply these colors in DARK mode */
+
+body:not(.light) .hljs{
+  color:#d7dce2;
+  background:transparent;
+}
+
+body:not(.light) .hljs-comment{
+  color:#7b8190;
+  font-style:italic;
+}
+
+body:not(.light) .hljs-keyword,
+body:not(.light) .hljs-selector-tag{
+  color:#b6bdd0;
+}
+
+body:not(.light) .hljs-string{
+  color:#c6d0d7;
+}
+
+body:not(.light) .hljs-function,
+body:not(.light) .hljs-title{
+  color:#d3d9e4;
+}
+
+body:not(.light) .hljs-number,
+body:not(.light) .hljs-literal{
+  color:#b8c7d1;
+}
+
+body:not(.light) .hljs-params{
+  color:#aab4bf;
+}
     :root{
       --bg: #0f1115;
       --bg-secondary: #14171d;
