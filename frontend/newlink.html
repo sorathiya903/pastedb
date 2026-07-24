@@ -2221,6 +2221,24 @@ background:#ef4444;
   </main>
 
 <script>
+  let currentLineCount = 0;
+
+function updateLines() {
+    const count = textarea.value.split("\n").length;
+
+    if (count === currentLineCount) return;
+
+    currentLineCount = count;
+
+    let html = "";
+
+    for (let i = 1; i <= count; i++) {
+        html += `<div>${i}</div>`;
+    }
+
+    lines.innerHTML = html;
+}
+
     
         window.addEventListener("load", () => {
 
