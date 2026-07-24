@@ -1479,6 +1479,306 @@ document.getElementById("createdAt").textContent =
 }, 10000);
 
 
+    
+  
+let nearbySocket;
+
+async function openNearbyShare(){
+
+    document.getElementById("nearbyModal").style.display = "flex";
+
+    const list =
+        document.getElementById("nearbyDevices");
+
+    list.innerHTML = "Searching...";
+
+    nearbySocket = new WebSocket(
+        WS_URL + "/ws/nearby"
+    );
+
+    nearbySocket.onopen = () => {
+
+        navigator.geolocation.getCurrentPosition(
+
+            pos => {
+
+                nearbySocket.send(JSON.stringify({
+
+                    action: "find",
+
+                    lat: pos.coords.latitude,
+
+                    lon: pos.coords.longitude
+
+                }));
+
+            },
+
+            () => {
+
+                // Location denied
+                nearbySocket.send(JSON.stringify({
+
+                    action: "find",
+
+                    lat: null,
+
+                    lon: null
+
+                }));
+
+            }
+
+        );
+
+    };
+
+  
+nearbySocket.onmessage = e => {
+
+    const msg = JSON.parse(e.data);
+
+    const list =
+        document.getElementById("nearbyDevices");
+
+    const status =
+        document.getElementById("nearbyStatus");
+
+    if(msg.type === "devices"){
+
+        if(msg.devices.length === 0){
+
+            status.textContent =
+                "No nearby devices found";
+
+            list.innerHTML = `
+<div class="nearby-empty">
+
+<div class="icon">📡</div>
+
+<h3>No devices found</h3>
+
+<p>
+Ask the other device to open Nearby Share
+and hold three fingers on the screen.
+</p>
+
+</div>
+`;
+
+            return;
+
+        }
+
+        status.textContent =
+            `${msg.devices.length} nearby device${msg.devices.length>1?"s":""} found`;
+
+        list.innerHTML = "";
+
+        msg.devices.forEach(device=>{
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "deviceCard";
+
+            card.innerHTML = `
+
+<div class="deviceLeft">
+
+<div class="deviceIcon">
+
+📱
+
+</div>
+
+<div>
+
+<div class="deviceName">
+${device.name}
+</div>
+
+<div class="deviceDistance">
+
+${device.distance!=null
+?`${device.distance} m away`
+:"Distance unavailable"}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="sendArrow">
+➜
+</div>
+
+`;
+
+            card.onclick=()=>{
+
+                status.textContent =
+                    "Sending paste...";
+
+                card.style.opacity=".7";
+
+                card.querySelector(".sendArrow")
+                    .innerHTML =
+                    `<div class="nearby-loader" style="width:22px;height:22px;border-width:3px"></div>`;
+
+                nearbySocket.send(JSON.stringify({
+
+                    action:"send",
+
+                    receiver:device.id,
+
+                    url:location.href
+
+                }));
+
+            };
+
+            list.appendChild(card);
+
+        });
+
+    }
+
+    else if(msg.type==="sent"){
+
+        document.getElementById(
+            "nearbyStatus"
+        ).textContent =
+        "Paste sent successfully";
+
+        document.getElementById(
+            "nearbyDevices"
+        ).innerHTML = `
+
+<div class="nearby-success">
+
+<div class="icon">✅</div>
+
+<h3>Transfer Complete</h3>
+
+<p>
+The paste has been sent to the selected device.
+</p>
+
+</div>
+
+`;
+
+        setTimeout(()=>{
+
+            closeNearbyShare();
+
+        },1500);
+
+    }
+
+    else if(msg.type==="full"){
+
+        status.textContent =
+            "Receiver limit reached";
+
+        list.innerHTML = `
+
+<div class="nearby-empty">
+
+<div class="icon">⚠️</div>
+
+<h3>Receiver list full</h3>
+
+<p>
+Try again in a few seconds.
+</p>
+
+</div>
+
+`;
+
+    }
+
+};
+
+  let nearbyRefresh;
+
+nearbySocket.onopen = () => {
+
+    const search = () => {
+
+        navigator.geolocation.getCurrentPosition(
+
+            pos => {
+
+                nearbySocket.send(JSON.stringify({
+
+                    action:"find",
+
+                    lat:pos.coords.latitude,
+
+                    lon:pos.coords.longitude
+
+                }));
+
+            },
+
+            () => {
+
+                nearbySocket.send(JSON.stringify({
+
+                    action:"find",
+
+                    lat:null,
+
+                    lon:null
+
+                }));
+
+            }
+
+        );
+
+    };
+
+    search();
+
+    nearbyRefresh = setInterval(search, 2000);
+
+};
+
+nearbySocket.onclose = () => {
+
+    clearInterval(nearbyRefresh);
+  console.log("Nearby socket closed");
+
+};
+    
+
+      }
+
+
+  function closeNearbyShare(){
+
+document.getElementById("nearbyModal").style.display="none";
+
+if(nearbySocket){
+
+nearbySocket.close();
+
+}
+
+  }
+
+
+  
+  document
+.getElementById("nearbyShareBtn")
+.addEventListener("click", openNearbyShare);
+
 </script>
 </body>
   </html>
