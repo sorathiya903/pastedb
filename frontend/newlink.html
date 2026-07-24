@@ -2221,6 +2221,20 @@ background:#ef4444;
   </main>
 
 <script>
+    
+        window.addEventListener("load", () => {
+
+    const loader = document.getElementById("pageLoader");
+
+    loader.style.opacity = "0";
+    loader.style.pointerEvents = "none";
+
+    setTimeout(() => {
+        loader.style.display = "none";
+    }, 500);
+
+});
+
  const createBtn = document.getElementById("createBtn");
 
 createBtn.addEventListener("click", createLinkPaste);
