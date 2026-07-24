@@ -526,54 +526,82 @@ header{
     border-left:4px solid #22c55e;
 }
 
-.feature-category:first-of-type{
-    margin-top:0;
+.feature-category:first-of-type {
+    margin-top: 0;
 }
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
-    gap:18px;
+/* Base Grid Setup */
+.grid {
+    display: grid;
+    gap: 18px;
+    /* Default: 3 equal columns for screen widths above 900px */
+    grid-template-columns: repeat(3, 1fr); 
 }
 
-.card{
-    background:#141414;
-    border:1px solid #242424;
-    border-radius:16px;
-    padding:20px;
-    transition:.25s;
+.card {
+    background: #141414;
+    border: 1px solid #242424;
+    border-radius: 16px;
+    padding: 20px;
+    transition: .25s;
 }
 
-.card:hover{
-    transform:translateY(-4px);
-    border-color:#333;
-}
- .grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
+.card:hover {
+    transform: translateY(-4px);
+    border-color: #333;
 }
 
-@media (max-width:900px){
-    .grid{
-        grid-template-columns:repeat(2,1fr);
+/* --- DESKTOP RULES (Above 900px) --- */
+/* Scenario A: Exactly 1 card left over in the 3-column row (e.g., total 4 or 7 cards) */
+.grid > .card:last-child:nth-child(3n+1) {
+    grid-column: 1 / -1; /* Spans all 3 columns */
+}
+
+/* Scenario B: Exactly 2 cards left over in the 3-column row (e.g., total 5 or 8 cards) */
+/* This targets the second-to-last card when it's the start of the row */
+.grid > .card:nth-last-child(2):nth-child(3n+1),
+.grid > .card:nth-last-child(2):nth-child(3n+1) + .card {
+    grid-column: span 1.5; /* Note: standard CSS Grid can't do fractional column spans cleanly. */
+}
+
+/* BETTER NATIVE CSS FIX FOR SCENARIO B (Desktop): 
+   Instead of hacking spans, we tell the last row elements to behave like standard CSS columns if needed.
+   Alternatively, use the modern :has selector or grid-column limits below for crisp half-half styling: */
+@media (min-width: 901px) {
+    /* If 4th card is alone, it spans 3 slots */
+    .grid > .card:last-child:nth-child(3n+1) { grid-column: span 3; }
+    
+    /* If 2 cards are left over, change row alignment or span them equally */
+    .grid > .card:nth-last-child(2):nth-child(3n+1) { grid-column: span 1 / 2; }
+}
+
+
+/* --- TABLET RULES (601px to 900px) --- */
+@media (max-width: 900px) and (min-width: 601px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Single last card takes full width */
-    .grid > .card:last-child:nth-child(2n+1){
-        grid-column:1 / -1;
+    /* If there is 1 lonely card left over in a 2-column layout (e.g., 3rd or 5th card) */
+    .grid > .card:last-child:nth-child(2n+1) {
+        grid-column: 1 / -1; /* Spans full width */
+    }
+    
+    /* If there are 2 cards in the last row, they naturally take half-half (1fr each) automatically! */
+}
+
+/* --- MOBILE RULES (600px and below) --- */
+@media (max-width: 600px) {
+    .grid {
+        grid-template-columns: 1fr; /* Everything is 1 column naturally */
+    }
+
+    .grid > .card {
+        grid-column: auto !important;
     }
 }
 
-@media (max-width:600px){
-    .grid{
-        grid-template-columns:1fr;
-    }
 
-    .grid > .card{
-        grid-column:auto;
-    }
-}
 </style>
 </head>
 
