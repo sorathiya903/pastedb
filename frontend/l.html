@@ -1780,13 +1780,29 @@ nearbySocket.close();
 .addEventListener("click", openNearbyShare);
 
 
+    function toggleTheme() {
+
+    document.body.classList.toggle("light");
+
+    const themeLink = document.getElementById("hljs-theme");
+
+    if (document.body.classList.contains("light")) {
+
+        themeLink.href =
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
+
+    } else {
+
+        themeLink.href =
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css";
+
+    }
+
+}
+
     document
     .getElementById("themeToggle")
-    .addEventListener("click", () => {
-
-      document.body.classList.toggle("light")
-
-    })
+    .addEventListener("click", toggleTheme);
 </script>
 </body>
   </html>
