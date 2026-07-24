@@ -2108,69 +2108,7 @@ background:#ef4444;
 
 
       
-          <div class="password-box">
-
-  <div class="password-header">
-
-    <div class="password-title">
-      <span>Password Protection</span>
-      <span id="pwdTick" class="pwd-status">Disabled</span>
-    </div>
-
-    <label class="switch">
-      <input type="checkbox" id="enablePassword">
-      <span class="slider"></span>
-    </label>
-
-  </div>
-
-  <div id="passwordContainer" class="password-container">
-
-    <input
-      type="password"
-      id="passwordInput"
-      placeholder="Enter secure password"
-    />
-
-    <button
-      type="button"
-      onclick="togglePassword()"
-      class="icon-btn"
-    >
-
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.7"
-        stroke="currentColor"
-        class="eye-icon"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-        />
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-        />
-      </svg>
-
-    </button>
-
-    <button
-      type="button"
-      onclick="generateStrongPassword()"
-      class="strong-btn"
-    >
-      Strong
-    </button>
-
-  </div>
-
-          </div>
+          
           <button data-ga-event="paste_created" class="create-btn" id="createBtn">
 
             <span id="btnText">
@@ -2221,6 +2159,46 @@ background:#ef4444;
   </main>
 
 <script>
+  
+    function updateDraftStatus(state){
+
+draftDot.className="";
+
+switch(state){
+
+case "typing":
+
+draftDot.classList.add("typing");
+draftStatus.title="Typing...";
+break;
+
+case "saving":
+
+draftDot.classList.add("saving");
+draftStatus.title="Saving draft...";
+break;
+
+case "saved":
+
+draftDot.classList.add("saved");
+draftStatus.title="All changes saved";
+break;
+
+case "error":
+
+draftDot.classList.add("error");
+draftStatus.title="Failed to save";
+break;
+
+case "error":
+
+draftDot.classList.add("cleared");
+draftStatus.title="Cleared";
+break;
+
+}
+
+  }
       
     let draftTimer;
     let toSave=true; 
