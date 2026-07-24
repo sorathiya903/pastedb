@@ -2384,6 +2384,140 @@ updateHint();
 document.getElementById("templateLink").onclick = () => {
     openTemplateDialog();
   }
+
+  
+
+async function handleCredentialResponse(response) {
+
+  try {
+
+    const token = response.credential;
+
+    // -------------------------------
+    // Google Login
+    // -------------------------------
+    const authRes = await fetch(
+      `${API_URL}/auth/google`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          token
+        })
+      }
+    );
+
+    if (!authRes.ok) {
+      throw new Error("Authentication failed");
+    }
+
+    const data = await authRes.json();
+
+    if (data.status !== "success") {
+      alert(data.detail || "Login failed.");
+      return;
+    }
+
+    // -------------------------------
+    // Device Keys
+    // -------------------------------
+    const keys = await ensureDeviceKeys();
+
+    const publicKey = await exportPublicKey(
+      keys.publicKey
+    );
+
+    let accountKEK = await getFromDB("accountKEK");
+
+    let encryptedKEK;
+
+    if (!accountKEK) {
+
+      // First login on this browser
+      accountKEK = await generatePEK();
+
+      await saveToDB(
+        "accountKEK",
+        accountKEK
+      );
+
+    }
+
+    const rawKEK =
+      await crypto.subtle.exportKey(
+        "raw",
+        accountKEK
+      );
+
+    encryptedKEK =
+      await encryptPEKWithPublicKey(
+        rawKEK,
+        keys.publicKey
+      );
+
+    // -------------------------------
+    // Register Device
+    // -------------------------------
+    const registerRes = await fetch(
+      `${API_URL}/device/register`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          device_id: keys.deviceId,
+          device_name: navigator.userAgent,
+          public_key: publicKey,
+          encrypted_kek: encryptedKEK
+        })
+      }
+    );
+
+    if (!registerRes.ok) {
+      throw new Error(
+        "Failed to register device."
+      );
+    }
+
+    // -------------------------------
+    // Safe Redirect
+    // -------------------------------
+    const redirect =
+      new URLSearchParams(
+        window.location.search
+      ).get("redirect");
+
+    if (redirect && redirect.startsWith("/")) {
+      window.location.href = redirect;
+    } else {
+      window.location.href = "/dashboard";
+    }
+
+  }
+
+  catch (err) {
+
+    console.error(err);
+
+    alert(
+      err.message ||
+      "Could not connect to server."
+    );
+
+  }
+
+}
+
+function triggerGoogleLogin() {
+
+  google.accounts.id.prompt();
+
+      }
 </script>
 </body>
   </html>
