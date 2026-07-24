@@ -1448,7 +1448,7 @@ function showMalformedUrlScreen() {
     document.getElementById("pasteTitle").textContent =
         json.title || "Untitled";
 
-    const created = new Date(paste.createdAt);
+    const created = new Date(json.createdAt);
 
 document.getElementById("createdAt").textContent =
     created.toLocaleDateString() +
