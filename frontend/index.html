@@ -577,18 +577,7 @@ header{
 
 
 /* --- TABLET RULES (601px to 900px) --- */
-@media (max-width: 900px) and (min-width: 601px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 
-    /* If there is 1 lonely card left over in a 2-column layout (e.g., 3rd or 5th card) */
-    .grid > .card:last-child:nth-child(2n+1) {
-        grid-column: 1 / -1; /* Spans full width */
-    }
-    
-    /* If there are 2 cards in the last row, they naturally take half-half (1fr each) automatically! */
-}
 
 /* --- MOBILE RULES (600px and below) --- */
 @media (max-width: 600px) {
@@ -598,6 +587,17 @@ header{
 
     .grid > .card {
         grid-column: auto !important;
+    }
+}
+@media (max-width: 900px) and (min-width: 601px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* If there are exactly 3 cards (or any odd number total), */
+    /* the very last card will span across both columns at the bottom. */
+    .grid > .card:last-child:nth-child(2n+1) {
+        grid-column: 1 / -1; 
     }
 }
 
