@@ -17,6 +17,8 @@ if(localStorage.getItem("theme")==="dark"){
   
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
 <script>
 
 if(debug){
@@ -2242,6 +2244,74 @@ function updateLines() {
 
 createBtn.addEventListener("click", createLinkPaste);
 
+                                function createQR(url, containerId){
+
+    const container =
+        document.getElementById(containerId);
+container.dataset.qrUrl = url;
+    if(container.dataset.generated){
+
+        container.style.display =
+            container.style.display === "none"
+                ? "block"
+                : "none";
+
+        return;
+    }
+
+    container.style.display = "block";
+
+    QRCode.toCanvas(
+        url,
+        {
+            width:220,
+        margin:2,
+        color:{
+            dark: document.documentElement.classList.contains("dark")
+                ? "#ffffff"
+                : "#111111",
+
+            light: document.documentElement.classList.contains("dark")
+                ? "#1d1d1d"
+                : "#ffffff"
+        }
+        },
+        (err, canvas)=>{
+
+            if(err){
+                console.error(err);
+                return;
+            }
+
+            container.appendChild(canvas);
+
+            // Download button
+            const btn =
+                document.createElement("button");
+
+            btn.className = "generate-btn";
+            btn.textContent = "Download";
+            btn.style.display = "block";
+            btn.style.margin = "15px auto 0";
+
+            btn.onclick = () => {
+
+                const link =
+                    document.createElement("a");
+
+                link.download = "PasteDB-LinkPaste-QR.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            };
+
+            container.appendChild(btn);
+
+            container.dataset.generated = "true";
+        }
+    );
+    }
+
+
 function createLinkPaste() {
 
     const title = document.getElementById("title").value.trim() || "Untitled";
@@ -2284,6 +2354,31 @@ function createLinkPaste() {
   discardDraft()
   setTimeout(()=>{createBtn.innerHTML="Create New Link Paste"
                  },1000)
+
+      const qrDiv = document.createElement("div");
+let qrUrl = url;
+
+qrDiv.id = "pasteQRContainer";
+qrDiv.style.marginTop = "16px";
+
+qrDiv.innerHTML = `
+<button
+    class="qr-btn"
+    onclick="createQR('${qrUrl}','pasteQR')">
+    Show QR
+</button>
+
+<div
+    id="pasteQR"
+    style="
+        display:none;
+        margin-top:15px;
+        text-align:center;
+    ">
+</div>
+`;
+
+pasteLinkBox.appendChild(qrDiv);
 }
 
   
