@@ -1899,6 +1899,21 @@ function toggleTheme() {
     document
     .getElementById("themeToggle")
     .addEventListener("click", toggleTheme);
+
+
+    function copyCode() {
+
+  await navigator.clipboard.writeText(
+    document.getElementById("codeBlock").innerText
+  );}
+
+    
+    document
+    .getElementById("copyBtn")
+    .addEventListener("click", copyCode)
+
+  
+document.getElementById("codeBlock"
 </script>
 </body>
   </html>
