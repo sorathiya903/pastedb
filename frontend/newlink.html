@@ -2275,10 +2275,92 @@ function createLinkPaste() {
     link.href = url;
     link.textContent = url;
 
-    navigator.clipboard.writeText(url);
+  //  navigator.clipboard.writeText(url);
 
-    createBtn.innerHTML = "✓ Link Copied";
+    createBtn.innerHTML = "✓ Link Paste Created";
 }
+
+  
+    const list = document.getElementById("templateList");
+const search = document.getElementById("templateSearch");
+
+function renderTemplates(filter=""){
+
+    list.innerHTML="";
+
+    TEMPLATES
+        .filter(t =>
+            t.title.toLowerCase().includes(filter.toLowerCase()) ||
+            t.category.toLowerCase().includes(filter.toLowerCase())
+        )
+        .forEach(t=>{
+
+            const card=document.createElement("div");
+
+            card.className="template-card";
+
+            card.innerHTML=`
+                <div>
+                    <h3>${t.title}</h3>
+                    <p>${t.description}</p>
+                </div>
+
+                <button>Use</button>
+            `;
+
+            card.querySelector("button").onclick=()=>{
+
+                document.getElementById("code").value=t.code;
+
+                document.getElementById("syntax").value=t.language;
+
+                closeTemplateDialog();
+
+                updateLines();
+
+                updateHint();
+
+            };
+
+            list.appendChild(card);
+
+        });
+
+}
+
+search.oninput=()=>renderTemplates(search.value);
+
+function openTemplateDialog(){
+
+    document.getElementById("templateDialog").classList.add("show");
+
+    search.value="";
+
+    renderTemplates();
+
+    search.focus();
+
+}
+
+function closeTemplateDialog(){
+
+    document.getElementById("templateDialog").classList.remove("show");
+
+}
+
+    
+   const Textcode = document.getElementById("code");
+const hint = document.getElementById("editorHint");
+
+function updateHint(){
+    hint.style.display = Textcode.value.length ? "none" : "block";
+}
+
+Textcode.addEventListener("input", updateHint);
+updateHint();
+
+document.getElementById("templateLink").onclick = () => {
+    openTemplateDialog();
 </script>
 </body>
   </html>
