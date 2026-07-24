@@ -121,6 +121,48 @@ if(localStorage.getItem("theme")==="dark"){
 <meta name="msvalidate.01" content="0E9393C673E8CAAC7ADCBD5CAB4C3B1E" />
   
   <style>
+    .privacy-footer {
+    margin-top: 18px;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: .2s ease;
+}
+
+.privacy-footer:hover {
+    background: var(--highlight);
+}
+
+.privacy-footer span {
+    display: block;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.privacy-footer a {
+    display: inline-block;
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px dashed var(--text);
+    transition: opacity .2s ease;
+}
+
+.privacy-footer a:hover {
+    opacity: 0.75;
+}
+
+.privacy-footer p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
 .close{
 
 width:40px;
