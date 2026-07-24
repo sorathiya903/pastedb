@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8NDTL7KT9"></script>
+
+  <script>
+if (location.hostname.includes("netlify")) {
+    document.write('<script src="/config.js"><\/script>');
+} else {
+    document.write('<script src="config.js"><\/script>');
+}
+  </script>
+    
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paste Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+<script>
+
+if(debug){
+
+  eruda.init();
+
+}
+
+  </script>
+  <script src="/encryption.js"></script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Highlight.js -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
+  <style>
+    :root{
+      --bg: #0f1115;
+      --bg-secondary: #14171d;
+      --surface: rgba(22, 25, 32, 0.74);
+      --surface-solid: #171a21;
+      --border: rgba(255,255,255,0.08);
+
+      --text: rgba(255,255,255,0.88);
+      --text-secondary: rgba(255,255,255,0.58);
+
+      --shadow:
+        0 10px 40px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+
+      --radius: 24px;
+
+      --accent: #8d95a5;
+      --accent-soft: rgba(141,149,165,0.14);
+
+      --success: #b6c4c0;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"Inter",sans-serif;
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.04), transparent 30%),
+                  radial-gradient(circle at bottom right, rgba(255,255,255,0.03), transparent 30%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+      padding-bottom:60px;padding:20px
+    }
+
+    body.light{
+      --bg:#f3f4f7;
+      --bg-secondary:#ffffff;
+      --surface:rgba(255,255,255,0.7);
+      --surface-solid:#ffffff;
+      --border:rgba(0,0,0,0.08);
+
+      --text:rgba(0,0,0,0.88);
+      --text-secondary:rgba(0,0,0,0.58);
+
+      --shadow:
+        0 10px 30px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+
+      background:
+        radial-gradient(circle at top left, rgba(0,0,0,0.04), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(0,0,0,0.03), transparent 30%),
+        var(--bg);
+    }
+
+    .background-glow{
+      position:fixed;
+      width:500px;
+      height:500px;
+      border-radius:50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%);
+      filter:blur(80px);
+      top:-150px;
+      right:-120px;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .container{
+      width:min(1200px, calc(100% - 32px));
+      margin:auto;
+      position:relative;
+      z-index:2;
+    }
+
+    /* Header */
+
+    .header{
+      position:sticky;
+      top:18px;
+      z-index:50;
+      margin-top:28px;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:16px 22px;
+
+      border:1px solid var(--border);
+      background:rgba(20,22,28,0.65);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+
+      border-radius:22px;
+      box-shadow:var(--shadow);
+
+      animation:fadeUp .7s ease;
+    }
+
+    body.light .header{
+      background:rgba(255,255,255,0.65);
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:600;
+      letter-spacing:-0.4px;
+    }
+
+    .logo-dot{
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      background:#9ca3af;
+      box-shadow:0 0 20px rgba(255,255,255,0.2);
+    }
+
+    .header-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .theme, .btn{
+      border:none;
+      outline:none;
+      cursor:pointer;
+      padding:11px 15px;
+      border-radius:16px;
+
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--border);
+
+      color:var(--text);
+      font-size:14px;
+      font-family:inherit;
+
+      transition:
+        transform .25s ease,
+        background .25s ease,
+        border .25s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,0.07);
+    }
+
+    /* Hero */
+
+    .hero{
+      margin-top:32px;
+
+      background:var(--surface);
+      border:1px solid var(--border);
+
+      border-radius:var(--radius);
+      padding:30px;
+
+      box-shadow:var(--shadow);
+
+      animation:fadeUp .9s ease;
+    }
+
+    .paste-title{
+      font-size:34px;
+      font-weight:700;
+      letter-spacing:-1px;
+      margin-bottom:18px;
+    }
+
+    .meta-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:18px;
+    }
+
+    .meta-card{
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .meta-label{
+      color:var(--text-secondary);
+      font-size:13px;
+      margin-bottom:8px;
+    }
+
+    .meta-value{
+      font-size:15px;
+      font-weight:500;
+      word-break:break-word;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+
+      padding:8px 12px;
+      border-radius:999px;
+
+      background:var(--accent-soft);
+      border:1px solid rgba(255,255,255,0.08);
+
+      width:fit-content;
+    }
+
+    .badge-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#c4c7d0;
+    }
+
+    /* Code Section */
+
+    .code-wrapper{
+      margin-top:28px;
+
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:28px;
+
+      overflow:hidden;
+      box-shadow:var(--shadow);
+
+      animation:fadeUp 1.1s ease;
+    }
+
+    .code-toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      padding:18px 22px;
+
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,0.02);
+
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .toolbar-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--text-secondary);
+      font-size:14px;
+    }
+
+    .toolbar-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .code-container{
+      overflow:auto;
+      position:relative;
+    }
+
+    pre{
+      margin:0;
+      padding:28px !important;
+      min-width:max-content;
+      background:transparent !important;
+    }
+
+    code{
+      font-family:"JetBrains Mono", monospace !important;
+      font-size:14px;
+      line-height:1.75;
+    }
+
+    /* Custom scrollbar */
+
+    ::-webkit-scrollbar{
+      width:10px;
+      height:10px;
+    }
+
+    ::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,0.1);
+      border-radius:999px;
+    }
+
+    ::-webkit-scrollbar-track{
+      background:transparent;
+    }
+
+    /* Loading Skeleton */
+
+    .skeleton{
+      padding:30px;
+      display:grid;
+      gap:16px;
+    }
+
+    .skeleton-line{
+      height:16px;
+      border-radius:999px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.03) 25%,
+          rgba(255,255,255,0.08) 50%,
+          rgba(255,255,255,0.03) 75%
+        );
+      background-size:200% 100%;
+      animation:shimmer 2s infinite linear;
+    }
+
+    .skeleton-line:nth-child(1){ width:80%; }
+    .skeleton-line:nth-child(2){ width:92%; }
+    .skeleton-line:nth-child(3){ width:70%; }
+    .skeleton-line:nth-child(4){ width:88%; }
+
+    /* Tooltip */
+
+    .tooltip{
+      position:fixed;
+      top:24px;
+      right:24px;
+
+      padding:12px 16px;
+      border-radius:16px;
+
+      background:rgba(22,24,30,0.95);
+      border:1px solid var(--border);
+
+      color:var(--success);
+      font-size:14px;
+
+      opacity:0;
+      transform:translateY(10px);
+
+      pointer-events:none;
+
+      transition:all .35s ease;
+      z-index:999;
+    }
+
+    .tooltip.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* Highlight.js overrides */
+
+    .hljs{
+      color:#d7dce2;
+      background:transparent;
+    }
+
+    .hljs-comment{
+      color:#7b8190;
+      font-style:italic;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag{
+      color:#b6bdd0;
+    }
+
+    .hljs-string{
+      color:#c6d0d7;
+    }
+
+    .hljs-function,
+    .hljs-title{
+      color:#d3d9e4;
+    }
+
+    .hljs-number,
+    .hljs-literal{
+      color:#b8c7d1;
+    }
+
+    .hljs-params{
+      color:#aab4bf;
+    }
+
+    /* Responsive */
+
+    @media(max-width:768px){
+
+      .header{
+        padding:14px 16px;
+      }
+
+      .hero{
+        padding:22px;
+      }
+
+      .paste-title{
+        font-size:26px;
+      }
+
+      .code-toolbar{
+        padding:16px;
+      }
+
+      pre{
+        padding:22px !important;
+      }
+
+      .toolbar-actions{
+        width:100%;
+      }
+
+      .toolbar-actions .btn{
+        flex:1;
+      }
+    }
+
+    @media(max-width:520px){
+
+      .header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:14px;
+      }
+
+      .header-actions{
+        width:100%;
+        flex-wrap:wrap;
+      }
+
+      .header-actions .btn{
+        flex:1;
+      }
+    }
+
+    /* Animations */
+
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(18px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    @keyframes shimmer{
+      from{
+        background-position:200% 0;
+      }
+      to{
+        background-position:-200% 0;
+      }
+    }
+    .theme{margin-bottom:15px}
+
+    .spinner {
+  width:10px;
+  height:10px;
+  border:2px solid #555;
+  border-top:2px solid white;
+  border-radius:50%;
+  display:inline-block;
+  animation:spin 0.8s linear infinite;
+  margin-right:6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+          }
+
+    #outputBlock{
+  color:#d7dce2;
+  font-family:"JetBrains Mono", monospace;
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+
+#outputWrapper{
+  animation:fadeUp .5s ease;
+}
+
+      .malformed-screen{
+    position:fixed;
+    inset:0;
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    z-index:99999;
+}
+
+.malformed-card{
+    width:100%;
+    max-width:520px;
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:40px 32px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.35);
+}
+
+.icon{
+    font-size:64px;
+    margin-bottom:18px;
+}
+
+.malformed-card h1{
+    color:#fff;
+    margin:0 0 14px;
+    font-size:30px;
+}
+
+.main-text{
+    color:#e2e8f0;
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.sub-text{
+    color:#94a3b8;
+    line-height:1.6;
+    margin-bottom:28px;
+}
+
+.actions{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.actions button{
+    border:none;
+    border-radius:10px;
+    padding:12px 22px;
+    font-size:16px;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+    transition:.2s;
+}
+
+.actions button:hover{
+    background:#1d4ed8;
+    }
+
+    .nearby-modal{
+
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(12px);
+justify-content:center;
+align-items:center;
+z-index:99999;
+padding:20px;
+
+}
+
+.nearby-card{
+
+width:100%;
+max-width:420px;
+background:#171a21;
+border-radius:24px;
+overflow:hidden;
+border:1px solid rgba(255,255,255,.08);
+box-shadow:0 20px 60px rgba(0,0,0,.45);
+animation:nearbyShow .25s ease;
+
+}
+
+@keyframes nearbyShow{
+
+from{
+
+opacity:0;
+transform:translateY(25px) scale(.96);
+
+}
+
+to{
+
+opacity:1;
+transform:none;
+
+}
+
+}
+
+.nearby-header{
+
+padding:22px;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.nearby-header h2{
+
+margin:0;
+font-size:22px;
+
+}
+
+#nearbyStatus{
+
+margin-top:6px;
+font-size:14px;
+color:#9ca3af;
+
+}
+
+.nearby-close{
+
+width:40px;
+height:40px;
+border:none;
+border-radius:50%;
+background:#232833;
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.nearby-close:hover{
+
+background:#303848;
+transform:rotate(90deg);
+
+}
+
+.nearby-list{
+
+padding:18px;
+min-height:240px;
+max-height:340px;
+overflow-y:auto;
+
+}
+
+.nearby-search{
+
+display:flex;
+align-items:center;
+gap:18px;
+padding:25px 0;
+
+}
+
+.nearby-loader{
+
+width:42px;
+height:42px;
+border-radius:50%;
+border:4px solid rgba(255,255,255,.15);
+border-top-color:#fff;
+animation:spin .8s linear infinite;
+
+}
+
+@keyframes spin{
+
+to{
+
+transform:rotate(360deg);
+
+}
+
+}
+
+.nearby-title{
+
+font-size:17px;
+font-weight:600;
+
+}
+
+.nearby-sub{
+
+margin-top:5px;
+font-size:13px;
+color:#8b95a7;
+
+}
+
+.deviceCard{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px;
+border-radius:18px;
+margin-bottom:12px;
+background:#20252f;
+cursor:pointer;
+transition:.25s;
+border:1px solid rgba(255,255,255,.05);
+
+}
+
+.deviceCard:hover{
+
+background:#2a303b;
+transform:translateY(-2px);
+
+}
+
+.deviceLeft{
+
+display:flex;
+align-items:center;
+gap:14px;
+
+}
+
+.deviceIcon{
+
+width:52px;
+height:52px;
+border-radius:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+background:#2d3442;
+
+}
+
+.deviceName{
+
+font-size:16px;
+font-weight:600;
+
+}
+
+.deviceDistance{
+
+margin-top:4px;
+font-size:13px;
+color:#8b95a7;
+
+}
+
+.sendArrow{
+
+font-size:24px;
+opacity:.6;
+transition:.2s;
+
+}
+
+.deviceCard:hover .sendArrow{
+
+transform:translateX(5px);
+opacity:1;
+
+}
+
+.nearby-empty{
+
+text-align:center;
+padding:40px 10px;
+
+}
+
+.nearby-empty .icon{
+
+font-size:55px;
+margin-bottom:12px;
+
+}
+
+.nearby-empty h3{
+
+margin-bottom:10px;
+
+}
+
+.nearby-empty p{
+
+color:#9ca3af;
+line-height:1.6;
+font-size:14px;
+
+}
+
+.nearby-success{
+
+text-align:center;
+padding:40px;
+
+}
+
+.nearby-success .icon{
+
+font-size:60px;
+margin-bottom:12px;
+
+}
+
+.nearby-success h3{
+
+margin-bottom:8px;
+
+}
+
+.nearby-success p{
+
+color:#9ca3af;
+
+}
+
+.nearby-footer{
+
+padding:18px;
+border-top:1px solid rgba(255,255,255,.06);
+
+}
+
+.nearby-cancel{
+
+width:100%;
+padding:14px;
+border:none;
+border-radius:16px;
+background:#2d3442;
+color:white;
+font-size:15px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.nearby-cancel:hover{
+
+background:#384152;
+
+    }
+
+  .btn{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+}
+
+.btn svg{
+    width:20px;
+    height:20px;
+    display:block;
+    flex-shrink:0;
+}
+    
+  </style>
+</head>
+
+<body>
+
+<div id="decryptionFailedScreen" class="malformed-screen" style="display:none;">
+
+  <div class="malformed-card">
+
+    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="50" width="50">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+</svg>
+</div>
+
+    <h1>Unable to Decrypt Paste</h1>
+
+    <p class="main-text">
+      This paste couldn't be decrypted.
+    </p>
+
+    <p class="sub-text">
+      The encryption key is invalid, missing, or doesn't match this paste. This usually happens if the link was modified or the wrong encryption key was used.
+    </p>
+
+    <div class="actions">
+      <button onclick="location.href='/'">
+        Go to Home
+      </button>
+    </div>
+
+  </div>
+
+</div>
+<div id="malformedUrlScreen" class="malformed-screen" style="display:none;">
+
+  <div class="malformed-card">
+    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="50" width="50">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+</svg>
+</div>
+
+    <h1>Invalid Paste Link</h1>
+
+    <p class="main-text">
+      This PasteDB link is invalid or malformed.
+    </p>
+
+    <p class="sub-text">
+      The link contains invalid or corrupted URL data and couldn't be processed. This usually happens if the link was modified, truncated, or copied incorrectly. If this is an encrypted paste, make sure you've copied the entire link, including everything after the <strong>#</strong>.
+    </p>
+
+    <div class="actions">
+      <button onclick="location.href='/'">
+        Go to Home
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+<section
+  class="hero"
+  id="errorState"
+  style="display:none;"
+>
+
+  <h1 class="paste-title">
+    Paste Not Found
+  </h1>
+
+  <p
+    style="
+      color:var(--text-secondary);
+      margin-top:10px;
+      line-height:1.7;
+    "
+  >
+    The paste may have expired, been deleted,
+    or the URL is invalid.
+  </p>
+
+</section>
+
+
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <button class="theme" data-ga-event="theme_changed_viewer" id="themeToggle">Toggle Theme</button>
+
+  <!-- TITLE SHIMMER -->
+  <div
+    class="skeleton-line"
+    id="titleSkeleton"
+    style="
+      width:320px;
+      height:34px;
+      margin-bottom:24px;
+      border-radius:14px;
+    "
+  ></div>
+
+  <h1
+    class="paste-title"
+    id="pasteTitle"
+    style="display:none;"
+  ></h1>
+
+  <div class="meta-grid">
+
+    <!-- CREATED -->
+    <div class="meta-card">
+
+      <div class="meta-label">
+        Created
+      </div>
+
+      <div
+        class="skeleton-line"
+        id="createdSkeleton"
+        style="width:120px;"
+      ></div>
+
+      <div
+        class="meta-value"
+        id="createdAt"
+        style="display:none;"
+      ></div>
+
+    </div>
+    
+
+  </div>
+
+</section>
+
+
+
+<!-- CODE WRAPPER -->
+<section
+  class="code-wrapper"
+  id="codeWrapper"
+>
+
+  <div class="code-toolbar">
+
+    <div class="toolbar-left">
+
+      <!-- FILE NAME SHIMMER -->
+      <div
+        class="skeleton-line"
+        id="fileSkeleton"
+        style="width:90px;"
+      ></div>
+
+      <span
+        id="fileName"
+        style="display:none;"
+      ></span>
+
+      <span>•</span>
+
+      <!-- LINE SHIMMER -->
+      <div
+        class="skeleton-line"
+        id="lineSkeleton"
+        style="width:60px;"
+      ></div>
+
+      <span
+        id="lineCount"
+        style="display:none;"
+      ></span>
+
+    </div>
+
+    <div class="toolbar-actions">
+
+      <button data-ga-event="copy_code" class="btn" id="copyBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 408 480">
+    <path fill="currentColor" d="M299 5v43H43v299H0V48q0-18 12.5-30.5T43 5h256zm64 86q17 0 29.5 12.5T405 133v299q0 18-12.5 30.5T363 475H128q-18 0-30.5-12.5T85 432V133q0-17 12.5-29.5T128 91h235zm0 341V133H128v299h235z"/>
+        </svg>
+      </button>
+
+      <button data-ga-event="raw_click" id="rawBtn" class="btn">
+       <b>Raw</b>
+      </button>
+      <button class="btn" id="imagesBtn" style="display:none;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <rect width="18" height="18" x="5" y="1" rx="2"/>
+        <circle cx="17" cy="7" r="2"/>
+        <path d="m5 16l6-6l9 9M1 5v13a5 5 0 0 0 5 5h13"/>
+    </g>
+        </svg>
+      </button>
+<button data-ga-event="run_code_clicked" class="btn" id="runBtn">
+    <b>Run</b>
+  </button>
+      <button class="btn" data-ga-event="nearby_transfer_opened" id="nearbyShareBtn" style="display:none">
+     
+        <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M3 16.5q-.2 0-.375-.075T2.3 16.2q-.15-.15-.225-.325Q2 15.7 2 15.5t.075-.375q.075-.175.225-.325l5.55-5.575q.8-.8 1.912-1.263Q10.875 7.5 12 7.5t2.238.462q1.112.463 1.912 1.263l.475.475l-1.425 1.4l-.45-.45q-.525-.5-1.275-.825Q12.725 9.5 12 9.5q-.725 0-1.462.312q-.738.313-1.288.838L3.7 16.2q-.15.15-.325.225Q3.2 16.5 3 16.5Zm1.025-5.55L2.3 9.2q-.15-.15-.225-.325Q2 8.7 2 8.5t.075-.375Q2.15 7.95 2.3 7.8q.15-.15.325-.225Q2.8 7.5 3 7.5t.375.075q.175.075.325.225l1.75 1.725ZM12 16.5q-1.125 0-2.238-.475Q8.65 15.55 7.85 14.75l-.275-.275l1.4-1.425l.3.3q.525.525 1.263.838q.737.312 1.462.312t1.463-.312q.737-.313 1.287-.838L20.3 7.8q.15-.15.325-.225Q20.8 7.5 21 7.5t.375.075q.175.075.325.225q.15.15.225.325Q22 8.3 22 8.5t-.062.375q-.063.175-.213.325l-5.575 5.55q-.8.8-1.912 1.275q-1.113.475-2.238.475Zm9 0q-.2 0-.375-.075T20.3 16.2l-1.725-1.725l1.4-1.425L21.7 14.8q.15.15.225.325q.075.175.075.375t-.075.375q-.075.175-.225.325q-.15.15-.325.225q-.175.075-.375.075Z"/>
+        </svg>
+      </button>
+
+
+    </div>
+
+  </div>
+
+  <!-- CODE SHIMMER -->
+  <div class="skeleton" id="skeleton">
+
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+
+  </div>
+
+  <!-- CODE -->
+  <div
+    class="code-container"
+    id="codeContainer"
+    style="display:none;"
+  >
+
+<pre><code
+class="language-plaintext"
+id="codeBlock"
+></code></pre>
+
+  </div>
+
+</section>
+
+
+<section
+  class="code-wrapper"
+  id="outputWrapper"
+  style="margin-top:20px; display:none;"
+>
+
+  <div class="code-toolbar">
+    <div class="toolbar-left">
+      Output
+    </div>
+  </div>
+
+  <div class="code-container">
+
+<pre>
+<code id="outputBlock"></code>
+</pre>
+
+  </div>
+
+</section>
+
+  <div
+  id="htmlPreviewWrapper"
+  style="
+    display:none;
+    margin-top:20px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    overflow:hidden;
+    background:white;
+    min-height:400px;
+  "
+>
+
+  <div
+    style="
+      padding:14px 18px;
+      border-bottom:1px solid var(--border);
+      background:var(--surface-solid);
+      color:var(--text);
+      font-weight:600; display:flex;justify-content:space-between;align-items :center 
+    "
+  >
+  <div>  HTML Preview </div>
+    <button
+    class="btn"
+      style="display:flex;justify-content:center;padding:5px;align-items:center "
+    id="openPreviewBtn"
+  >
+   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" height="20" width="20">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
+</svg>
+  
+
+  
+    </button>
+  </div>
+
+  <iframe
+    id="htmlPreview"
+    sandbox="allow-scripts allow-modals"
+    style="
+      width:100%;
+      height:500px;
+      border:none;
+      background:white;
+    "
+  ></iframe>
+
+  </div>
+  <div id="nearbyModal" class="nearby-modal">
+
+<div class="nearby-card">
+
+<div class="nearby-header">
+
+<div>
+
+<h2>Nearby Share</h2>
+
+<p id="nearbyStatus">
+Searching for nearby devices...
+</p>
+
+</div>
+
+<button
+class="nearby-close"
+onclick="closeNearbyShare()">
+✕
+</button>
+
+</div>
+
+<div
+id="nearbyDevices"
+class="nearby-list">
+
+<div class="nearby-search">
+
+<div class="nearby-loader"></div>
+
+<div>
+
+<div class="nearby-title">
+Searching...
+</div>
+
+<div class="nearby-sub">
+Looking for nearby devices
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="nearby-footer">
+
+<button
+class="nearby-cancel"
+onclick="closeNearbyShare()">
+
+Cancel
+
+</button>
+
+</div>
+
+</div>
+
+  </div>
+  
+<script></script>
+<!-- Elegant Full Width Footer -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+<footer class="footer">
+  <p>
+     <span id="credit" class="shimmer-text">Made with passion and thousands of lines of code by Aditya</span>
+  </p>
+
+  <div class="footer-links">
+    <a href="/dashboard.html" data-ga-event="dash_opened_viewer">Dashboard</a>
+    <a href="/explore" data-ga-event="explore_opened_viewer">Explore</a>
+    <a href="/terms" data-ga-event="term_opened_viewer">Terms</a>
+  </div>
+</footer>
+
+<style>
+.footer{
+    width:100%;
+    padding:24px 20px;
+    text-align:center;
+
+    background:var(--bg);
+    border-top:1px solid rgba(255,255,255,0.08);
+
+    font-family:Inter, system-ui, sans-serif;
+}
+
+.footer p{
+    color:var(--text);
+    font-size:14px;
+    margin-bottom:14px;
+}
+
+
+.footer-links{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    flex-wrap:wrap;
+}
+
+.footer-links a{
+    color:var(--muted);
+    text-decoration:none;
+    font-size:14px;
+    transition:.25s;
+}
+
+.footer-links a:hover{
+    color:#fff;
+}
+
+:root{
+    --shimmer-base: rgba(255,255,255,0.45);
+    --shimmer-highlight: #ffffff;
+}
+
+body.light{
+    --shimmer-base: rgba(0,0,0,0.35);
+    --shimmer-highlight: #000000;
+}
+
+.shimmer-text{
+    font-weight:700;
+
+    background:linear-gradient(
+        90deg,
+        var(--shimmer-base) 0%,
+        var(--shimmer-highlight) 50%,
+        var(--shimmer-base) 100%
+    );
+
+    background-size:200% 100%;
+    background-position:-200% 0;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:shimmer 2s linear infinite;
+}
+
+@keyframes shimmer{
+    to{
+        background-position:200% 0;
+    }
+}
+</style>
+
+<script>
+function showMalformedUrl() {
+    document.getElementById("malformedUrlScreen").style.display = "flex";
+    document.getElementById("heroSection").style.display = "none";
+    document.getElementById("codeWrapper").style.display = "none";
+}
+
+(function () {
+
+    const hash = location.hash.slice(1);
+
+    if (!hash) {
+        showMalformedUrl();
+        return;
+    }
+
+    let json;
+
+    try {
+        const decompressed = LZString.decompressFromEncodedURIComponent(hash);
+
+        if (!decompressed)
+            throw new Error("Invalid compressed data");
+
+        json = JSON.parse(decompressed);
+
+    } catch (e) {
+        console.error(e);
+        showMalformedUrl();
+        return;
+    }
+
+    // Remove skeletons
+    document.getElementById("titleSkeleton").style.display = "none";
+    document.getElementById("createdSkeleton").style.display = "none";
+    document.getElementById("fileSkeleton").style.display = "none";
+    document.getElementById("lineSkeleton").style.display = "none";
+    document.getElementById("skeleton").style.display = "none";
+
+    // Show content
+    document.getElementById("pasteTitle").style.display = "";
+    document.getElementById("createdAt").style.display = "";
+    document.getElementById("fileName").style.display = "";
+    document.getElementById("lineCount").style.display = "";
+    document.getElementById("codeContainer").style.display = "";
+
+    document.getElementById("pasteTitle").textContent =
+        json.title || "Untitled";
+
+    document.getElementById("createdAt").textContent =
+        json.created_at || "Local Paste";
+
+    document.getElementById("fileName").textContent =
+        json.file_name || "text.txt";
+
+    const code = json.content || "";
+
+    document.getElementById("codeBlock").textContent = code;
+
+    document.getElementById("lineCount").textContent =
+        code.split("\n").length + " lines";
+
+    // Highlight
+    hljs.highlightElement(document.getElementById("codeBlock"));
+
+})();
+</script>
+</body>
+  </html>
