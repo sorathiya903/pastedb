@@ -1395,12 +1395,17 @@ body.light{
 </style>
 
 <script>
-function showMalformedUrl() {
-    document.getElementById("malformedUrlScreen").style.display = "flex";
-    document.getElementById("heroSection").style.display = "none";
-    document.getElementById("codeWrapper").style.display = "none";
-}
+function showMalformedUrlScreen() {
 
+    const screen =
+        document.getElementById("malformedUrlScreen");
+
+    document.body.innerHTML = "";
+
+    document.body.appendChild(screen);
+
+    screen.style.display = "flex";
+}
 (function () {
 
     const hash = location.hash.slice(1);
