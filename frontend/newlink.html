@@ -2244,7 +2244,7 @@ function updateLines() {
 
 createBtn.addEventListener("click", createLinkPaste);
 
-                                function createQR(url, containerId){
+        function createQR(url, containerId){
 
     const container =
         document.getElementById(containerId);
@@ -2321,6 +2321,14 @@ function createLinkPaste() {
         alert("Paste cannot be empty.");
         return;
     }
+  const oldBtn = document.getElementById("showQrBtn");
+if (oldBtn) oldBtn.remove();
+
+const btn = document.createElement("button");
+btn.id = "showQrBtn";
+btn.className = "qr-btn";
+btn.textContent = "Show QR";
+pasteLinkBox.appendChild(btn);
 
     const syntax = document.getElementById("syntax").value;
 
