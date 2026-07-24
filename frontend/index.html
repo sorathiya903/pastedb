@@ -559,8 +559,8 @@ header{
         grid-template-columns:repeat(2,1fr);
     }
 
-    /* Last card becomes full width if odd */
-    .grid > .card:last-child:nth-child(odd){
+    /* Single last card takes full width */
+    .grid > .card:last-child:nth-child(2n+1){
         grid-column:1 / -1;
     }
 }
@@ -570,7 +570,7 @@ header{
         grid-template-columns:1fr;
     }
 
-    .grid > .card:last-child{
+    .grid > .card{
         grid-column:auto;
     }
 }
