@@ -1903,7 +1903,7 @@ function toggleTheme() {
 
     function copyCode() {
 
-  await navigator.clipboard.writeText(
+  navigator.clipboard.writeText(
     document.getElementById("codeBlock").innerText
   );}
 
@@ -1913,7 +1913,7 @@ function toggleTheme() {
     .addEventListener("click", copyCode)
 
   
-document.getElementById("codeBlock"
+
 </script>
 </body>
   </html>
