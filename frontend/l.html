@@ -1779,25 +1779,29 @@ nearbySocket.close();
 .getElementById("nearbyShareBtn")
 .addEventListener("click", openNearbyShare);
 
-
-    function toggleTheme() {
+function toggleTheme() {
 
     document.body.classList.toggle("light");
 
     const themeLink = document.getElementById("hljs-theme");
+    const codeBlock = document.getElementById("codeBlock");
 
-    if (document.body.classList.contains("light")) {
+    themeLink.onload = () => {
 
-        themeLink.href =
-        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css";
+        // Remove previous highlighting
+        codeBlock.removeAttribute("data-highlighted");
 
-    } else {
+        // Keep the language class
+        const lang = [...codeBlock.classList].find(c => c.startsWith("language-")) || "language-plaintext";
+        codeBlock.className = lang;
 
-        themeLink.href =
-        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css";
+        // Highlight again
+        hljs.highlightElement(codeBlock);
+    };
 
-    }
-
+    themeLink.href = document.body.classList.contains("light")
+        ? "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+        : "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css";
 }
 
     document
