@@ -589,15 +589,15 @@ header{
         grid-column: auto !important;
     }
 }
-@media (max-width: 900px) and (min-width: 601px) {
+ @media (max-width: 900px) and (min-width: 601px) {
     .grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* If there are exactly 3 cards (or any odd number total), */
-    /* the very last card will span across both columns at the bottom. */
-    .grid > .card:last-child:nth-child(2n+1) {
-        grid-column: 1 / -1; 
+    /* Target Card 3 and Card 4 specifically when there are exactly 4 cards total */
+    .grid > .card:nth-child(3):nth-last-child(2),
+    .grid > .card:nth-child(4):last-child {
+        grid-column: 1 / -1; /* Forces both to take full width */
     }
 }
 
