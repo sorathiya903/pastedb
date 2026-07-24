@@ -7,6 +7,17 @@
         <priority>1.0</priority>
         <changefreq>daily</changefreq>
     </url>
+    <url>
+        <loc>https://pastedb.netlify.app/create</loc>
+        <priority>0.9</priority>
+        <changefreq>monthly</changefreq>
+    </url>
+    
+    <url>
+        <loc>https://pastedb.netlify.app/newLink</loc>
+        <priority>0.9</priority>
+        <changefreq>monthly</changefreq>
+    </url>
 
     <url>
         <loc>https://pastedb.netlify.app/explore</loc>
