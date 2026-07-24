@@ -2112,7 +2112,7 @@ background:#ef4444;
           <button data-ga-event="paste_created" class="create-btn" id="createBtn">
 
             <span id="btnText">
-              Create New Paste
+              Create New Link Paste
             </span>
 
           </button>
@@ -2282,6 +2282,8 @@ function createLinkPaste() {
 
     createBtn.innerHTML = "✓ Link Paste Created";
   discardDraft()
+  setTimeout(()=>{createBtn.innerHTML="Create New Link Paste"
+                 },1000)
 }
 
   
