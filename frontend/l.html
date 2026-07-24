@@ -1422,9 +1422,96 @@ document.getElementById("createdAt").textContent =
     created.toLocaleDateString() +
     " " +
     created.toLocaleTimeString();
+
+
+    const language =
+        json.syntax || "plaintext"
+
+
+
+const extensions = {
+    plaintext: "txt",
+
+    // Web
+    html: "html",
+    xml: "xml",
+    css: "css",
+    javascript: "js",
+    typescript: "ts",
+    json: "json",
+    markdown: "md",
+
+    // Backend
+    python: "py",
+    java: "java",
+    kotlin: "kt",
+    php: "php",
+    ruby: "rb",
+    go: "go",
+    rust: "rs",
+    csharp: "cs",
+    swift: "swift",
+
+    // C Family
+    c: "c",
+    cpp: "cpp",
+    objectivec: "m",
+
+    // Shell
+    bash: "sh",
+    shell: "sh",
+    powershell: "ps1",
+
+    // Database
+    sql: "sql",
+
+    // Config
+    yaml: "yaml",
+    toml: "toml",
+    ini: "ini",
+
+    // DevOps
+    dockerfile: "Dockerfile",
+    nginx: "conf",
+
+    // Data Science
+    r: "r",
+    matlab: "m",
+
+    // Mobile
+    dart: "dart",
+
+    // Other
+    lua: "lua",
+    perl: "pl",
+    scala: "scala",
+    haskell: "hs",
+    elixir: "ex",
+    erlang: "erl",
+    clojure: "clj",
+    graphql: "graphql",
+    protobuf: "proto",
+    diff: "diff",
+    apache: "conf"
+};
+
+
+
+      const ext =
+        extensions[language] || "txt"
+
+
+
+      // FILE NAME
+
+     const file_name =
+        `main.${ext}`
+
+      
+
     
     document.getElementById("fileName").textContent =
-        json.file_name || "text.txt";
+        file_name || "text.txt";
 
     const code = json.content || "";
 
@@ -1434,6 +1521,9 @@ document.getElementById("createdAt").textContent =
         code.split("\n").length + " lines";
 
     // Highlight
+    document.getElementById("codeBlock").className =
+        `language-${language}`
+
     hljs.highlightElement(document.getElementById("codeBlock"));
 
 })();
