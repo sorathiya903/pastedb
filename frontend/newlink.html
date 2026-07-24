@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8NDTL7KT9"></script>
+
+  
+<script src="config.js"></script>
+<script src="/encryption.js"></script>
+<script src="templates.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+
+
+  
+  <title>PasteDB - Create a Paste</title>
+<meta name="description"
+      content="Create and share code snippets, notes, text, and images instantly with PasteDB. Customize visibility, expiration, and manage your pastes easily.">
+
+  
+  <link rel="canonical"
+      href="https://pastedb.netlify.app/create">
+
+  
+  <meta property="og:type" content="website">
+
+<meta property="og:title"
+      content="Create a Paste - PasteDB">
+
+<meta property="og:description"
+      content="Create and share code snippets, notes, text, and images instantly with PasteDB.">
+
+<meta property="og:url"
+      content="https://pastedb.netlify.app/create">
+
+<meta property="og:image"
+      content="https://pastedb.netlify.app/og-image.png">
+  
+<meta name="twitter:card"
+      content="summary_large_image">
+
+<meta name="twitter:title"
+      content="Create a Paste - PasteDB">
+
+<meta name="twitter:description"
+      content="Create and share code snippets, notes, text, and images instantly with PasteDB.">
+
+<meta name="twitter:image"
+      content="https://pastedb.netlify.app/og-image.png">
+  
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Create a Paste - PasteDB",
+  "url": "https://pastedb.netlify.app/create",
+  "description": "Create and share code snippets, notes, text and images instantly with PasteDB.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "PasteDB",
+    "url": "https://pastedb.netlify.app"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PasteDB",
+    "url": "https://pastedb.netlify.app"
+  },
+  "potentialAction": {
+  "@type": "CreateAction",
+  "target": "https://pastedb.netlify.app/create"
+},
+  "inLanguage": "en"
+}
+</script>
+  
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PasteDB",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "url": "https://pastedb.netlify.app",
+  "description": "PasteDB is an online pastebin for sharing code snippets, notes, markdown, images and text with syntax highlighting, password protection, expiration, analytics and more.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<meta name="msvalidate.01" content="0E9393C673E8CAAC7ADCBD5CAB4C3B1E" />
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+  <style>
+.close{
+
+width:40px;
+height:40px;
+border:none;
+border-radius:50%;
+background:#232833;
+color:white;
+font-size:18px;
+cursor:pointer;
+transition:.2s;
+
+}
+
+.close:hover{
+
+background:#303848;
+transform:rotate(90deg);
+
+}
+    .template-dialog{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+.template-dialog.show{
+    display:flex;
+}
+
+.template-box{
+
+    width:650px;
+    max-width:95vw;
+
+    max-height:80vh;
+
+    overflow:hidden;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:24px;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.template-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:22px;
+}
+
+#templateSearch{
+
+    margin:0 22px 18px;
+
+    width:calc(100% - 44px);
+}
+
+#templateList{
+
+    overflow:auto;
+
+    padding:0 22px 22px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+}
+
+.template-card{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    background:var(--editor);
+}
+
+.template-card h3{
+
+    font-size:16px;
+
+    margin-bottom:5px;
+}
+
+.template-card p{
+
+    color:var(--muted);
+
+    font-size:14px;
+}
+
+.template-card button{
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--text);
+
+    color:var(--bg);
+
+    cursor:pointer;
+}
+    
+    .editor-wrapper{
+    position:relative;
+    flex:1;
+}
+
+#code{
+    width:100%;
+    height:100%;
+} 
+
+.editor-hint{
+  margin-top:15px;margin-right:5px;margin-left:9px;
+  position:absolute;
+    top:24px;
+    left:24px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px;
+    color:#8b949e;
+    pointer-events:none;
+    user-select:none;
+}
+
+.editor-hint span{
+    color:#2f81f7;
+    pointer-events:auto;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.editor-hint span:hover{
+    text-decoration:underline;
+  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+
+      --bg: #f4f4f3;
+      --card: #fbfbfa;
+      --border: #e5e5e3;
+
+      --text: #1d1d1d;
+      --muted: #787878;
+
+      --input: #ffffff;
+
+      --button: #202020;
+      --buttonText: #f5f5f5;
+
+      --shadow:
+        0 10px 30px rgba(0, 0, 0, 0.04);
+
+      --highlight:
+        rgba(0, 0, 0, 0.03);
+
+      --editor:
+        #fcfcfb;
+
+      --line:
+        #b3b3b3;
+    }
+
+ html.dark,   body.dark {
+
+      --bg: #161616;
+      --card: #1d1d1d;
+      --border: #2b2b2b;
+
+      --text: #ececec;
+      --muted: #9d9d9d;
+
+      --input: #202020;
+
+      --button: #efefef;
+      --buttonText: #111;
+
+      --shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25);
+
+      --highlight:
+        rgba(255, 255, 255, 0.03);
+
+      --editor:
+        #1a1a1a;
+
+      --line:
+        #666;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      transition: 0.35s ease;
+      overflow-x: hidden;
+    }
+    
+
+    .bg-glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.5;
+    }
+
+    .glow1 {
+      background: rgba(120, 120, 120, 0.08);
+      top: -200px;
+      left: -150px;
+    }
+
+    .glow2 {
+      background: rgba(160, 160, 160, 0.08);
+      right: -150px;
+      bottom: -200px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.7);
+      border-bottom: 1px solid var(--border);display:flex;justify-content:center;align-items :center;
+    }
+
+    html.dark header {
+      background: rgba(20, 20, 20, 0.7);
+    }
+
+    .navbar {
+      max-width: 1400px;
+      margin: auto;
+      padding: 18px 24px;
+flex-wrap: wrap;
+gap: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 14px;
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      box-shadow: var(--shadow);
+    }
+
+    .logo-icon div {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      background: var(--text);
+    }
+
+    .logo h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .logo p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn,
+    .theme-btn {
+
+      padding: 12px 18px;
+
+      border-radius: 14px;
+
+      border: 1px solid var(--border);
+
+      background: var(--card);
+      color: var(--text);
+
+      cursor: pointer;
+
+      transition: 0.25s ease;
+
+      font-weight: 600;
+    }
+
+    .nav-btn:hover,
+    .theme-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: auto;
+      padding: 40px 24px;
+    }
+
+    .container {
+
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    @keyframes fadeUp {
+
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .editor {
+
+      background: var(--editor);
+
+      border: 1px solid var(--border);
+
+      border-radius: 30px;
+
+      overflow: hidden;
+
+      box-shadow: var(--shadow);
+    }
+
+    .editor-top {
+
+      padding: 22px 28px;
+
+      border-bottom: 1px solid var(--border);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .editor-top h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .editor-top p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dots div {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #999;
+    }
+
+    .editor-body{
+  display: flex;
+  height: 680px;
+  overflow: hidden;
+}
+    .lines{
+
+  width: 70px;
+
+  border-right: 1px solid var(--border);
+
+  padding: 24px 14px;
+
+  background: var(--highlight);
+
+  text-align: right;
+
+  font-family: 'JetBrains Mono', monospace;
+
+  color: var(--line);
+
+  user-select: none;
+
+  overflow-y: hidden;
+}
+    .lines div {
+      line-height: 34px;
+      font-size: 14px;
+    }
+
+    textarea{
+  flex: 1;
+
+  border: none;
+  outline: none;
+
+  resize: none;
+
+  padding: 24px;
+
+  background: transparent;
+
+  color: var(--text);
+
+  font-family: 'JetBrains Mono', monospace;
+
+  font-size: 15px;
+
+  line-height: 34px;
+
+  height: 680px;
+  max-height: 680px;
+
+  overflow-y: auto;
+}
+
+    textarea::placeholder {
+      color: #999;
+    }
+
+    textarea:focus {
+      box-shadow:
+        inset 0 0 0 1px rgba(120, 120, 120, 0.3);
+    }
+
+    .sidebar {
+
+      background: var(--card);
+
+      border: 1px solid var(--border);
+
+      border-radius: 30px;
+
+      height: fit-content;
+
+      position: sticky;
+      top: 95px;
+
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-top {
+
+      padding: 24px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-top h3 {
+      font-size: 20px;
+    }
+
+    .sidebar-top p {
+      color: var(--muted);
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .settings {
+
+      padding: 24px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    label {
+
+      display: block;
+
+      margin-bottom: 10px;
+
+      font-size: 14px;
+
+      color: var(--muted);
+    }
+
+    input,
+    select {
+
+      width: 100%;
+
+      padding: 14px 16px;
+
+      border-radius: 16px;
+
+      border: 1px solid var(--border);
+
+      background: var(--input);
+
+      color: var(--text);
+
+      outline: none;
+
+      transition: 0.25s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #999;
+    }
+
+
+
+    
+    
+
+    .create-btn {
+
+      width: 100%;
+
+      padding: 17px;
+
+      border: none;
+
+      border-radius: 18px;
+
+      background: var(--button);
+
+      color: var(--buttonText);
+
+      font-size: 16px;
+      font-weight: 600;
+
+      cursor: pointer;
+
+      transition: 0.25s ease;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .create-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.94;
+    }
+
+    .create-btn:active {
+      transform: scale(0.98);
+    }
+
+    .create-btn:disabled {
+
+      opacity: 0.6;
+
+      cursor: not-allowed;
+
+      transform: none !important;
+    }
+
+    .spinner {
+
+      width: 18px;
+      height: 18px;
+
+      border-radius: 50%;
+
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid white;
+
+      animation: spin 0.8s linear infinite;
+    }
+
+    html.dark .spinner{
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top: 2px solid black;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .syntax-preview {
+
+      margin-top: 14px;
+
+      padding: 16px;
+
+      border-radius: 16px;
+
+      background: var(--editor);
+
+      border: 1px solid var(--border);
+
+      font-family: 'JetBrains Mono', monospace;
+
+      font-size: 14px;
+
+      overflow-x: auto;
+    }
+
+    .keyword {
+      color: #7c6df2;
+    }
+
+    .string {
+      color: #2f9d58;
+    }
+
+    .function {
+      color: #c67dff;
+    }
+
+    .comment {
+      color: #888;
+    }
+
+    @media(max-width:1000px){
+
+      .container{
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar{
+        position: relative;
+        top: 0;
+      }
+    }
+
+    @media(max-width:700px){
+
+      .lines{
+        display: none;
+      }
+
+      .editor-body{
+        min-height: 500px;
+      }
+
+     
+
+      .navbar{
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+    .page-loader{
+
+  position: fixed;
+
+  inset: 0;
+
+  background: var(--bg);
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999999;
+
+  transition: 0.5s ease;
+}
+
+.loader-box{
+  text-align: center;
+}
+
+.loader-spinner{
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 50%;
+
+  margin: auto auto 20px;
+
+  border: 3px solid rgba(120,120,120,0.2);
+
+  border-top: 3px solid var(--text);
+
+  animation: spin 0.8s linear infinite;
+}
+
+.loader-box h2{
+
+  font-size: 24px;
+
+  margin-bottom: 8px;
+
+  font-weight: 600;
+}
+
+.loader-box p{
+
+  color: var(--muted);
+
+  font-size: 15px;
+}
+
+@keyframes spin{
+  to{
+    transform: rotate(360deg);
+  }
+}
+  
+  .google-btn{
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  height:46px;
+  padding:0 18px;
+
+  border:none;
+  border-radius:14px;
+
+  background:var(--card);
+  border:1px solid var(--border);
+
+  color:var(--text);
+
+  cursor:pointer;
+
+  overflow:hidden;
+
+  position:relative;
+
+  transition:0.25s ease;
+}
+
+.google-btn:hover{
+
+  transform:translateY(-2px);
+
+  box-shadow:var(--shadow);
+}
+
+.animated-text{
+
+  position:relative;
+
+  height:18px;
+  width:85px;
+
+  overflow:hidden;
+}
+
+.animated-text span{
+
+  position:absolute;
+
+  left:0;
+  top:0;
+
+  opacity:0;
+
+  animation:textCycle 6s infinite;
+
+  font-size:14px;
+  font-weight:600;
+}
+
+.animated-text span:nth-child(1){
+  animation-delay:0s;
+}
+
+.animated-text span:nth-child(2){
+  animation-delay:2s;
+}
+
+.animated-text span:nth-child(3){
+  animation-delay:4s;
+}
+
+@keyframes textCycle{
+
+  0%{
+    opacity:0;
+    transform:translateY(10px);
+  }
+
+  10%{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  30%{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  40%{
+    opacity:0;
+    transform:translateY(-10px);
+  }
+
+  100%{
+    opacity:0;
+  }
+}
+  
+  @media(max-width:700px){
+
+  header{
+    padding:0;
+  }
+
+  .navbar{
+
+    flex-direction:row;
+
+    align-items:center;
+    justify-content:flex-start;
+
+    gap:12px;
+
+    padding:14px 16px;
+  }
+
+  .logo{
+    gap:10px;
+    flex:1;
+    min-width:0;
+  }
+
+  .logo-icon{
+
+    width:42px;
+    height:42px;
+
+    border-radius:12px;
+
+    flex-shrink:0;
+  }
+
+  .logo h1{
+
+    font-size:20px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .logo p{
+    font-size:11px;
+  }
+
+  .nav-actions{
+
+    display:flex;
+    align-items:center;
+
+    gap:8px;
+
+    flex-shrink:0;
+  }
+
+  .theme-btn{
+
+    padding:10px 12px;
+
+    font-size:12px;
+display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:12px;
+  }
+
+  .google-btn{
+
+    height:42px;
+
+    padding:0 14px;
+
+    border-radius:12px;
+  }
+
+  .animated-text{
+    width:70px;
+  }
+
+  .animated-text span{
+    font-size:14px;
+  }
+    .logo{
+  min-width:0;
+  flex:1;
+}
+
+.nav-actions{
+  flex-shrink:0;
+}
+
+.logo h1{
+  font-size:18px;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  max-width:140px;
+}
+}
+
+    .custom-id-box{
+  margin-top: 18px;
+}
+
+.custom-id-box label{
+  display:block;
+  margin-bottom:8px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.custom-id-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  border-radius:14px;
+
+  padding:10px 12px;
+
+  overflow:hidden;
+}
+
+.prefix{
+  color:var(--muted);
+  font-size:14px;
+  white-space:nowrap;
+}
+
+#customId{
+  flex:1;
+
+  background:transparent;
+
+  border:none;
+
+  outline:none;
+
+  color:var(--text);
+
+  font-size:15px;
+}
+
+.generate-btn{
+  border:none;
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  padding:10px 14px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+
+  font-size:13px;
+margin:10px;
+  font-weight:600;
+}
+    
+  
+    
+.qr-btn{
+  border:none;
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  padding:10px 14px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+
+  font-size:13px;
+margin:0;
+  font-weight:600;
+}
+    .generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: grayscale(30%);
+  }
+
+    .password-box input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.password-box{
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  border-radius:20px;
+
+  padding:18px;
+
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.password-header{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+}
+
+.password-title{
+
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.password-title span:first-child{
+
+  font-size:15px;
+
+  font-weight:600;
+}
+
+.pwd-status{
+
+  font-size:13px;
+
+  color:var(--muted);
+}
+
+
+
+.password-container{
+
+  max-height:0;
+
+  opacity:0;
+
+  overflow:hidden;
+
+  transform:translateY(-10px);
+
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    transform 0.35s ease;
+
+  position:relative;
+}
+
+.password-container.show{
+
+  max-height:120px;
+
+  opacity:1;
+
+  transform:translateY(0);
+
+  margin-top:14px;
+}
+
+#passwordInput{
+
+  width:100%;
+
+  padding:14px 110px 14px 16px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:var(--input);
+
+  color:var(--text);
+
+  outline:none;
+
+  font-size:14px;
+}
+
+#passwordInput:focus{
+
+  border-color:#888;
+}
+
+.icon-btn{
+
+  position:absolute;
+
+  right:78px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  border:none;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  cursor:pointer;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+}
+
+.eye-icon{
+
+  width:18px;
+  height:18px;
+}
+
+.strong-btn{
+
+  position:absolute;
+
+  right:8px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  border:none;
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  padding:8px 12px;
+
+  border-radius:10px;
+
+  font-size:12px;
+
+  font-weight:600;
+
+  cursor:pointer;
+}
+
+/* SWITCH */
+
+.switch{
+  position:relative;
+
+  width:48px;
+  height:26px;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+
+  position:absolute;
+
+  inset:0;
+
+  background:#888;
+
+  border-radius:999px;
+
+  cursor:pointer;
+
+  transition:0.3s ease;
+}
+
+.slider::before{
+
+  content:"";
+
+  position:absolute;
+
+  width:20px;
+  height:20px;
+
+  left:3px;
+  top:3px;
+
+  background:white;
+
+  border-radius:50%;
+
+  transition:0.3s ease;
+}
+
+.switch input:checked + .slider{
+
+  background:#22c55e;
+}
+
+.switch input:checked + .slider::before{
+
+  transform:translateX(22px);
+}
+
+    .editor-tabs{
+
+  display:flex;
+  align-items:center;
+
+  gap:8px;
+
+  background:var(--highlight);
+
+  padding:6px;
+
+  border-radius:14px;
+}
+
+.tab-btn{
+
+  border:none;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  padding:10px 16px;
+
+  border-radius:10px;
+
+  cursor:pointer;
+
+  font-size:14px;
+
+  font-weight:600;
+
+  transition:0.25s ease;
+}
+
+.tab-btn.active{
+
+  background:var(--card);
+
+  color:var(--text);
+
+  box-shadow:var(--shadow);
+}
+
+.preview-pane{
+
+  flex:1;
+
+  padding:28px;
+
+  overflow-y:auto;
+
+  display:none;
+
+  background:transparent;
+
+  color:var(--text);
+}
+
+.preview-pane.show{
+  display:block;
+}
+
+.preview-pane h1,
+.preview-pane h2,
+.preview-pane h3{
+  margin:18px 0 10px;
+}
+
+.preview-pane p{
+  line-height:1.8;
+  margin-bottom:14px;
+}
+
+.preview-pane code{
+
+  background:var(--highlight);
+
+  padding:2px 6px;
+
+  border-radius:6px;
+
+  font-family:'JetBrains Mono', monospace;
+}
+
+.preview-pane pre{
+
+  background:var(--highlight);
+
+  padding:18px;
+
+  border-radius:16px;
+
+  overflow:auto;
+
+  margin:16px 0;
+}
+
+.preview-pane blockquote{
+
+  border-left:4px solid var(--border);
+
+  padding-left:16px;
+
+  color:var(--muted);
+
+  margin:16px 0;
+}
+
+.preview-pane img{
+
+  max-width:100%;
+
+  border-radius:18px;
+
+  margin:16px 0;
+}
+    .visibility-box{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.visibility-options{
+  display:flex;
+  gap:10px;
+}
+
+.visibility-btn{
+
+  flex:1;
+
+  padding:14px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  color:var(--text);
+
+  cursor:pointer;
+
+  font-weight:600;
+
+  transition:0.25s ease;
+}
+
+.visibility-btn:hover{
+  transform:translateY(-1px);
+}
+
+.visibility-btn.active{
+
+  background:var(--text);
+
+  color:var(--bg);
+
+  border-color:var(--text);
+}
+
+    .image-upload-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+    margin-top:20px;
+}
+
+.upload-label{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    border:2px dashed var(--border);
+    border-radius:16px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.upload-label:hover{
+    border-color:#6366f1;
+}
+
+.upload-icon{
+    font-size:36px;
+}
+
+.upload-title{
+    margin-top:10px;
+    font-weight:600;
+    font-size:18px;
+}
+
+.upload-subtitle{
+    color:var(--muted);
+    margin-top:4px;
+    font-size:14px;
+}
+
+#previewGrid{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+    gap:12px;
+}
+
+.preview-item{
+    position:relative;
+}
+
+.preview-item img{
+    width:100%;
+    height:100px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.remove-image{
+    position:absolute;
+    top:6px;
+    right:6px;
+    width:28px;
+    height:28px;
+    border:none;
+    border-radius:50%;
+    background:rgba(0,0,0,.7);
+    color:white;
+    cursor:pointer;
+  }
+
+
+    .editor-hint{
+    position:absolute;
+    top:16px;
+    left:16px;
+    color:#6e7681;
+    pointer-events:none;
+    font-size:15px;
+    user-select:none;
+}
+
+.editor-hint span{
+    color:#2f81f7;
+    cursor:pointer;
+    pointer-events:auto;
+    font-weight:600;
+}
+
+.editor-hint span:hover{
+    text-decoration:underline;
+}
+    
+
+
+    .draft-toast{
+
+position:fixed;
+
+right:22px;
+bottom:40px;
+
+width:320px;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+border-radius:18px;
+
+padding:18px;
+
+box-shadow:var(--shadow);
+
+display:none;opacity:0;
+
+z-index:99999;
+
+animation:slideUp .5s ease;
+      animation-delay: 2s; 
+animation-fill-mode: forwards;
+}
+
+.draft-toast.show{
+
+display:block;
+
+}
+
+.draft-toast h3{
+
+margin-bottom:6px;
+
+font-size:18px;
+
+}
+
+.draft-toast p{
+
+font-weight:600;
+
+margin-bottom:4px;
+
+}
+
+.draft-toast small{
+
+color:var(--muted);
+
+display:block;
+
+margin-bottom:16px;
+
+}
+
+.draft-actions{
+
+display:flex;
+
+gap:10px;
+
+}
+
+.draft-actions button{
+
+flex:1;
+
+padding:12px;
+
+border:none;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-weight:600;
+
+background:var(--text);
+
+color:var(--bg);
+
+}
+
+.draft-actions .discard{
+
+background:#ef4444;
+
+color:white;
+
+}
+
+@keyframes slideUp{
+
+from{
+
+opacity:0;
+
+
+
+}
+
+to{
+
+opacity:1;
+
+
+
+}
+
+}
+    .draft-status{
+
+width:18px;
+height:18px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+cursor:default;
+
+}
+
+#draftDot{
+
+width:8px;
+height:8px;margin-right:5px;
+
+border-radius:50%;
+
+background:#22c55e;
+
+transition:.5s;
+
+}
+
+#draftDot.typing{
+background:#3b82f6;
+}
+
+#draftDot.saving{
+background:#f59e0b;
+}
+
+#draftDot.saved{
+background:#22c55e;
+}
+
+#draftDot.error{
+background:#ef4444;
+  }
+    #draftDot.cleared{
+    background:#a3a3a3;
+    }
+  </style>
+</head>
+
+<body class="">
+  <div id="draftToast" class="draft-toast">
+
+    <h3>Draft found</h3>
+
+    <p id="draftToastTitle"></p>
+
+    <small id="draftToastTime"></small>
+
+    <div class="draft-actions">
+
+        <button onclick="restoreDraft()">Restore</button>
+
+        <button class="discard" onclick="discardDraft()">
+            Discard
+        </button>
+
+    </div>
+
+  </div>
+
+  
+<div id="templateDialog" class="template-dialog">
+
+    <div class="template-box">
+
+        <div class="template-header">
+            <h2>Templates</h2>
+
+            <button class="close" onclick="closeTemplateDialog()">✕</button>
+        </div>
+
+        <input
+            id="templateSearch"
+            type="text"
+            placeholder="Search templates..."
+        >
+
+        <div id="templateList"></div>
+
+    </div>
+
+</div>
+  
+<div class="page-loader" id="pageLoader">
+
+  <div class="loader-box">
+
+    <div class="loader-spinner"></div>
+
+    <h2>PasteDB - Link Based Pastes</h2>
+
+    <p>Preparing your workspace...</p>
+
+  </div>
+
+</div>
+  <div class="bg-glow glow1"></div>
+  <div class="bg-glow glow2"></div>
+
+  <header>
+
+  <div class="navbar">
+
+    <div class="logo">
+
+      <div class="logo-icon">
+        <div></div>
+      </div>
+
+      <div>
+        <h1>PasteDB</h1>
+        <p>Elegant text sharing</p>
+      </div>
+
+    </div>
+
+    <div class="nav-actions">
+
+      <button class="theme-btn" onclick="toggleTheme()">
+        <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="18"
+  height="18"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <circle cx="12" cy="12" r="5"></circle>
+
+  <line x1="12" y1="1" x2="12" y2="3"></line>
+  <line x1="12" y1="21" x2="12" y2="23"></line>
+
+  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+
+  <line x1="1" y1="12" x2="3" y2="12"></line>
+  <line x1="21" y1="12" x2="23" y2="12"></line>
+
+  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+</svg>
+      </button>
+
+      <div
+        id="g_id_onload"
+        data-client_id="169600349371-uqd2ban2g8d60gunf5tes428qjr0hng4.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false">
+      </div>
+
+      <button data-ga-event="login_google_create" onclick="triggerGoogleLogin()" class="google-btn">
+
+  <svg width="18" height="18" viewBox="0 0 48 48">
+    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12S17.4 12 24 12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
+    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.3 19 12 24 12c3 0 5.8 1.1 7.9 2.9l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+    <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.5 16.2 44 24 44z"/>
+    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3-3.4 5.3-6.2 6.6l6.2 5.2C39 36.4 44 31 44 24c0-1.3-.1-2.3-.4-3.5z"/>
+  </svg>
+
+  <span class="animated-text">
+    <span>Continue</span>
+    <span>With</span>
+    <span>Google</span>
+  </span>
+
+</button>
+    </div>
+
+  </div>
+
+</header>
+
+  <main>
+
+    <div class="container">
+
+      <div class="editor">
+
+        <div class="editor-top">
+          
+
+          <div>
+            <h2>Create New Paste</h2>
+            <p>Write and share beautifully.</p>
+          </div>
+          <div id="draftStatus" class="draft-status" title="All changes saved">
+    <span id="draftDot"></span>
+          </div>
+
+
+          <div class="editor-tabs" id="editorTabs" style="display:none;">
+
+  <button
+    class="tab-btn active"
+    id="writeTab"
+    onclick="switchTab('write')"
+  >
+    Markdown
+  </button>
+
+  <button
+    class="tab-btn"
+    id="previewTab"
+    onclick="switchTab('preview')"
+  >
+    Preview
+  </button>
+
+          </div>
+
+        </div>
+
+        <div class="editor-body">
+
+          <div class="lines" id="lines"></div>
+<div class="editor-wrapper">
+    <textarea id="code"></textarea>
+
+    <div id="editorHint" class="editor-hint">
+        Start writing your paste or
+        <span  data-ga-event="tempUse" id="templateLink">Start with a template</span>
+    </div>
+
+</div>
+
+          
+          
+
+      </div>
+
+      <div class="sidebar">
+
+        <div class="sidebar-top">
+          <h3>Paste Settings</h3>
+          <p>Configure your paste options.</p>
+        </div>
+
+        <div class="settings">
+
+          <div>
+
+            <label>Paste Title</label>
+
+            <input id="title"
+              type="text"
+              placeholder="Untitled Paste"
+            >
+
+          </div>
+
+          <div>
+  <label>Syntax Highlighting</label>
+  <select id="syntax">
+  <option value="plaintext">Plain Text</option>
+
+  <!-- Web -->
+  <option value="html">HTML</option>
+  <option value="xml">XML</option>
+  <option value="css">CSS</option>
+  <option value="javascript">JavaScript</option>
+  <option value="typescript">TypeScript</option>
+  <option value="json">JSON</option>
+  <option value="markdown">Markdown</option>
+
+  <!-- Backend -->
+  <option value="python">Python</option>
+  <option value="java">Java</option>
+  <option value="kotlin">Kotlin</option>
+  <option value="php">PHP</option>
+  <option value="ruby">Ruby</option>
+  <option value="go">Go</option>
+  <option value="rust">Rust</option>
+  <option value="csharp">C#</option>
+  <option value="swift">Swift</option>
+
+  <!-- C Family -->
+  <option value="c">C</option>
+  <option value="cpp">C++</option>
+  <option value="objectivec">Objective-C</option>
+
+  <!-- Shell -->
+  <option value="bash">Bash</option>
+  <option value="shell">Shell</option>
+  <option value="powershell">PowerShell</option>
+
+  <!-- Database -->
+  <option value="sql">SQL</option>
+
+  <!-- Config -->
+  <option value="yaml">YAML</option>
+  <option value="toml">TOML</option>
+  <option value="ini">INI</option>
+
+  <!-- DevOps -->
+  <option value="dockerfile">Dockerfile</option>
+  <option value="nginx">Nginx</option>
+
+  <!-- Data Science -->
+  <option value="r">R</option>
+  <option value="matlab">MATLAB</option>
+
+  <!-- Mobile -->
+  <option value="dart">Dart</option>
+
+  <!-- Other -->
+  <option value="lua">Lua</option>
+  <option value="perl">Perl</option>
+  <option value="scala">Scala</option>
+  <option value="haskell">Haskell</option>
+  <option value="elixir">Elixir</option>
+  <option value="erlang">Erlang</option>
+  <option value="clojure">Clojure</option>
+  <option value="graphql">GraphQL</option>
+  <option value="protobuf">Protocol Buffers</option>
+  <option value="diff">Diff</option>
+  <option value="apache">Apache Config</option>
+  </select>
+</div>
+
+
+
+      
+          <div class="password-box">
+
+  <div class="password-header">
+
+    <div class="password-title">
+      <span>Password Protection</span>
+      <span id="pwdTick" class="pwd-status">Disabled</span>
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" id="enablePassword">
+      <span class="slider"></span>
+    </label>
+
+  </div>
+
+  <div id="passwordContainer" class="password-container">
+
+    <input
+      type="password"
+      id="passwordInput"
+      placeholder="Enter secure password"
+    />
+
+    <button
+      type="button"
+      onclick="togglePassword()"
+      class="icon-btn"
+    >
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.7"
+        stroke="currentColor"
+        class="eye-icon"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+        />
+      </svg>
+
+    </button>
+
+    <button
+      type="button"
+      onclick="generateStrongPassword()"
+      class="strong-btn"
+    >
+      Strong
+    </button>
+
+  </div>
+
+          </div>
+          <button data-ga-event="paste_created" class="create-btn" id="createBtn">
+
+            <span id="btnText">
+              Create New Paste
+            </span>
+
+          </button>
+<div
+  id="pasteLinkBox"
+  style="
+    display:none;
+    margin-top:18px;
+    padding:16px;
+    border-radius:18px;
+    border:1px solid var(--border);
+    background:var(--highlight);
+    word-break:break-all;
+  "
+>
+
+  <p
+    style="
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:10px;
+    "
+  >
+    Your paste link
+  </p>
+
+  <a
+    id="pasteLink"
+    target="_blank"
+    style="
+      color:var(--text);
+      text-decoration:none;
+      font-weight:600;
+    "
+  ></a>
+
+</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+<script>
+ const createBtn = document.getElementById("createBtn");
+
+createBtn.addEventListener("click", createLinkPaste);
+
+function createLinkPaste() {
+
+    const title = document.getElementById("title").value.trim() || "Untitled";
+    const content = document.getElementById("code").value;
+
+    if (!content.trim()) {
+        alert("Paste cannot be empty.");
+        return;
+    }
+
+    const syntax = document.getElementById("syntax").value;
+
+    const paste = {
+        version: 1,
+        title,
+        content,
+        syntax,
+        createdAt: Date.now()
+    };
+
+    const json = JSON.stringify(paste);
+
+    const compressed = LZString.compressToEncodedURIComponent(json);
+
+    const url =
+        window.location.origin +
+        "/l#" +
+        compressed;
+
+    document.getElementById("pasteLinkBox").style.display = "block";
+
+    const link = document.getElementById("pasteLink");
+
+    link.href = url;
+    link.textContent = url;
+
+    navigator.clipboard.writeText(url);
+
+    createBtn.innerHTML = "✓ Link Copied";
+}
+</script>
+</body>
+  </html>
