@@ -1821,6 +1821,11 @@ background:#ef4444;
     #draftDot.cleared{
     background:#a3a3a3;
     }
+
+               #pasteQRContainer {
+                 display:flex;
+justify-content:center;align-items:center
+               }
   </style>
 </head>
 
@@ -2351,6 +2356,7 @@ let qrUrl = url;
 
 qrDiv.id = "pasteQRContainer";
 qrDiv.style.marginTop = "16px";
+  
 
 qrDiv.innerHTML = `
 <button id="showQrBtn"
