@@ -2415,6 +2415,12 @@ qrDiv.style.marginTop = "16px";
   
 
 qrDiv.innerHTML = `
+<button id="copyUrlBtn"
+    class="generate-btn"
+    data-url="${url}">
+  Copy URL
+</button>
+
 <button id="showQrBtn"
     class="qr-btn"
     onclick="createQR('${qrUrl}','pasteQR')">
@@ -2432,6 +2438,15 @@ qrDiv.innerHTML = `
 `;
 
 pasteLinkBox.appendChild(qrDiv);
+  document.getElementById("copyUrlBtn").onclick = async function () {
+    await navigator.clipboard.writeText(this.dataset.url);
+
+    this.textContent = "Copied!";
+
+    setTimeout(() => {
+        this.textContent = "Copy URL";
+    }, 1500);
+};
 }
 
   
