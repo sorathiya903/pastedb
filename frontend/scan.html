@@ -79,8 +79,9 @@ if(
 </script>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://unpkg.com/@zxing/library@latest"></script>
-<style>
+<script src="https://unpkg.com/@zxing/browser@latest"></script>
+  
+  <style>
 
     *{
     box-sizing:border-box;
@@ -261,8 +262,8 @@ imageInput.onchange = async () => {
             img.onerror = reject;
         });
 
-        const codeReader = new ZXing.BrowserQRCodeReader();
-
+        const codeReader = new ZXingBrowser.BrowserQRCodeReader();
+      
         const result = await codeReader.decodeFromImageElement(img);
 
         URL.revokeObjectURL(img.src);
