@@ -67,7 +67,7 @@
   
 
 <script src="https://unpkg.com/html5-qrcode"></script>
-
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 <style>
 
     *{
@@ -233,43 +233,55 @@ imageInput.onchange = async () => {
 
     if (!imageInput.files.length) return;
 
+    const file = imageInput.files[0];
+    const status = document.getElementById("status");
+
+    status.textContent = "Scanning image...";
+
     try {
 
-        const html5QrCode =
-            new Html5Qrcode("reader");
+        // Create a temporary image
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
 
-        const result =
-            await html5QrCode.scanFile(
-                imageInput.files[0],
-                false
-            );
+        await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+        });
+
+        const codeReader = new ZXing.BrowserQRCodeReader();
+
+        const result = await codeReader.decodeFromImageElement(img);
+
+        URL.revokeObjectURL(img.src);
 
         if (navigator.vibrate) {
             navigator.vibrate(150);
         }
 
-        document.getElementById("status").textContent =
-            "Opening... "+ result;
-      
+        status.textContent = "Opening...";
 
-        if (
-            result.startsWith("https://pastedb")
-        ) {
+        const text = result.text;
 
-            location.href = result;
-
+        if (text.startsWith("https://pastedb")) {
+            location.href = text;
         } else {
-
             alert("Not a PasteDB QR code.");
-
         }
 
     } catch (err) {
-alert(err)
-        
+
+        console.error(err);
+
+        document.getElementById("status").textContent =
+            "Couldn't read QR code.";
+
+        alert("Unable to decode the QR code.");
+
     }
 
 };
+  
 const scanner = new Html5Qrcode("reader");
 
 scanner.start(
