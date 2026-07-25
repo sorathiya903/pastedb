@@ -2248,18 +2248,24 @@ createBtn.addEventListener("click", createLinkPaste);
 
     const container =
         document.getElementById(containerId);
-container.dataset.qrUrl = url;
-    if(container.dataset.generated){
+          
+    // URL changed? Clear old QR.
+    if(container.dataset.qrUrl !== url){
+        container.innerHTML = "";
+        container.dataset.generated = "";
+        container.dataset.qrUrl = url;
+    }
 
+    if(container.dataset.generated){
         container.style.display =
             container.style.display === "none"
                 ? "block"
                 : "none";
-
         return;
     }
 
-    container.style.display = "block";
+
+    
 
     QRCode.toCanvas(
         url,
