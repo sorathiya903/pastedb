@@ -241,7 +241,7 @@ imageInput.onchange = async () => {
         const result =
             await html5QrCode.scanFile(
                 imageInput.files[0],
-                true
+                false
             );
 
         if (navigator.vibrate) {
