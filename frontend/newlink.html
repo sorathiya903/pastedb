@@ -2244,79 +2244,60 @@ function updateLines() {
 
 createBtn.addEventListener("click", createLinkPaste);
 
-        function createQR(url, containerId){
+        function createQR(url, containerId) {
 
-    const container =
-        document.getElementById(containerId);
-          
-    // URL changed? Clear old QR.
-    if(container.dataset.qrUrl !== url){
+    const container = document.getElementById(containerId);
+
+    // If URL changed, clear previous QR
+    if (container.dataset.qrUrl !== url) {
         container.innerHTML = "";
         container.dataset.generated = "";
         container.dataset.qrUrl = url;
     }
 
-    if(container.dataset.generated){
+    // Toggle only if already generated
+    if (container.dataset.generated === "true") {
         container.style.display =
-            container.style.display === "none"
-                ? "block"
-                : "none";
+            container.style.display === "none" ? "block" : "none";
         return;
     }
 
+    container.style.display = "block";
 
-    
-
-    QRCode.toCanvas(
-        url,
-        {
-            width:220,
-        margin:2,
-        color:{
-            dark: document.documentElement.classList.contains("dark")
-                ? "#ffffff"
-                : "#111111",
-
-            light: document.documentElement.classList.contains("dark")
-                ? "#1d1d1d"
-                : "#ffffff"
+    QRCode.toCanvas(url, {
+        width: 220,
+        margin: 2,
+        color: {
+            dark: document.documentElement.classList.contains("dark") ? "#fff" : "#111",
+            light: document.documentElement.classList.contains("dark") ? "#1d1d1d" : "#fff"
         }
-        },
-        (err, canvas)=>{
+    }, (err, canvas) => {
 
-            if(err){
-                console.error(err);
-                return;
-            }
-
-            container.appendChild(canvas);
-
-            // Download button
-            const btn =
-                document.createElement("button");
-
-            btn.className = "generate-btn";
-            btn.textContent = "Download";
-            btn.style.display = "block";
-            btn.style.margin = "15px auto 0";
-
-            btn.onclick = () => {
-
-                const link =
-                    document.createElement("a");
-
-                link.download = "PasteDB-LinkPaste-QR.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            };
-
-            container.appendChild(btn);
-
-            container.dataset.generated = "true";
+        if (err) {
+            console.error(err);
+            return;
         }
-    );
-    }
 
+        container.innerHTML = ""; // Prevent duplicates
+
+        container.appendChild(canvas);
+
+        const btn = document.createElement("button");
+        btn.className = "generate-btn";
+        btn.textContent = "Download";
+
+        btn.onclick = () => {
+            const a = document.createElement("a");
+            a.download = "PasteDB-LinkPaste-QR.png";
+            a.href = canvas.toDataURL();
+            a.click();
+        };
+
+        container.appendChild(btn);
+
+        container.dataset.generated = "true";
+    });
+  }
 
 function createLinkPaste() {
 
