@@ -64,24 +64,11 @@
 }
 </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
-<script>
-
-if(
-  true
-){
-
-  eruda.init();
-
-}
-
-</script>
+  
 
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://unpkg.com/@zxing/browser@latest"></script>
-  
-  <style>
+
+<style>
 
     *{
     box-sizing:border-box;
@@ -246,55 +233,43 @@ imageInput.onchange = async () => {
 
     if (!imageInput.files.length) return;
 
-    const file = imageInput.files[0];
-    const status = document.getElementById("status");
-
-    status.textContent = "Scanning image...";
-
     try {
 
-        // Create a temporary image
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
+        const html5QrCode =
+            new Html5Qrcode("reader");
 
-        await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-        });
-
-        const codeReader = new ZXingBrowser.BrowserQRCodeReader();
-      
-        const result = await codeReader.decodeFromImageElement(img);
-
-        URL.revokeObjectURL(img.src);
+        const result =
+            await html5QrCode.scanFile(
+                imageInput.files[0],
+                true
+            );
 
         if (navigator.vibrate) {
             navigator.vibrate(150);
         }
 
-        status.textContent = "Opening...";
+        document.getElementById("status").textContent =
+            "Opening... "+ result;
+      
 
-        const text = result.text;
+        if (
+            result.startsWith("https://pastedb")
+        ) {
 
-        if (text.startsWith("https://pastedb")) {
-            location.href = text;
+            location.href = result;
+
         } else {
+
             alert("Not a PasteDB QR code.");
+
         }
 
     } catch (err) {
-
-        console.error(err);
-
-        document.getElementById("status").textContent =
-            "Couldn't read QR code.";
-
-        alert("Unable to decode the QR code.");
-
+alert(err)
+        
     }
 
 };
-  
 const scanner = new Html5Qrcode("reader");
 
 scanner.start(
@@ -338,4 +313,4 @@ scanner.start(
 </script>
 
 </body>
-  </html>
+</html>
