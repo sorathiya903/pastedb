@@ -2258,11 +2258,11 @@ createBtn.addEventListener("click", createLinkPaste);
     // Toggle only if already generated
     if (container.dataset.generated === "true") {
         container.style.display =
-            container.style.display === "none" ? "block" : "none";
+            container.style.display === "none" ? "flex" : "none";
         return;
     }
-
-    container.style.display = "block";
+ 
+    container.style.display = "flex";
 
     QRCode.toCanvas(url, {
         width: 220,
