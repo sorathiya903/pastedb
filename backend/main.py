@@ -253,11 +253,7 @@ def build_update_data(data: dict):
         else:
             update_data["password"] = hash_password(data["password"])
 
-    result = pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
-        {"$set": update_data}
-    )
-
+    
     if result.matched_count == 0:
         raise HTTPException(404, "Paste not found")
         
