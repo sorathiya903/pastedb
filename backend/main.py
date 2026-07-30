@@ -172,8 +172,97 @@ app.add_middleware(
 
 
 
+def build_update_data(data: dict):
+    now = datetime.now(timezone.utc)
 
- 
+    expire_at= None
+    expiration = data.get("expiration")
+    burn_after_read = expiration == "burn"
+
+    if expiration in ["10m", "10min"]:
+        expire_at = now + timedelta(minutes=10)
+
+    elif expiration in ["1h", "1hour"]:
+        expire_at = now + timedelta(hours=1)
+
+    elif expiration in ["1d", "1day"]:
+        expire_at = now + timedelta(days=1)
+
+    elif expiration == "30m":
+        expire_at = now + timedelta(minutes=30)
+
+    elif expiration == "6h":
+        expire_at = now + timedelta(hours=6)
+
+    elif expiration == "12h":
+        expire_at = now + timedelta(hours=12)
+
+    elif expiration == "3d":
+        expire_at = now + timedelta(days=3)
+
+    elif expiration == "30d":
+        expire_at = now + timedelta(days=30)
+
+    elif expiration in ["1w", "1week"]:
+        expire_at = now + timedelta(days=7)
+        
+    update_data = {
+        "title": data.get("title"),
+        "content": data.get("content"),
+        "syntax": data.get("syntax"),
+        "expiration": expiration,
+        "expire_at": expire_at,
+        "burn_after_read": burn_after_read,
+        "visibility":data.get("visibility"),
+        "e2ee": data.get("e2ee", False)
+    }
+    if "images" in data:
+        update_data["images"] = data["images"]
+    
+    # Handle encrypted PEK
+    # Handle encrypted PEKs
+    if update_data["e2ee"]:
+
+        if not data.get("encrypted_pek"):
+            raise HTTPException(
+                400,
+                "encrypted_pek required"
+            )  
+
+        update_data["encrypted_pek"] = data.get(
+            "encrypted_pek"
+        )
+
+    else:
+        update_data["encrypted_pek"] = None
+
+    #  HANDLE PASSWORD IN EDIT
+    if "password" in data:
+        # new password entered
+        if data.get('password'):
+            hashed = hash_password(data.get('password'))
+            update_data["password"] = hashed
+
+# user disabled password
+    
+        elif data.get("remove_password"):
+            update_data["password"] = None
+
+        elif data["password"] is None or data["password"] == "":
+            update_data["password"] = None
+        else:
+            update_data["password"] = hash_password(data["password"])
+
+    result = pastes_collection.update_one(
+        {"_id": ObjectId(paste_id)},
+        {"$set": update_data}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(404, "Paste not found")
+        
+    return update_data
+
     
 
 
@@ -1476,6 +1565,8 @@ def save_version(
 
     if paste.get("user_email_key") != email_key:
         raise HTTPException(403, "Unauthorized")
+
+    update_data = build_update_data()
 
     version = paste.get("current_version", 0) + 1
 
