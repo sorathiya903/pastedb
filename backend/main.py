@@ -1681,7 +1681,38 @@ def save_version(
     }
 
 
+@app.get("/paste/{paste_id}/version/{version}")
+def get_version(
+    paste_id: str,
+    version: int,
+    user=Depends(get_current_user)
+):
+    # Find main paste by _id or custom_id
+    if ObjectId.is_valid(paste_id):
+        paste = pastes_collection.find_one({"_id": ObjectId(paste_id)})
+    else:
+        paste = pastes_collection.find_one({"custom_id": paste_id})
 
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    email_key = user["email"].replace(".", "_")
+
+    if paste.get("user_email_key") != email_key:
+        raise HTTPException(403, "Unauthorized")
+
+    version_doc = versions_collection.find_one({
+        "paste_id": paste["_id"],
+        "version": version
+    })
+
+    if not version_doc:
+        raise HTTPException(404, "Version not found")
+
+    version_doc["_id"] = str(version_doc["_id"])
+    version_doc["paste_id"] = str(version_doc["paste_id"])
+
+    return version_doc
 
 @app.get("/stats/{paste_id}")
 def paste_stats(
