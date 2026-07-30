@@ -3019,6 +3019,25 @@ textarea.addEventListener("input", () => {
 updateLines();
 
 
+    async function saveVersion(editId, pasteData) {
+
+  const response = await fetch(
+    `${API_URL}/paste/${editId}/version`,
+    {
+      method: "POST",
+      credentials: "include",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify(pasteData)
+    }
+  );
+
+  return response;
+    }
+
 // EDIT PASTE
 
 async function editPaste(editId, pasteData){
