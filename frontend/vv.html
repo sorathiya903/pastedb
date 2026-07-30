@@ -42,22 +42,30 @@ header p{color:var(--muted);margin-top:4px;font-size:13px}
 .back-btn{text-decoration:none;color:var(--bg);background:var(--accent);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;transition:.2s;border:1px solid var(--accent)}
 .back-btn:hover{background:var(--bg);color:var(--accent)}
 
-.timeline{position:relative;margin-left:80px;padding-left:30px;border-left:1px solid var(--border)}
+.timeline{
+    position: relative;
+    margin-left: 80px;
+    padding-left: 30px;
+    border-left: 1px solid var(--border);
+}
+
+.version-card::before{
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--border);
+    border: 2px solid var(--bg);
+
+    left: calc(-30px - 6px);  /* aligns center with the timeline */
+    top: 50%;
+    transform: translateY(-50%);
+}
 
 .version-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:28px;padding:18px 20px;transition:.2s}
 .version-card:hover{border-color:var(--text)}
 
-.version-card::before{
-    content:"";
-    position:absolute;
-    width:10px;
-    height:10px;
-    border-radius:0;
-    background:var(--border);
-    border:2px solid var(--bg);
-    transform: translateY(calc(-50% - 1px));
-    top:22px;
-}
+
 .version-card.current::before{background:var(--accent)}
 
 .time-label{
