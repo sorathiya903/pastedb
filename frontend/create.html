@@ -3022,7 +3022,7 @@ updateLines();
     async function saveVersion(editId, pasteData) {
 
   const response = await fetch(
-    `${API_URL}/paste/${editId}/version`,
+    `${API_URL}/paste/${editId}/save-version`,
     {
       method: "POST",
       credentials: "include",
