@@ -1195,6 +1195,47 @@ async def delete_paste(
         )
 
 
+@app.get("/paste/{paste_id}/versions")
+def get_versions(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+    paste = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    email_key = user["email"].replace(".", "_")
+
+    if paste.get("user_email_key") != email_key:
+        raise HTTPException(403, "Unauthorized")
+
+    versions = list(
+        versions_collection.find(
+            {"paste_id": ObjectId(paste_id)},
+            {
+                "_id": 0,
+                "version": 1,
+                "created_at": 1
+            }
+        ).sort("version", -1)
+    )
+
+    current = paste.get("current_version", 0)
+
+    for v in versions:
+        v["current"] = (v["version"] == current)
+
+    return {
+        "current_version": current,
+        "total_versions": len(versions),
+        "versions": versions
+    }
+
+
+
 @app.put("/paste/{paste_id}")
 def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
     paste = pastes_collection.find_one({ "_id": ObjectId(paste_id)})
