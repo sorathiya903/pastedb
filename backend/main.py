@@ -1681,39 +1681,81 @@ def save_version(
     }
 
 
-@app.get("/paste/{paste_id}/version/{version}")
-def get_version(
+@app.get("/p/{paste_id}/version/{version}")
+async def get_paste_version(
     paste_id: str,
     version: int,
-    user=Depends(get_current_user)
+    request: Request
 ):
-    # Find main paste by _id or custom_id
-    if ObjectId.is_valid(paste_id):
-        paste = pastes_collection.find_one({"_id": ObjectId(paste_id)})
-    else:
-        paste = pastes_collection.find_one({"custom_id": paste_id})
+    try:
 
-    if not paste:
-        raise HTTPException(404, "Paste not found")
+        paste = None
 
-    email_key = user["email"].replace(".", "_")
+        # SEARCH MAIN PASTE
+        if ObjectId.is_valid(paste_id):
+            paste = pastes_collection.find_one({
+                "_id": ObjectId(paste_id)
+            })
 
-    if paste.get("user_email_key") != email_key:
-        raise HTTPException(403, "Unauthorized")
+        if not paste:
+            paste = pastes_collection.find_one({
+                "custom_id": paste_id
+            })
 
-    version_doc = versions_collection.find_one({
-        "paste_id": paste["_id"],
-        "version": version
-    })
+        if not paste:
+            raise HTTPException(
+                status_code=404,
+                detail="Paste not found"
+            )
 
-    if not version_doc:
-        raise HTTPException(404, "Version not found")
+        # PRIVATE CHECK
+        if paste.get("visibility") == "private":
 
-    version_doc["_id"] = str(version_doc["_id"])
-    version_doc["paste_id"] = str(version_doc["paste_id"])
+            token = request.cookies.get("session")
 
-    return version_doc
+            if not token:
+                raise HTTPException(404, "Paste not found")
 
+            payload = decode_token(token)
+
+            if not payload:
+                raise HTTPException(401, "Invalid token")
+
+            email_key = payload["email"].replace(".", "_")
+
+            if email_key != paste.get("user_email_key"):
+                raise HTTPException(404, "Paste not found")
+
+        # FIND REQUESTED VERSION
+        version_doc = versions_collection.find_one({
+            "paste_id": paste["_id"],
+            "version": version
+        })
+
+        if not version_doc:
+            raise HTTPException(
+                status_code=404,
+                detail="Version not found"
+            )
+
+        # Return data in the same format as a normal paste
+        version_doc["_id"] = str(paste["_id"])
+        version_doc["custom_id"] = paste.get("custom_id")
+        version_doc.pop("paste_id", None)
+        version_doc.pop("password", None)
+
+        return version_doc
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        print(traceback.format_exc())
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error"
+                )
+    
 @app.get("/stats/{paste_id}")
 def paste_stats(
     paste_id: str,
