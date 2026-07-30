@@ -1204,9 +1204,19 @@ def get_versions(
     paste_id: str,
     user=Depends(get_current_user)
 ):
-    paste = pastes_collection.find_one({
-        "_id": ObjectId(paste_id)
-    })
+    # Try MongoDB _id first
+    try:
+        paste = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
+    except:
+        paste = None
+
+    # If not found, try custom_id
+    if not paste:
+        paste = pastes_collection.find_one({
+            "custom_id": paste_id
+        })
 
     if not paste:
         raise HTTPException(404, "Paste not found")
@@ -1218,7 +1228,7 @@ def get_versions(
 
     versions = list(
         versions_collection.find(
-            {"paste_id": ObjectId(paste_id)},
+            {"paste_id": paste["_id"]},
             {
                 "_id": 0,
                 "version": 1,
