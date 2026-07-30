@@ -1156,6 +1156,10 @@ async def delete_paste(
 
         email_key = user["email"].replace(".", "_")
 
+        print("Payload:", user)
+        print("Payload email:", user.get("email"))
+        print("Paste owner:", paste.get("user_email_key"))
+
         paste = pastes_collection.find_one({
             "_id": ObjectId(paste_id)
         })
