@@ -254,9 +254,7 @@ def build_update_data(data: dict):
             update_data["password"] = hash_password(data["password"])
 
     
-    if result.matched_count == 0:
-        raise HTTPException(404, "Paste not found")
-        
+
     return update_data
 
     
