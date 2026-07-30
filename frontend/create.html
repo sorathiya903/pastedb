@@ -3089,14 +3089,11 @@ async function createPaste(pasteData){
 
     
 createBtn.addEventListener("click", async () => {
-const customId =
-  document.getElementById("customId").value.trim();
+const customId =  document.getElementById("customId").value.trim();
 
-const passwordEnabled =
-  document.getElementById("enablePassword").checked;
+const passwordEnabled = document.getElementById("enablePassword").checked;
 
-const passwordValue =
-  document.getElementById("passwordInput").value.trim();
+const passwordValue = document.getElementById("passwordInput").value.trim();
 
 const pasteData = {
   title: document.getElementById("title").value || "Untitled Paste",
@@ -3233,6 +3230,8 @@ if (
   return;
   }
 
+  const sfv = document.getElementById("saveVersion")?.checked || false;
+
   createBtn.disabled = true;
   if (editId){
   createBtn.innerHTML = `<div class="spinner"></div> Saving Changes...`;
@@ -3243,16 +3242,19 @@ try {
   
   
 
-  let response
+  let response;
 
-  if(editId){
-
-    response = await editPaste(editId, pasteData)
-
-  }else{
-
-  console.log(pasteData)
-    response = await createPaste(pasteData)
+if (editId) {
+    if (sfv) {
+        response = await saveVersion(editId, pasteData);
+    } else {
+        response = await editPaste(editId, pasteData);
+    }
+} else {
+    console.log(pasteData);
+    response = await createPaste(pasteData);
+}
+  
     
 
   }
