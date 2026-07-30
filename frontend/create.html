@@ -1861,6 +1861,26 @@ background:#ef4444;
     #draftDot.cleared{
     background:#a3a3a3;
     }
+
+  .option-row {
+    margin: 14px 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
   </style>
 </head>
 
@@ -2324,6 +2344,12 @@ background:#ef4444;
     </button>
 
   </div>
+            <div class="option-row" id="saveVersionRow">
+    <label class="checkbox-label">
+        <input type="checkbox" id="saveVersion">
+        <span>Save Previous Version</span>
+    </label>
+            </div>
 
           </div>
           <button data-ga-event="paste_created" class="create-btn" id="createBtn">
@@ -3352,7 +3378,11 @@ finally{
 
     // Keep loader visible while editing a paste.
     // It will be hidden after loadPasteForEditing() finishes.
-    if (editId) return;
+    if (editId) {
+      document.getElementById("saveVersionRow").style.display =
+    editId ? "block" : "none";
+      return;
+    }
 
     const loader = document.getElementById("pageLoader");
 
