@@ -2002,17 +2002,25 @@ const pasteId = getPasteId();
 
   // LOAD PASTE
 
-  async function loadPaste(){
+   const params = new URLSearchParams(window.location.search);
+const version = params.get("version");
 
-    try{
-  
-      const response = await fetch(
-        `${API_URL}/p/${pasteId}`,
-      {
-        credentials:"include"
-      }
-        
-      )
+async function loadPaste() {
+
+
+
+        let url;
+
+        if (version) {
+            url = `${API_URL}/p/${pasteId}/version/${version}`;
+        } else {
+            url = `${API_URL}/p/${pasteId}`;
+        }
+
+        const response = await fetch(url, {
+            credentials: "include"
+        });
+
 
 
       // INVALID ID
