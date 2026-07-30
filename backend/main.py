@@ -1584,6 +1584,30 @@ def save_version(
 
     versions_collection.insert_one(version_doc)
 
+    count = versions_collection.count_documents({
+        "paste_id": ObjectId(paste_id)
+    })
+
+    if count > 10:
+        oldest = versions_collection.find_one(
+            {"paste_id": ObjectId(paste_id)},
+            sort=[("version", 1)]   # oldest version
+        )
+
+        if oldest:
+            versions_collection.delete_one({
+                "_id": oldest["_id"]
+            })
+
+            pastes_collection.update_one(
+                {"_id": ObjectId(paste_id)},
+                {
+                    "$pull": {
+                        "versions": oldest["version"]
+                    }
+                }
+            )
+
     update_data["current_version"] = version
 
     result = pastes_collection.update_one(
