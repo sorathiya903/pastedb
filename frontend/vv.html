@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paste Versions</title>
+
+<style>
+:root{
+    --bg:#000;
+    --card:#111;
+    --border:#333;
+    --text:#ffffff;
+    --muted:#888;
+    --accent:#ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Segoe UI,Arial,sans-serif}
+
+body{background:var(--bg);color:var(--text)}
+
+.container{max-width:800px;margin:40px auto;padding:20px}
+
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px}
+header h1{font-size:28px;font-weight:700;letter-spacing:-0.5px}
+header p{color:var(--muted);margin-top:4px;font-size:13px}
+
+.back-btn{text-decoration:none;color:var(--bg);background:var(--accent);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;transition:.2s;border:1px solid var(--accent)}
+.back-btn:hover{background:var(--bg);color:var(--accent)}
+
+.timeline{position:relative;margin-left:80px;padding-left:30px;border-left:1px solid var(--border)}
+
+.version-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:28px;padding:18px 20px;transition:.2s}
+.version-card:hover{border-color:var(--text)}
+
+.version-card::before{
+    content:"";
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--border);
+    border:2px solid var(--bg);
+    left:-36px;
+    top:22px;
+}
+.version-card.current::before{background:var(--accent)}
+
+.time-label{
+    position:absolute;
+    left:-80px;
+    top:16px;
+    font-size:12px;
+    color:var(--muted);
+    white-space:nowrap;
+    text-align:right;
+    width:70px;
+}
+
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.version{font-size:16px;font-weight:600}
+.badge{background:var(--accent);color:var(--bg);padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase}
+
+.actions{display:flex;gap:10px}
+.btn{border:1px solid var(--border);background:var(--bg);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500;transition:.2s;font-size:13px}
+.btn:hover{background:var(--text);color:var(--bg);border-color:var(--text)}
+
+/* SHIMMER */
+.shimmer{
+    background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+}
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-card .time-label{width:60px;height:12px}
+.skeleton-card .version{width:80px;height:16px;margin-bottom:10px}
+.skeleton-card .btn{width:60px;height:32px}
+
+.error{text-align:center;padding:40px;color:var(--muted)}
+
+@media(max-width:700px){
+.timeline{margin-left:0;padding-left:20px}
+.time-label{position:static;display:block;margin-bottom:8px;text-align:left;width:auto;font-size:11px}
+.version-card::before{left:-26px}
+header{flex-direction:column;align-items:flex-start;gap:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+<div>
+<h1>Version History</h1>
+<p id="versionCount">Loading versions...</p>
+</div>
+<a href="/paste" class="back-btn">← Back</a>
+</header>
+
+<div class="timeline" id="versionsList">
+    <!-- SHIMMER SKELETONS -->
+    <div class="version-card skeleton-card">
+        <div class="time-label shimmer"></div>
+        <div class="top"><div class="version shimmer"></div></div>
+        <div class="actions"><div class="btn shimmer"></div></div>
+    </div>
+    <div class="version-card skeleton-card">
+        <div class="time-label shimmer"></div>
+        <div class="top"><div class="version shimmer"></div></div>
+        <div class="actions"><div class="btn shimmer"></div></div>
+    </div>
+    <div class="version-card skeleton-card">
+        <div class="time-label shimmer"></div>
+        <div class="top"><div class="version shimmer"></div></div>
+        <div class="actions"><div class="btn shimmer"></div></div>
+    </div>
+</div>
+
+</div>
+
+<script>
+
+const urlParams = new URLSearchParams(window.location.search);
+const paste_id = urlParams.get('id')
+
+async function loadVersions(){
+    const list = document.getElementById("versionsList");
+    const count = document.getElementById("versionCount");
+
+    try {
+        const res = await fetch(`${API_URL}/paste/${paste_id}/versions`, {
+            method: "GET",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"}
+        });
+
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        
+        count.textContent = `${data.total_versions} versions`;
+
+        if(data.versions.length === 0){
+            list.innerHTML = `<div class="error">No versions found</div>`;
+            return;
+        }
+
+        list.innerHTML = data.versions.map(v => {
+            const date = new Date(v.created_at).toLocaleString('en-IN', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            return `
+            <div class="version-card ${v.current ? 'current' : ''}">
+                <div class="time-label">${date}</div>
+                <div class="top">
+                    <div class="version">v${v.version}</div>
+                    ${v.current ? '<span class="badge">Current</span>' : ''}
+                </div>
+                <div class="actions">
+                    <button class="btn" onclick="viewVersion(${v.version})">View</button>
+                </div>
+            </div>
+            `
+        }).join('');
+
+    } catch(err){
+        console.error(err);
+        count.textContent = "Failed to load";
+        list.innerHTML = `<div class="error">Could not fetch versions</div>`;
+    }
+}
+
+function viewVersion(version){
+    window.location.href = `/paste/${paste_id}?version=${version}`;
+}
+
+loadVersions();
+</script>
+
+</body>
+  </html>
