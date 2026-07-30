@@ -1551,7 +1551,7 @@ def verify_custom_password(
     
 @app.post("/paste/{paste_id}/save-version")
 def save_version(
-    paste_id: str,
+    paste_id: str, data: dict,
     user=Depends(get_current_user)
 ):
     paste = pastes_collection.find_one({
@@ -1566,7 +1566,7 @@ def save_version(
     if paste.get("user_email_key") != email_key:
         raise HTTPException(403, "Unauthorized")
 
-    update_data = build_update_data()
+    update_data = build_update_data(data)
 
     version = paste.get("current_version", 0) + 1
 
