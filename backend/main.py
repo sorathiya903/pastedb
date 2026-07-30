@@ -48,6 +48,7 @@ db = client["pasteDB"]
 pastes_collection = db["pastes"]
 users_collection = db["users"]
 api_keys_collection = db["api_keys"]
+versions_collection = db["pasteVersions"]
 
 pastes_collection.create_index(
     "expire_at",
@@ -1459,6 +1460,64 @@ def verify_custom_password(
 
     return {"access": False}
     
+@app.post("/paste/{paste_id}/save-version")
+def save_version(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+    paste = pastes_collection.find_one({
+        "_id": ObjectId(paste_id)
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    email_key = user["email"].replace(".", "_")
+
+    if paste.get("user_email_key") != email_key:
+        raise HTTPException(403, "Unauthorized")
+
+    version = paste.get("current_version", 0) + 1
+
+    version_doc = {
+        "paste_id": ObjectId(paste_id),
+        "version": version,
+        "created_at": datetime.now(timezone.utc),
+
+        "title": paste.get("title"),
+        "content": paste.get("content"),
+        "syntax": paste.get("syntax"),
+        "expiration": paste.get("expiration"),
+        "expire_at": paste.get("expire_at"),
+        "burn_after_read": paste.get("burn_after_read"),
+        "visibility": paste.get("visibility"),
+        "e2ee": paste.get("e2ee", False),
+        "encrypted_pek": paste.get("encrypted_pek"),
+        "images": paste.get("images", []),
+        "password": paste.get("password")
+    }
+
+    versions_collection.insert_one(version_doc)
+
+    pastes_collection.update_one(
+        {"_id": ObjectId(paste_id)},
+        {
+            "$set": {
+                "current_version": version
+            },
+            "$push": {
+                "versions": version
+            }
+        }
+    )
+
+    return {
+        "status": "saved",
+        "version": version
+    }
+
+
+
 
 @app.get("/stats/{paste_id}")
 def paste_stats(
