@@ -1499,18 +1499,18 @@ def save_version(
 
     versions_collection.insert_one(version_doc)
 
-    pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
+    update_data["current_version"] = version
+
+    result = pastes_collection.update_one(
+            {"_id": ObjectId(paste_id)},
         {
-            "$set": {
-                "current_version": version
-            },
+            "$set": update_data,
             "$push": {
                 "versions": version
             }
         }
-    )
-
+     )
+    
     return {
         "status": "saved",
         "version": version
