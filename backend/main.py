@@ -1230,12 +1230,7 @@ def get_versions(
 
     versions=[]
 
-    versions.insert(0,{
-    "version": current,
-    "created_at": paste.get("updated_at"),
-    "current": True
-    })
-
+    
 
     versions = list(
         versions_collection.find(
@@ -1250,7 +1245,12 @@ def get_versions(
 
     
 
-    
+    versions.insert(0,{
+    "version": current,
+    "created_at": paste.get("updated_at"),
+    "current": True
+      })
+
     
 
     for v in versions:
