@@ -1881,6 +1881,47 @@ background:#ef4444;
     height: 18px;
     accent-color: var(--accent);
 }
+    .version-card{
+    margin:18px 0;
+    background:#111;
+    border:1px solid #2b2b2b;
+    border-radius:12px;
+    padding:18px;
+}
+
+.version-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:14px;
+}
+
+.version-icon{
+    font-size:20px;
+}
+
+.version-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-top:1px solid #222;
+}
+
+.version-row:first-of-type{
+    border-top:none;
+}
+
+.version-row span{
+    color:#888;
+}
+
+.version-row strong{
+    color:#fff;
+    font-weight:600;
+}
   </style>
 </head>
 
@@ -2350,7 +2391,27 @@ background:#ef4444;
         <input type="checkbox" id="saveVersion">
         <span>Save Previous Version</span>
     </label>
-            
+            <div id="versionInfoCard" class="version-card" style="display:none;">
+    <div class="version-header">
+        <span class="version-icon">🕘</span>
+        <span>Version Information</span>
+    </div>
+
+    <div class="version-row">
+        <span>Editing</span>
+        <strong id="editingVersion">v1 (Current)</strong>
+    </div>
+
+    <div class="version-row">
+        <span>After Save</span>
+        <strong id="nextVersion">v2</strong>
+    </div>
+
+    <div class="version-row">
+        <span>Oldest Deleted</span>
+        <strong id="deleteVersion">None</strong>
+    </div>
+            </div>
 
           </div>
           <button data-ga-event="paste_created" class="create-btn" id="createBtn">
@@ -2408,6 +2469,13 @@ background:#ef4444;
   </main>
 
   <script>
+    const saveVersion = document.getElementById("saveVersion");
+const versionCard = document.getElementById("versionInfoCard");
+
+saveVersion.addEventListener("change", () => {
+    versionCard.style.display =
+        saveVersion.checked ? "block" : "none";
+});
     let draftTimer;
     let toSave=true; 
       const DRAFT_KEY = "pastedb_create_draft";
@@ -2809,6 +2877,31 @@ async function loadPasteForEditing(editId){
     
     
     // FILL INPUTS
+    const versionCard =
+    document.getElementById("versionInfoCard");
+
+versionCard.style.display = "block";
+
+const current =
+    data.current_version || 1;
+
+document.getElementById("editingVersion").textContent =
+    `v${current} (Current)`;
+
+document.getElementById("nextVersion").textContent =
+    `v${current + 1}`;
+
+if (current >= 10) {
+
+    document.getElementById("deleteVersion").textContent =
+        `v${current - 9}`;
+
+} else {
+
+    document.getElementById("deleteVersion").textContent =
+        "None";
+
+    }
 
     document.getElementById("title").value =
       data.title || ""
