@@ -1226,6 +1226,17 @@ def get_versions(
     if paste.get("user_email_key") != email_key:
         raise HTTPException(403, "Unauthorized")
 
+    current = paste.get("current_version", 0)
+
+    versions={}
+
+    versions.append({
+    "version": current,
+    "created_at": paste.get("updated_at"),
+    "current": True
+    })
+
+
     versions = list(
         versions_collection.find(
             {"paste_id": paste["_id"]},
@@ -1237,14 +1248,9 @@ def get_versions(
         ).sort("version", -1)
     )
 
-    current = paste.get("current_version", 0)
+    
 
-    versions.append({
-    "version": current,
-    "created_at": paste.get("updated_at"),
-    "current": True
-    })
-
+    
     
 
     for v in versions:
