@@ -3805,17 +3805,18 @@ function triggerGoogleLogin() {
   google.accounts.id.prompt();
 
       }
-  function scheduleDraft() {
-    if (!toSave) return;
+let loadingEditPaste = !!editId;
+
+function scheduleDraft() {
+    if (!toSave || loadingEditPaste) return;
 
     clearTimeout(draftTimer);
 
     draftTimer = setTimeout(() => {
         if (!toSave) return;
         saveDraft();
-    }, 1500);
-  }
-
+    }, 3000);
+}
   const draftInputs = [
     document.getElementById("title"),
     document.getElementById("code"),
