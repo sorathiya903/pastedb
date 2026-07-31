@@ -171,12 +171,16 @@ async function loadVersions(){
             list.innerHTML = `<div class="error">No versions found</div>`;
             return;
         }
-
-        list.innerHTML = data.versions.map(v => {
-            const date = new Date(v.created_at).toLocaleString('en-IN', {
-                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-            });
-
+list.innerHTML = data.versions.map(v => {
+    // Force the formatting to Indian Standard Time (IST)
+    const date = new Date(v.created_at).toLocaleString('en-IN', {
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true,          // Ensures AM/PM format
+        timeZone: 'Asia/Kolkata' // Forces Kolkata/India time zone
+    });
             return `
             <div class="version-card ${v.current ? 'current' : ''}">
                 <div class="time-label">${date}</div>
