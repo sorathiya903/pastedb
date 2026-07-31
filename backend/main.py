@@ -1239,6 +1239,14 @@ def get_versions(
 
     current = paste.get("current_version", 0)
 
+    versions.append({
+    "version": current,
+    "created_at": paste.get("updated_at"),
+    "current": True
+    })
+
+    
+
     for v in versions:
         v["current"] = (v["version"] == current)
 
