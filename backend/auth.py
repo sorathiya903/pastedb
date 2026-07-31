@@ -327,8 +327,10 @@ async def get_paste(
         
         "password":
             True if paste.get("password")
-            else False
+            else False,
+        "current_version":paste.get("current_version")
         }
+    
 
 
 @router.get("/auth/me")
