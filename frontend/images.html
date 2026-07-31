@@ -358,18 +358,24 @@ document
 
 async function loadImages(){
 console.log("working...")
-    const id =
-        new URLSearchParams(
-            location.search
-        ).get("id")
+    const params = new URLSearchParams(location.search);
 
-    const res =
-        await fetch(
-            `${API_URL}/images/${encodeURIComponent(id)}`
-        )
+const id = params.get("id");
+const version = params.get("version");
 
-    const data =
-        await res.json()
+let url;
+
+if (version) {
+    url = `${API_URL}/p/${encodeURIComponent(id)}/version/${version}`;
+} else {
+    url = `${API_URL}/images/${encodeURIComponent(id)}`;
+}
+
+const res = await fetch(url, {
+    credentials: "include"
+});
+
+const data = await res.json();
   
   if (
     data.e2ee &&
