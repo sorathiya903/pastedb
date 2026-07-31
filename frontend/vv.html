@@ -185,7 +185,10 @@ async function loadVersions(){
                     ${v.current ? '<span class="badge">Current</span>' : ''}
                 </div>
                 <div class="actions">
-                    <button class="btn" onclick="viewVersion(${v.version})">View</button>
+                    <button class="btn" onclick="viewVersion(${v.version}, ${v.current})">
+    View
+</button>
+
                 </div>
             </div>
             `
@@ -198,9 +201,16 @@ async function loadVersions(){
     }
 }
 
-function viewVersion(version){
-    window.location.href = `/paste/${paste_id}?version=${version}`;
-}
+function viewVersion(version, current){
+
+    if(current){
+        window.location.href = `/paste/${paste_id}`;
+        return;
+    }
+
+    window.location.href =
+        `/paste/${paste_id}?version=${version}`;
+                                      }
 
 loadVersions();
 </script>
