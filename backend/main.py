@@ -1228,7 +1228,7 @@ def get_versions(
 
     current = paste.get("current_version", 0)
 
-    versions={}
+    versions=[]
 
     versions.append({
     "version": current,
