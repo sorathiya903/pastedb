@@ -2391,27 +2391,27 @@ background:#ef4444;
   </div>
           </div>
           
-            <div class="option-row" id="saveVersionRow">
+            <div class="option-row" style="display:none;" id="saveVersionRow">
     <label class="checkbox-label">
         <input type="checkbox" id="saveVersion">
         <span>Save Previous Version</span>
     </label>
 </div>
 
-<div class="version-card-wrap" id="versionCardWrap">
+<div class="version-card-wrap" style="display:none;" id="versionCardWrap">
     <div class="version-info-card">
         <div class="version-title">
-            📚 Version Information
+            Version Information
         </div>
 
         <div class="version-line">
             <span>Editing</span>
-            <strong id="editingVersion">v9</strong>
+            <strong id="editingVersion">-</strong>
         </div>
 
         <div class="version-line">
             <span>After saving</span>
-            <strong id="newVersion">v10</strong>
+            <strong id="newVersion">-</strong>
         </div>
 
         <div class="version-line warning">
@@ -2485,6 +2485,10 @@ const params =
 
 const editId =
   params.get("edit")
+    if (editId) {
+    document.getElementById("saveVersionRow").style.display = "block";
+    document.getElementById("versionCardWrap").style.display = "block";
+    }
     const sV = document.getElementById("saveVersion");
 const versionCardWrap = document.getElementById("versionCardWrap");
 
