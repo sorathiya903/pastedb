@@ -2469,12 +2469,12 @@ background:#ef4444;
   </main>
 
   <script>
-    const saveVersion = document.getElementById("saveVersion");
+    const saveV = document.getElementById("saveVersion");
 const versionCard = document.getElementById("versionInfoCard");
 
-saveVersion.addEventListener("change", () => {
+saveV.addEventListener("change", () => {
     versionCard.style.display =
-        saveVersion.checked ? "block" : "none";
+        saveV.checked ? "block" : "none";
 });
     let draftTimer;
     let toSave=true; 
