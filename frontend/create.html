@@ -3227,6 +3227,26 @@ async function createPaste(pasteData){
     });
     }
 
+ async function copyPasteUrl(url){
+
+    await navigator.clipboard.writeText(url);
+
+    const icon = document.getElementById("copyUrlIcon");
+
+    icon.innerHTML = `
+        <path d="M20 6L9 17l-5-5"/>
+    `;
+
+    setTimeout(() => {
+
+        icon.innerHTML = `
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        `;
+
+    }, 1000);
+ }
+
     
 createBtn.addEventListener("click", async () => {
 const customId =  document.getElementById("customId").value.trim();
@@ -3473,6 +3493,21 @@ qrDiv.innerHTML = `
     class="qr-btn"
     onclick="createQR('${qrUrl}','pasteQR')">
     Show QR
+</button>
+
+<button
+    class="qr-btn"
+    id="copyUrlBtn"
+    onclick="copyPasteUrl('${qrUrl}')">
+
+<svg id="copyUrlIcon" xmlns="http://www.w3.org/2000/svg"
+width="18" height="18" viewBox="0 0 24 24"
+fill="none" stroke="currentColor" stroke-width="2"
+stroke-linecap="round" stroke-linejoin="round">
+  <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+</svg>
+
 </button>
 
 <div
