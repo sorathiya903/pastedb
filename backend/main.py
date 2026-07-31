@@ -1230,7 +1230,7 @@ def get_versions(
 
     versions=[]
 
-    versions.append({
+    versions.insert(0,{
     "version": current,
     "created_at": paste.get("updated_at"),
     "current": True
