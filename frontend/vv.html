@@ -181,7 +181,7 @@ async function loadVersions(){
             <div class="version-card ${v.current ? 'current' : ''}">
                 <div class="time-label">${date}</div>
                 <div class="top">
-                    <div class="version">v${v.version}</div>
+                    <div class="version">v${v.version === 0 ? 1 : v.version}</div>
                     ${v.current ? '<span class="badge">Current</span>' : ''}
                 </div>
                 <div class="actions">
