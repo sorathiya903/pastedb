@@ -1700,7 +1700,7 @@ def save_version(
 
     return {
         "status": "saved",
-        "version": new_version
+        "version": new_version,
         
            "custom_id":paste.get("custom_id")
            
