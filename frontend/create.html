@@ -1881,47 +1881,51 @@ background:#ef4444;
     height: 18px;
     accent-color: var(--accent);
 }
-    .version-card{
-    margin:18px 0;
+    .version-card-wrap{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    margin-top:0;
+    transition:
+        max-height .35s ease,
+        opacity .25s ease,
+        margin-top .35s ease;
+}
+
+.version-card-wrap.show{
+    max-height:220px;
+    opacity:1;
+    margin-top:14px;
+}
+
+.version-info-card{
     background:#111;
-    border:1px solid #2b2b2b;
-    border-radius:12px;transition:0.3s;
-    padding:18px;height:0;overflow:hidden
+    border:1px solid #333;
+    border-radius:12px;
+    padding:16px;
 }
 
-.version-header{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:18px;
-    font-weight:700;
-    margin-bottom:14px;
+.version-title{
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:12px;
 }
 
-.version-icon{
-    font-size:20px;
-}
-
-.version-row{
+.version-line{
     display:flex;
     justify-content:space-between;
-    align-items:center;
-    padding:10px 0;
-    border-top:1px solid #222;
+    margin:8px 0;
+    color:#ccc;
 }
 
-.version-row:first-of-type{
-    border-top:none;
-}
-
-.version-row span{
-    color:#888;
-}
-
-.version-row strong{
+.version-line strong{
     color:#fff;
-    font-weight:600;
 }
+
+.version-line.warning strong{
+    color:#ffb84d;
+    }
+    
   </style>
 </head>
 
@@ -2386,34 +2390,40 @@ background:#ef4444;
 
   </div>
           </div>
+          
             <div class="option-row" id="saveVersionRow">
     <label class="checkbox-label">
         <input type="checkbox" id="saveVersion">
         <span>Save Previous Version</span>
     </label>
-            <div id="versionInfoCard" class="version-card" style="display:none;">
-    <div class="version-header">
-        <span class="version-icon">🕘</span>
-        <span>Version Information</span>
-    </div>
+</div>
 
-    <div class="version-row">
-        <span>Editing</span>
-        <strong id="editingVersion">v1 (Current)</strong>
-    </div>
+<div class="version-card-wrap" id="versionCardWrap">
+    <div class="version-info-card">
+        <div class="version-title">
+            📚 Version Information
+        </div>
 
-    <div class="version-row">
-        <span>After Save</span>
-        <strong id="nextVersion">v2</strong>
-    </div>
+        <div class="version-line">
+            <span>Editing</span>
+            <strong id="editingVersion">v9</strong>
+        </div>
 
-    <div class="version-row">
-        <span>Oldest to be Deleted</span>
-        <strong id="deleteVersion">None</strong>
-    </div>
-            </div>
+        <div class="version-line">
+            <span>After saving</span>
+            <strong id="newVersion">v10</strong>
+        </div>
 
-          </div>
+        <div class="version-line warning">
+            <span>Oldest deleted</span>
+            <strong id="deletedVersion">None</strong>
+        </div>
+    </div>
+</div>
+
+          
+
+          
           <button data-ga-event="paste_created" class="create-btn" id="createBtn">
 
             <span id="btnText">
@@ -2470,12 +2480,12 @@ background:#ef4444;
 
   <script>
     const saveV = document.getElementById("saveVersion");
-const versionCard = document.getElementById("versionInfoCard");
+const versionCardWrap = document.getElementById("versionCardWrap");
 
 saveV.addEventListener("change", () => {
-    versionCard.style.height =
-        saveV.checked ? "auto" : "0";
+    versionCardWrap.classList.toggle("show", saveV.checked);
 });
+    
     let draftTimer;
     let toSave=true; 
       const DRAFT_KEY = "pastedb_create_draft";
