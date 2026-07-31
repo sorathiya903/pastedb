@@ -2479,6 +2479,12 @@ background:#ef4444;
   </main>
 
   <script>
+        
+const params =
+  new URLSearchParams(window.location.search)
+
+const editId =
+  params.get("edit")
     const sV = document.getElementById("saveVersion");
 const versionCardWrap = document.getElementById("versionCardWrap");
 
@@ -2488,9 +2494,9 @@ sV.addEventListener("change", () => {
     
     let draftTimer;
     let toSave=true; 
-      const DRAFT_KEY = "pastedb_create_draft";
-
-
+      const DRAFT_KEY = editId
+    ? `pastedb_edit_draft_${editId}`
+    : "pastedb_create_draft";
     
     function createQR(url, containerId){
 
@@ -3070,12 +3076,7 @@ async function uploadImage(file){
 
 
     
-    
-const params =
-  new URLSearchParams(window.location.search)
 
-const editId =
-  params.get("edit")
 if(editId){
 document.querySelector("#pageLoader h2").textContent = "Loading Paste";
     document.querySelector("#pageLoader p").textContent = "Fetching your paste...";
