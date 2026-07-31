@@ -1614,7 +1614,8 @@ def verify_custom_password(
     
 @app.post("/paste/{paste_id}/save-version")
 def save_version(
-    paste_id: str, data: dict,
+    paste_id: str,
+    data: dict,
     user=Depends(get_current_user)
 ):
     paste = pastes_collection.find_one({
@@ -1631,11 +1632,13 @@ def save_version(
 
     update_data = build_update_data(data)
 
-    version = paste.get("current_version", 0) + 1
+    current_version = paste.get("current_version", 1)
+    new_version = current_version + 1
 
+    # Save the CURRENT paste as a historical version
     version_doc = {
         "paste_id": ObjectId(paste_id),
-        "version": version,
+        "version": current_version,
         "created_at": datetime.now(timezone.utc),
 
         "title": paste.get("title"),
@@ -1653,6 +1656,7 @@ def save_version(
 
     versions_collection.insert_one(version_doc)
 
+    # Keep only the latest 10 historical versions
     count = versions_collection.count_documents({
         "paste_id": ObjectId(paste_id)
     })
@@ -1660,7 +1664,7 @@ def save_version(
     if count > 10:
         oldest = versions_collection.find_one(
             {"paste_id": ObjectId(paste_id)},
-            sort=[("version", 1)]   # oldest version
+            sort=[("version", 1)]
         )
 
         if oldest:
@@ -1677,23 +1681,28 @@ def save_version(
                 }
             )
 
-    update_data["current_version"] = version
+    # Update main paste with the NEW version
+    update_data["current_version"] = new_version
+    update_data["updated_at"] = datetime.now(timezone.utc)
 
     result = pastes_collection.update_one(
-            {"_id": ObjectId(paste_id)},
+        {"_id": ObjectId(paste_id)},
         {
             "$set": update_data,
             "$push": {
-                "versions": version
+                "versions": current_version
             }
         }
-     )
-    
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(404, "Paste not found")
+
     return {
         "status": "saved",
-        "version": version
+        "version": new_version
     }
-
+    
 
 @app.get("/p/{paste_id}/version/{version}")
 async def get_paste_version(
