@@ -1885,8 +1885,8 @@ background:#ef4444;
     margin:18px 0;
     background:#111;
     border:1px solid #2b2b2b;
-    border-radius:12px;
-    padding:18px;
+    border-radius:12px;transition:0.3s;
+    padding:18px;height:0;overflow:hidden
 }
 
 .version-header{
@@ -2408,7 +2408,7 @@ background:#ef4444;
     </div>
 
     <div class="version-row">
-        <span>Oldest Deleted</span>
+        <span>Oldest to be Deleted</span>
         <strong id="deleteVersion">None</strong>
     </div>
             </div>
@@ -2473,8 +2473,8 @@ background:#ef4444;
 const versionCard = document.getElementById("versionInfoCard");
 
 saveV.addEventListener("change", () => {
-    versionCard.style.display =
-        saveV.checked ? "block" : "none";
+    versionCard.style.height =
+        saveV.checked ? "auto" : "0";
 });
     let draftTimer;
     let toSave=true; 
