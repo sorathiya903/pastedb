@@ -1661,7 +1661,7 @@ def save_version(
         "paste_id": ObjectId(paste_id)
     })
 
-    if count > 10:
+    if count > 9:
         oldest = versions_collection.find_one(
             {"paste_id": ObjectId(paste_id)},
             sort=[("version", 1)]
