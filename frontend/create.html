@@ -2479,11 +2479,11 @@ background:#ef4444;
   </main>
 
   <script>
-    const saveV = document.getElementById("saveVersion");
+    const sV = document.getElementById("saveVersion");
 const versionCardWrap = document.getElementById("versionCardWrap");
 
-saveV.addEventListener("change", () => {
-    versionCardWrap.classList.toggle("show", saveV.checked);
+sV.addEventListener("change", () => {
+    versionCardWrap.classList.toggle("show", sV.checked);
 });
     
     let draftTimer;
@@ -2888,9 +2888,7 @@ async function loadPasteForEditing(editId){
     
     // FILL INPUTS
     const versionCard =
-    document.getElementById("versionInfoCard");
-
-versionCard.style.display = "block";
+    document.getElementById("versionCardWrap");
 
 const current =
     data.current_version || 1;
@@ -2898,20 +2896,37 @@ const current =
 document.getElementById("editingVersion").textContent =
     `v${current} (Current)`;
 
-document.getElementById("nextVersion").textContent =
+document.getElementById("newVersion").textContent =
     `v${current + 1}`;
 
 if (current >= 10) {
 
-    document.getElementById("deleteVersion").textContent =
+    document.getElementById("deletedVersion").textContent =
         `v${current - 9}`;
 
 } else {
 
-    document.getElementById("deleteVersion").textContent =
+    document.getElementById("deletedVersion").textContent =
         "None";
+}
 
-    }
+const saveV =
+    document.getElementById("saveVersion");
+
+function updateVersionCard() {
+    versionCard.classList.toggle(
+        "show",
+        saveV.checked
+    );
+}
+
+saveVersion.addEventListener(
+    "change",
+    updateVersionCard
+);
+
+// Set initial state
+updateVersionCard();
 
     document.getElementById("title").value =
       data.title || ""
