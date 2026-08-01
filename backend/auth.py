@@ -411,7 +411,7 @@ async def get_device_keys(
         devices_collection.find(
             {
                 "email": email,
-                "approved": True
+                
             },
             {
                 "_id": 0
