@@ -601,18 +601,18 @@ header{
     }
 }
 
-@media (min-width: 768px) {
-  .grid-container {
-    /* Create a 2-column grid layout */
+ @media (min-width: 768px) {
+  .grid {
+    /* Creates the 2-column layout */
     grid-template-columns: repeat(2, 1fr); 
   }
 
-  /* Target the 5th item specifically */
-  .grid-item:nth-child(5) {
-    /* Span across both columns to take full width */
+  /* Targets the 5th card specifically */
+  .card:nth-child(5) {
+    /* Forces it to span across both columns */
     grid-column: 1 / -1; 
   }
-     }
+ }
 </style>
 </head>
 
