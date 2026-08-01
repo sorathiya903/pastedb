@@ -17,7 +17,7 @@ db = client["pasteDB"]
 users_collection = db["users"]
 pastes_collection = db["pastes"]
 devices_collection = db["devices"]
-tranfers_collection = db["transfers"]
+transfers_collection = db["transfers"]
 
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
