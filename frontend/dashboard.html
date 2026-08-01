@@ -1046,6 +1046,95 @@ transform:translateY(20px);
    }
 
    .row{display:flex; flex-direction:row}
+
+       #kekR{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:24px;
+    margin:25px 0;
+    box-shadow:var(--shadow);
+}
+
+#kekR .logo{
+    justify-content:flex-start;
+    margin-bottom:18px;
+}
+
+#kekR .logo-icon{
+    width:54px;
+    height:54px;
+    font-size:26px;
+    background:#2a2414;
+    border:1px solid #5b4b18;
+}
+
+#kekR .login-header{
+    text-align:left;
+    margin-bottom:18px;
+}
+
+#kekR .login-header h2{
+    font-size:24px;
+    margin-bottom:8px;
+}
+
+#kekR .login-header p{
+    color:var(--muted);
+    font-size:15px;
+}
+
+#kekR .warning{
+    background:#2a2414;
+    border:1px solid #5b4b18;
+    color:#facc15;
+    border-radius:12px;
+    padding:14px 16px;
+    font-weight:600;
+    margin:18px 0;
+}
+
+#kekR .content{
+    color:var(--muted);
+    line-height:1.8;
+    font-size:15px;
+}
+
+#kekR .content strong{
+    color:var(--text);
+}
+
+#kekR .content a{
+    color:white;
+    text-decoration:underline;
+}
+
+#kekR .actions{
+    display:flex;
+    gap:12px;
+    margin-top:28px;
+    flex-wrap:wrap;
+}
+
+#kekR .actions .google-btn{
+    flex:1;
+    justify-content:center;
+    text-decoration:none;
+    min-height:48px;
+}
+
+@media(max-width:600px){
+
+    #kekR .actions{
+        flex-direction:column;
+    }
+
+    #kekR .actions .google-btn{
+        width:100%;
+    }
+
+       }
 </style>
 </head>
 
@@ -1065,23 +1154,21 @@ transform:translateY(20px);
         </p>
     </div>
 
-    <div class="error-box show"
-         style="display:block;
-                background:#2a2414;
-                color:#facc15;
-                border-color:#5b4b18;">
+    <div class="warning"
+         >
 
         This device has not yet received your encryption key.
 
     </div>
 
-    <p style="margin-top:18px;line-height:1.7;color:var(--muted);">
+    <p class="content">
 
         Without the encryption key, this device cannot unlock or manage your
         <strong>Unlisted</strong> and
         <strong>Private</strong> encrypted pastes.
 
         <br><br>
+           <div class="actions">
 
         To import your key:
 
@@ -1106,6 +1193,8 @@ transform:translateY(20px);
            Scanner
         </a>
         page and scan the QR.
+
+           </div>
 
     </p>
 
