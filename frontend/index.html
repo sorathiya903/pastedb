@@ -561,23 +561,17 @@ header{
         grid-column: 1 / -1; 
     }
 }
-
-/* --- 3. DESKTOP RULES (901px and above) --- */
 @media (min-width: 901px) {
     .grid {
         grid-template-columns: repeat(3, 1fr); /* 3 columns */
     }
 
-    /* "If" 5 cards total: Cards 4 and 5 will cleanly split the last row (50% width each) */
-    .grid > .card:nth-child(4):nth-last-child(2) {
-        grid-column: span 1; 
-    }
-    
-    /* Clean fallback: If a single card gets left behind on desktop, make it full width */
-    .grid > .card:last-child:nth-child(3n+1) {
+    /* "If" total number of cards is odd (e.g. 5 items), force the last card full width */
+    .grid > .card:last-child:nth-child(2n+1) {
         grid-column: 1 / -1; 
     }
 }
+
 
 </style>
 </head>
