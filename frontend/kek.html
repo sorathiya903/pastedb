@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Trusted Devices - PasteDB</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+<script>
+
+if(
+  debug
+){
+
+  eruda.init();
+
+}
+
+</script>
+<style>
+:root{
+    --bg:#0b0b0b;
+    --card:#161616;
+    --border:#2a2a2a;
+    --text:#fff;
+    --muted:#9ca3af;
+    --green:#22c55e;
+    --yellow:#f59e0b;
+    --accent:#ffffff;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+.container{
+    width:min(900px,95%);
+    margin:40px auto;
+}
+
+header{
+    margin-bottom:30px;
+}
+
+header h1{
+    font-size:32px;
+    margin-bottom:8px;
+}
+
+header p{
+    color:var(--muted);
+}
+
+.device-list{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.device-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transition:.2s;
+}
+
+.device-card:hover{
+    border-color:#555;
+}
+
+.left{
+    flex:1;
+}
+
+.device-name{
+    font-size:18px;
+    font-weight:600;
+}
+
+.device-id{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:13px;
+    word-break:break-all;
+}
+
+.status{
+    display:inline-block;
+    margin-top:10px;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.status.approved{
+    background:rgba(34,197,94,.15);
+    color:var(--green);
+}
+
+.status.pending{
+    background:rgba(245,158,11,.15);
+    color:var(--yellow);
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+}
+
+.btn{
+    border:none;
+    cursor:pointer;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.btn.primary{
+    background:white;
+    color:black;
+}
+
+.btn.primary:hover{
+    transform:translateY(-2px);
+}
+
+.btn.secondary{
+    background:#222;
+    color:white;
+    border:1px solid #444;
+}
+
+.btn.secondary:hover{
+    background:#333;
+}
+
+.empty{
+    text-align:center;
+    padding:60px;
+    color:var(--muted);
+}
+
+.qrModal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.modal{
+    background:#181818;
+    border:1px solid #333;
+    border-radius:20px;
+    padding:25px;
+    width:min(400px,92%);
+    text-align:center;
+}
+
+.modal h2{
+    margin-bottom:15px;
+}
+
+#qr{
+    margin:20px auto;
+}
+
+.closeBtn{
+    margin-top:20px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:white;
+    color:black;
+    cursor:pointer;
+    font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+<h1>Trusted Devices</h1>
+<p>
+Approve new devices and securely transfer your encryption key.
+</p>
+</header>
+
+<div class="device-list" id="deviceList">
+
+<!-- Example -->
+
+<div class="device-card">
+
+<div class="left">
+
+<div class="device-name">
+Windows Laptop
+</div>
+
+<div class="device-id">
+Device ID: d8fc7b4d...
+</div>
+
+<div class="status approved">
+Approved
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="btn secondary">
+Details
+</button>
+
+</div>
+
+</div>
+
+<div class="device-card">
+
+<div class="left">
+
+<div class="device-name">
+Samsung Galaxy
+</div>
+
+<div class="device-id">
+Device ID: a91cb24...
+</div>
+
+<div class="status pending">
+Pending Approval
+</div>
+
+</div>
+
+<div class="actions">
+
+<button
+class="btn primary"
+onclick="showQR('deviceid')">
+Generate QR
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="qrModal" id="qrModal">
+
+<div class="modal">
+
+<h2>Transfer Encryption Key</h2>
+
+<div id="qr">
+
+<!-- QR generated here -->
+
+</div>
+
+<p style="color:#9ca3af;font-size:14px">
+Scan this QR on the new device to securely import your encryption key.
+</p>
+
+<button
+class="closeBtn"
+onclick="closeQR()">
+Done
+</button>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+
+// Use your existing DB/keys from encryption.js
+async function loadDevices() {
+    const devicesContainer = document.getElementById("deviceList");
+    devicesContainer.innerHTML = `<div style="text-align:center;color:#888">Loading...</div>`;
+
+    try {
+        const res = await fetch(`${API_URL}/device/keys`, {
+            credentials: "include"
+        });
+        if(!res.ok) throw new Error("Failed to fetch devices");
+        const data = await res.json();
+
+        // load current device from your DB
+        currentDeviceId = await getFromDB("deviceId");
+        currentPrivateKey = await getFromDB("privateKey");
+        currentPublicKey = await getFromDB("publicKey");
+
+        devicesContainer.innerHTML = "";
+
+        if(data.devices.length === 0){
+            devicesContainer.innerHTML = `<div class="empty">No devices found</div>`;
+            return;
+        }
+
+        data.devices.forEach(device => {
+            const isCurrent = device.device_id === currentDeviceId;
+            const isApproved = device.approved;
+            const statusClass = isApproved ? "approved" : "pending";
+            const statusText = isApproved ? "Approved" : "Pending Approval";
+            
+            let actionBtn = "";
+            if(isCurrent){
+                actionBtn = `<button class="btn secondary" disabled>This Device</button>`;
+            } else if(!isApproved){
+                actionBtn = `<button class="btn primary" onclick="generateTransferQR('${device.device_id}','${device.public_key}')">Generate QR</button>`;
+            } else {
+                actionBtn = `<button class="btn secondary" disabled>Approved</button>`;
+            }
+
+            devicesContainer.innerHTML += `
+            <div class="device-card">
+                <div class="left">
+                    <div class="device-name">${isCurrent ? "This Device" : device.device_name}</div>
+                    <div class="device-id">Device ID: ${device.device_id}</div>
+                    <div class="status ${statusClass}">${statusText}</div>
+                </div>
+                <div class="actions">${actionBtn}</div>
+            </div>
+            `;
+        });
+    } catch(e){
+        console.error(e);
+        devicesContainer.innerHTML = `<div class="empty">Error loading devices</div>`;
+    }
+}
+
+// ===== TRANSFER KEK FLOW =====
+async function generateTransferQR(targetDeviceId, targetPublicKeyB64){
+    document.getElementById("qrModal").style.display="flex";
+    document.getElementById("qr").innerHTML = "Generating...";
+
+    try{
+        // 1. Get local Account KEK from your DB
+        const accountKEK = await getFromDB("accountKEK");
+        if(!accountKEK){
+            throw new Error("No Account KEK found on this device. You must be approved first.");
+        }
+
+        // 2. Import target device's RSA public key using your helper
+        const targetPublicKey = await importPublicKey(targetPublicKeyB64);
+
+        // 3. Export raw KEK and encrypt with target's public key using your helper
+        const rawKEK = await crypto.subtle.exportKey("raw", accountKEK);
+        const encryptedKEK = await encryptPEKWithPublicKey(rawKEK, targetPublicKey);
+
+        // 4. Create payload for QR
+        const payload = JSON.stringify({
+            device_id: targetDeviceId,
+            encrypted_kek: encryptedKEK
+        });
+
+        // 5. Generate QR using qrcode.js
+        document.getElementById("qr").innerHTML = "";
+        QRCode.toCanvas(payload, { 
+            width: 240, 
+            colorDark: "#ffffff", 
+            colorLight: "#181818",
+            margin: 2
+        }, function(err, canvas){
+            if(err) throw err;
+            document.getElementById("qr").appendChild(canvas);
+        });
+
+    } catch(e){
+        console.error(e);
+        document.getElementById("qr").innerHTML = `<p style="color:#f87171">${e.message}</p>`;
+    }
+}
+
+function closeQR(){
+    document.getElementById("qrModal").style.display="none";
+    document.getElementById("qr").innerHTML = "";
+}
+
+function showQR(deviceId){
+    // legacy hook from your html
+    generateTransferQR(deviceId, "")
+}
+
+// ===== NEW DEVICE: IMPORT FROM QR =====
+// Call this on the new device after scanning QR
+async function importKEKFromQR(qrDataString){
+    try{
+        const payload = JSON.parse(qrDataString);
+        const { device_id, encrypted_kek } = payload;
+
+        // 1. Ensure we have our keys
+        await ensureDeviceKeys();
+        const myDeviceId = await getFromDB("deviceId");
+        currentPrivateKey = await getFromDB("privateKey");
+
+        if(device_id !== myDeviceId){
+            throw new Error("This QR is not for this device");
+        }
+
+        // 2. Decrypt KEK using your helper
+        const decryptedKEKRaw = await decryptPEKWithPrivateKey(encrypted_kek, currentPrivateKey);
+
+        // 3. Import as AES-GCM key and save to IndexedDB
+        const accountKEK = await crypto.subtle.importKey(
+            "raw",
+            decryptedKEKRaw,
+            { name: "AES-GCM", length: 256 },
+            true,
+            ["encrypt", "decrypt"]
+        );
+        await saveToDB("accountKEK", accountKEK);
+
+        // 4. Tell server: "here is my encrypted_kek for me" to mark approved
+        const publicKeyB64 = await exportPublicKey(currentPublicKey);
+        await fetch(`${API_URL}/device/register`, {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                device_id: myDeviceId,
+                device_name: navigator.userAgent.slice(0,50), // or from form
+                public_key: publicKeyB64,
+                encrypted_kek: encrypted_kek // same blob, now server stores it for this device
+            })
+        });
+
+        alert("Encryption key imported. Device approved.");
+        window.location.reload();
+
+    } catch(e){
+        console.error(e);
+        alert("Failed to import key: " + e.message);
+    }
+}
+
+// Auto load on page open
+loadDevices();
+</script>
+</body>
+  </html>
