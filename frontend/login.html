@@ -377,101 +377,158 @@ display:flex;
       google.accounts.id.prompt();
     }
 
-    async function handleCredentialResponse(response) {
-      const btn = document.getElementById("googleBtn");
-      const btnText = document.getElementById("googleBtnText");
-      
-      btn.disabled = true;
-      btnText.innerHTML = '<div class="spinner"></div> &nbsp; Signing in...';
+     async function handleCredentialResponse(response) {
 
-      try {
-        const res = await fetch(`${API_URL}/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ token: response.credential })
-        });
+    const btn = document.getElementById("googleBtn");
+    const btnText = document.getElementById("googleBtnText");
 
-        const data = await res.json();
+    btn.disabled = true;
+    btnText.innerHTML =
+        '<div class="spinner"></div>&nbsp; Signing in...';
 
-        if (data.status === "success") {
-const keys = await ensureDeviceKeys();
+    try {
 
-const publicKey = await exportPublicKey(keys.publicKey);
+        // Google Login
+        const loginRes = await fetch(
+            `${API_URL}/auth/google`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    token: response.credential
+                })
+            }
+        );
 
-let encryptedKEK = null;
+        const loginData = await loginRes.json();
 
-// Check if this device already has a KEK
-const existingKEK = await getFromDB("accountKEK");
+        if (loginData.status !== "success") {
 
-if (existingKEK) {
+            showError(
+                loginData.detail ||
+                "Login failed."
+            );
 
-    encryptedKEK = await encryptPEKWithPublicKey(
-        await crypto.subtle.exportKey("raw", existingKEK),
-        keys.publicKey
-    );
+            btn.disabled = false;
+            btnText.textContent =
+                "Continue with Google";
 
-} else {
-
-    // First login on this browser
-    const accountKEK = await generatePEK();
-  const rawKEK = await crypto.subtle.exportKey("raw", accountKEK);
-
-encryptedKEK = await encryptPEKWithPublicKey(
-    rawKEK,
-    keys.publicKey
-);
-
-    await saveToDB("accountKEK", accountKEK);
-
-    
-
-}
-
-await fetch(`${API_URL}/device/register`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        device_id: keys.deviceId,
-        device_name: navigator.userAgent,
-        public_key: publicKey,
-        encrypted_kek: encryptedKEK
-    })
-});
-
-          // Redirect to dashboard or create page
-          const redirect = new URLSearchParams(window.location.search).get("redirect");
-          window.location.href = redirect || "/dashboard.html";
-        } else {
-          showError(data.detail || "Login failed. Please try again.");
-          btn.disabled = false;
-          btnText.textContent = "Continue with Google";
+            return;
         }
-      } catch (err) {
+
+        // Ensure RSA keys exist
+        const keys =
+            await ensureDeviceKeys();
+
+        const publicKey =
+            await exportPublicKey(
+                keys.publicKey
+            );
+
+        // Register device
+        const registerRes = await fetch(
+            `${API_URL}/device/register`,
+            {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                    device_id: keys.deviceId,
+                    device_name:
+                        navigator.userAgent,
+                    public_key: publicKey
+                })
+            }
+        );
+
+        const registerData =
+            await registerRes.json();
+
+        // Check whether this device already has KEK
+        let accountKEK =
+            await getFromDB("accountKEK");
+
+        // First device of account
+        if (
+            !accountKEK &&
+            registerData.generate_kek
+        ) {
+
+            accountKEK =
+                await generatePEK();
+
+            await saveToDB(
+                "accountKEK",
+                accountKEK
+            );
+
+            const rawKEK =
+                await crypto.subtle.exportKey(
+                    "raw",
+                    accountKEK
+                );
+
+            const encryptedKEK =
+                await encryptPEKWithPublicKey(
+                    rawKEK,
+                    keys.publicKey
+                );
+
+            // Save encrypted KEK
+            await fetch(
+                `${API_URL}/device/register`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+                    body: JSON.stringify({
+                        device_id:
+                            keys.deviceId,
+                        device_name:
+                            navigator.userAgent,
+                        public_key:
+                            publicKey,
+                        encrypted_kek:
+                            encryptedKEK
+                    })
+                }
+            );
+
+        }
+
+        const redirect =
+            new URLSearchParams(
+                location.search
+            ).get("redirect");
+
+        window.location.href =
+            redirect ||
+            "/dashboard";
+
+    } catch (err) {
+
         console.error(err);
-        showError("Could not connect to server. Please try again.");
+
+        showError(
+            "Could not connect to server."
+        );
+
         btn.disabled = false;
-        btnText.textContent = "Continue with Google";
-      }
+
+        btnText.textContent =
+            "Continue with Google";
     }
 
-    // Check if already logged in
-    window.addEventListener("load", async () => {
-      try {
-        const res = await fetch(`${API_URL}/auth/me`, {
-          credentials: "include"
-        });
-        if (res.ok) {
-          // Already logged in, redirect
-          window.location.href = "/dashboard.html";
-        }
-      } catch (e) {
-        // Not logged in, stay on login page
-      }
-    });
+   }
   </script>
 </body>
   </html>
