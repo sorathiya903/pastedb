@@ -529,48 +529,43 @@ header{
 .feature-category:first-of-type {
     margin-top: 0;
 }
-/* --- BASE CARD STYLES --- */
-.card {
+/* --- Flexbox Layout Container --- */
+.grid {
+    display: flex;
+    flex-wrap: wrap; /* Allows cards to wrap to the next line */
+    gap: 18px;       /* Spacing between cards */
+    width: 100%;
+}
+
+/* --- Base Mobile Card Styles (Stacked) --- */
+.grid > .card {
+    flex: 1 1 100%;  /* Default: 100% full width on mobile screens */
     background: #141414;
     border: 1px solid #242424;
     border-radius: 16px;
     padding: 20px;
     transition: .25s;
+    box-sizing: border-box;
 }
 
-.card:hover {
+.grid > .card:hover {
     transform: translateY(-4px);
     border-color: #333;
 }
 
-/* --- 1. MOBILE RULES (Default: 0px to 600px) --- */
-.grid {
-    display: grid;
-    gap: 18px;
-    grid-template-columns: 1fr; /* 1 column stack */
-}
-
-/* --- 2. TABLET RULES (601px to 900px) --- */
-@media (min-width: 601px) and (max-width: 900px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+/* --- Larger Screens (Tablets / Desktops) --- */
+@media (min-width: 601px) {
+    .grid > .card {
+        /* Base size is roughly half width minus gap spacing */
+        flex: 1 1 calc(50% - 9px); 
     }
 
-    /* "If" there is a 5th card, make it span full width in the 2-column layout */
-    .grid > .card:nth-child(5) {
-        grid-column: 1 / -1; 
-    }
-}
-@media (min-width: 901px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    }
-
-    /* "If" total number of cards is odd (e.g. 5 items), force the last card full width */
+    /* DYNAMIC RULE: If the last card is an odd number, make it stretch 100% full width */
     .grid > .card:last-child:nth-child(2n+1) {
-        grid-column: 1 / -1; 
+        flex: 1 1 100%; 
     }
 }
+
 
 
 </style>
