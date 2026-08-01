@@ -602,10 +602,17 @@ header{
 }
 
 @media (min-width: 768px) {
-  .fu {
-    width: 100%;
+  .grid-container {
+    /* Create a 2-column grid layout */
+    grid-template-columns: repeat(2, 1fr); 
   }
-}
+
+  /* Target the 5th item specifically */
+  .grid-item:nth-child(5) {
+    /* Span across both columns to take full width */
+    grid-column: 1 / -1; 
+  }
+     }
 </style>
 </head>
 
