@@ -379,15 +379,29 @@ async function generateTransferQR(targetDeviceId, targetPublicKeyB64){
         const encryptedKEK = await encryptPEKWithPublicKey(rawKEK, targetPublicKey);
 
         // 4. Create payload for QR
-        const payload = JSON.stringify({
+const res = await fetch(
+    `${API_URL}/device/create-transfer`,
+    {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
             device_id: targetDeviceId,
             encrypted_kek: encryptedKEK
-        });
+        })
+    }
+);
+
+const data = await res.json();
+
+      const url = `${location.origin}/import-key?id=${data.transfer_id}`;
 
         // 5. Generate QR using qrcodejs
 document.getElementById("qr").innerHTML = "";
 new QRCode(document.getElementById("qr"), {
-    text: payload,
+    text: url,
     width: 240,
     height: 240,
     colorDark : "#ffffff",
