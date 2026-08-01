@@ -17,6 +17,7 @@ db = client["pasteDB"]
 users_collection = db["users"]
 pastes_collection = db["pastes"]
 devices_collection = db["devices"]
+tranfers_collection = db["transfers"]
 
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -422,3 +423,124 @@ async def get_device_keys(
     return {
         "devices": devices
         }
+
+
+@router.post("/device/create-transfer")
+async def create_transfer(
+    data: CreateTransfer,
+    user=Depends(get_current_user)
+):
+    email = user["email"]
+
+    device = devices_collection.find_one({
+        "email": email,
+        "device_id": data.device_id,
+        "approved": False
+    })
+
+    if not device:
+        raise HTTPException(
+            404,
+            "Pending device not found"
+        )
+
+    transfer_id = secrets.token_urlsafe(16)
+
+    transfers_collection.insert_one({
+        "transfer_id": transfer_id,
+        "email": email,
+        "device_id": data.device_id,
+        "encrypted_kek": data.encrypted_kek,
+        "created_at": datetime.now(timezone.utc),
+        "expires_at": datetime.now(timezone.utc)
+                      + timedelta(minutes=5),
+        "used": False
+    })
+
+    return {
+        "transfer_id": transfer_id,
+        "expires_in": 300
+    }
+
+@router.get("/device/transfer/{transfer_id}")
+async def get_transfer(
+    transfer_id: str
+):
+    transfer = transfers_collection.find_one({
+        "transfer_id": transfer_id
+    })
+
+    if not transfer:
+        raise HTTPException(
+            404,
+            "Transfer not found"
+        )
+
+    if transfer["used"]:
+        raise HTTPException(
+            400,
+            "Transfer already used"
+        )
+
+    if transfer["expires_at"] < datetime.now(timezone.utc):
+        transfers_collection.delete_one({
+            "_id": transfer["_id"]
+        })
+
+        raise HTTPException(
+            400,
+            "Transfer expired"
+        )
+
+    return {
+        "device_id": transfer["device_id"],
+        "encrypted_kek": transfer["encrypted_kek"]
+    }
+
+@router.post("/device/complete-transfer")
+async def complete_transfer(
+    data: CompleteTransfer
+):
+    transfer = transfers_collection.find_one({
+        "transfer_id": data.transfer_id
+    })
+
+    if not transfer:
+        raise HTTPException(
+            404,
+            "Transfer not found"
+        )
+
+    if transfer["used"]:
+        raise HTTPException(
+            400,
+            "Already used"
+        )
+
+    if transfer["expires_at"] < datetime.now(timezone.utc):
+        raise HTTPException(
+            400,
+            "Transfer expired"
+        )
+
+    devices_collection.update_one(
+        {
+            "email": transfer["email"],
+            "device_id": transfer["device_id"]
+        },
+        {
+            "$set": {
+                "approved": True,
+                "encrypted_kek": transfer["encrypted_kek"]
+            }
+        }
+    )
+
+    transfers_collection.delete_one({
+        "_id": transfer["_id"]
+    })
+
+    return {
+        "status": "approved"
+    }
+
