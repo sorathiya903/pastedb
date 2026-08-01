@@ -302,6 +302,48 @@ Done
 
 </div>
   <script>
+    function getDeviceName(userAgent) {
+
+    if (!userAgent) return "Unknown Device";
+
+    // Android
+    if (userAgent.includes("Android")) {
+
+        // Firefox Android
+        const rv = userAgent.match(/Android\s[\d.]+;\s*Mobile;\s*rv:[^)]*\)\s*Gecko\/[^ ]+\s*([^/]+)/);
+
+        if (rv) return rv[1].replace(/_/g, " ");
+
+        // Chrome Android
+        const chrome = userAgent.match(/Android[^;]*;\s*([^;)]+)\s*Build\//);
+
+        if (chrome) return chrome[1].replace(/_/g, " ");
+
+        return "Android Device";
+    }
+
+    // Windows
+    if (userAgent.includes("Windows"))
+        return "Windows PC";
+
+    // Mac
+    if (userAgent.includes("Macintosh"))
+        return "Mac";
+
+    // Linux
+    if (userAgent.includes("Linux"))
+        return "Linux";
+
+    // iPhone
+    if (userAgent.includes("iPhone"))
+        return "iPhone";
+
+    // iPad
+    if (userAgent.includes("iPad"))
+        return "iPad";
+
+    return "Unknown Device";
+    }
 
 // Use your existing DB/keys from encryption.js
 async function loadDevices() {
@@ -345,8 +387,10 @@ async function loadDevices() {
             devicesContainer.innerHTML += `
             <div class="device-card">
                 <div class="left">
-                    <div class="device-name">${isCurrent ? "This Device" : device.device_name}</div>
-                    <div class="device-id">Device ID: ${device.device_id}</div>
+                    <div class="device-name">
+${isCurrent ? "This Device" : getDeviceName(device.device_name)}
+</div>
+<div class="device-id">Device ID: ${device.device_id}</div>
                     <div class="status ${statusClass}">${statusText}</div>
                 </div>
                 <div class="actions">${actionBtn}</div>
