@@ -28,7 +28,16 @@ ALGORITHM = "HS256"
 class GoogleLogin(BaseModel):
     token: str
 
+from pydantic import BaseModel
+import secrets
 
+class CreateTransfer(BaseModel):
+    device_id: str
+    encrypted_kek: str
+
+
+class CompleteTransfer(BaseModel):
+    transfer_id: str
 # ---------------- GOOGLE LOGIN ----------------
 @router.post("/auth/google")
 async def google_auth(data: GoogleLogin, response: Response):
