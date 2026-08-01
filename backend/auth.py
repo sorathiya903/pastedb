@@ -528,12 +528,16 @@ async def complete_transfer(
             "Already used"
         )
 
-    if transfer["expires_at"] < datetime.now(timezone.utc):
-        raise HTTPException(
-            400,
-            "Transfer expired"
-        )
+    
 
+    if transfer["expires_at"] < datetime.utcnow():
+        transfers_collection.delete_one({
+            "_id": transfer["_id"]
+        })
+
+        raise HTTPException(
+            400,   "Transfer expired"   )
+        
     devices_collection.update_one(
         {
             "email": transfer["email"],
