@@ -410,7 +410,8 @@ async def register_device(
     
     return {
     "status": "success",
-    "approved": approved
+    "approved": approved,
+    "generate_kek":approved
         }
 
 @router.get("/device/keys")
