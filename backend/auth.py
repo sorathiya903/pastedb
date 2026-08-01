@@ -491,7 +491,9 @@ async def get_transfer(
             "Transfer already used"
         )
 
-    if transfer["expires_at"] < datetime.now(timezone.utc):
+    
+
+    if transfer["expires_at"] < datetime.utcnow():
         transfers_collection.delete_one({
             "_id": transfer["_id"]
         })
