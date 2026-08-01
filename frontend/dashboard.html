@@ -1050,7 +1050,82 @@ transform:translateY(20px);
 </head>
 
 <body>
+<div id="kekR" style="display:none;" class="login-card">
 
+    <div class="logo">
+        <div class="logo-icon">
+            🔐
+        </div>
+    </div>
+
+    <div class="login-header">
+        <h2>Encryption Key Required</h2>
+        <p>
+            Your Google account is already linked to PasteDB.
+        </p>
+    </div>
+
+    <div class="error-box show"
+         style="display:block;
+                background:#2a2414;
+                color:#facc15;
+                border-color:#5b4b18;">
+
+        This device has not yet received your encryption key.
+
+    </div>
+
+    <p style="margin-top:18px;line-height:1.7;color:var(--muted);">
+
+        Without the encryption key, this device cannot unlock or manage your
+        <strong>Unlisted</strong> and
+        <strong>Private</strong> encrypted pastes.
+
+        <br><br>
+
+        To import your key:
+
+        <br><br>
+
+        1. Open <strong>PasteDB</strong> on one of your trusted devices.
+
+        <br>
+
+        2. Open
+        <strong>Dashboard → Menu → Devices</strong>.
+
+        <br>
+
+        3. Tap <strong>Generate QR</strong> beside this device.
+
+        <br>
+
+        4. On this device open the
+        <a href="/scan"
+           style="color:white;text-decoration:underline;">
+           Scanner
+        </a>
+        page and scan the QR.
+
+    </p>
+
+    <div style="margin-top:30px;display:flex;gap:12px;">
+
+        <a href="/scan"
+           class="google-btn"
+           style="text-decoration:none;">
+            Open Scanner
+        </a>
+
+        <button
+            class="google-btn"
+            onclick="document.getElementById('kekR').style.display = 'block'">
+            Skip
+        </button>
+
+    </div>
+
+</div>
 <!-- NAVBAR -->
 <div class="navbar">
   <div class="logo">PasteDB</div>
@@ -2227,7 +2302,7 @@ showToast("Logout Error", "error");
        const acKEK = await getFromDB("accountKEK");
 
 if (!acKEK) {
-    document.getElementById("kekBanner").style.display = "block";
+    document.getElementById("kekR").style.display = "block";
 }
 </script>
 </body>
