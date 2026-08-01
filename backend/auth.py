@@ -380,10 +380,13 @@ async def register_device(
     })
 
     if existing:
+        
         return {
-            "status": "already_registered"
+            "status": "already_registered",
+            "approved": existing["approved"],
+            "generate_kek": False
         }
-
+   
     approved = (
         devices_collection.count_documents(
             {"email": email}
