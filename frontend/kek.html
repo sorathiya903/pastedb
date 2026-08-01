@@ -8,8 +8,8 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script src="encryption.js"></script>
 <script>
 
@@ -384,17 +384,18 @@ async function generateTransferQR(targetDeviceId, targetPublicKeyB64){
             encrypted_kek: encryptedKEK
         });
 
-        // 5. Generate QR using qrcode.js
-        document.getElementById("qr").innerHTML = "";
-        QRCode.toCanvas(payload, { 
-            width: 240, 
-            colorDark: "#ffffff", 
-            colorLight: "#181818",
-            margin: 2
-        }, function(err, canvas){
-            if(err) throw err;
-            document.getElementById("qr").appendChild(canvas);
-        });
+        // 5. Generate QR using qrcodejs
+document.getElementById("qr").innerHTML = "";
+new QRCode(document.getElementById("qr"), {
+    text: payload,
+    width: 240,
+    height: 240,
+    colorDark : "#ffffff",
+    colorLight : "#181818",
+    correctLevel : QRCode.CorrectLevel.H
+});
+      
+        
 
     } catch(e){
         console.error(e);
