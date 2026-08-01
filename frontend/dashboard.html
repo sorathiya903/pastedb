@@ -2299,11 +2299,13 @@ showToast("Logout Error", "error");
   }
 }
 
-       const acKEK = await getFromDB("accountKEK");
+      async function init(){
+             const acKEK = await getFromDB("accountKEK");
 
 if (!acKEK) {
     document.getElementById("kekR").style.display = "block";
 }
+                     }
 </script>
 </body>
   </html>
