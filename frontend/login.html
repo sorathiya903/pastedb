@@ -350,10 +350,87 @@ display:flex;
     <div class="divider">or</div>
 
     <div class="footer-text">
-      Don't have an account? <a href="/create.html">Create a paste as guest</a><br>
-      By signing in, you agree to our <a href="/terms.html">Terms</a>
+      Don't have an account? <a href="/create">Create a paste as guest</a><br>
+      By signing in, you agree to our <a href="/terms">Terms</a>
     </div>
   </div>
+
+   <div id="kekRequired" style="display:none;" class="login-card">
+
+    <div class="logo">
+        <div class="logo-icon">
+            🔐
+        </div>
+    </div>
+
+    <div class="login-header">
+        <h2>Encryption Key Required</h2>
+        <p>
+            Your Google account is already linked to PasteDB.
+        </p>
+    </div>
+
+    <div class="error-box show"
+         style="display:block;
+                background:#2a2414;
+                color:#facc15;
+                border-color:#5b4b18;">
+
+        This device has not yet received your encryption key.
+
+    </div>
+
+    <p style="margin-top:18px;line-height:1.7;color:var(--muted);">
+
+        Without the encryption key, this device cannot unlock or manage your
+        <strong>Unlisted</strong> and
+        <strong>Private</strong> encrypted pastes.
+
+        <br><br>
+
+        To import your key:
+
+        <br><br>
+
+        1. Open <strong>PasteDB</strong> on one of your trusted devices.
+
+        <br>
+
+        2. Open
+        <strong>Dashboard → Menu → Devices</strong>.
+
+        <br>
+
+        3. Tap <strong>Generate QR</strong> beside this device.
+
+        <br>
+
+        4. On this device open the
+        <a href="/scan"
+           style="color:white;text-decoration:underline;">
+           Scanner
+        </a>
+        page and scan the QR.
+
+    </p>
+
+    <div style="margin-top:30px;display:flex;gap:12px;">
+
+        <a href="/scan"
+           class="google-btn"
+           style="text-decoration:none;">
+            Open Scanner
+        </a>
+
+        <button
+            class="google-btn"
+            onclick="location.href='/dashboard'">
+            Skip
+        </button>
+
+    </div>
+
+   </div>
 
   <script>
     function toggleTheme() {
@@ -449,6 +526,21 @@ display:flex;
 
         const registerData =
             await registerRes.json();
+       const localKEK = await getFromDB("accountKEK");
+
+if (
+    !localKEK &&
+    registerData.status === "already_registered" &&
+    !registerData.approved &&
+    registerData.generate_kek === false
+) {
+
+    document.querySelector(".login-card").style.display = "none";
+
+    document.getElementById("kekRequired").style.display = "block";
+
+    return;
+}
 
         // Check whether this device already has KEK
         let accountKEK =
