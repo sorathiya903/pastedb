@@ -1047,169 +1047,196 @@ transform:translateY(20px);
 
    .row{display:flex; flex-direction:row}
 
-       #kekR{
-    display:none;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:24px;
-    margin:25px 0;
-    box-shadow:var(--shadow);
+.kek-card{
+    max-width:720px;
+    margin:30px auto;
+    background:#181818;
+    border:1px solid #303030;
+    border-radius:22px;
+    padding:32px;
+    color:#fff;
 }
 
-#kekR .logo{
-    justify-content:flex-start;
-    margin-bottom:18px;
-}
-
-#kekR .logo-icon{
-    width:54px;
-    height:54px;
-    font-size:26px;
-    background:#2a2414;
-    border:1px solid #5b4b18;
-}
-
-#kekR .login-header{
-    text-align:left;
-    margin-bottom:18px;
-}
-
-#kekR .login-header h2{
-    font-size:24px;
-    margin-bottom:8px;
-}
-
-#kekR .login-header p{
-    color:var(--muted);
-    font-size:15px;
-}
-
-#kekR .warning{
-    background:#2a2414;
-    border:1px solid #5b4b18;
+.kek-icon{
+    width:72px;
+    height:72px;
+    margin:auto;
+    border-radius:18px;
+    background:#2b2210;
     color:#facc15;
-    border-radius:12px;
-    padding:14px 16px;
-    font-weight:600;
-    margin:18px 0;
-}
-
-#kekR .content{
-    color:var(--muted);
-    line-height:1.8;
-    font-size:15px;
-}
-
-#kekR .content strong{
-    color:var(--text);
-}
-
-#kekR .content a{
-    color:white;
-    text-decoration:underline;
-}
-
-#kekR .actions{
     display:flex;
-    gap:12px;
-    margin-top:28px;
-    flex-wrap:wrap;
-}
-
-#kekR .actions .google-btn{
-    flex:1;
     justify-content:center;
-    text-decoration:none;
-    min-height:48px;
+    align-items:center;
+    font-size:36px;
+    margin-bottom:20px;
 }
 
-@media(max-width:600px){
+.kek-card h2{
+    text-align:center;
+    font-size:30px;
+    margin-bottom:10px;
+}
 
-    #kekR .actions{
-        flex-direction:column;
-    }
+.subtitle{
+    text-align:center;
+    color:#9ca3af;
+    margin-bottom:28px;
+    font-size:16px;
+}
 
-    #kekR .actions .google-btn{
-        width:100%;
-    }
+.warning-box{
+    background:#30240d;
+    border:1px solid #8a6a13;
+    color:#fde68a;
+    padding:18px;
+    border-radius:14px;
+    line-height:1.7;
+    margin-bottom:28px;
+}
+
+.steps{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.step{
+    display:flex;
+    align-items:flex-start;
+    gap:15px;
+    background:#202020;
+    border:1px solid #323232;
+    border-radius:14px;
+    padding:16px;
+    line-height:1.6;
+}
+
+.step span{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:white;
+    color:black;
+    font-weight:bold;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-shrink:0;
+}
+
+.kek-buttons{
+    display:flex;
+    gap:15px;
+    margin-top:30px;
+}
+
+.primary-btn,
+.secondary-btn{
+    flex:1;
+    height:50px;
+    border-radius:12px;
+    border:none;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+    transition:.2s;
+}
+
+.primary-btn{
+    background:white;
+    color:black;
+}
+
+.primary-btn:hover{
+    transform:translateY(-2px);
+}
+
+.secondary-btn{
+    background:#262626;
+    color:white;
+    border:1px solid #3a3a3a;
+}
+
+.secondary-btn:hover{
+    background:#333;
+}
+
+@media(max-width:700px){
+
+.kek-card{
+    margin:20px;
+    padding:24px;
+}
+
+.kek-buttons{
+    flex-direction:column;
+}
+
+.kek-card h2{
+    font-size:24px;
+}
 
        }
+    
 </style>
 </head>
 
 <body>
-<div id="kekR" style="display:none;" class="login-card">
+<div class="kek-card" id="kekR" style="display:none;">
 
-    <div class="logo">
-        <div class="logo-icon">
-            🔐
-        </div>
+    <div class="kek-icon">
+        🔐
     </div>
 
-    <div class="login-header">
-        <h2>Encryption Key Required</h2>
-        <p>
-            Your Google account is already linked to PasteDB.
-        </p>
-    </div>
+    <h2>Encryption Key Required</h2>
 
-    <div class="warning"
-         >
-
-        This device has not yet received your encryption key.
-
-    </div>
-
-    <p class="content">
-
-        Without the encryption key, this device cannot unlock or manage your
-        <strong>Unlisted</strong> and
-        <strong>Private</strong> encrypted pastes.
-
-        <br><br>
-           <div class="actions">
-
-        To import your key:
-
-        <br><br>
-
-        1. Open <strong>PasteDB</strong> on one of your trusted devices.
-
-        <br>
-
-        2. Open
-        <strong>Dashboard → Menu → Devices</strong>.
-
-        <br>
-
-        3. Tap <strong>Generate QR</strong> beside this device.
-
-        <br>
-
-        4. On this device open the
-        <a href="/scan"
-           style="color:white;text-decoration:underline;">
-           Scanner
-        </a>
-        page and scan the QR.
-
-           </div>
-
+    <p class="subtitle">
+        This device hasn't received your encryption key yet.
     </p>
 
-    <div style="margin-top:30px;display:flex;gap:12px;">
+    <div class="warning-box">
+        You can still use PasteDB normally, but your encrypted
+        <strong>Private</strong> and
+        <strong>Unlisted</strong> pastes cannot be opened until the key is imported.
+    </div>
 
-        <a href="/scan"
-           class="google-btn"
-           style="text-decoration:none;">
-            Open Scanner
+    <div class="steps">
+
+        <div class="step">
+            <span>1</span>
+            Open <b>PasteDB</b> on a trusted device.
+        </div>
+
+        <div class="step">
+            <span>2</span>
+            Go to <b>Dashboard → Menu → Devices</b>.
+        </div>
+
+        <div class="step">
+            <span>3</span>
+            Tap <b>Generate QR</b> beside this device.
+        </div>
+
+        <div class="step">
+            <span>4</span>
+            Open the Scanner on this device and scan the QR.
+        </div>
+
+    </div>
+
+    <div class="kek-buttons">
+
+        <a href="/scan" class="primary-btn">
+            📷 Open Scanner
         </a>
 
-        <button
-            class="google-btn"
-            onclick="document.getElementById('kekR').style.display = 'block'">
-            Skip
+        <button class="secondary-btn"
+        onclick="document.getElementById('kekR').style.display='none'">
+            Continue Without Key
         </button>
 
     </div>
