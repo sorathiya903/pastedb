@@ -529,15 +529,7 @@ header{
 .feature-category:first-of-type {
     margin-top: 0;
 }
-
-/* Base Grid Setup */
-.grid {
-    display: grid;
-    gap: 18px;
-    /* Default: 3 equal columns for screen widths above 900px */
-    grid-template-columns: repeat(3, 1fr); 
-}
-
+/* --- BASE CARD STYLES --- */
 .card {
     background: #141414;
     border: 1px solid #242424;
@@ -551,68 +543,42 @@ header{
     border-color: #333;
 }
 
-/* --- DESKTOP RULES (Above 900px) --- */
-/* Scenario A: Exactly 1 card left over in the 3-column row (e.g., total 4 or 7 cards) */
-.grid > .card:last-child:nth-child(3n+1) {
-    grid-column: 1 / -1; /* Spans all 3 columns */
+/* --- 1. MOBILE RULES (Default: 0px to 600px) --- */
+.grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1fr; /* 1 column stack */
 }
 
-/* Scenario B: Exactly 2 cards left over in the 3-column row (e.g., total 5 or 8 cards) */
-/* This targets the second-to-last card when it's the start of the row */
-.grid > .card:nth-last-child(2):nth-child(3n+1),
-.grid > .card:nth-last-child(2):nth-child(3n+1) + .card {
-    grid-column: span 1.5; /* Note: standard CSS Grid can't do fractional column spans cleanly. */
+/* --- 2. TABLET RULES (601px to 900px) --- */
+@media (min-width: 601px) and (max-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    }
+
+    /* "If" there is a 5th card, make it span full width in the 2-column layout */
+    .grid > .card:nth-child(5) {
+        grid-column: 1 / -1; 
+    }
 }
 
-/* BETTER NATIVE CSS FIX FOR SCENARIO B (Desktop): 
-   Instead of hacking spans, we tell the last row elements to behave like standard CSS columns if needed.
-   Alternatively, use the modern :has selector or grid-column limits below for crisp half-half styling: */
+/* --- 3. DESKTOP RULES (901px and above) --- */
 @media (min-width: 901px) {
-    /* If 4th card is alone, it spans 3 slots */
-    .grid > .card:last-child:nth-child(3n+1) { grid-column: span 3; }
+    .grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    }
+
+    /* "If" 5 cards total: Cards 4 and 5 will cleanly split the last row (50% width each) */
+    .grid > .card:nth-child(4):nth-last-child(2) {
+        grid-column: span 1; 
+    }
     
-    /* If 2 cards are left over, change row alignment or span them equally */
-    .grid > .card:nth-last-child(2):nth-child(3n+1) { grid-column: span 1 / 2; }
-}
-
-
-/* --- TABLET RULES (601px to 900px) --- */
-
-
-/* --- MOBILE RULES (600px and below) --- */
-@media (max-width: 600px) {
-    .grid {
-        grid-template-columns: 1fr; /* Everything is 1 column naturally */
-    }
-
-    .grid > .card {
-        grid-column: auto !important;
-    }
-}
- @media (max-width: 900px) and (min-width: 601px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    /* Target Card 3 and Card 4 specifically when there are exactly 4 cards total */
-    .grid > .card:nth-child(3):nth-last-child(2),
-    .grid > .card:nth-child(4):last-child {
-        grid-column: 1 / -1; /* Forces both to take full width */
+    /* Clean fallback: If a single card gets left behind on desktop, make it full width */
+    .grid > .card:last-child:nth-child(3n+1) {
+        grid-column: 1 / -1; 
     }
 }
 
- @media (min-width: 768px) {
-  .grid {
-    /* Creates the 2-column layout */
-    grid-template-columns: repeat(2, 1fr); 
-  }
-
-  /* Targets the 5th card specifically */
-  .card:nth-child(5) {
-    /* Forces it to span across both columns */
-    grid-column: 1 / -1; 
-  }
- }
 </style>
 </head>
 
