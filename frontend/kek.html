@@ -397,7 +397,7 @@ const res = await fetch(
 const data = await res.json();
 
       const url = `${location.origin}/import-key?id=${data.transfer_id}`;
-
+console.log(url)
         // 5. Generate QR using qrcodejs
 document.getElementById("qr").innerHTML = "";
 new QRCode(document.getElementById("qr"), {
