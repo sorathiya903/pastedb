@@ -2223,6 +2223,12 @@ showToast("Logout Error", "error");
     alert(err);
   }
 }
+
+       const acKEK = await getFromDB("accountKEK");
+
+if (!acKEK) {
+    document.getElementById("kekBanner").style.display = "block";
+}
 </script>
 </body>
   </html>
