@@ -3,7 +3,7 @@ from auth import get_current_user
 import secrets
 from pymongo import MongoClient
 import os
-router = APIRouter(prefix="/collab", tags=["Collaboration"])
+router = APIRouter(tags=["Collaboration"])
 
 client = MongoClient(os.getenv('MONGO_URI'))
 
@@ -20,7 +20,7 @@ api_keys_collection = db["api_keys"]
 versions_collection = db["pasteVersions"]
 
 
-@router.post("/create/{paste_id}")
+@router.post("/collab/create/{paste_id}")
 async def create_collaboration(
     paste_id: str,
     user=Depends(get_current_user)
