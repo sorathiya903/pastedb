@@ -14,6 +14,11 @@ if not os.getenv("MONGO_URI"):
 
 db = client["pasteDB"]
 collab_collection = db["collaborations"]
+pastes_collection = db["pastes"]
+users_collection = db["users"]
+api_keys_collection = db["api_keys"]
+versions_collection = db["pasteVersions"]
+
 
 @router.post("/create/{paste_id}")
 async def create_collaboration(
