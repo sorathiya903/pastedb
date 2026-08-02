@@ -1767,9 +1767,12 @@ async function genColLink() {
 
     const data = await res.json();
 
-    document.getElementById("collabLink").value =
-        `${location.origin}/c.html?session=${data.session_id}`;
-}
+    const inviteLink =
+    "https://pastedb.netlify.app/collab/" +
+    data.invite_token;
+
+       console.log(inviteLink)
+       }
        
 window.addEventListener("click",e=>{
 
