@@ -1721,6 +1721,7 @@ color:white;
 
 
 <script>
+       
 let currentCollabPaste = "";
 
 function openColModel(customId){
@@ -1751,6 +1752,25 @@ alert("Invite link copied!");
 
 }
 
+
+async function genColLink() {
+    const res = await fetch(`${API_URL}/collab/create`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            paste_id: currentCollabPaste
+        })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("collabLink").value =
+        `${location.origin}/c.html?session=${data.session_id}`;
+}
+       
 window.addEventListener("click",e=>{
 
 const modal=document.getElementById("collabModal");
