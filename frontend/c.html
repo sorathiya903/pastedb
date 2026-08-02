@@ -1413,7 +1413,95 @@ background:#3b82f6;
     </div>
 
   </main>
+<div id="joinScreen" style="position:fixed;inset:0;background:var(--bg);display:flex;justify-content:center;align-items:center;z-index:9999;">
 
+  <div style="background:var(--card);padding:30px;border-radius:24px;border:1px solid var(--border);width:350px;max-width:90%;">
+
+    <h2 style="margin-bottom:10px;">Join Collaboration</h2>
+
+    <p style="color:var(--muted);margin-bottom:20px;">
+      Choose how you want to join this workspace.
+    </p>
+
+    <input id="joinName"
+      placeholder="Your name"
+      style="margin-bottom:18px;">
+
+    <label style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+      <input type="radio" name="role" value="editor" checked>
+      Editor
+    </label>
+
+    <label style="display:flex;gap:10px;align-items:center;margin-bottom:20px;">
+      <input type="radio" name="role" value="viewer">
+      Viewer
+    </label>
+
+    <button class="create-btn" onclick="requestJoin()">
+      Request Access
+    </button>
+
+  </div>
+
+</div>
+
+<div id="waitingScreen" style="display:none;position:fixed;inset:0;background:var(--bg);justify-content:center;align-items:center;z-index:9999;">
+
+  <div style="text-align:center;">
+
+    <div class="loader-spinner"></div>
+
+    <h2 style="margin-top:18px;">Waiting for host...</h2>
+
+    <p style="color:var(--muted);margin-top:8px;">
+      Your join request has been sent.
+    </p>
+
+  </div>
+
+</div>
+
+<script>
+function requestJoin(){
+
+    const name = document.getElementById("joinName").value.trim();
+
+    if(!name){
+        alert("Enter your name");
+        return;
+    }
+
+    const role =
+        document.querySelector("input[name=role]:checked").value;
+
+    document.getElementById("joinScreen").style.display="none";
+    document.getElementById("waitingScreen").style.display="flex";
+
+    // Send through WebSocket
+    ws.send(JSON.stringify({
+        type:"join_request",
+        name:name,
+        role:role
+    }));
+}
+
+// Call this when the host approves
+function joinApproved(){
+
+    document.getElementById("waitingScreen").style.display="none";
+
+    document.querySelector("main").style.display="block";
+}
+
+// Call this when the host rejects
+function joinRejected(){
+
+    alert("Host denied your request.");
+
+    document.getElementById("waitingScreen").style.display="none";
+    document.getElementById("joinScreen").style.display="flex";
+}
+</script>
 <script>
 if(localStorage.getItem("theme")==="dark"){
     document.documentElement.classList.add("dark");
