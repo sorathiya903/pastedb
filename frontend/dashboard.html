@@ -1181,11 +1181,249 @@ transform:translateY(20px);
 }
 
        }
-    
+  .collab-overlay{
+
+position:fixed;
+inset:0;
+
+background:rgba(0,0,0,.55);
+
+display:none;
+
+justify-content:center;
+align-items:center;
+
+z-index:99999;
+
+backdrop-filter:blur(5px);
+
+}
+
+.collab-overlay.show{
+display:flex;
+}
+
+.collab-box{
+
+width:560px;
+max-width:95vw;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+border-radius:24px;
+
+overflow:hidden;
+
+box-shadow:var(--shadow);
+
+animation:fadeUp .25s ease;
+
+}
+
+.collab-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:22px;
+
+border-bottom:1px solid var(--border);
+
+}
+
+.collab-header h2{
+
+font-size:22px;
+
+}
+
+.collab-body{
+
+padding:22px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:14px;
+
+}
+
+.collab-link-box{
+
+display:flex;
+
+gap:10px;
+
+}
+
+.collab-link-box input{
+
+flex:1;
+
+}
+
+.collab-link-box button{
+
+border:none;
+
+background:var(--text);
+
+color:var(--bg);
+
+padding:0 18px;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.collab-note{
+
+color:var(--muted);
+
+}
+
+.pending-section{
+
+margin-top:10px;
+
+}
+
+.pending-user{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:14px;
+
+border:1px solid var(--border);
+
+border-radius:14px;
+
+background:var(--editor);
+
+margin-top:10px;
+
+}
+
+.pending-actions{
+
+display:flex;
+
+gap:8px;
+
+}
+
+.pending-actions button{
+
+border:none;
+
+padding:9px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.accept-btn{
+
+background:#22c55e;
+
+color:white;
+
+}
+
+.reject-btn{
+
+background:#ef4444;
+
+color:white;
+
+       }  
 </style>
 </head>
 
 <body>
+       <div id="collabModal" class="collab-overlay">
+
+  <div class="collab-box">
+
+    <div class="collab-header">
+      <h2>🤝 Collaboration</h2>
+
+      <button class="close" onclick="closeColModel()">✕</button>
+    </div>
+
+    <div class="collab-body">
+
+      <label>Permission</label>
+
+      <select id="collabRole">
+        <option value="viewer">Viewer (Live View Only)</option>
+        <option value="editor">Editor (Can Edit)</option>
+      </select>
+
+      <label style="margin-top:18px;">Invite Link</label>
+
+      <div class="collab-link-box">
+
+        <input
+          id="collabLink"
+          readonly
+          value="https://pastedb.netlify.app/collab/xxxx"
+        >
+
+        <button onclick="copyCollabLink()">
+          Copy
+        </button>
+
+      </div>
+
+      <small class="collab-note">
+        Anyone opening this link must be approved by you before joining.
+      </small>
+
+      <hr>
+
+      <div class="pending-section">
+
+        <h3>Pending Requests</h3>
+
+        <div id="pendingList">
+
+          <div class="pending-user">
+
+            <div>
+              <strong>No pending requests</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+       </div>
+       
 <div class="kek-card" id="kekR" style="display:none;">
 
     <div class="kek-icon">
@@ -1448,6 +1686,43 @@ transform:translateY(20px);
 
 
 <script>
+       function openColModel(){
+
+document
+.getElementById("collabModal")
+.classList.add("show");
+
+}
+
+function closeColModel(){
+
+document
+.getElementById("collabModal")
+.classList.remove("show");
+
+}
+
+function copyCollabLink(){
+
+const input=document.getElementById("collabLink");
+
+navigator.clipboard.writeText(input.value);
+
+alert("Invite link copied!");
+
+}
+
+window.addEventListener("click",e=>{
+
+const modal=document.getElementById("collabModal");
+
+if(e.target===modal){
+
+closeColModel();
+
+}
+
+});
 async function showQRCode(customId) {
 
     const paste = allPastes.find(
@@ -1833,7 +2108,7 @@ Show QR
 </button>
     <button
   class="dropdown-btn"
-  onclick="openCollabModal('${p.custom_id}')"
+  onclick="openColModal('${p.custom_id}')"
 >
   👥 Collaborate
 </button>
