@@ -1754,15 +1754,10 @@ alert("Invite link copied!");
 
 
 async function generateLink() {
-    const res = await fetch(`${API_URL}/collab/create`, {
+    const res = await fetch(`${API_URL}/collab/create/${currentCollabPaste}`, {
         method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            paste_id: currentCollabPaste
-        })
+        credentials: "include"
+        
     });
 
     const data = await res.json();
