@@ -1428,7 +1428,9 @@ background:#3b82f6;
   </main>
 
 <script>
-
+if(localStorage.getItem("theme")==="dark"){
+    document.documentElement.classList.add("dark");
+}
 
 window.addEventListener("load", () => {
 
