@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from auth import get_current_user
 import secrets
 from pymongo import MongoClient
-
+import os
 router = APIRouter(prefix="/collab", tags=["Collaboration"])
 
 client = MongoClient(os.getenv('MONGO_URI'))
