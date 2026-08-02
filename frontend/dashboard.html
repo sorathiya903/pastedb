@@ -1439,7 +1439,7 @@ color:white;
       <div class="collab-link-box">
 
         
-        <button onclick="genColLink()">
+        <button onclick="generateLink()">
           Generate Link
         </button>
 
@@ -1753,7 +1753,7 @@ alert("Invite link copied!");
 }
 
 
-async function genColLink() {
+async function generateLink() {
     const res = await fetch(`${API_URL}/collab/create`, {
         method: "POST",
         credentials: "include",
