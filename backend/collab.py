@@ -1,9 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
 from auth import get_current_user
-
+import secrets
+from pymongo import MongoClient
 
 router = APIRouter(prefix="/collab", tags=["Collaboration"])
-import secrets
+
+client = MongoClient(os.getenv('MONGO_URI'))
+
+
+if not os.getenv("MONGO_URI"):
+    raise Exception("MONGO_URI not set")
+
+
+db = client["pasteDB"]
+collab_collection = db["collaborations"]
 
 @router.post("/create/{paste_id}")
 async def create_collaboration(
