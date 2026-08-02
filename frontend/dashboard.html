@@ -1354,7 +1354,44 @@ background:#ef4444;
 
 color:white;
 
-       }  
+       } 
+       .paste-id-card{
+    margin-top:18px;
+    padding:14px 16px;
+
+    border:1px solid var(--border);
+    border-radius:16px;
+
+    background:rgba(255,255,255,0.04);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:12px;
+}
+
+.paste-id-label{
+    font-size:13px;
+    color:var(--muted);
+    font-weight:600;
+}
+
+#collabPasteId{
+    font-family:"JetBrains Mono", monospace;
+
+    background:rgba(255,255,255,.06);
+
+    padding:6px 10px;
+
+    border-radius:10px;
+
+    font-size:14px;
+
+    color:#7dd3fc;
+
+    user-select:all;
+       }
 </style>
 </head>
 
@@ -1370,6 +1407,10 @@ color:white;
     </div>
 
     <div class="collab-body">
+           <div class="paste-id-card">
+    <span class="paste-id-label">Paste ID</span>
+    <code id="collabPasteId">Loading...</code>
+           </div>
 
      
 
@@ -1681,14 +1722,18 @@ color:white;
 
 
 <script>
-        let currentCollabPaste = "";
+let currentCollabPaste = "";
 
 function openColModel(customId){
 
     currentCollabPaste = customId;
 
-    document.getElementById("collabModal").classList.add("show");
+    document.getElementById("collabPasteId").textContent = customId;
 
+    document.getElementById("collabLink").value =
+        `${location.origin}/c.html?paste=${customId}`;
+
+    document.getElementById("collabModal").classList.add("show");
 }
 
 function closeColModel(){
