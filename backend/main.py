@@ -11,6 +11,7 @@ from auth import (
     get_optional_user,
     decode_token
 )
+from collab import router as collab_router
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse 
 import io
@@ -153,7 +154,7 @@ class PasteCreate(BaseModel):
 
 app = FastAPI()
 app.include_router(auth_router)
-
+app.include_router(collab_router)
 
 app.add_middleware(
     CORSMiddleware,
