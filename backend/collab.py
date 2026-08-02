@@ -1,0 +1,48 @@
+from fastapi import APIRouter, Depends, HTTPException
+from auth import get_current_user
+
+
+router = APIRouter(prefix="/collab", tags=["Collaboration"])
+import secrets
+
+@router.post("/create/{paste_id}")
+async def create_collaboration(
+    paste_id: str,
+    user=Depends(get_current_user)
+):
+    email_key = user["email"].replace(".", "_")
+
+    paste = pastes_collection.find_one({
+        "custom_id": paste_id
+    })
+
+    if not paste:
+        raise HTTPException(404, "Paste not found")
+
+    if paste.get("user_email_key") != email_key:
+        raise HTTPException(403, "Unauthorized")
+
+    existing = collab_collection.find_one({
+        "paste_id": paste_id
+    })
+
+    if existing:
+        return {
+            "success": True,
+            "invite_token": existing["invite_token"]
+        }
+
+    token = secrets.token_urlsafe(24)
+
+    collab_collection.insert_one({
+        "paste_id": paste_id,
+        "owner": user["email"],
+        "invite_token": token,
+        "pending": [],
+        "members": []
+    })
+
+    return {
+        "success": True,
+        "invite_token": token
+    }
