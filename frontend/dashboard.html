@@ -1371,12 +1371,7 @@ color:white;
 
     <div class="collab-body">
 
-      <label>Permission</label>
-
-      <select id="collabRole">
-        <option value="viewer">Viewer (Live View Only)</option>
-        <option value="editor">Editor (Can Edit)</option>
-      </select>
+     
 
       <label style="margin-top:18px;">Invite Link</label>
 
@@ -1385,7 +1380,7 @@ color:white;
         <input
           id="collabLink"
           readonly
-          value="https://pastedb.netlify.app/collab/xxxx"
+          value=""
         >
 
         <button onclick="copyCollabLink()">
@@ -1686,11 +1681,13 @@ color:white;
 
 
 <script>
-       function openColModel(){
+        let currentCollabPaste = "";
 
-document
-.getElementById("collabModal")
-.classList.add("show");
+function openColModel(customId){
+
+    currentCollabPaste = customId;
+
+    document.getElementById("collabModal").classList.add("show");
 
 }
 
