@@ -1523,7 +1523,8 @@ function joinRejected(){
 if(localStorage.getItem("theme")==="dark"){
     document.documentElement.classList.add("dark");
 }
-let user;
+let user = null;
+
 window.addEventListener("load", async () => {
 
     const loader = document.getElementById("pageLoader");
@@ -1535,24 +1536,41 @@ window.addEventListener("load", async () => {
         loader.style.display = "none";
     }, 500);
 
+    // Try login (ignore if not logged in)
     try {
         const res = await fetch(`${API_URL}/auth/me`, {
             credentials: "include"
         });
 
-        user = await res.json();
+        if (res.ok) {
+            user = await res.json();
+        }
+    } catch (e) {}
 
-        console.log(user);
+    // Fetch collaboration info
+    const res = await fetch(`${API_URL}/collab/${inviteToken}`);
+    const collab = await res.json();
 
-    } catch (err) {
-        console.error(err);
+    // HOST
+    if (user && collab.owner === user.email) {
+
+        document.getElementById("joinScreen").style.display = "none";
+        document.getElementById("waitingScreen").style.display = "none";
+        document.querySelector("main").style.display = "block";
+
+        startHost();   // Your websocket host function
+        return;
     }
 
-const res = await fetch(`${API_URL}/collab/${inviteToken}`);
-const collab = await res.json();
-  if(collab.owner===user.email){
-    console.log("Host arrived")
-  }
+    // Logged in guest
+    if (user) {
+        document.getElementById("joinName").value =
+            user.name || user.email.split("@")[0];
+    }
+
+    // Show join screen for guests
+    document.getElementById("joinScreen").style.display = "flex";
+    document.querySelector("main").style.display = "none";
 });
 function toggleTheme(){
 
