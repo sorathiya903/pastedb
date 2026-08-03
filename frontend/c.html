@@ -15,6 +15,9 @@ debug
   eruda.init();
 
 }
+  if(localStorage.getItem("theme")==="dark"){
+    document.documentElement.classList.add("dark");
+  }
 
                              </script>
   <meta charset="UTF-8" />
@@ -1520,9 +1523,7 @@ function joinRejected(){
 }
 </script>
 <script>
-if(localStorage.getItem("theme")==="dark"){
-    document.documentElement.classList.add("dark");
-}
+
 let user = null;
 
 window.addEventListener("load", async () => {
