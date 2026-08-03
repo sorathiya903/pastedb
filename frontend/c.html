@@ -1478,6 +1478,35 @@ background:#3b82f6;
 </div>
 
 <script>
+  let ws;
+
+function connectWebSocket(role) {
+
+    ws = new WebSocket(
+        `${WS_URL}/collab/ws/${inviteToken}`
+    );
+
+    ws.onopen = () => {
+        console.log("Connected");
+
+        ws.send(JSON.stringify({
+            type: "connect",
+            role: role
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+
+        // Handle messages here
+    };
+
+    ws.onclose = () => {
+        console.log("Disconnected");
+    };
+}
+  
   const inviteToken = window.location.href
     .split("/c/")[1]
     .split("?")[0]
