@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PasteDB Node.js SDK</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          bg: '#000',
+          card: '#111',
+          border: '#222',
+          text: '#ffffff',
+          muted: '#a3a3a3'
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  body { font-family: Inter, system-ui, sans-serif; }
+  pre { position: relative; border-radius: 12px; border: 1px solid #222; }
+  html:not(.dark) pre { border-color: #e5e5e5; }
+ .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 12px; padding: 6px 10px; border-radius: 6px;
+    background: #1f1f1f; border: 1px solid #333; color: #ccc;
+    opacity: 0; transition:.2s;
+  }
+  pre:hover.copy-btn { opacity: 1; }
+  html:not(.dark).copy-btn { background: #f5f5f5; border-color: #ddd; color: #333; }
+
+ .method-card {
+    border: 1px solid #222; border-radius: 14px; padding: 18px;
+    background: #0a0a0a; transition:.2s;
+  }
+ .method-card:hover { border-color: #444; transform: translateY(-2px); }
+  html:not(.dark).method-card { background: #fafafa; border-color: #e5e5e5; }
+
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: white; color: black; padding: 12px 18px;
+    border-radius: 10px; font-weight: 500; opacity: 0;
+    transform: translateY(20px); transition: all.3s ease;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  html.dark #toast { background: white; color: black; }
+  html:not(.dark) #toast { background: black; color: white; }
+
+ .sidebar-link.active { background: #1a1a1a; color: white; }
+  html:not(.dark).sidebar-link.active { background: #f0f0f0; color: black; }
+</style>
+</head>
+<body class="bg-black text-white">
+
+<div class="flex">
+  <!-- Sidebar -->
+  <aside class="w-64 h-screen sticky top-0 border-r border-neutral-800 p-4 hidden lg:block">
+    <div class="mb-6 flex items-center justify-between">
+      <h1 class="text-lg font-bold">PasteDB SDK</h1>
+      <button id="themeToggle" class="text-xs px-2 py-1 border-neutral-700 rounded">☀️</button>
+    </div>
+
+    <input id="search" type="text" placeholder="Search docs..."
+      class="w-full mb-4 px-3 py-2 text-sm rounded-lg bg-neutral-900 border-neutral-800 focus:outline-none">
+
+    <nav id="sidebarNav" class="space-y-1 text-sm">
+      <a href="#quickstart" class="sidebar-link block px-3 py-2 rounded">Getting Started</a>
+      <a href="#auth" class="sidebar-link block px-3 py-2 rounded">Authentication</a>
+      <a href="#paste" class="sidebar-link block px-3 py-2 rounded">Paste Methods</a>
+      <a href="#keys" class="sidebar-link block px-3 py-2 rounded">API Keys</a>
+      <a href="#error" class="sidebar-link block px-3 py-2 rounded">Errors</a>
+      <a href="#example" class="sidebar-link block px-3 py-2 rounded">Examples</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 max-w-4xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-bold mb-2">PasteDB Node.js SDK</h1>
+    <p class="text-neutral-400 mb-10">The official Node.js SDK for interacting with the PasteDB API.</p>
+
+    <!-- QUICK START -->
+    <section id="quickstart" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Quick Start (30 seconds)</h2>
+
+      <h3 class="font-medium mt-4 mb-2">1. Install</h3>
+      <div class="code-wrapper"><pre><code class="language-bash">npm install pastedb-js</code></pre></div>
+
+      <h3 class="font-medium mt-4 mb-2">2. Import</h3>
+      <div class="code-wrapper"><pre><code class="language-js">const { Client } = require("pastedb-js");</code></pre></div>
+
+      <h3 class="font-medium mt-4 mb-2">3. Create client</h3>
+      <div class="code-wrapper"><pre><code class="language-js">const client = new Client("YOUR_API_KEY");</code></pre></div>
+
+      <h3 class="font-medium mt-4 mb-2">4. First API call</h3>
+      <div class="code-wrapper"><pre><code class="language-js">async function main() {
+  const me = await client.me();
+  console.log(me);
+}
+main();</code></pre></div>
+
+      <h3 class="font-medium mt-4 mb-2">Expected Output</h3>
+      <div class="code-wrapper"><pre><code class="language-json">{
+  "email": "user@example.com",
+  "created_at": "7374723",
+}</code></pre></div>
+    </section>
+
+    <!-- AUTH -->
+    <section id="auth" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Authentication</h2>
+      <p class="text-neutral-400 mb-4">API key is optional. Pass it to the constructor.</p>
+      <div class="code-wrapper"><pre><code class="language-js">const user = await client.me();</code></pre></div>
+    </section>
+
+    <!-- PASTE METHODS -->
+    <section id="paste" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Paste Methods</h2>
+      <div class="grid gap-4">
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">📄 createPaste()</div>
+          <div class="text-neutral-400 text-sm mb-3">Create a new paste in seconds.</div>
+          <div class="code-wrapper"><pre><code class="language-js">await client.createPaste({
+  title: "Hello",
+  content: "Hello World",
+  language: "javascript"
+});</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">📥 getPaste(id)</div>
+          <div class="text-neutral-400 text-sm mb-3">Fetch a paste by ID.</div>
+          <div class="code-wrapper"><pre><code class="language-js">const paste = await client.getPaste("abc123");</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">✏️ updatePaste(id, data)</div>
+          <div class="text-neutral-400 text-sm mb-3">Update title, content, etc.</div>
+          <div class="code-wrapper"><pre><code class="language-js">await client.updatePaste("abc123", {
+  title: "Updated Title"
+});</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">📊 pasteStats(id)</div>
+          <div class="text-neutral-400 text-sm mb-3">Get views, copies, etc.</div>
+          <div class="code-wrapper"><pre><code class="language-js">const stats = await client.pasteStats("abc123");</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">🖼️ getImages(id)</div>
+          <div class="text-neutral-400 text-sm mb-3">Get all images attached to a paste.</div>
+          <div class="code-wrapper"><pre><code class="language-js">const images = await client.getImages("abc123");</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">🔍 explore()</div>
+          <div class="text-neutral-400 text-sm mb-3">Get public trending pastes.</div>
+          <div class="code-wrapper"><pre><code class="language-js">const posts = await client.explore();</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">▶️ runCode(lang, code)</div>
+          <div class="text-neutral-400 text-sm mb-3">Execute code in the sandbox.</div>
+          <div class="code-wrapper"><pre><code class="language-js">const result = await client.runCode(
+  "python",
+  "print('Hello World')"
+);</code></pre></div>
+        </div>
+
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">🔗 checkCustomId(id)</div>
+          <div class="text-neutral-400 text-sm mb-3">Check if a custom URL is available.</div>
+          <div class="code-wrapper"><pre><code class="language-js">const available = await client.checkCustomId("my-paste");</code></pre></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API KEYS -->
+    <section id="keys" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">API Key Management</h2>
+      <div class="grid gap-4">
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">🔑 generateApiKey(name)</div>
+          <div class="code-wrapper"><pre><code class="language-js">await client.generateApiKey("My App");</code></pre></div>
+        </div>
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">📋 myApiKeys()</div>
+          <div class="code-wrapper"><pre><code class="language-js">await client.myApiKeys();</code></pre></div>
+        </div>
+        <div class="method-card">
+          <div class="font-mono font-semibold mb-1">🗑️ deleteApiKey(key)</div>
+          <div class="code-wrapper"><pre><code class="language-js">await client.deleteApiKey(API_KEY);</code></pre></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ERRORS -->
+    <section id="error" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Error Handling</h2>
+      <div class="code-wrapper"><pre><code class="language-js">const { Client, PasteDBError } = require("pastedb-js");
+
+try {
+    await client.me();
+} catch (err) {
+    if (err instanceof PasteDBError) {
+        console.log(err.message);
+    }
+}</code></pre></div>
+      <p class="text-neutral-400 mt-2">Throws `PasteDBError` for API and timeout errors. Uses native `fetch()` Node 18+</p>
+    </section>
+
+    <!-- EXAMPLE -->
+    <section id="example" class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Full Example</h2>
+      <div class="code-wrapper"><pre><code class="language-js">const { Client } = require("pastedb-js");
+const client = new Client("YOUR_API_KEY");
+
+async function run() {
+  const paste = await client.createPaste({
+    title: "Test",
+    content: "Hello from SDK",
+    language: "js"
+  });
+  console.log("Created:", paste.id);
+}
+run();</code></pre></div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast">Copied!</div>
+
+<script>
+hljs.highlightAll();
+
+// Add copy buttons to all code blocks
+document.querySelectorAll('.code-wrapper pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  pre.appendChild(btn);
+
+  btn.addEventListener('click', () => {
+    const code = pre.querySelector('code').innerText;
+    navigator.clipboard.writeText(code);
+    showToast();
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = 'Copy', 1000);
+  });
+});
+
+// Toast
+function showToast(){
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1000);
+}
+
+// Theme toggle
+const btn = document.getElementById('themeToggle');
+btn.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  btn.textContent = document.documentElement.classList.contains('dark')? '☀️' : '🌙';
+  localStorage.theme = document.documentElement.classList.contains('dark')? 'dark' : 'light';
+});
+if(localStorage.theme === 'light') {
+  document.documentElement.classList.remove('dark');
+  btn.textContent = '🌙';
+}
+
+// Search filter
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('#sidebarNav a').forEach(a => {
+    a.style.display = a.textContent.toLowerCase().includes(q)? 'block' : 'none';
+  });
+});
+
+// Active link on scroll
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if(window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  document.querySelectorAll('.sidebar-link').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === `#${current}`);
+  });
+});
+</script>
+</body>
+</html>
