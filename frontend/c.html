@@ -1523,7 +1523,26 @@ function joinRejected(){
 }
 </script>
 <script>
+async function startHost(customId) {
 
+    // Fetch the current paste
+    const res = await fetch(`${API_URL}/p/${customId}`);
+    const paste = await res.json();
+
+    // Put it in the editor
+    document.getElementById("code").value = paste.content || "";
+
+    // Hide join screen if it is visible
+    document.getElementById("joinScreen").style.display = "none";
+    document.getElementById("waitingScreen").style.display = "none";
+
+    // Show the editor
+    document.querySelector("main").style.display = "block";
+
+    // Connect websocket as host
+    connectWebSocket("host");
+}
+  
 let user = null;
 
 window.addEventListener("load", async () => {
@@ -1559,7 +1578,7 @@ window.addEventListener("load", async () => {
         document.getElementById("waitingScreen").style.display = "none";
         document.querySelector("main").style.display = "block";
 
-        startHost();   // Your websocket host function
+        startHost(collab.paste_id);  
         return;
     }
 
