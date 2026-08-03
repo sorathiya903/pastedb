@@ -1518,6 +1518,11 @@ window.addEventListener("load", () => {
         loader.style.display = "none";
     }, 500);
 
+  let res = fetch(`${API_URL}/auth/me`,
+                  credentials:"include")
+  let data = res.json()
+  console.log(data)
+              
 });
 function toggleTheme(){
 
