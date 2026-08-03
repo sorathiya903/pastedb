@@ -76,13 +76,27 @@ async def get_collaboration(invite_token: str):
     return collab
 
 
-
+HOSTS={}
 @router.websocket("/collab/ws/{invite_token}")
 async def collab_ws(websocket: WebSocket, invite_token: str):
     await websocket.accept()
 
     while True:
         data = await websocket.receive_json()
+        
+        if data["type"] == "connect" and data["role"] == "host":
+            HOSTS[invite_token] = websocket
+
+        if data["type"] == "join_request":
+
+        host_ws = HOSTS.get(invite_token)
+
+            if host_ws:
+                await host_ws.send_json({
+                    "type": "join_request",
+                    "name": data["name"],
+                    "role": data["role"]
+                })
 
         # Handle:
         # join_request
