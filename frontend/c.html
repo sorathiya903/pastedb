@@ -1523,7 +1523,7 @@ function joinRejected(){
 if(localStorage.getItem("theme")==="dark"){
     document.documentElement.classList.add("dark");
 }
-
+let user;
 window.addEventListener("load", async () => {
 
     const loader = document.getElementById("pageLoader");
@@ -1540,9 +1540,9 @@ window.addEventListener("load", async () => {
             credentials: "include"
         });
 
-        const data = await res.json();
+        let user = await res.json();
 
-        console.log(data);
+        console.log(user);
 
     } catch (err) {
         console.error(err);
@@ -1550,7 +1550,9 @@ window.addEventListener("load", async () => {
 
 const res = await fetch(`${API_URL}/collab/${inviteToken}`);
 const collab = await res.json();
-  
+  if(collab.owner===user.email){
+    console.log("Host arrived")
+  }
 });
 function toggleTheme(){
 
