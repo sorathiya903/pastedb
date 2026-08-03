@@ -61,3 +61,16 @@ async def create_collaboration(
         "success": True,
         "invite_token": token
     }
+
+
+@router.get("/collab/{invite_token}")
+async def get_collaboration(invite_token: str):
+    collab = collab_collection.find_one(
+        {"invite_token": invite_token},
+        {"_id": 0}
+    )
+
+    if not collab:
+        raise HTTPException(404, "Collaboration not found")
+
+    return collab
