@@ -1475,6 +1475,10 @@ background:#3b82f6;
 </div>
 
 <script>
+  const inviteToken = window.location.href
+    .split("/c/")[1]
+    .split("?")[0]
+    .split("#")[0];
 function requestJoin(){
 
     const name = document.getElementById("joinName").value.trim();
@@ -1544,6 +1548,9 @@ window.addEventListener("load", async () => {
         console.error(err);
     }
 
+const res = await fetch(`${API_URL}/collab/${inviteToken}`);
+const collab = await res.json();
+  
 });
 function toggleTheme(){
 
