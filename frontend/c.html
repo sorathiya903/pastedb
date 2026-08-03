@@ -1478,6 +1478,10 @@ background:#3b82f6;
 </div>
 
 <script>
+  const inviteToken = window.location.href
+    .split("/c/")[1]
+    .split("?")[0]
+    .split("#")[0];
   let ws;
 
 function connectWebSocket(role) {
@@ -1487,14 +1491,21 @@ function connectWebSocket(role) {
     );
 
     ws.onopen = () => {
-        console.log("Connected");
+    console.log("Connected");
 
+    ws.send(JSON.stringify({
+        type: "connect",
+        role: role
+    }));
+
+    if (role !== "host") {
         ws.send(JSON.stringify({
-            type: "connect",
+            type: "join_request",
+            name: document.getElementById("joinName").value.trim(),
             role: role
         }));
-    };
-
+    }
+};
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(data);
@@ -1507,31 +1518,27 @@ function connectWebSocket(role) {
     };
 }
   
-  const inviteToken = window.location.href
-    .split("/c/")[1]
-    .split("?")[0]
-    .split("#")[0];
+  
 function requestJoin(){
-
-    const name = document.getElementById("joinName").value.trim();
+  const name = document.getElementById("joinName").value.trim();
 
     if(!name){
         alert("Enter your name");
         return;
     }
 
-    const role =
-        document.querySelector("input[name=role]:checked").value;
+  
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        const role =  document.querySelector("input[name=role]:checked").value;
 
+connectWebSocket(role);
+    }
+
+    
+    
     document.getElementById("joinScreen").style.display="none";
     document.getElementById("waitingScreen").style.display="flex";
-
-    // Send through WebSocket
-    ws.send(JSON.stringify({
-        type:"join_request",
-        name:name,
-        role:role
-    }));
+    
 }
 
 // Call this when the host approves
