@@ -89,7 +89,7 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
 
         if data["type"] == "join_request":
 
-        host_ws = HOSTS.get(invite_token)
+            host_ws = HOSTS.get(invite_token)
 
             if host_ws:
                 await host_ws.send_json({
