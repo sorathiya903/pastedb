@@ -45,17 +45,22 @@ if(
 
 </script>
 <style>
-  .code-wrapper {
+  
+  /* Make code blocks responsive */
+.code-wrapper,
+pre {
     max-width: 100%;
     overflow-x: auto;
-  }
-  pre {
-    overflow-x: auto;
-    max-width: 100%;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+pre {
+    white-space: pre;
 }
 
 code {
-    white-space: pre;
+    white-space: inherit;
 }
   *{
   margin:0;
