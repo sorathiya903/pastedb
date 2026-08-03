@@ -240,7 +240,7 @@ main();</code></pre></div>
       <h3>Expected Output</h3>
       <div class="code-wrapper"><pre><code class="language-json">{
   "email": "user@example.com",
-  "id": "usr_123",
+  "id": "usr_123"
 }</code></pre></div>
     </section>
 
@@ -256,16 +256,28 @@ main();</code></pre></div>
         <div class="method-card">
           <div class="method-title">📄 createPaste()</div>
           <p>Create a new paste in seconds.</p>
-          <div class="code-wrapper"><pre><code class="language-js">await client.createPaste({
-  title: "Hello",
-  content: "Hello World",
-  language: "javascript"
-});</code></pre></div>
+          <div class="code-wrapper"><pre><code class="language-js">
+            const { Client } = require("pastedb-js");
+
+const client = new Client("YOUR_API_KEY");
+
+async function main() {
+    const paste = await client.createPaste({
+        title: "Hello",
+        content: "Hello World",
+        language: "javascript",
+        images:[]
+    });
+
+    console.log(paste);
+}
+
+main().catch(console.error);</code></pre></div>
         </div>
         <div class="method-card">
           <div class="method-title">📥 getPaste(id)</div>
           <p>Fetch a paste by ID.</p>
-          <div class="code-wrapper"><pre><code class="language-js">const paste = await client.getPaste("abc123");</code></pre></div>
+          <div class="code-wrapper"><pre><code class="language-js">await const paste = await client.getPaste("abc123");</code></pre></div>
         </div>
         <div class="method-card">
           <div class="method-title">✏️ updatePaste(id, data)</div>
