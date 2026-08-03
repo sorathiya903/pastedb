@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,WebSocket
 from auth import get_current_user
 import secrets
 from pymongo import MongoClient
@@ -74,3 +74,20 @@ async def get_collaboration(invite_token: str):
         raise HTTPException(404, "Collaboration not found")
 
     return collab
+
+
+
+@router.websocket("/collab/ws/{invite_token}")
+async def collab_ws(websocket: WebSocket, invite_token: str):
+    await websocket.accept()
+
+    while True:
+        data = await websocket.receive_json()
+
+        # Handle:
+        # join_request
+        # approve
+        # reject
+        # edit
+        # cursor
+        # leave
