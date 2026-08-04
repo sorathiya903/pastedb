@@ -1591,6 +1591,12 @@ background:#3b82f6;
 
     // Show collaboration editor
     document.querySelector("main").style.display = "block";
+    const res = await fetch(`${API_URL}/p/${customId}`);
+    const paste = await res.json();
+
+    // Put it in the editor
+    document.getElementById("code").value = paste.content || "";
+
 
     // Update status
     document.getElementById("roomStatus").textContent =
