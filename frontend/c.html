@@ -1294,6 +1294,24 @@ font-size:13px;
 background:#3b82f6;
 
 }
+
+    .editor-wrapper .cm-editor {
+    height: 100%;
+}
+
+.editor-wrapper .cm-scroller {
+    overflow: auto;
+}
+
+.editor-wrapper .cm-content {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+}
+
+.editor-wrapper .cm-gutters {
+    background: var(--highlight);
+    border-right: 1px solid var(--border);
+  }
   </style>
 </head>
 
@@ -1403,8 +1421,11 @@ background:#3b82f6;
 
           <div class="lines" id="lines"></div>
 <div class="editor-wrapper">
-    <textarea id="code" placeholder="Start collaborating..."></textarea>
-
+<textarea
+    id="code"
+    placeholder="Start collaborating..."
+    style="display:none;"
+></textarea>
 </div>
 
           
@@ -1523,6 +1544,24 @@ background:#3b82f6;
     </div>
 
 </div>
+  <script type="module">
+  import { EditorView, basicSetup } from "https://esm.sh/codemirror";
+  import { EditorState } from "https://esm.sh/@codemirror/state";
+  import { javascript } from "https://esm.sh/@codemirror/lang-javascript";
+
+  const editor = new EditorView({
+    state: EditorState.create({
+      doc: "",
+      extensions: [
+        basicSetup,
+        javascript()
+      ]
+    }),
+    parent: document.querySelector(".editor-wrapper")
+  });
+
+  window.codeEditor = editor;
+</script>
 <script>
   const inviteToken = window.location.href
     .split("/c/")[1]
@@ -1589,15 +1628,7 @@ background:#3b82f6;
 
     document.getElementById("waitingScreen").style.display = "none";
     document.querySelector("main").style.display = "block";
-   const code = document.getElementById("code");
-
-    // Viewer cannot edit
-    if (role === "viewer") {
-        code.readOnly = true;
-    } else {
-        code.readOnly = false;
-    }
-
+   
 
     // Fetch current paste
     const res = await fetch(`${API_URL}/p/${customId}`);
@@ -1609,9 +1640,13 @@ background:#3b82f6;
 
     const paste = await res.json();
 
-  code.value =
-        paste.content || "";
-
+  window.codeEditor.dispatch({
+    changes: {
+        from: 0,
+        to: window.codeEditor.state.doc.length,
+        insert: paste.content || ""
+    }
+});
     document.getElementById("roomStatus").textContent =
         "Connected • " + role;
 
@@ -1711,8 +1746,14 @@ async function startHost(customId) {
     const paste = await res.json();
 
     // Put it in the editor
-    document.getElementById("code").value = paste.content || "";
-
+    window.codeEditor.dispatch({
+    changes: {
+        from: 0,
+        to: window.codeEditor.state.doc.length,
+        insert: paste.content || ""
+    }
+});
+  
     // Hide join screen if it is visible
     document.getElementById("joinScreen").style.display = "none";
     document.getElementById("waitingScreen").style.display = "none";
