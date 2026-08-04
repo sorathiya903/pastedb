@@ -1576,35 +1576,40 @@ background:#3b82f6;
     document.getElementById("joinRequestBox").style.display = "block";
     }
 
- async function joinApproved(guestId, role){
+ async function joinApproved(guestId, role, customId) {
 
     console.log("You are approved");
     console.log("Guest ID:", guestId);
     console.log("Role:", role);
+    console.log("Custom ID:", customId);
 
-    // Store the ID for this browser session
     window.guestId = guestId;
     window.guestRole = role;
+    window.customId = customId;
 
-    // Hide waiting screen
     document.getElementById("waitingScreen").style.display = "none";
-
-    // Show collaboration editor
     document.querySelector("main").style.display = "block";
+
+    // Fetch current paste
     const res = await fetch(`${API_URL}/p/${customId}`);
+
+    if (!res.ok) {
+        console.error("Failed to fetch paste:", res.status);
+        return;
+    }
+
     const paste = await res.json();
 
-    // Put it in the editor
-    document.getElementById("code").value = paste.content || "";
+    document.getElementById("code").value =
+        paste.content || "";
 
-
-    // Update status
     document.getElementById("roomStatus").textContent =
         "Connected • " + role;
 
-
     console.log("Guest joined collaboration room");
-      }
+                            }
+
+  
     function joinRejected(){
     console.log("You are rejected")
   }
@@ -1648,7 +1653,11 @@ function connectWebSocket(role, n) {
     }
 
     if (data.type === "join_approved") {
-        joinApproved(data.guest_id,data.role);
+    joinApproved(
+        data.guest_id,
+        data.role,
+        data.custom_id
+    );
     }
 
     if (data.type === "join_rejected") {
