@@ -1538,7 +1538,8 @@ background:#3b82f6;
     ws.send(JSON.stringify({
         type: "join_approved",
         name: pendingJoinRequest.name,
-        role: pendingJoinRequest.role
+        role: pendingJoinRequest.role,
+        guest_id:pendingJoinRequest.id
     }));
 
     document.getElementById("joinRequestBox").style.display = "none";
@@ -1552,7 +1553,8 @@ background:#3b82f6;
     ws.send(JSON.stringify({
         type: "join_rejected",
         name: pendingJoinRequest.name,
-        role: pendingJoinRequest.role
+        role: pendingJoinRequest.role,
+        guest_id:pendingJoinRequest.id
     }));
 
     document.getElementById("joinRequestBox").style.display = "none";
@@ -1560,11 +1562,12 @@ background:#3b82f6;
     pendingJoinRequest = null;
   }
 
-  function showJoinRequest(name, role) {
+  function showJoinRequest(name, role, ID) {
 
     pendingJoinRequest = {
         name: name,
-        role: role
+        role: role,
+        id=ID
     };
 
     document.getElementById("joinRequestText").textContent =
@@ -1613,7 +1616,8 @@ function connectWebSocket(role, n) {
 
         showJoinRequest(
             data.name,
-            data.role
+            data.role,
+            data.guest_id
         );
     }
 
