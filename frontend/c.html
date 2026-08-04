@@ -1589,6 +1589,15 @@ background:#3b82f6;
 
     document.getElementById("waitingScreen").style.display = "none";
     document.querySelector("main").style.display = "block";
+   const code = document.getElementById("code");
+
+    // Viewer cannot edit
+    if (role === "viewer") {
+        code.readOnly = true;
+    } else {
+        code.readOnly = false;
+    }
+
 
     // Fetch current paste
     const res = await fetch(`${API_URL}/p/${customId}`);
@@ -1600,7 +1609,7 @@ background:#3b82f6;
 
     const paste = await res.json();
 
-    document.getElementById("code").value =
+  code.value =
         paste.content || "";
 
     document.getElementById("roomStatus").textContent =
