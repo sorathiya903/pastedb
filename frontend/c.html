@@ -1312,6 +1312,31 @@ background:#3b82f6;
     background: var(--highlight);
     border-right: 1px solid var(--border);
   }
+    .editor-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.editor-wrapper .cm-editor {
+    height: 100%;
+    width: 100%;
+}
+
+.editor-wrapper .cm-scroller {
+    overflow: auto !important;
+    white-space: pre;
+}
+
+.editor-wrapper .cm-content {
+    min-width: max-content;
+}
+
+.editor-wrapper .cm-line {
+    white-space: pre;
+}
   </style>
 </head>
 
