@@ -3,6 +3,7 @@ from auth import get_current_user
 import secrets
 from pymongo import MongoClient
 import os
+from uuid import uuid4
 router = APIRouter(tags=["Collaboration"])
 
 client = MongoClient(os.getenv('MONGO_URI'))
@@ -76,32 +77,161 @@ async def get_collaboration(invite_token: str):
     return collab
 
 
-HOSTS={}
+
+
+HOSTS = {}
+GUESTS = {}
+
+
 @router.websocket("/collab/ws/{invite_token}")
 async def collab_ws(websocket: WebSocket, invite_token: str):
+
     await websocket.accept()
 
-    while True:
-        data = await websocket.receive_json()
-        
-        if data["type"] == "connect" and data["role"] == "host":
-            HOSTS[invite_token] = websocket
+    guest_id = None
 
-        if data["type"] == "join_request":
+    try:
 
-            host_ws = HOSTS.get(invite_token)
+        while True:
 
-            if host_ws:
-                await host_ws.send_json({
-                    "type": "join_request",
-                    "name": data["name"],
-                    "role": data["role"]
-                })
+            data = await websocket.receive_json()
 
-        # Handle:
-        # join_request
-        # approve
-        # reject
-        # edit
-        # cursor
-        # leave
+            # =========================
+            # CONNECT
+            # =========================
+
+            if data["type"] == "connect":
+
+                role = data.get("role")
+
+                # -------------------------
+                # HOST
+                # -------------------------
+
+                if role == "host":
+
+                    HOSTS[invite_token] = websocket
+
+                    print("Host connected:", invite_token)
+
+                    await websocket.send_json({
+                        "type": "connected",
+                        "role": "host"
+                    })
+
+                # -------------------------
+                # GUEST
+            # -------------------------
+
+                else:
+
+                    # Generate ID ONLY on backend
+                    guest_id = str(uuid4())
+
+                    GUESTS.setdefault(invite_token, {})
+
+                    GUESTS[invite_token][guest_id] = {
+                        "websocket": websocket,
+                        "name": data.get("name", "Guest"),
+                        "role": role
+                    }
+
+                    print(
+                        "Guest connected:",
+                        guest_id,
+                        data.get("name")
+                    )
+
+                    # Send ID back to guest
+                    await websocket.send_json({
+                        "type": "connected",
+                        "role": role,
+                        "guest_id": guest_id
+                    })
+
+
+            # =========================
+            # JOIN REQUEST
+            # =========================
+
+            elif data["type"] == "join_request":
+
+                host_ws = HOSTS.get(invite_token)
+
+                if host_ws and guest_id:
+
+                    guest = GUESTS.get(
+                        invite_token, {}
+                    ).get(guest_id)
+
+                    if guest:
+
+                        await host_ws.send_json({
+                            "type": "join_request",
+                            "guest_id": guest_id,
+                            "name": guest["name"],
+                            "role": guest["role"]
+                        })
+
+
+            # =========================
+            # APPROVE
+            # =========================
+
+            elif data["type"] == "join_approved":
+
+                target_guest_id = data.get("guest_id")
+
+                guest = GUESTS.get(
+                    invite_token, {}
+                ).get(target_guest_id)
+
+                if guest:
+
+                    await guest["websocket"].send_json({
+                        "type": "join_approved"
+                    })
+
+
+            # =========================
+            # REJECT
+            # =========================
+
+            elif data["type"] == "join_rejected":
+
+                target_guest_id = data.get("guest_id")
+
+                guest = GUESTS.get(
+                    invite_token, {}
+                ).get(target_guest_id)
+
+                if guest:
+
+                    await guest["websocket"].send_json({
+                        "type": "join_rejected"
+                    })
+
+
+    except Exception as e:
+
+        print("WebSocket disconnected:", e)
+
+        # -------------------------
+        # Remove host
+        # -------------------------
+
+        if HOSTS.get(invite_token) == websocket:
+            del HOSTS[invite_token]
+
+        # -------------------------
+        # Remove guest
+        # -------------------------
+
+        if guest_id:
+
+            guests = GUESTS.get(invite_token, {})
+
+            guests.pop(guest_id, None)
+
+            if not guests:
+                GUESTS.pop(invite_token, None)
