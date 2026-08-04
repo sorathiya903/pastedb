@@ -188,9 +188,23 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
 
                 if guest:
 
-                    await guest["websocket"].send_json({
-                        "type": "join_approved"
+        # Find the collaboration using the invite token
+                    collab = collab_collection.find_one({
+                        "invite_token": invite_token
                     })
+
+                    if not collab:
+                        continue
+
+        # This is your PasteDB custom ID
+                    custom_id = collab["paste_id"]
+
+                    await guest["websocket"].send_json({
+                    "type": "join_approved",
+                    "guest_id": target_guest_id,
+                    "role": guest["role"],
+                    "custom_id": custom_id
+                })
 
 
             # =========================
