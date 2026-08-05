@@ -311,8 +311,7 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                             "type": "error",
                             "message": "Guest not found."
                          })
-
-                         continue
+                        continue
 
         # Guest must be approved
                          if not guest.get("approved", False):
