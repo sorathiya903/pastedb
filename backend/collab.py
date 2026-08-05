@@ -421,13 +421,11 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                             gid,
                             e)
 
-        except WebSocketDisconnect:
-
+    except WebSocketDisconnect:
         print(
             "WebSocket disconnected:",
             invite_token,
-            guest_id
-        )
+            guest_id  )
 
     except Exception as e:
 
