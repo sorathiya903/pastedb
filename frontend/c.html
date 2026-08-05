@@ -1570,23 +1570,249 @@ background:#3b82f6;
 
 </div>
   <script type="module">
-  import { EditorView, basicSetup } from "https://esm.sh/codemirror";
-  import { EditorState } from "https://esm.sh/@codemirror/state";
-  import { javascript } from "https://esm.sh/@codemirror/lang-javascript";
 
-  const editor = new EditorView({
+import * as Y from "https://esm.sh/yjs@13.6.27";
+
+import {
+    EditorView,
+    basicSetup
+} from "https://esm.sh/codemirror";
+
+import {
+    EditorState
+} from "https://esm.sh/@codemirror/state";
+
+import {
+    javascript
+} from "https://esm.sh/@codemirror/lang-javascript";
+
+
+// =====================================================
+// YJS DOCUMENT
+// =====================================================
+
+const ydoc = new Y.Doc();
+
+const ytext = ydoc.getText("content");
+
+window.ydoc = ydoc;
+window.ytext = ytext;
+
+
+// =====================================================
+// REMOTE UPDATE FLAG
+// =====================================================
+
+let applyingRemoteUpdate = false;
+
+
+// =====================================================
+// CODEMIRROR
+// =====================================================
+
+const editor = new EditorView({
+
     state: EditorState.create({
-      doc: "",
-      extensions: [
-        basicSetup,
-        javascript()
-      ]
-    }),
-    parent: document.querySelector(".editor-wrapper")
-  });
 
-  window.codeEditor = editor;
-</script>
+        doc: "",
+
+        extensions: [
+
+            basicSetup,
+
+            javascript(),
+
+            EditorView.updateListener.of(
+                update => {
+
+                    if (
+                        !update.docChanged
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        applyingRemoteUpdate
+                    ) {
+                        return;
+                    }
+
+
+                    // Collect changes.
+                    const changes = [];
+
+                    update.changes.iterChanges(
+                        (
+                            fromA,
+                            toA,
+                            fromB,
+                            toB,
+                            inserted
+                        ) => {
+
+                            changes.push({
+                                fromA,
+                                toA,
+                                text: inserted.toString()
+                            });
+
+                        }
+                    );
+
+
+                    // Apply from bottom to top
+                    // so positions remain valid.
+
+                    changes.reverse();
+
+
+                    ydoc.transact(() => {
+
+                        for (
+                            const change of changes
+                        ) {
+
+                            if (
+                                change.toA >
+                                change.fromA
+                            ) {
+
+                                ytext.delete(
+                                    change.fromA,
+                                    change.toA -
+                                    change.fromA
+                                );
+
+                            }
+
+
+                            if (
+                                change.text.length
+                            ) {
+
+                                ytext.insert(
+                                    change.fromA,
+                                    change.text
+                                );
+
+                            }
+
+                        }
+
+                    });
+
+                }
+            )
+
+        ]
+
+    }),
+
+    parent:
+        document.querySelector(
+            ".editor-wrapper"
+        )
+
+});
+
+
+window.codeEditor = editor;
+
+
+// =====================================================
+// YJS → CODEMIRROR
+// =====================================================
+
+ytext.observe(event => {
+
+    if (
+        event.transaction.origin ===
+        "codemirror"
+    ) {
+        return;
+    }
+
+
+    const newText =
+        ytext.toString();
+
+
+    const currentText =
+        editor.state.doc.toString();
+
+
+    if (
+        newText === currentText
+    ) {
+        return;
+    }
+
+
+    applyingRemoteUpdate = true;
+
+
+    editor.dispatch({
+
+        changes: {
+            from: 0,
+
+            to:
+                editor.state.doc.length,
+
+            insert: newText
+        }
+
+    });
+
+
+    applyingRemoteUpdate = false;
+
+});
+
+
+// =====================================================
+// SEND YJS UPDATE
+// =====================================================
+
+ydoc.on(
+    "update",
+    update => {
+
+        if (
+            !window.ws ||
+            window.ws.readyState !==
+            WebSocket.OPEN
+        ) {
+
+            return;
+
+        }
+
+
+        const encoded =
+            btoa(
+                String.fromCharCode(
+                    ...update
+                )
+            );
+
+
+        window.ws.send(
+            JSON.stringify({
+
+                type:
+                    "yjs_update",
+
+                update:
+                    encoded
+
+            })
+        );
+
+    }
+);
+
+                          </script>
 <script>
   const inviteToken = window.location.href
     .split("/c/")[1]
