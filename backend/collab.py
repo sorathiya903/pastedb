@@ -420,3 +420,45 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                             "Failed to send update to guest:",
                             gid,
                             e)
+
+        except WebSocketDisconnect:
+
+        print(
+            "WebSocket disconnected:",
+            invite_token,
+            guest_id
+        )
+
+    except Exception as e:
+
+        print(
+            "WebSocket error:",
+            invite_token,
+            guest_id,
+            e
+        )
+
+    finally:
+
+        # Remove host
+        if HOSTS.get(invite_token) == websocket:
+            del HOSTS[invite_token]
+
+        # Remove guest
+        if guest_id:
+
+            guests = GUESTS.get(
+                invite_token,
+                {}
+            )
+
+            guests.pop(
+                guest_id,
+                None
+            )
+
+            if not guests:
+                GUESTS.pop(
+                    invite_token,
+                    None
+                )
