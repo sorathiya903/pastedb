@@ -1869,43 +1869,47 @@ window.ws = null;
     document.getElementById("joinRequestBox").style.display = "block";
     }
 
- async function joinApproved(guestId, role, customId) {
+async function joinApproved(
+    guestId,
+    role,
+    customId
+) {
 
     console.log("You are approved");
-    console.log("Guest ID:", guestId);
-    console.log("Role:", role);
-    console.log("Custom ID:", customId);
 
     window.guestId = guestId;
     window.guestRole = role;
     window.customId = customId;
 
-    document.getElementById("waitingScreen").style.display = "none";
-    document.querySelector("main").style.display = "block";
-   
 
-    // Fetch current paste
-    const res = await fetch(`${API_URL}/p/${customId}`);
+    document.getElementById(
+        "waitingScreen"
+    ).style.display = "none";
 
-    if (!res.ok) {
-        console.error("Failed to fetch paste:", res.status);
-        return;
-    }
 
-    const paste = await res.json();
+    document.querySelector(
+        "main"
+    ).style.display = "block";
 
-  window.codeEditor.dispatch({
-    changes: {
-        from: 0,
-        to: window.codeEditor.state.doc.length,
-        insert: paste.content || ""
-    }
-});
-    document.getElementById("roomStatus").textContent =
+
+    document.getElementById(
+        "roomStatus"
+    ).textContent =
         "Connected • " + role;
 
-    console.log("Guest joined collaboration room");
-                            }
+  if (role === "viewer") {
+
+    window.codeEditor.dispatch({
+        effects: EditorView.editable.of(false)
+    });
+
+  }
+
+
+    // The server will send the current Yjs
+    // document through yjs_sync.
+
+  }
 
   
     function joinRejected(){
