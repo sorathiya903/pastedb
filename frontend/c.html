@@ -1572,6 +1572,7 @@ background:#3b82f6;
   <script type="module">
 
 import * as Y from "https://esm.sh/yjs@13.6.27";
+    window.Y = Y;
 
 import {
     EditorView,
@@ -1818,7 +1819,9 @@ ydoc.on(
     .split("/c/")[1]
     .split("?")[0]
     .split("#")[0];
-  let ws;
+let ws;
+
+window.ws = null;
   let pendingJoinRequest = null;
 
   function approveJoin() {
@@ -1912,9 +1915,11 @@ ydoc.on(
 function connectWebSocket(role, n) {
 
     ws = new WebSocket(
-        `${WS_URL}/collab/ws/${inviteToken}`
-    );
+    `${WS_URL}/collab/ws/${inviteToken}`
+);
 
+window.ws = ws;
+  
     ws.onopen = () => {
     console.log("Connected");
 
@@ -1937,6 +1942,35 @@ function connectWebSocket(role, n) {
     const data = JSON.parse(event.data);
 
     console.log(data);
+
+      if (data.type === "yjs_sync") {
+
+    const binary = Uint8Array.from(
+        atob(data.update),
+        c => c.charCodeAt(0)
+    );
+
+    Y.applyUpdate(
+        window.ydoc,
+        binary
+    );
+
+}
+
+
+if (data.type === "yjs_update") {
+
+    const binary = Uint8Array.from(
+        atob(data.update),
+        c => c.charCodeAt(0)
+    );
+
+    Y.applyUpdate(
+        window.ydoc,
+        binary
+    );
+
+  }
 
     if (data.type === "join_request") {
 
