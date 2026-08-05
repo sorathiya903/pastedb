@@ -283,6 +283,10 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
             # YJS UPDATE
             # =====================================================
 
+                        # =====================================================
+            # YJS UPDATE
+            # =====================================================
+
             elif message_type == "yjs_update":
 
                 encoded_update = data.get("update")
@@ -290,52 +294,80 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                 if not encoded_update:
                     continue
 
-                if not encoded_update:
-                    continue
+                # =================================================
+                # CHECK PERMISSION
+                # =================================================
 
-    # =====================================================
-    # CHECK PERMISSION
-    # =====================================================
+                # HOST
+                if role == "host":
+                    pass
 
-                if guest_id:
+                # GUEST
+                else:
 
                     guest = GUESTS.get(
-                    invite_token,
-                  {}
-                ).get(guest_id)
+                        invite_token,
+                        {}
+                    ).get(guest_id)
 
-        # Guest must exist
+                    # Guest must exist
                     if not guest:
 
                         await websocket.send_json({
                             "type": "error",
                             "message": "Guest not found."
-                         })
+                        })
+
                         continue
 
-        # Guest must be approved
-                         if not guest.get("approved", False):
-                             await websocket.send_json({   "type": "error",      "message": "You are not approved."   })
-                             continue
+                    # Guest must be approved
+                    if not guest.get("approved", False):
 
-        # Viewer cannot send edits
-                        if guest.get("role") == "viewer":
-                            await websocket.send_json({
-                                "type": "error",
-                                "message": "Viewers cannot edit."   })
-                            continue
+                        await websocket.send_json({
+                            "type": "error",
+                            "message": "You are not approved."
+                        })
 
+                        continue
 
-                update = decode_bytes(
-                    encoded_update
-                )
+                    # Viewer cannot edit
+                    if guest.get("role") == "viewer":
 
-                # Store latest complete Yjs state.
+                        await websocket.send_json({
+                            "type": "error",
+                            "message": "Viewers cannot edit."
+                        })
+
+                        continue
+
+                # =================================================
+                # DECODE UPDATE
+                # =================================================
+
+                try:
+
+                    update = decode_bytes(
+                        encoded_update
+                    )
+
+                except Exception:
+
+                    await websocket.send_json({
+                        "type": "error",
+                        "message": "Invalid Yjs update."
+                    })
+
+                    continue
+
+                # =================================================
+                # STORE STATE
+                # =================================================
+
                 ROOM_STATES[invite_token] = update
 
-                # -------------------------------------------------
-                # Broadcast to HOST
-                # -------------------------------------------------
+                # =================================================
+                # SEND TO HOST
+                # =================================================
 
                 host_ws = HOSTS.get(
                     invite_token
@@ -350,12 +382,16 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                             "update": encoded_update
                         })
 
-                    except Exception:
-                        pass
+                    except Exception as e:
 
-                # -------------------------------------------------
-                # Broadcast to ALL GUESTS
-                # -------------------------------------------------
+                        print(
+                            "Failed to send update to host:",
+                            e
+                        )
+
+                # =================================================
+                # SEND TO ALL OTHER GUESTS
+                # =================================================
 
                 guests = GUESTS.get(
                     invite_token,
@@ -378,55 +414,9 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                             "update": encoded_update
                         })
 
-                    except Exception:
+                    except Exception as e:
 
-                        pass
-
-
-    except WebSocketDisconnect:
-
-        print(
-            "WebSocket disconnected:",
-            invite_token,
-            guest_id
-        )
-
-    except Exception as e:
-
-        print(
-            "WebSocket error:",
-            e
-        )
-
-    finally:
-
-        # ---------------------------------------------------------
-        # Remove host
-        # ---------------------------------------------------------
-
-        if HOSTS.get(invite_token) == websocket:
-
-            del HOSTS[invite_token]
-
-        # ---------------------------------------------------------
-        # Remove guest
-        # ---------------------------------------------------------
-
-        if guest_id:
-
-            guests = GUESTS.get(
-                invite_token,
-                {}
-            )
-
-            guests.pop(
-                guest_id,
-                None
-            )
-
-            if not guests:
-
-                GUESTS.pop(
-                    invite_token,
-                    None
-        )
+                        print(
+                            "Failed to send update to guest:",
+                            gid,
+                            e)
