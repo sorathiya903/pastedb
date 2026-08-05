@@ -1942,19 +1942,17 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-
-      if (data.type === "yjs_sync") {
+if (data.type === "yjs_sync") {
 
     const binary = Uint8Array.from(
         atob(data.update),
         c => c.charCodeAt(0)
     );
 
-    Y.applyUpdate(
+    window.Y.applyUpdate(
         window.ydoc,
         binary
     );
-
 }
 
 
@@ -1965,12 +1963,11 @@ if (data.type === "yjs_update") {
         c => c.charCodeAt(0)
     );
 
-    Y.applyUpdate(
+    window.Y.applyUpdate(
         window.ydoc,
         binary
     );
-
-  }
+      }
 
     if (data.type === "join_request") {
 
@@ -2026,30 +2023,49 @@ connectWebSocket(role);
 <script>
 async function startHost(customId) {
 
-    // Fetch the current paste
-    const res = await fetch(`${API_URL}/p/${customId}`);
+    const res = await fetch(
+        `${API_URL}/p/${customId}`
+    );
+
     const paste = await res.json();
 
-    // Put it in the editor
-    window.codeEditor.dispatch({
-    changes: {
-        from: 0,
-        to: window.codeEditor.state.doc.length,
-        insert: paste.content || ""
+
+    // Put initial content into Yjs
+    if (
+        window.ytext.length === 0 &&
+        paste.content
+    ) {
+
+        window.ydoc.transact(() => {
+
+            window.ytext.insert(
+                0,
+                paste.content
+            );
+
+        });
+
     }
-});
-  
-    // Hide join screen if it is visible
-    document.getElementById("joinScreen").style.display = "none";
-    document.getElementById("waitingScreen").style.display = "none";
 
-    // Show the editor
-    document.querySelector("main").style.display = "block";
 
-    // Connect websocket as host
+    document.getElementById(
+        "joinScreen"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "waitingScreen"
+    ).style.display = "none";
+
+
+    document.querySelector(
+        "main"
+    ).style.display = "block";
+
+
     connectWebSocket("host");
-}
-  
+
+  }
 let user = null;
 
 window.addEventListener("load", async () => {
