@@ -168,7 +168,8 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                             "name",
                             "Guest"
                         ),
-                        "role": role
+                        "role": role,
+                        "approved": False
                     }
 
                     print(
@@ -240,10 +241,13 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                         "invite_token": invite_token
                     })
 
+                    
+
                     if not collab:
                         continue
 
                     custom_id = collab["paste_id"]
+                    guest["approved"] = True
 
                     await guest["websocket"].send_json({
                         "type": "join_approved",
@@ -285,6 +289,43 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
 
                 if not encoded_update:
                     continue
+
+                if not encoded_update:
+                    continue
+
+    # =====================================================
+    # CHECK PERMISSION
+    # =====================================================
+
+                if guest_id:
+
+                    guest = GUESTS.get(
+                    invite_token,
+                  {}
+                ).get(guest_id)
+
+        # Guest must exist
+                    if not guest:
+
+                        await websocket.send_json({
+                            "type": "error",
+                            "message": "Guest not found."
+                         })
+
+                         continue
+
+        # Guest must be approved
+                         if not guest.get("approved", False):
+                             await websocket.send_json({   "type": "error",      "message": "You are not approved."   })
+                             continue
+
+        # Viewer cannot send edits
+                        if guest.get("role") == "viewer":
+                            await websocket.send_json({
+                                "type": "error",
+                                "message": "Viewers cannot edit."   })
+                            continue
+
 
                 update = decode_bytes(
                     encoded_update
