@@ -83,10 +83,6 @@ async def get_collaboration(invite_token: str):
 HOSTS = {}
 GUESTS = {}
 
-# Latest Yjs document state for each collaboration room.
-# This is in-memory for now.
-ROOM_STATES = {}
-
 
 def encode_bytes(data: bytes) -> str:
     return base64.b64encode(data).decode("ascii")
@@ -97,7 +93,10 @@ def decode_bytes(data: str) -> bytes:
 
 
 @router.websocket("/collab/ws/{invite_token}")
-async def collab_ws(websocket: WebSocket, invite_token: str):
+async def collab_ws(
+    websocket: WebSocket,
+    invite_token: str
+):
 
     await websocket.accept()
 
@@ -138,17 +137,6 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                         "role": "host"
                     })
 
-                    # If a document state already exists,
-                    # send it back to the host.
-                    if invite_token in ROOM_STATES:
-
-                        await websocket.send_json({
-                            "type": "yjs_sync",
-                            "update": encode_bytes(
-                                ROOM_STATES[invite_token]
-                            )
-                        })
-
                 # -------------------------------------------------
                 # GUEST
                 # -------------------------------------------------
@@ -163,12 +151,16 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                     )
 
                     GUESTS[invite_token][guest_id] = {
+
                         "websocket": websocket,
+
                         "name": data.get(
                             "name",
                             "Guest"
                         ),
+
                         "role": role,
+
                         "approved": False
                     }
 
@@ -179,70 +171,80 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                     )
 
                     await websocket.send_json({
+
                         "type": "connected",
+
                         "role": role,
+
                         "guest_id": guest_id
                     })
 
-                    # Send current Yjs state to new guest.
-                    if invite_token in ROOM_STATES:
 
-                        await websocket.send_json({
-                            "type": "yjs_sync",
-                            "update": encode_bytes(
-                                ROOM_STATES[invite_token]
-                            )
-                        })
+            # =====================================================
+            # REQUEST FULL SYNC
+            # =====================================================
+
+            elif message_type == "request_sync":
+
+                # Only a guest should request the document.
+                if role == "host":
+                    continue
+
+                host_ws = HOSTS.get(
+                    invite_token
+                )
+
+                if host_ws:
+
+                    await host_ws.send_json({
+
+                        "type": "sync_request",
+
+                        "guest_id": guest_id
+                    })
 
 
             # =====================================================
             # JOIN REQUEST
             # =====================================================
-            elif message_type == "request_sync":
-                host_ws = HOSTS.get(invite_token)
-                if host_ws:
-                    await host_ws.send_json({   "type": "sync_request"   })
-           
+
             elif message_type == "join_request":
 
-                host_ws = HOSTS.get(invite_token)
+                host_ws = HOSTS.get(
+                    invite_token
+                )
 
-                if host_ws and guest_id:
+                if not host_ws or not guest_id:
+                    continue
 
-                    guest = GUESTS.get(
-                        invite_token,
-                        {}
-                    ).get(guest_id)
+                guest = GUESTS.get(
+                    invite_token,
+                    {}
+                ).get(guest_id)
 
-                    if guest:
+                if guest:
 
-                        await host_ws.send_json({
-                            "type": "join_request",
-                            "guest_id": guest_id,
-                            "name": guest["name"],
-                            "role": guest["role"]
-                        })
+                    await host_ws.send_json({
+
+                        "type": "join_request",
+
+                        "guest_id": guest_id,
+
+                        "name": guest["name"],
+
+                        "role": guest["role"]
+                    })
 
 
             # =====================================================
             # APPROVE
             # =====================================================
-            elif message_type == "yjs_full_state":
-                encoded_state = data.get("update")
-                if not encoded_state:
-                    continue
-                guests = GUESTS.get(
-                     invite_token,
-                    {}
-                 )
-                for gid, guest in list(guests.items()):
-                    guest_ws = guest["websocket"]
-                    try:
-                        await guest_ws.send_json({    "type": "yjs_full_state",     "update": encoded_state    })
-                    except Exception as e:
-                        print(   "Failed to send full Yjs state:",    gid,   e   )
-                        
+
             elif message_type == "join_approved":
+
+                # Only HOST is allowed to approve.
+                if role != "host":
+                    continue
 
                 target_guest_id = data.get(
                     "guest_id"
@@ -253,26 +255,40 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                     {}
                 ).get(target_guest_id)
 
-                if guest:
+                if not guest:
+                    continue
 
-                    collab = collab_collection.find_one({
-                        "invite_token": invite_token
-                    })
+                collab = collab_collection.find_one({
 
-                    
+                    "invite_token":
+                        invite_token
+                })
 
-                    if not collab:
-                        continue
+                if not collab:
+                    continue
 
-                    custom_id = collab["paste_id"]
-                    guest["approved"] = True
+                custom_id = collab["paste_id"]
 
-                    await guest["websocket"].send_json({
-                        "type": "join_approved",
-                        "guest_id": target_guest_id,
-                        "role": guest["role"],
-                        "custom_id": custom_id
-                    })
+                guest["approved"] = True
+
+                await guest["websocket"].send_json({
+
+                    "type": "join_approved",
+
+                    "guest_id":
+                        target_guest_id,
+
+                    "role":
+                        guest["role"],
+
+                    "custom_id":
+                        custom_id
+                })
+
+                print(
+                    "Guest approved:",
+                    target_guest_id
+                )
 
 
             # =====================================================
@@ -281,6 +297,10 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
 
             elif message_type == "join_rejected":
 
+                # Only HOST is allowed to reject.
+                if role != "host":
+                    continue
+
                 target_guest_id = data.get(
                     "guest_id"
                 )
@@ -293,31 +313,88 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                 if guest:
 
                     await guest["websocket"].send_json({
-                        "type": "join_rejected"
+
+                        "type":
+                            "join_rejected"
                     })
 
 
             # =====================================================
-            # YJS UPDATE
+            # FULL YJS STATE
             # =====================================================
 
-                        # =====================================================
-            # YJS UPDATE
+            elif message_type == "yjs_full_state":
+
+                # IMPORTANT:
+                # Only the host can provide the authoritative
+                # complete Yjs document.
+
+                if role != "host":
+                    continue
+
+                encoded_state = data.get(
+                    "update"
+                )
+
+                if not encoded_state:
+                    continue
+
+                # Send to all approved guests.
+                guests = GUESTS.get(
+                    invite_token,
+                    {}
+                )
+
+                for gid, guest in list(
+                    guests.items()
+                ):
+
+                    if not guest.get(
+                        "approved",
+                        False
+                    ):
+                        continue
+
+                    try:
+
+                        await guest["websocket"].send_json({
+
+                            "type":
+                                "yjs_full_state",
+
+                            "update":
+                                encoded_state
+                        })
+
+                    except Exception as e:
+
+                        print(
+                            "Failed full sync:",
+                            gid,
+                            e
+                        )
+
+
+            # =====================================================
+            # YJS INCREMENTAL UPDATE
             # =====================================================
 
             elif message_type == "yjs_update":
 
-                encoded_update = data.get("update")
+                encoded_update = data.get(
+                    "update"
+                )
 
                 if not encoded_update:
                     continue
 
-                # =================================================
-                # CHECK PERMISSION
-                # =================================================
+                # -------------------------------------------------
+                # PERMISSION CHECK
+                # -------------------------------------------------
 
-                # HOST
+                # HOST can edit.
                 if role == "host":
+
                     pass
 
                 # GUEST
@@ -328,88 +405,110 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                         {}
                     ).get(guest_id)
 
-                    # Guest must exist
                     if not guest:
 
                         await websocket.send_json({
-                            "type": "error",
-                            "message": "Guest not found."
+
+                            "type":
+                                "error",
+
+                            "message":
+                                "Guest not found."
                         })
 
                         continue
 
-                    # Guest must be approved
-                    if not guest.get("approved", False):
+                    # Must be approved.
+                    if not guest.get(
+                        "approved",
+                        False
+                    ):
 
                         await websocket.send_json({
-                            "type": "error",
-                            "message": "You are not approved."
+
+                            "type":
+                                "error",
+
+                            "message":
+                                "You are not approved."
                         })
 
                         continue
 
-                    # Viewer cannot edit
-                    if guest.get("role") == "viewer":
+                    # Viewer cannot edit.
+                    if guest.get(
+                        "role"
+                    ) == "viewer":
 
                         await websocket.send_json({
-                            "type": "error",
-                            "message": "Viewers cannot edit."
+
+                            "type":
+                                "error",
+
+                            "message":
+                                "Viewers cannot edit."
                         })
 
                         continue
 
-                # =================================================
-                # DECODE UPDATE
-                # =================================================
+                # -------------------------------------------------
+                # VALIDATE BASE64
+                # -------------------------------------------------
 
                 try:
 
-                    update = decode_bytes(
+                    decode_bytes(
                         encoded_update
                     )
 
                 except Exception:
 
                     await websocket.send_json({
-                        "type": "error",
-                        "message": "Invalid Yjs update."
+
+                        "type":
+                            "error",
+
+                        "message":
+                            "Invalid Yjs update."
                     })
 
                     continue
 
-                # =================================================
-                # STORE STATE
-                # =================================================
-
-                ROOM_STATES[invite_token] = update
-
-                # =================================================
+                # -------------------------------------------------
                 # SEND TO HOST
-                # =================================================
+                # -------------------------------------------------
 
                 host_ws = HOSTS.get(
                     invite_token
                 )
 
-                if host_ws and host_ws != websocket:
+                if (
+                    host_ws
+                    and host_ws != websocket
+                ):
 
                     try:
 
                         await host_ws.send_json({
-                            "type": "yjs_update",
-                            "update": encoded_update
+
+                            "type":
+                                "yjs_update",
+
+                            "update":
+                                encoded_update
                         })
 
                     except Exception as e:
 
                         print(
-                            "Failed to send update to host:",
+                            "Failed to send update "
+                            "to host:",
                             e
                         )
 
-                # =================================================
-                # SEND TO ALL OTHER GUESTS
-                # =================================================
+                # -------------------------------------------------
+                # SEND TO OTHER APPROVED GUESTS
+                # -------------------------------------------------
 
                 guests = GUESTS.get(
                     invite_token,
@@ -420,30 +519,53 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
                     guests.items()
                 ):
 
-                    guest_ws = guest["websocket"]
+                    guest_ws = guest[
+                        "websocket"
+                    ]
 
+                    # Don't send back to sender.
                     if guest_ws == websocket:
+                        continue
+
+                    # Don't send edits to unapproved users.
+                    if not guest.get(
+                        "approved",
+                        False
+                    ):
                         continue
 
                     try:
 
                         await guest_ws.send_json({
-                            "type": "yjs_update",
-                            "update": encoded_update
+
+                            "type":
+                                "yjs_update",
+
+                            "update":
+                                encoded_update
                         })
 
                     except Exception as e:
 
                         print(
-                            "Failed to send update to guest:",
+                            "Failed to send update "
+                            "to guest:",
                             gid,
-                            e)
+                            e
+                        )
+
+
+    # =============================================================
+    # DISCONNECT
+    # =============================================================
 
     except WebSocketDisconnect:
+
         print(
             "WebSocket disconnected:",
             invite_token,
-            guest_id  )
+            guest_id
+        )
 
     except Exception as e:
 
@@ -456,11 +578,22 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
 
     finally:
 
-        # Remove host
-        if HOSTS.get(invite_token) == websocket:
-            del HOSTS[invite_token]
+        # ---------------------------------------------------------
+        # REMOVE HOST
+        # ---------------------------------------------------------
 
-        # Remove guest
+        if HOSTS.get(
+            invite_token
+        ) == websocket:
+
+            del HOSTS[
+                invite_token
+            ]
+
+        # ---------------------------------------------------------
+        # REMOVE GUEST
+        # ---------------------------------------------------------
+
         if guest_id:
 
             guests = GUESTS.get(
@@ -474,6 +607,7 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
             )
 
             if not guests:
+
                 GUESTS.pop(
                     invite_token,
                     None
