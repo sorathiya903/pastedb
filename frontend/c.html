@@ -1701,15 +1701,23 @@ window.codeEditor = editor;
 
 ytext.observe(event => {
 
-    // This change originated from CodeMirror.
-    if (event.transaction.origin === "codemirror") {
-        return;
-    }
+    console.log("YJS OBSERVER FIRED");
+
+    console.log(
+        "YJS text:",
+        JSON.stringify(ytext.toString())
+    );
+
+    console.log(
+        "CodeMirror text:",
+        JSON.stringify(editor.state.doc.toString())
+    );
 
     const newText = ytext.toString();
     const currentText = editor.state.doc.toString();
 
     if (newText === currentText) {
+        console.log("Already synchronized");
         return;
     }
 
@@ -1730,6 +1738,11 @@ ytext.observe(event => {
         applyingRemoteUpdate = false;
 
     }
+
+    console.log(
+        "CodeMirror updated:",
+        JSON.stringify(editor.state.doc.toString())
+    );
 
 });
 
@@ -1968,16 +1981,48 @@ if (data.type === "yjs_sync") {
 
 if (data.type === "yjs_update") {
 
-    const binary = Uint8Array.from(
-        atob(data.update),
-        c => c.charCodeAt(0)
-    );
+    console.log("RECEIVED YJS UPDATE");
 
-    window.Y.applyUpdate(
-        window.ydoc,
-        binary
-    );
-      }
+    try {
+
+        const binary = Uint8Array.from(
+            atob(data.update),
+            c => c.charCodeAt(0)
+        );
+
+        console.log(
+            "Update bytes:",
+            binary.length
+        );
+
+        window.Y.applyUpdate(
+            window.ydoc,
+            binary
+        );
+
+        console.log(
+            "YJS AFTER UPDATE:",
+            JSON.stringify(window.ytext.toString())
+        );
+
+        console.log(
+            "CODEMIRROR AFTER UPDATE:",
+            JSON.stringify(
+                window.codeEditor.state.doc.toString()
+            )
+        );
+
+    } catch (error) {
+
+        console.error(
+            "YJS APPLY ERROR:",
+            error
+        );
+
+    }
+
+    return;
+  }
 
     if (data.type === "join_request") {
 
