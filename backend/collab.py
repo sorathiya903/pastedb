@@ -198,7 +198,11 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
             # =====================================================
             # JOIN REQUEST
             # =====================================================
-
+            elif message_type == "request_sync":
+                host_ws = HOSTS.get(invite_token)
+                if host_ws:
+                    await host_ws.send_json({   "type": "sync_request"   })
+           
             elif message_type == "join_request":
 
                 host_ws = HOSTS.get(invite_token)
@@ -223,7 +227,21 @@ async def collab_ws(websocket: WebSocket, invite_token: str):
             # =====================================================
             # APPROVE
             # =====================================================
-
+            elif message_type == "yjs_full_state":
+                encoded_state = data.get("update")
+                if not encoded_state:
+                    continue
+                guests = GUESTS.get(
+                     invite_token,
+                    {}
+                 )
+                for gid, guest in list(guests.items()):
+                    guest_ws = guest["websocket"]
+                    try:
+                        await guest_ws.send_json({    "type": "yjs_full_state",     "update": encoded_state    })
+                    except Exception as e:
+                        print(   "Failed to send full Yjs state:",    gid,   e   )
+                        
             elif message_type == "join_approved":
 
                 target_guest_id = data.get(
