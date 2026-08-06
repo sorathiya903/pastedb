@@ -323,56 +323,33 @@ async def collab_ws(
             # FULL YJS STATE
             # =====================================================
 
+             
             elif message_type == "yjs_full_state":
 
-                # IMPORTANT:
-                # Only the host can provide the authoritative
-                # complete Yjs document.
+            if role != "host":
+                continue
 
-                if role != "host":
-                    continue
+            encoded_state = data.get("update")
+            target_guest_id = data.get("guest_id")
+            
+            if not encoded_state or not target_guest_id:
+                continue
 
-                encoded_state = data.get(
-                    "update"
-                )
+            guest = GUESTS.get(  invite_token,   {}  ).get(target_guest_id)
 
-                if not encoded_state:
-                    continue
+            if not guest:
+                continue
 
-                # Send to all approved guests.
-                guests = GUESTS.get(
-                    invite_token,
-                    {}
-                )
-
-                for gid, guest in list(
-                    guests.items()
-                ):
-
-                    if not guest.get(
-                        "approved",
-                        False
-                    ):
-                        continue
-
-                    try:
-
-                        await guest["websocket"].send_json({
-
-                            "type":
-                                "yjs_full_state",
-
-                            "update":
-                                encoded_state
-                        })
-
-                    except Exception as e:
-
-                        print(
-                            "Failed full sync:",
-                            gid,
-                            e
-                        )
+            if not guest.get("approved", False):
+                continue
+                
+            try:
+                await guest["websocket"].send_json({
+                    "type": "yjs_full_state", "update": encoded_state
+                })
+            
+            except Exception as e:
+                print(   "Failed full sync:",         target_guest_id,    e   )
 
 
             # =====================================================
