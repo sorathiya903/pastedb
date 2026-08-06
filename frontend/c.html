@@ -1850,8 +1850,18 @@ async function joinApproved(
   }
 
 
-    // The server will send the current Yjs
-    // document through yjs_sync.
+
+      // Ask the host for the complete current document.
+    if (
+        window.ws &&
+        window.ws.readyState === WebSocket.OPEN
+    ) {
+
+        window.ws.send(JSON.stringify({
+            type: "request_sync"
+        }));
+
+  }
 
   }
 
@@ -1890,6 +1900,58 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
+      if (data.type === "sync_request") {
+
+    // Only the host should answer this.
+    if (window.guestRole === "host") {
+
+        const fullState =
+            window.Y.encodeStateAsUpdate(
+                window.ydoc
+            );
+
+        const encoded =
+            btoa(
+                String.fromCharCode(
+                    ...fullState
+                )
+            );
+
+        window.ws.send(JSON.stringify({
+            type: "yjs_full_state",
+            update: encoded
+        }));
+
+    }
+
+    return;
+  }
+      if (data.type === "yjs_full_state") {
+
+    const binary = Uint8Array.from(
+        atob(data.update),
+        c => c.charCodeAt(0)
+    );
+
+    applyingRemoteUpdate = true;
+
+    try {
+
+        window.Y.applyUpdate(
+            window.ydoc,
+            binary
+        );
+
+    } finally {
+
+        applyingRemoteUpdate = false;
+
+    }
+
+    return;
+                       }
+
+  
 if (data.type === "yjs_sync") {
 
     const binary = Uint8Array.from(
