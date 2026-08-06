@@ -1580,13 +1580,14 @@ import {
 } from "https://esm.sh/codemirror";
 
 import {
-    EditorState
+    EditorState,
+    StateEffect
 } from "https://esm.sh/@codemirror/state";
-
+    
 import {
     javascript
 } from "https://esm.sh/@codemirror/lang-javascript";
-
+const CollabRemote = StateEffect.define();
 
 // =====================================================
 // YJS DOCUMENT
@@ -1621,63 +1622,70 @@ const editor = new EditorView({
 
             javascript(),
 
-            EditorView.updateListener.of(update => {
+            
+EditorView.updateListener.of(update => {
 
-                if (!update.docChanged) {
-                    return;
-                }
-
-                // This change came from Yjs.
-                // Do NOT send it back into Yjs.
-                if (applyingRemoteUpdate) {
-                    return;
-                }
-
-                const changes = [];
-
-                update.changes.iterChanges(
-                    (
-                        fromA,
-                        toA,
-                        fromB,
-                        toB,
-                        inserted
-                    ) => {
-
-                        changes.push({
-                            from: fromA,
-                            to: toA,
-                            text: inserted.toString()
-                        });
-
-                    }
-                );
-
-                // Work backwards so positions remain valid.
-                changes.reverse();
-
-                ydoc.transact(() => {
-
-    for (const change of changes) {
-
-        if (change.toA > change.fromA) {
-            ytext.delete(
-                change.fromA,
-                change.toA - change.fromA
-            );
-        }
-
-        if (change.text.length) {
-            ytext.insert(
-                change.fromA,
-                change.text
-            );
-        }
-
+    if (!update.docChanged) {
+        return;
     }
 
-}, "codemirror");
-            })
+    // Ignore CodeMirror changes that are caused
+    // by Yjs updating the editor.
+    if (update.transactions.some(
+        tr => tr.annotation(CollabRemote)
+    )) {
+        return;
+    }
+
+    const changes = [];
+
+    update.changes.iterChanges(
+        (
+            fromA,
+            toA,
+            fromB,
+            toB,
+            inserted
+        ) => {
+
+            changes.push({
+                from: fromA,
+                to: toA,
+                text: inserted.toString()
+            });
+
+        }
+    );
+
+    changes.reverse();
+
+    ydoc.transact(() => {
+
+        for (const change of changes) {
+
+            if (change.to > change.from) {
+
+                ytext.delete(
+                    change.from,
+                    change.to - change.from
+                );
+
+            }
+
+            if (change.text.length) {
+
+                ytext.insert(
+                    change.from,
+                    change.text
+                );
+
+            }
+
+        }
+
+    }, "codemirror");
+
+})
 
         ]
 
@@ -1698,49 +1706,45 @@ ytext.observe(event => {
 
     console.log("YJS OBSERVER FIRED");
 
+    const newText = ytext.toString();
+    const currentText = editor.state.doc.toString();
+
     console.log(
         "YJS text:",
-        JSON.stringify(ytext.toString())
+        JSON.stringify(newText)
     );
 
     console.log(
         "CodeMirror text:",
-        JSON.stringify(editor.state.doc.toString())
+        JSON.stringify(currentText)
     );
-
-    const newText = ytext.toString();
-    const currentText = editor.state.doc.toString();
 
     if (newText === currentText) {
         console.log("Already synchronized");
         return;
     }
 
-    applyingRemoteUpdate = true;
+    editor.dispatch({
 
-    try {
+        changes: {
+            from: 0,
+            to: editor.state.doc.length,
+            insert: newText
+        },
 
-        editor.dispatch({
-            changes: {
-                from: 0,
-                to: editor.state.doc.length,
-                insert: newText
-            }
-        });
+        effects: CollabRemote.of(true)
 
-    } finally {
-
-        applyingRemoteUpdate = false;
-
-    }
+    });
 
     console.log(
         "CodeMirror updated:",
-        JSON.stringify(editor.state.doc.toString())
+        JSON.stringify(
+            editor.state.doc.toString()
+        )
     );
 
 });
-
+    
 
 // =====================================================
 // SEND YJS UPDATES
@@ -1908,9 +1912,8 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-      if (data.type === "sync_request") {
+if (data.type === "sync_request") {
 
-    // Only the host should answer this.
     if (window.guestRole === "host") {
 
         const fullState =
@@ -1927,13 +1930,14 @@ window.ws = ws;
 
         window.ws.send(JSON.stringify({
             type: "yjs_full_state",
-            update: encoded
+            update: encoded,
+            guest_id: data.guest_id
         }));
 
     }
 
     return;
-  }
+              }
 
       
       
@@ -1944,24 +1948,15 @@ window.ws = ws;
         c => c.charCodeAt(0)
     );
 
-    applyingRemoteUpdate = true;
-
-    try {
-
-        window.Y.applyUpdate(
-            window.ydoc,
-            binary
-        );
-
-    } finally {
-
-        applyingRemoteUpdate = false;
-
-    }
+    window.Y.applyUpdate(
+        window.ydoc,
+        binary,
+        "remote"
+    );
 
     return;
-                       }
-
+  }
+      
   
 if (data.type === "yjs_sync") {
 
@@ -1975,7 +1970,6 @@ if (data.type === "yjs_sync") {
         binary
     );
 }
-
 
 if (data.type === "yjs_update") {
 
@@ -1995,12 +1989,15 @@ if (data.type === "yjs_update") {
 
         window.Y.applyUpdate(
             window.ydoc,
-            binary
+            binary,
+            "remote"
         );
 
         console.log(
             "YJS AFTER UPDATE:",
-            JSON.stringify(window.ytext.toString())
+            JSON.stringify(
+                window.ytext.toString()
+            )
         );
 
         console.log(
