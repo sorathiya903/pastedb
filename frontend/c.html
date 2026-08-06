@@ -1658,30 +1658,25 @@ const editor = new EditorView({
 
                 ydoc.transact(() => {
 
-                    for (const change of changes) {
+    for (const change of changes) {
 
-                        if (change.to > change.from) {
+        if (change.toA > change.fromA) {
+            ytext.delete(
+                change.fromA,
+                change.toA - change.fromA
+            );
+        }
 
-                            ytext.delete(
-                                change.from,
-                                change.to - change.from
-                            );
+        if (change.text.length) {
+            ytext.insert(
+                change.fromA,
+                change.text
+            );
+        }
 
-                        }
+    }
 
-                        if (change.text.length > 0) {
-
-                            ytext.insert(
-                                change.from,
-                                change.text
-                            );
-
-                        }
-
-                    }
-
-                }, "codemirror");
-
+}, "codemirror");
             })
 
         ]
