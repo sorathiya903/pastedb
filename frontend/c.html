@@ -1591,18 +1591,16 @@ import {
 // =====================================================
 // YJS DOCUMENT
 // =====================================================
+// =====================================================
+// YJS DOCUMENT
+// =====================================================
 
 const ydoc = new Y.Doc();
-
 const ytext = ydoc.getText("content");
 
+window.Y = Y;
 window.ydoc = ydoc;
 window.ytext = ytext;
-
-
-// =====================================================
-// REMOTE UPDATE FLAG
-// =====================================================
 
 let applyingRemoteUpdate = false;
 
@@ -1623,99 +1621,76 @@ const editor = new EditorView({
 
             javascript(),
 
-            EditorView.updateListener.of(
-                update => {
+            EditorView.updateListener.of(update => {
 
-                    if (
-                        !update.docChanged
-                    ) {
-                        return;
-                    }
-
-                    if (
-                        applyingRemoteUpdate
-                    ) {
-                        return;
-                    }
-
-
-                    // Collect changes.
-                    const changes = [];
-
-                    update.changes.iterChanges(
-                        (
-                            fromA,
-                            toA,
-                            fromB,
-                            toB,
-                            inserted
-                        ) => {
-
-                            changes.push({
-                                fromA,
-                                toA,
-                                text: inserted.toString()
-                            });
-
-                        }
-                    );
-
-
-                    // Apply from bottom to top
-                    // so positions remain valid.
-
-                    changes.reverse();
-
-
-                    ydoc.transact(() => {
-
-                        for (
-                            const change of changes
-                        ) {
-
-                            if (
-                                change.toA >
-                                change.fromA
-                            ) {
-
-                                ytext.delete(
-                                    change.fromA,
-                                    change.toA -
-                                    change.fromA
-                                );
-
-                            }
-
-
-                            if (
-                                change.text.length
-                            ) {
-
-                                ytext.insert(
-                                    change.fromA,
-                                    change.text
-                                );
-
-                            }
-
-                        }
-
-                    });
-
+                if (!update.docChanged) {
+                    return;
                 }
-            )
+
+                // This change came from Yjs.
+                // Do NOT send it back into Yjs.
+                if (applyingRemoteUpdate) {
+                    return;
+                }
+
+                const changes = [];
+
+                update.changes.iterChanges(
+                    (
+                        fromA,
+                        toA,
+                        fromB,
+                        toB,
+                        inserted
+                    ) => {
+
+                        changes.push({
+                            from: fromA,
+                            to: toA,
+                            text: inserted.toString()
+                        });
+
+                    }
+                );
+
+                // Work backwards so positions remain valid.
+                changes.reverse();
+
+                ydoc.transact(() => {
+
+                    for (const change of changes) {
+
+                        if (change.to > change.from) {
+
+                            ytext.delete(
+                                change.from,
+                                change.to - change.from
+                            );
+
+                        }
+
+                        if (change.text.length > 0) {
+
+                            ytext.insert(
+                                change.from,
+                                change.text
+                            );
+
+                        }
+
+                    }
+
+                }, "codemirror");
+
+            })
 
         ]
 
     }),
 
-    parent:
-        document.querySelector(
-            ".editor-wrapper"
-        )
+    parent: document.querySelector(".editor-wrapper")
 
 });
-
 
 window.codeEditor = editor;
 
@@ -1726,93 +1701,62 @@ window.codeEditor = editor;
 
 ytext.observe(event => {
 
-    if (
-        event.transaction.origin ===
-        "codemirror"
-    ) {
+    // This change originated from CodeMirror.
+    if (event.transaction.origin === "codemirror") {
         return;
     }
 
+    const newText = ytext.toString();
+    const currentText = editor.state.doc.toString();
 
-    const newText =
-        ytext.toString();
-
-
-    const currentText =
-        editor.state.doc.toString();
-
-
-    if (
-        newText === currentText
-    ) {
+    if (newText === currentText) {
         return;
     }
-
 
     applyingRemoteUpdate = true;
 
+    try {
 
-    editor.dispatch({
+        editor.dispatch({
+            changes: {
+                from: 0,
+                to: editor.state.doc.length,
+                insert: newText
+            }
+        });
 
-        changes: {
-            from: 0,
+    } finally {
 
-            to:
-                editor.state.doc.length,
+        applyingRemoteUpdate = false;
 
-            insert: newText
-        }
-
-    });
-
-
-    applyingRemoteUpdate = false;
+    }
 
 });
 
 
 // =====================================================
-// SEND YJS UPDATE
+// SEND YJS UPDATES
 // =====================================================
 
-ydoc.on(
-    "update",
-    update => {
+ydoc.on("update", update => {
 
-        if (
-            !window.ws ||
-            window.ws.readyState !==
-            WebSocket.OPEN
-        ) {
-
-            return;
-
-        }
-
-
-        const encoded =
-            btoa(
-                String.fromCharCode(
-                    ...update
-                )
-            );
-
-
-        window.ws.send(
-            JSON.stringify({
-
-                type:
-                    "yjs_update",
-
-                update:
-                    encoded
-
-            })
-        );
-
+    if (
+        !window.ws ||
+        window.ws.readyState !== WebSocket.OPEN
+    ) {
+        return;
     }
-);
 
+    const encoded = btoa(
+        String.fromCharCode(...update)
+    );
+
+    window.ws.send(JSON.stringify({
+        type: "yjs_update",
+        update: encoded
+    }));
+
+});
                           </script>
 <script>
   const inviteToken = window.location.href
