@@ -2076,10 +2076,14 @@ connectWebSocket(role);
 <script>
 async function startHost(customId) {
 
+
+    // Mark this browser as the host
+    window.guestRole = "host";
+    window.customId = customId;
+
     const res = await fetch(
         `${API_URL}/p/${customId}`
     );
-
     const paste = await res.json();
 
 
