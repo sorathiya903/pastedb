@@ -326,30 +326,30 @@ async def collab_ws(
              
             elif message_type == "yjs_full_state":
 
-            if role != "host":
-                continue
+                if role != "host":
+                    continue
 
-            encoded_state = data.get("update")
-            target_guest_id = data.get("guest_id")
+                encoded_state = data.get("update")
+                target_guest_id = data.get("guest_id")
             
-            if not encoded_state or not target_guest_id:
-                continue
+                if not encoded_state or not target_guest_id:
+                    continue
 
-            guest = GUESTS.get(  invite_token,   {}  ).get(target_guest_id)
+                guest = GUESTS.get(  invite_token,   {}  ).get(target_guest_id)
 
-            if not guest:
-                continue
+                if not guest:
+                    continue
 
-            if not guest.get("approved", False):
-                continue
+                if not guest.get("approved", False):
+                    continue
                 
-            try:
-                await guest["websocket"].send_json({
-                    "type": "yjs_full_state", "update": encoded_state
-                })
+                try:
+                    await guest["websocket"].send_json({
+                        "type": "yjs_full_state", "update": encoded_state
+                    })
             
-            except Exception as e:
-                print(   "Failed full sync:",         target_guest_id,    e   )
+                except Exception as e:
+                    print(   "Failed full sync:",         target_guest_id,    e   )
 
 
             # =====================================================
