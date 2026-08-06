@@ -1631,11 +1631,11 @@ EditorView.updateListener.of(update => {
 
     // Ignore CodeMirror changes that are caused
     // by Yjs updating the editor.
-    if (update.transactions.some(
-        tr => tr.annotation(CollabRemote)
-    )) {
-        return;
-    }
+  if (update.transactions.some(tr =>
+    tr.effects.some(effect => effect.is(CollabRemote))
+)) {
+    return;
+  }
 
     const changes = [];
 
@@ -1725,17 +1725,13 @@ ytext.observe(event => {
     }
 
     editor.dispatch({
-
-        changes: {
-            from: 0,
-            to: editor.state.doc.length,
-            insert: newText
-        },
-
-        effects: CollabRemote.of(true)
-
-    });
-
+    changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: newText
+    },
+    effects: CollabRemote.of(true)
+});
     console.log(
         "CodeMirror updated:",
         JSON.stringify(
