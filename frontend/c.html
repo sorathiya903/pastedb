@@ -32,6 +32,27 @@ debug
 <link rel="icon" type="image/png" href="/favicon.png">
 
   <style>
+    .option-row {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.checkbox-label input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #22c55e;
+}
 .close{
 
 width:40px;
@@ -1457,7 +1478,7 @@ background:#3b82f6;
           
 
       </div>
-                    <div class="option-row" style="display:none;" id="saveVersionRow">
+                    <div class="option-row" id="saveVersionRow">
     <label class="checkbox-label">
         <input type="checkbox" id="saveVersion">
         <span>Save Previous Version</span>
