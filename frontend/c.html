@@ -2213,6 +2213,24 @@ const versionCardWrap = document.getElementById("versionCardWrap");
 sV.addEventListener("change", () => {
     versionCardWrap.classList.toggle("show", sV.checked);
 });
+  
+    async function saveVersion(editId, pasteData) {
+
+  const response = await fetch(
+    `${API_URL}/paste/${editId}/save-version`,
+    {
+      method: "POST",
+      credentials: "include",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify(pasteData)
+    }
+  );
+
+  return response;
   </script>
 </body>
   </html>
