@@ -32,6 +32,41 @@ debug
 <link rel="icon" type="image/png" href="/favicon.png">
 
   <style>
+    .version-card-wrap {
+    display: none;
+    padding: 16px 24px;
+}
+
+.version-card-wrap.show {
+    display: block;
+}
+
+.version-info-card {
+    background: var(--highlight);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.version-title {
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.version-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    color: var(--muted);
+}
+
+.version-line strong {
+    color: var(--text);
+}
+
+.version-line.warning strong {
+    color: #f59e0b;
+}
     .option-row {
     padding: 16px 24px;
     border-top: 1px solid var(--border);
