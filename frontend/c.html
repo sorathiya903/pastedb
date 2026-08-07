@@ -2234,265 +2234,149 @@ sV.addEventListener("change", () => {
                              }
   
     
-createBtn.addEventListener("click", async () => {
-const customId =  document.getElementById("customId").value.trim();
 
-const passwordEnabled = document.getElementById("enablePassword").checked;
-
-const passwordValue = document.getElementById("passwordInput").value.trim();
-
-const pasteData = {
-  title: document.getElementById("title").value || "Untitled Paste",
-  content: document.getElementById("code").value,
-  syntax: document.getElementById("syntax").value,
-  expiration: document.getElementById("expiration").value,
-  visibility:visibility,
-  e2ee: visibility === "private" || visibility === "unlisted",
-  images:[]
-};
- 
-
-  const wasEncrypted = originalPaste?.e2ee || false;
-  createBtn.disabled =true;
-  createBtn.innerHTML = `<div class="spinner"></div> Verifing User...`;
-
-const shouldEncrypt =
-    visibility === "private" ||
-    visibility === "unlisted";
-  const loggedIn = (await fetch(`${API_URL}/auth/me`, {
-    credentials: "include"
-})).ok;
-
-if (!loggedIn && shouldEncrypt) {
-
-    const pek = await generatePEK();
-
-    sharePEK = await exportAESKey(pek);
-
-    Object.assign(
-        pasteData,
-        await encryptPasteData(pasteData, pek, false)
-    );
-
-    pasteData.e2ee = true;
-
-} else {
-  
-const existingPEK = originalPEK 
-console.log(existingPEK)
-if (!wasEncrypted && shouldEncrypt) {
-
-    Object.assign(
-        pasteData,
-        await encryptPasteData(
-            pasteData,
-            existingPEK
-        )
-    );
-
-    pasteData.e2ee = true;
-
-}
-
-else if (wasEncrypted && shouldEncrypt) {
-
-    Object.assign(
-        pasteData,
-        await encryptPasteData(
-            pasteData,
-            existingPEK
-        )
-    );
-
-    pasteData.e2ee = true;
-
-}
-
-else if (wasEncrypted && !shouldEncrypt) {
-
-    pasteData.e2ee = false;
-
-}
-
-else {
-
-    pasteData.e2ee = false;
-
-}
-}
-  
-if (passwordEnabled) {
-
-  // enabled but empty
-  if (passwordValue === "") {
-
-    pasteData.password = null;
-
-  } else {
-
-    // enabled with password
-    pasteData.password = passwordValue;
-
-  }
-
-} else {
-
-  
-  pasteData.password = null;
-
-}
 
   
 
-  const sfv = document.getElementById("saveVersion")?.checked || false;
+async function editPaste(editId, pasteData){
 
-  createBtn.disabled = true;
-  
-  createBtn.innerHTML = `<div class="spinner"></div> Saving Changes...`;
+  const response = await fetch(
+    `${API_URL}/paste/${editId}`,
+    {
+      method: "PUT",
+      credentials: "include",
 
-    createBtn.innerHTML = `<div class="spinner"></div> Creating Paste...`;
+      headers: {
+        "Content-Type": "application/json"
+      },
 
-try {
-  
-  
-
-  let response;
-
-
-    if (sfv) {
-        response = await saveVersion(editId, pasteData);
-    } else {
-        response = await editPaste(editId, pasteData);
-    
-}
-    
-
-  
-
-  const data = await response.json()
-
-if (response.ok) {
-  
-    const pasteId =
-        data.custom_id || data._id || editId;
-
-    const pasteUrl =
-        `https://pastedb.netlify.app/paste/${pasteId}`;
-
-    const pasteLinkBox =
-        document.getElementById("pasteLinkBox");
-
-    const pasteLink =
-        document.getElementById("pasteLink");
-
-    pasteLink.href = pasteUrl;
-    pasteLink.textContent = pasteUrl;
-
-    // Remove old share link if it exists
-    document.getElementById("shareLinkContainer")?.remove();
-
-    // Show share link for unlisted pastes
-    if (visibility === "unlisted" && sharePEK) {
-
-        const shareUrl =
-            `${pasteUrl}#${encodeURIComponent(sharePEK)}`;
-
-        const div = document.createElement("div");
-        div.id = "shareLinkContainer";
-        div.style.marginTop = "18px";
-
-        div.innerHTML = `
-            <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">
-                Share this link with others
-            </p>
-
-            <a
-                href="${shareUrl}"
-                target="_blank"
-                style="
-                    color:var(--text);
-                    text-decoration:none;
-                    font-weight:600;
-                    word-break:break-all;
-                "
-            >${shareUrl}</a>
-        `;
-
-        pasteLinkBox.appendChild(div);
+      body: JSON.stringify(pasteData)
     }
+  )
 
-    pasteLinkBox.style.display = "block";
-
-document.getElementById("pasteQRContainer")?.remove();
-
-const qrDiv = document.createElement("div");
-let qrUrl = pasteUrl;
-
-if (visibility === "unlisted" && sharePEK) {
-    qrUrl = `${pasteUrl}#${encodeURIComponent(sharePEK)}`;
+  return response
       }
-qrDiv.id = "pasteQRContainer";
-qrDiv.style.marginTop = "16px";
+  createBtn.addEventListener("click", async () => {
 
-qrDiv.innerHTML = `
-<button
-    class="qr-btn"
-    onclick="createQR('${qrUrl}','pasteQR')">
-    Show QR
-</button>
-
-<button
-    class="qr-btn"
-    id="copyUrlBtn"
-    onclick="copyPasteUrl('${qrUrl}')">
-
-<svg id="copyUrlIcon" xmlns="http://www.w3.org/2000/svg"
-width="18" height="18" viewBox="0 0 24 24"
-fill="none" stroke="currentColor" stroke-width="2"
-stroke-linecap="round" stroke-linejoin="round">
-  <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-</svg>
-
-</button>
-
-<div
-    id="pasteQR"
-    style="
-        display:none;
-        margin-top:15px;
-        text-align:center;
-    ">
-</div>
-`;
-
-pasteLinkBox.appendChild(qrDiv);
+    // Only host can save
+    if (window.guestRole !== "host") {
+        alert("Only the host can save changes.");
+        return;
     }
-  else{
 
-    alert(data.detail || "Something went wrong")
+    const editId = window.customId;
 
-  }
+    if (!editId) {
+        alert("Paste ID is not available.");
+        return;
+    }
 
-}
+    const savePreviousVersion =
+        document.getElementById("saveVersion")?.checked || false;
 
-catch(error){
+    // Get the CURRENT collaborative content
+    const content = window.ytext.toString();
 
-  alert(error)
+    // Start with the original paste information
+    const original = window.currentPaste || {};
 
-  alert("Could not connect to the server.")
+    const pasteData = {
+        title: original.title || "Untitled Paste",
 
-}
+        content: content,
 
-finally{
+        syntax: original.syntax || "text",
 
-  createBtn.disabled = false
+        expiration: original.expiration || null,
 
-  createBtn.innerHTML =
-    `<span id="btnText">Save Changes</span>`
+        visibility: original.visibility || "public",
 
-}
-    })
+        e2ee: original.e2ee || false,
+
+        images: original.images || []
+    };
+
+    createBtn.disabled = true;
+
+    createBtn.innerHTML =
+        `<div class="spinner"></div> Saving Changes...`;
+
+    try {
+
+        let response;
+
+        if (savePreviousVersion) {
+
+            // Save this as a new version
+            response = await saveVersion(
+                editId,
+                pasteData
+            );
+
+        } else {
+
+            // Normal update
+            response = await editPaste(
+                editId,
+                pasteData
+            );
+
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail ||
+                data.message ||
+                "Failed to save changes."
+            );
+        }
+
+        // Update our local copy
+        window.currentPaste = {
+            ...window.currentPaste,
+            ...pasteData
+        };
+
+        // Success UI
+        createBtn.innerHTML =
+            savePreviousVersion
+                ? "✓ Version Saved"
+                : "✓ Changes Saved";
+
+        // Optional: uncheck after saving a version
+        if (savePreviousVersion) {
+            document.getElementById("saveVersion").checked = false;
+        }
+
+        setTimeout(() => {
+
+            createBtn.innerHTML =
+                `<span id="btnText">Save Changes</span>`;
+
+        }, 1500);
+
+    } catch (error) {
+
+        console.error("Save error:", error);
+
+        alert(
+            error.message ||
+            "Could not save changes."
+        );
+
+        createBtn.innerHTML =
+            `<span id="btnText">Save Changes</span>`;
+
+    } finally {
+
+        createBtn.disabled = false;
+
+    }
+
+});
   </script>
 </body>
   </html>
