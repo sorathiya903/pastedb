@@ -2099,53 +2099,47 @@ connectWebSocket(role);
 <script>
 async function startHost(customId) {
 
-
-    // Mark this browser as the host
     window.guestRole = "host";
     window.customId = customId;
 
-    const res = await fetch(
-        `${API_URL}/p/${customId}`
-    );
-    const paste = await res.json();
+    try {
+        const res = await fetch(
+            `${API_URL}/p/${customId}`
+        );
 
+        if (!res.ok) {
+            throw new Error(`Failed to load paste: ${res.status}`);
+        }
 
-    // Put initial content into Yjs
-    if (
-        window.ytext.length === 0 &&
-        paste.content
-    ) {
+        const paste = await res.json();
 
-        window.ydoc.transact(() => {
+        // IMPORTANT
+        window.currentPaste = paste;
 
-            window.ytext.insert(
-                0,
-                paste.content
-            );
+        if (
+            window.ytext.length === 0 &&
+            paste.content
+        ) {
+            window.ydoc.transact(() => {
+                window.ytext.insert(0, paste.content);
+            });
+        }
 
-        });
-
+    } catch (error) {
+        console.error("Failed to load paste:", error);
+        alert(error.message);
+        return;
     }
 
-
-    document.getElementById(
-        "joinScreen"
-    ).style.display = "none";
-
-
-    document.getElementById(
-        "waitingScreen"
-    ).style.display = "none";
-
-
-    document.querySelector(
-        "main"
-    ).style.display = "block";
-
+    document.getElementById("joinScreen").style.display = "none";
+    document.getElementById("waitingScreen").style.display = "none";
+    document.querySelector("main").style.display = "block";
 
     connectWebSocket("host");
+}
 
-  }
+
+    
 let user = null;
 
 window.addEventListener("load", async () => {
@@ -2215,47 +2209,49 @@ sV.addEventListener("change", () => {
 });
   
     async function saveVersion(editId, pasteData) {
+async function saveVersion(editId, pasteData) {
 
-  const response = await fetch(
-    `${API_URL}/paste/${editId}/save-version`,
-    {
-      method: "POST",
-      credentials: "include",
+    const url = `${API_URL}/paste/${editId}/save-version`;
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+    console.log("VERSION URL:", url);
+    console.log("VERSION DATA:", pasteData);
 
-      body: JSON.stringify(pasteData)
-    }
-  );
+    const response = await fetch(url, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pasteData)
+    });
 
-  return response;
-                             }
+    console.log("VERSION STATUS:", response.status);
+
+    return response;
+  }
+      async function editPaste(editId, pasteData) {
+
+    const url = `${API_URL}/paste/${editId}`;
+
+    console.log("EDIT URL:", url);
+    console.log("EDIT DATA:", pasteData);
+    console.log("API_URL:", API_URL);
+
+    const response = await fetch(url, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pasteData)
+    });
+
+    console.log("EDIT STATUS:", response.status);
+
+    return response;
+  }
+
   
-    
-
-
-  
-
-async function editPaste(editId, pasteData){
-
-  const response = await fetch(
-    `${API_URL}/paste/${editId}`,
-    {
-      method: "PUT",
-      credentials: "include",
-
-      headers: {
-        "Content-Type": "application/json"
-      },
-
-      body: JSON.stringify(pasteData)
-    }
-  )
-
-  return response
-      }
   createBtn.addEventListener("click", async () => {
 
     // Only host can save
