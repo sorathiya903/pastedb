@@ -1457,7 +1457,37 @@ background:#3b82f6;
           
 
       </div>
+                    <div class="option-row" style="display:none;" id="saveVersionRow">
+    <label class="checkbox-label">
+        <input type="checkbox" id="saveVersion">
+        <span>Save Previous Version</span>
+    </label>
+</div>
+
+<div class="version-card-wrap" style="display:none;" id="versionCardWrap">
+    <div class="version-info-card">
+        <div class="version-title">
+            Version Information
+        </div>
+
+        <div class="version-line">
+            <span>Editing</span>
+            <strong id="editingVersion">-</strong>
+        </div>
+
+        <div class="version-line">
+            <span>After saving</span>
+            <strong id="newVersion">-</strong>
+        </div>
+
+        <div class="version-line warning">
+            <span>Oldest deleted</span>
+            <strong id="deletedVersion">None</strong>
+        </div>
+    </div>
+</div>
       </div>
+      
 
         <!--     <button data-ga-event="paste_created" class="create-btn" id="createBtn">
 
@@ -2176,6 +2206,13 @@ function toggleTheme(){
             : "light"
     );
 }
+
+      const sV = document.getElementById("saveVersion");
+const versionCardWrap = document.getElementById("versionCardWrap");
+
+sV.addEventListener("change", () => {
+    versionCardWrap.classList.toggle("show", sV.checked);
+});
   </script>
 </body>
   </html>
