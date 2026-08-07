@@ -1619,9 +1619,14 @@ def save_version(
     data: dict,
     user=Depends(get_current_user)
 ):
-    paste = pastes_collection.find_one({
-        "_id": ObjectId(paste_id)
-    })
+    paste = None
+
+    if ObjectId.is_valid(paste_id):
+        paste = pastes_collection.find_one({    "_id": ObjectId(paste_id)   })
+
+    if not paste:
+        paste = pastes_collection.find_one({  "custom_id": paste_id  })
+
 
     if not paste:
         raise HTTPException(404, "Paste not found")
@@ -1638,7 +1643,7 @@ def save_version(
 
     # Save the CURRENT paste as a historical version
     version_doc = {
-        "paste_id": ObjectId(paste_id),
+        "paste_id": paste["_id"],
         "version": current_version,
         "created_at": datetime.now(timezone.utc),
 
