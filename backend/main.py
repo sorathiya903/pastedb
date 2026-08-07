@@ -1664,12 +1664,12 @@ def save_version(
 
     # Keep only the latest 10 historical versions
     count = versions_collection.count_documents({
-        "paste_id": ObjectId(paste_id)
+        "paste_id": paste["_id"]
     })
 
     if count > 9:
         oldest = versions_collection.find_one(
-            {"paste_id": ObjectId(paste_id)},
+            {"paste_id": paste["_id"]},
             sort=[("version", 1)]
         )
 
@@ -1679,7 +1679,7 @@ def save_version(
             })
 
             pastes_collection.update_one(
-                {"_id": ObjectId(paste_id)},
+                {"_id": paste["_id"]},
                 {
                     "$pull": {
                         "versions": oldest["version"]
@@ -1692,7 +1692,7 @@ def save_version(
     update_data["updated_at"] = datetime.now(timezone.utc)
 
     result = pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
+        {"_id": paste["_id"]},
         {
             "$set": update_data,
             "$push": {
