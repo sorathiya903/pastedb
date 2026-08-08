@@ -22,7 +22,67 @@ pastes_collection = db["pastes"]
 users_collection = db["users"]
 api_keys_collection = db["api_keys"]
 versions_collection = db["pasteVersions"]
+async def broadcast_members(invite_token):
 
+    collab = collab_collection.find_one({
+        "invite_token": invite_token
+    })
+
+    if not collab:
+        return
+
+    members = collab.get("members", [])
+
+    # ------------------------------------------------
+    # HOST
+    # ------------------------------------------------
+
+    host_ws = HOSTS.get(invite_token)
+
+    if host_ws:
+
+        try:
+
+            await host_ws.send_json({
+                "type": "participants",
+                "users": members
+            })
+
+        except Exception as e:
+
+            print(
+                "Failed to send members to host:",
+                e
+            )
+
+    # ------------------------------------------------
+    # GUESTS
+    # ------------------------------------------------
+
+    guests = GUESTS.get(
+        invite_token,
+        {}
+    )
+
+    for gid, guest in list(guests.items()):
+
+        if not guest.get("approved", False):
+            continue
+
+        try:
+
+            await guest["websocket"].send_json({
+                "type": "participants",
+                "users": members
+            })
+
+        except Exception as e:
+
+            print(
+                "Failed to send members to guest:",
+                gid,
+                e
+        )
 
 @router.post("/collab/create/{paste_id}")
 async def create_collaboration(
@@ -124,18 +184,37 @@ async def collab_ws(
                 # -------------------------------------------------
 
                 if role == "host":
-
                     HOSTS[invite_token] = websocket
+                    print(  "Host connected:",  invite_token  )
 
-                    print(
-                        "Host connected:",
-                        invite_token
-                    )
+                    collab = collab_collection.find_one({    "invite_token": invite_token   })
+                    host_name = "Host"
+                    if collab:
+                        host_email = collab.get("owner")
+                        host_user = users_collection.find_one({  "email": host_email     })
+                        
+                        if host_user:
+                            host_name = (
+                                host_user.get("name")
+                                or host_user.get("email", "Host").split("@")[0]     )
+                            members = collab.get("members", [])
+                            host_exists = any(     m.get("guest_id") == "host"  for m in members    )
+                            
+                            if not host_exists:
+                                
+                                collab_collection.update_one(     {
+                                  "invite_token": invite_token
+                                       },
+                                {
+                                  "$push": {
+                                  "members": {
+                                      "guest_id": "host",
+                                   "name": host_name,
+                                   "role": "host"      }    }      }    )
+                                
+            await websocket.send_json({     "type": "connected",     "role": "host"    })
 
-                    await websocket.send_json({
-                        "type": "connected",
-                        "role": "host"
-                    })
+            await broadcast_members(invite_token)
 
                 # -------------------------------------------------
                 # GUEST
