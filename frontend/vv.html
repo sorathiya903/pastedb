@@ -155,10 +155,23 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
     if (typeof value === "number") {
         // Unix timestamp in seconds
         date = new Date(value * 1000);
-    } else if (typeof value === "string") {
-        // ISO string
-        date = new Date(value);
-    } else {
+    } 
+    else if (typeof value === "string") {
+        let utcValue = value;
+
+        // Backend sends UTC ISO timestamps without Z
+        // Example: 2026-08-08T05:58:56.560000
+        if (
+            !utcValue.endsWith("Z") &&
+            !utcValue.includes("+") &&
+            !utcValue.includes("-", 10)
+        ) {
+            utcValue += "Z";
+        }
+
+        date = new Date(utcValue);
+    } 
+    else {
         return "Unknown date";
     }
 
@@ -167,10 +180,12 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
     }
 
     return date.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
         month: "short",
         day: "numeric",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        hour12: true
     });
     }
 
