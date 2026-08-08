@@ -37,7 +37,7 @@ debug
     padding: 16px 24px;
 }
 
-.version-card-wrap.show {
+.version-card-wrap.show {    
     display: block;
 }
 
@@ -1991,6 +1991,39 @@ async function joinApproved(
     function joinRejected(){
     console.log("You are rejected")
   }
+  function updateParticipants(users) {
+
+    const container =
+        document.querySelector(".collab-users");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    users.forEach(user => {
+
+        const avatar =
+            document.createElement("div");
+
+        avatar.className =
+            "user-avatar";
+
+        if (user.role === "host") {
+            avatar.classList.add("owner");
+        }
+
+        const name =
+            user.name || "Guest";
+
+        avatar.textContent =
+            name.charAt(0).toUpperCase();
+
+        avatar.title =
+            `${name} • ${user.role}`;
+
+        container.appendChild(avatar);
+    });
+      }
     
 function connectWebSocket(role, n) {
 
@@ -2003,11 +2036,14 @@ window.ws = ws;
     ws.onopen = () => {
     console.log("Connected");
 
-    ws.send(JSON.stringify({
-        type: "connect",
-        role: role
+    
+      ws.send(JSON.stringify({
+    type: "connect",
+    role: role,
+    name: document.getElementById("joinName").value.trim()
+}));
         
-    }));
+  
 
     if (role !== "host") {
         ws.send(JSON.stringify({
@@ -2022,6 +2058,12 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
+      if (data.type === "participants") {
+
+    updateParticipants(data.users);
+
+    return;
+  }
 if (data.type === "sync_request") {
 
     if (window.guestRole === "host") {
