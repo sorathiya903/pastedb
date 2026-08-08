@@ -2271,9 +2271,7 @@ window.addEventListener("load", async () => {
         document.getElementById("joinScreen").style.display = "none";
         document.getElementById("waitingScreen").style.display = "none";
         document.querySelector("main").style.display = "block";
-      document.getElementById("saveVersion").style.display="none";
- document.getElementById("versionCardWrap").style.display="none"
-
+      
         startHost(collab.paste_id);  
         return;
     }
@@ -2287,6 +2285,11 @@ window.addEventListener("load", async () => {
     // Show join screen for guests
     document.getElementById("joinScreen").style.display = "flex";
     document.querySelector("main").style.display = "none";
+  document.getElementById("saveVersion").style.display="none";
+ document.getElementById("versionCardWrap").style.display="none"
+document.getElementById("saveVersionRow").style.display="none";
+ 
+
 });
 function toggleTheme(){
 
