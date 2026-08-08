@@ -22,8 +22,9 @@ pastes_collection = db["pastes"]
 users_collection = db["users"]
 api_keys_collection = db["api_keys"]
 versions_collection = db["pasteVersions"]
-async def broadcast_members(invite_token):
 
+
+async def broadcast_members(invite_token):
     collab = collab_collection.find_one({
         "invite_token": invite_token
     })
@@ -33,36 +34,20 @@ async def broadcast_members(invite_token):
 
     members = collab.get("members", [])
 
-    # ------------------------------------------------
-    # HOST
-    # ------------------------------------------------
-
+    # Send to host
     host_ws = HOSTS.get(invite_token)
 
     if host_ws:
-
         try:
-
             await host_ws.send_json({
                 "type": "participants",
                 "users": members
             })
-
         except Exception as e:
+            print("Failed to send members to host:", e)
 
-            print(
-                "Failed to send members to host:",
-                e
-            )
-
-    # ------------------------------------------------
-    # GUESTS
-    # ------------------------------------------------
-
-    guests = GUESTS.get(
-        invite_token,
-        {}
-    )
+    # Send to approved guests
+    guests = GUESTS.get(invite_token, {})
 
     for gid, guest in list(guests.items()):
 
@@ -70,19 +55,16 @@ async def broadcast_members(invite_token):
             continue
 
         try:
-
             await guest["websocket"].send_json({
                 "type": "participants",
                 "users": members
             })
-
         except Exception as e:
-
             print(
                 "Failed to send members to guest:",
                 gid,
                 e
-        )
+            )
 
 @router.post("/collab/create/{paste_id}")
 async def create_collaboration(
@@ -315,10 +297,11 @@ async def collab_ws(
             # JOIN REQUEST
             # =====================================================
 
-            elif message_type == "join_request":
-            	host_ws = HOSTS.get(invite_token)
-
- 			   if not host_ws or not guest_id:
+			elif message_type == "join_request":
+			
+			    host_ws = HOSTS.get(invite_token)
+			
+			    if not host_ws or not guest_id:
 			        continue
 			
 			    guest = GUESTS.get(
@@ -329,120 +312,118 @@ async def collab_ws(
 			    if not guest:
 			        continue
 			
-			    # Get the actual name and role sent by the guest
-			    name = (data.get("name") or "").strip()
-			    requested_role = data.get("role") or guest.get("role")
+			    # Get name sent by guest
+			    name = (
+			        data.get("name") or ""
+			    ).strip()
+			
+			    requested_role = (
+			        data.get("role")
+			        or guest.get("role")
+			        or "viewer"
+			    )
 			
 			    if not name:
 			        name = "Guest"
 			
-			    # Update the temporary guest record
+			    # Update temporary guest information
 			    guest["name"] = name
 			    guest["role"] = requested_role
 			
+			    print(
+			        "Join request:",
+			        name,
+			        requested_role,
+			        guest_id
+			    )
+			
+			    # Send request to host
 			    await host_ws.send_json({
-			
 			        "type": "join_request",
-			
 			        "guest_id": guest_id,
-			
 			        "name": name,
-			
 			        "role": requested_role
 			    })
-			
 
             # =====================================================
             # APPROVE
             # =====================================================
-
-            elif message_type == "join_approved":
-
-                # Only HOST is allowed to approve.
-                if role != "host":
-                    continue
-
-                target_guest_id = data.get(
-                    "guest_id"
-                )
-
-                guest = GUESTS.get(
-                    invite_token,
-                    {}
-                ).get(target_guest_id)
-
-                if not guest:
-                    continue
-
-                collab = collab_collection.find_one({
-
-                    "invite_token":
-                        invite_token
-                })
-
-                if not collab:
-                    continue
-
-                custom_id = collab["paste_id"]
-
-                guest["approved"] = True
-
-				member = {
-				    "guest_id": target_guest_id,
-				    "name": guest.get("name", "Guest"),
-				    "role": guest.get("role", "viewer")
-				}
-				
-				# Remove an old entry if it somehow exists
-				collab_collection.update_one(
-				    {
-				        "invite_token": invite_token
-				    },
-				    {
-				        "$pull": {
-				            "members": {
-				                "guest_id": target_guest_id
-				            }
-				        }
-				    }
-				)
-				
-				# Add approved member
-				collab_collection.update_one(
-				    {
-				        "invite_token": invite_token
-				    },
-				    {
-				        "$push": {
-				            "members": member
-				        }
-				    }
-				)
-				
-				await guest["websocket"].send_json({
-				
-				    "type": "join_approved",
-				
-				    "guest_id": target_guest_id,
-				
-				    "role": guest["role"],
-				
-				    "custom_id": custom_id
-				})
-				
-				print(
-				    "Guest approved:",
-				    target_guest_id,
-				    member
-				)
-				
-# Send updated list to EVERYONE
-await broadcast_members(invite_token)
-
-                print(
-                    "Guest approved:",
-                    target_guest_id
-                )
+			elif message_type == "join_approved":
+			
+			    # Only host can approve
+			    if role != "host":
+			        continue
+			
+			    target_guest_id = data.get("guest_id")
+			
+			    guest = GUESTS.get(
+			        invite_token,
+			        {}
+			    ).get(target_guest_id)
+			
+			    if not guest:
+			        continue
+			
+			    collab = collab_collection.find_one({
+			        "invite_token": invite_token
+			    })
+			
+			    if not collab:
+			        continue
+			
+			    custom_id = collab["paste_id"]
+			
+			    # Mark guest approved
+			    guest["approved"] = True
+			
+			    member = {
+			        "guest_id": target_guest_id,
+			        "name": guest.get("name", "Guest"),
+			        "role": guest.get("role", "viewer")
+			    }
+			
+			    # Remove existing member entry if present
+			    collab_collection.update_one(
+			        {
+			            "invite_token": invite_token
+			        },
+			        {
+			            "$pull": {
+			                "members": {
+			                    "guest_id": target_guest_id
+			                }
+			            }
+			        }
+			    )
+			
+			    # Add approved member
+			    collab_collection.update_one(
+			        {
+			            "invite_token": invite_token
+			        },
+			        {
+			            "$push": {
+			                "members": member
+			            }
+			        }
+			    )
+			
+			    # Tell guest they are approved
+			    await guest["websocket"].send_json({
+			        "type": "join_approved",
+			        "guest_id": target_guest_id,
+			        "role": guest["role"],
+			        "custom_id": custom_id
+			    })
+			
+			    print(
+			        "Guest approved:",
+			        target_guest_id,
+			        member
+			    )
+			
+			    # Send updated participant list to everyone
+			    await broadcast_members(invite_token)
 
 
             # =====================================================
