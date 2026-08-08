@@ -2173,7 +2173,7 @@ async function startHost(customId) {
     document.getElementById("versionCardWrap");
 
 const current =
-    data.current_version || 1;
+    res.current_version || 1;
 
 document.getElementById("editingVersion").textContent =
     `v${current} (Current)`;
