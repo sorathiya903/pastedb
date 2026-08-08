@@ -175,90 +175,118 @@ async def collab_ws(
             # CONNECT
             # =====================================================
 
-            if message_type == "connect":
-
-                role = data.get("role")
-
-                # -------------------------------------------------
-                # HOST
-                # -------------------------------------------------
-
-                if role == "host":
-                    HOSTS[invite_token] = websocket
-                    print(  "Host connected:",  invite_token  )
-
-                    collab = collab_collection.find_one({    "invite_token": invite_token   })
-                    host_name = "Host"
-                    if collab:
-                        host_email = collab.get("owner")
-                        host_user = users_collection.find_one({  "email": host_email     })
-                        
-                        if host_user:
-                            host_name = (
-                                host_user.get("name")
-                                or host_user.get("email", "Host").split("@")[0]     )
-                            members = collab.get("members", [])
-                            host_exists = any(     m.get("guest_id") == "host"  for m in members    )
-                            
-                            if not host_exists:
-                                
-                                collab_collection.update_one(     {
-                                  "invite_token": invite_token
-                                       },
-                                {
-                                  "$push": {
-                                  "members": {
-                                      "guest_id": "host",
-                                   "name": host_name,
-                                   "role": "host"      }    }      }    )
-                                
-            await websocket.send_json({     "type": "connected",     "role": "host"    })
-
-            await broadcast_members(invite_token)
-
-                # -------------------------------------------------
-                # GUEST
-                # -------------------------------------------------
-
-                else:
-
-                    guest_id = str(uuid4())
-
-                    GUESTS.setdefault(
-                        invite_token,
-                        {}
-                    )
-
-                    GUESTS[invite_token][guest_id] = {
-
-                        "websocket": websocket,
-
-                        "name": data.get(
-                            "name",
-                            "Guest"
-                        ),
-
-                        "role": role,
-
-                        "approved": False
-                    }
-
-                    print(
-                        "Guest connected:",
-                        guest_id,
-                        data.get("name")
-                    )
-
-                    await websocket.send_json({
-
-                        "type": "connected",
-
-                        "role": role,
-
-                        "guest_id": guest_id
-                    })
-
-
+			if message_type == "connect":
+			
+			    role = data.get("role")
+			
+			    # =================================================
+			    # HOST
+			    # =================================================
+			
+			    if role == "host":
+			
+			        HOSTS[invite_token] = websocket
+			
+			        print(
+			            "Host connected:",
+			            invite_token
+			        )
+			
+			        collab = collab_collection.find_one({
+			            "invite_token": invite_token
+			        })
+			
+			        host_name = "Host"
+			
+			        if collab:
+			
+			            host_email = collab.get("owner")
+			
+			            host_user = users_collection.find_one({
+			                "email": host_email
+			            })
+			
+			            if host_user:
+			
+			                host_name = (
+			                    host_user.get("name")
+			                    or host_user.get(
+			                        "email",
+			                        "Host"
+			                    ).split("@")[0]
+			                )
+			
+			            # Check whether host already exists
+			            members = collab.get("members", [])
+			
+			            host_exists = any(
+			                m.get("guest_id") == "host"
+			                for m in members
+			            )
+			
+			            if not host_exists:
+			
+			                collab_collection.update_one(
+			                    {
+			                        "invite_token": invite_token
+			                    },
+			                    {
+			                        "$push": {
+			                            "members": {
+			                                "guest_id": "host",
+			                                "name": host_name,
+			                                "role": "host"
+			                            }
+			                        }
+			                    }
+			                )
+			
+			        await websocket.send_json({
+			            "type": "connected",
+			            "role": "host"
+			        })
+			
+			        await broadcast_members(invite_token)
+			
+			    # =================================================
+			    # GUEST
+			    # =================================================
+			
+			    else:
+			
+			        guest_id = str(uuid4())
+			
+			        GUESTS.setdefault(
+			            invite_token,
+			            {}
+			        )
+			
+			        GUESTS[invite_token][guest_id] = {
+			
+			            "websocket": websocket,
+			
+			            "name": data.get(
+			                "name",
+			                "Guest"
+			            ),
+			
+			            "role": role,
+			
+			            "approved": False
+			        }
+			
+			        print(
+			            "Guest connected:",
+			            guest_id,
+			            data.get("name")
+			        )
+			
+			        await websocket.send_json({
+			            "type": "connected",
+			            "role": role,
+			            "guest_id": guest_id
+			        })
+			
             # =====================================================
             # REQUEST FULL SYNC
             # =====================================================
@@ -714,4 +742,4 @@ await broadcast_members(invite_token)
                 GUESTS.pop(
                     invite_token,
                     None
-    )
+			)
