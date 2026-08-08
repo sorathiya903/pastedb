@@ -1906,6 +1906,33 @@ window.ws = null;
 
     document.getElementById("joinRequestBox").style.display = "block";
     }
+  function setHostControls(isHost) {
+
+    const saveBtn = document.getElementById("createBtn");
+    const saveVersionRow = document.getElementById("saveVersionRow");
+    const versionCard = document.getElementById("versionCardWrap");
+
+    if (isHost) {
+
+        // Host can save
+        saveBtn.style.display = "flex";
+        saveVersionRow.style.display = "block";
+
+    } else {
+
+        // Guests cannot save
+        saveBtn.style.display = "none";
+        saveVersionRow.style.display = "none";
+        versionCard.style.display = "none";
+
+        // Also make sure checkbox cannot remain active
+        const checkbox = document.getElementById("saveVersion");
+
+        if (checkbox) {
+            checkbox.checked = false;
+        }
+    }
+  }
 
 async function joinApproved(
     guestId,
@@ -1920,6 +1947,7 @@ async function joinApproved(
     window.customId = customId;
 
 
+    setHostControls(false);
     document.getElementById(
         "waitingScreen"
     ).style.display = "none";
@@ -2157,6 +2185,8 @@ async function startHost(customId) {
 
     window.guestRole = "host";
     window.customId = customId;
+  
+    setHostControls(true);
 
     try {
         const res = await fetch(
