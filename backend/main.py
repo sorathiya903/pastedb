@@ -1361,7 +1361,7 @@ def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
             update_data["password"] = hash_password(data["password"])
 
     result = pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
+        {"_id": paste["_id"]},
         {"$set": update_data}
     )
 
