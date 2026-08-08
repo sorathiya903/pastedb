@@ -1645,7 +1645,7 @@ def save_version(
     version_doc = {
         "paste_id": paste["_id"],
         "version": current_version,
-        "created_at": datetime.now(timezone.utc),
+        "created_at": paste.get("updated_at") or paste.get("created_at"),
 
         "title": paste.get("title"),
         "content": paste.get("content"),
