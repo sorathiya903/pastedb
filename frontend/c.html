@@ -1667,7 +1667,8 @@ import {
 
 import {
     EditorState,
-    StateEffect
+    StateEffect,
+  Compartment
 } from "https://esm.sh/@codemirror/state";
     
 import {
@@ -1695,7 +1696,7 @@ let applyingRemoteUpdate = false;
 // =====================================================
 // CODEMIRROR
 // =====================================================
-
+const editableCompartment = new Compartment();
 const editor = new EditorView({
 
     state: EditorState.create({
@@ -1708,70 +1709,73 @@ const editor = new EditorView({
 
             javascript(),
 
-            
-EditorView.updateListener.of(update => {
+            editableCompartment.of(
+                EditorView.editable.of(true)
+            ),
 
-    if (!update.docChanged) {
-        return;
-    }
+            EditorView.updateListener.of(update => {
 
-    // Ignore CodeMirror changes that are caused
-    // by Yjs updating the editor.
-  if (update.transactions.some(tr =>
-    tr.effects.some(effect => effect.is(CollabRemote))
-)) {
-    return;
-  }
+                if (!update.docChanged) {
+                    return;
+                }
 
-    const changes = [];
+                if (update.transactions.some(tr =>
+                    tr.effects.some(effect =>
+                        effect.is(CollabRemote)
+                    )
+                )) {
+                    return;
+                }
 
-    update.changes.iterChanges(
-        (
-            fromA,
-            toA,
-            fromB,
-            toB,
-            inserted
-        ) => {
+                const changes = [];
 
-            changes.push({
-                from: fromA,
-                to: toA,
-                text: inserted.toString()
-            });
+                update.changes.iterChanges(
+                    (
+                        fromA,
+                        toA,
+                        fromB,
+                        toB,
+                        inserted
+                    ) => {
 
-        }
-    );
+                        changes.push({
+                            from: fromA,
+                            to: toA,
+                            text: inserted.toString()
+                        });
 
-    changes.reverse();
-
-    ydoc.transact(() => {
-
-        for (const change of changes) {
-
-            if (change.to > change.from) {
-
-                ytext.delete(
-                    change.from,
-                    change.to - change.from
+                    }
                 );
 
-            }
+                changes.reverse();
 
-            if (change.text.length) {
+                ydoc.transact(() => {
 
-                ytext.insert(
-                    change.from,
-                    change.text
-                );
+                    for (const change of changes) {
 
-            }
+                        if (change.to > change.from) {
 
-        }
+                            ytext.delete(
+                                change.from,
+                                change.to - change.from
+                            );
 
-    }, "codemirror");
+                        }
 
-})
+                        if (change.text.length) {
+
+                            ytext.insert(
+                                change.from,
+                                change.text
+                            );
+
+                        }
+
+                    }
+
+                }, "codemirror");
+
+            })
 
         ]
 
@@ -1783,7 +1787,20 @@ EditorView.updateListener.of(update => {
 
 window.codeEditor = editor;
 
+window.setEditorEditable = function(editable) {
 
+    if (!window.codeEditor) {
+        console.error("CodeMirror editor not initialized");
+        return;
+    }
+
+    window.codeEditor.dispatch({
+        effects: editableCompartment.reconfigure(
+            EditorView.editable.of(editable)
+        )
+    });
+
+};
 // =====================================================
 // YJS → CODEMIRROR
 // =====================================================
@@ -1966,15 +1983,14 @@ async function joinApproved(
 
   if (role === "viewer") {
 
-    window.codeEditor.dispatch({
-        effects: EditorView.editable.of(false)
-    });
+    window.setEditorEditable(false);
+
+} else if (role === "editor") {
+
+    window.setEditorEditable(true);
 
   }
 
-
-
-      // Ask the host for the complete current document.
     if (
         window.ws &&
         window.ws.readyState === WebSocket.OPEN
@@ -2228,6 +2244,7 @@ async function startHost(customId) {
 
     window.guestRole = "host";
     window.customId = customId;
+  window.setEditorEditable(true);
   
     setHostControls(true);
 
