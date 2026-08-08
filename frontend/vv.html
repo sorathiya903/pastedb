@@ -147,6 +147,32 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
 </div>
 
 <script>
+    function formatVersionDate(value) {
+    if (!value) return "Unknown date";
+
+    let date;
+
+    if (typeof value === "number") {
+        // Unix timestamp in seconds
+        date = new Date(value * 1000);
+    } else if (typeof value === "string") {
+        // ISO string
+        date = new Date(value);
+    } else {
+        return "Unknown date";
+    }
+
+    if (isNaN(date.getTime())) {
+        return "Unknown date";
+    }
+
+    return date.toLocaleString("en-IN", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+    }
 
 const urlParams = new URLSearchParams(window.location.search);
 const paste_id = urlParams.get('id')
@@ -173,17 +199,7 @@ async function loadVersions(){
         }
 list.innerHTML = data.versions.map(v => {
     // Append 'Z' to treat the raw string as a UTC timestamp
-    const utcDateString = v.created_at.endsWith('Z') ? v.created_at : `${v.created_at}Z`;
-    
-    const date = new Date(utcDateString).toLocaleString('en-IN', {
-        month: 'short', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'Asia/Kolkata' // Forces Indian Standard Time
-    });
-    
+    const date = formatVersionDate(v.created_at);
     return `
             <div class="version-card ${v.current ? 'current' : ''}">
                 <div class="time-label">${date}</div>
