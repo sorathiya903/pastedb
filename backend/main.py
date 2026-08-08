@@ -1267,10 +1267,14 @@ def get_versions(
 
 @app.put("/paste/{paste_id}")
 def update_paste(paste_id: str, data: dict, user=Depends(get_current_user)):
-    paste = pastes_collection.find_one({ "_id": ObjectId(paste_id)})
+    paste = None
+
+    if ObjectId.is_valid(paste_id):
+        paste = pastes_collection.find_one({    "_id": ObjectId(paste_id)   })
+
     if not paste:
-        raise HTTPException(404, "Paste not found")
-        
+        paste = pastes_collection.find_one({  "custom_id": paste_id  })
+
     email_key = user["email"].replace(".", "_")
     
     if paste.get("user_email_key") != email_key:
