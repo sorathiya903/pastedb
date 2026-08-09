@@ -32,6 +32,31 @@ debug
 <link rel="icon" type="image/png" href="/favicon.png">
 
   <style>
+    .remote-cursor {
+    position: absolute;
+    width: 2px;
+    height: 22px;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.remote-cursor-label {
+    position: absolute;
+    left: 3px;
+    top: -24px;
+
+    color: white;
+
+    padding: 4px 7px;
+    border-radius: 6px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+}
     .version-card-wrap {
     display: none;
     padding: 16px 24px;
