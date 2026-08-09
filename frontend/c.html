@@ -2262,7 +2262,7 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-      if (data.type === "presence") {
+      if (data.type === "presence_state") {
 
     const clientId =
         data.guest_id || "host";
