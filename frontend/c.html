@@ -1754,10 +1754,18 @@ const editor = new EditorView({
             update.state.selection.main.head;
 
         awareness.setLocalStateField("cursor", {
-            anchor: pos,
-            head: pos
-        });
+    anchor: pos,
+    head: pos
+});
 
+awareness.setLocalStateField("user", {
+    name:
+        document.getElementById("joinName")?.value.trim()
+        || "Host",
+
+    color:
+        getUserColor()
+});
                   }
 
                 if (update.transactions.some(tr =>
@@ -1845,7 +1853,7 @@ window.setEditorEditable = function(editable) {
 // =====================================================
 // YJS → CODEMIRROR
 // =====================================================
-awareness.on("update", ({ added, updated, removed }) => {
+awareness.on("update", () => {
 
     if (
         !window.ws ||
@@ -1854,27 +1862,27 @@ awareness.on("update", ({ added, updated, removed }) => {
         return;
     }
 
-    const states = awareness.getStates();
+    const localState =
+        awareness.getLocalState();
 
-    const users = [];
+    if (!localState) return;
 
-    states.forEach((state, clientId) => {
-
-        if (!state.user || !state.cursor)
-            return;
-
-        users.push({
-            client_id: clientId,
-            user: state.user,
-            cursor: state.cursor
-        });
-
-    });
+    if (!localState.user || !localState.cursor) {
+        return;
+    }
 
     window.ws.send(JSON.stringify({
+
         type: "presence",
-        users
+
+        presence: {
+            user: localState.user,
+            cursor: localState.cursor
+        }
+
     }));
+
+});
 
 });
 
@@ -1947,14 +1955,32 @@ ydoc.on("update", update => {
 
   
 <script>
+
+
+  function escapeHtml(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+  }
   function renderRemoteCursor(clientId, cursor, user) {
 
-    const pos = cursor.anchor;
+    if (!window.codeEditor || !cursor || !user) return;
 
-    const coords =
-        window.codeEditor.coordsAtPos(pos);
+    const pos = cursor.head ?? cursor.anchor;
+
+    const coords = window.codeEditor.coordsAtPos(pos);
 
     if (!coords) return;
+
+    const wrapper =
+        document.querySelector(".editor-wrapper");
+
+    if (!wrapper) return;
+
+    const rect = wrapper.getBoundingClientRect();
 
     let el =
         document.getElementById(
@@ -1971,29 +1997,68 @@ ydoc.on("update", update => {
         el.className =
             "remote-cursor";
 
-        document
-            .querySelector(".editor-wrapper")
-            .appendChild(el);
+        wrapper.appendChild(el);
     }
 
+    /*
+     * coordsAtPos() gives viewport coordinates.
+     * Convert them to coordinates relative
+     * to editor-wrapper.
+     */
+
     el.style.left =
-        `${coords.left}px`;
+        `${coords.left - rect.left}px`;
 
     el.style.top =
-        `${coords.top}px`;
+        `${coords.top - rect.top}px`;
 
     el.style.background =
-        user.color;
+        user.color || "#3b82f6";
 
     el.innerHTML = `
         <span
             class="remote-cursor-label"
-            style="background:${user.color}"
+            style="background:${user.color || "#3b82f6"}"
         >
-            ${escapeHtml(user.name)}
+            ${escapeHtml(user.name || "Guest")}
         </span>
     `;
-  }
+      }
+
+  
+  function getUserColor() {
+
+    const colors = [
+        "#3b82f6",
+        "#ef4444",
+        "#22c55e",
+        "#a855f7",
+        "#f97316",
+        "#06b6d4",
+        "#eab308",
+        "#ec4899"
+    ];
+
+    let color =
+        localStorage.getItem("collabCursorColor");
+
+    if (!color) {
+
+        color =
+            colors[
+                Math.floor(
+                    Math.random() * colors.length
+                )
+            ];
+
+        localStorage.setItem(
+            "collabCursorColor",
+            color
+        );
+    }
+
+    return color;
+      }
   const inviteToken = window.location.href
     .split("/c/")[1]
     .split("?")[0]
@@ -2198,6 +2263,19 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
+      if (data.type === "presence") {
+
+    const clientId =
+        data.guest_id || "host";
+
+    renderRemoteCursor(
+        clientId,
+        data.presence?.cursor,
+        data.presence?.user
+    );
+
+    return;
+      }
       if (data.type === "participants") {
 
     updateParticipants(data.users);
