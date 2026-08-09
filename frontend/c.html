@@ -1747,35 +1747,36 @@ const editor = new EditorView({
                 if (!update.docChanged) {
                     return;
                 }
-                  if (update.selectionSet || update.docChanged) {
+                      if (update.selectionSet || update.docChanged) {
 
-        const pos =
-            update.state.selection.main.head;
+        const pos = update.state.selection.main.head;
 
         awareness.setLocalStateField("cursor", {
-    anchor: pos,
-    head: pos
-});
+            anchor: update.state.selection.main.anchor,
+            head: pos
+        });
 
-const localName =
-    user?.name ||
-    document.getElementById("joinName")?.value.trim() ||
-    "Host";
+        const localName =
+            user?.name ||
+            document.getElementById("joinName")?.value.trim() ||
+            "Host";
 
-awareness.setLocalStateField("user", {
-    name: localName,
-    color: getUserColor(),
-    picture: user?.picture || null
-}); }
+        awareness.setLocalStateField("user", {
+            name: localName,
+            color: getUserColor(),
+            picture: user?.picture || null
+        });
+    }
 
-                if (update.transactions.some(tr =>
-                    tr.effects.some(effect =>
-                        effect.is(CollabRemote)
-                    )
-                )) {
-                    return;
-                }
-
+    if (
+        update.transactions.some(tr =>
+            tr.effects.some(effect =>
+                effect.is(CollabRemote)
+            )
+        )
+    ) {
+        return;
+    }
                 const changes = [];
 
                 update.changes.iterChanges(
@@ -1950,6 +1951,38 @@ ydoc.on("update", update => {
 
 });
     window.EditorView = EditorView;
+
+    const editorScroller =
+    editor.dom.querySelector(".cm-scroller");
+
+if (editorScroller) {
+
+    editorScroller.addEventListener("scroll", () => {
+
+        document
+            .querySelectorAll(".remote-cursor")
+            .forEach(el => {
+
+                const clientId =
+                    el.dataset.clientId;
+
+                const cursorData =
+                    window.remoteCursors?.[clientId];
+
+                if (!cursorData) return;
+
+                renderRemoteCursor(
+                    clientId,
+                    cursorData.cursor,
+                    cursorData.user
+                );
+
+            });
+
+    });
+}
+
+                  
                           </script>
 
   
@@ -1964,22 +1997,35 @@ ydoc.on("update", update => {
 
     return div.innerHTML;
   }
+  window.remoteCursors = {};
+
   function renderRemoteCursor(clientId, cursor, user) {
 
-    if (!window.codeEditor || !cursor || !user) return;
+    if (!window.codeEditor || !cursor || !user) {
+        return;
+    }
 
     const pos = cursor.head ?? cursor.anchor;
 
-    const coords = window.codeEditor.coordsAtPos(pos);
+    const coords =
+        window.codeEditor.coordsAtPos(pos);
 
-    if (!coords) return;
+    if (!coords) {
+        return;
+    }
 
     const wrapper =
         document.querySelector(".editor-wrapper");
 
-    if (!wrapper) return;
+    if (!wrapper) {
+        return;
+    }
 
-    const rect = wrapper.getBoundingClientRect();
+    // Save latest position
+    window.remoteCursors[clientId] = {
+        cursor,
+        user
+    };
 
     let el =
         document.getElementById(
@@ -1996,14 +2042,13 @@ ydoc.on("update", update => {
         el.className =
             "remote-cursor";
 
+        el.dataset.clientId = clientId;
+
         wrapper.appendChild(el);
     }
 
-    /*
-     * coordsAtPos() gives viewport coordinates.
-     * Convert them to coordinates relative
-     * to editor-wrapper.
-     */
+    const rect =
+        wrapper.getBoundingClientRect();
 
     el.style.left =
         `${coords.left - rect.left}px`;
@@ -2022,8 +2067,8 @@ ydoc.on("update", update => {
             ${escapeHtml(user.name || "Guest")}
         </span>
     `;
-      }
-
+  }
+      
   
   function getUserColor() {
 
@@ -2228,6 +2273,30 @@ async function joinApproved(
         container.appendChild(avatar);
     });
       }
+
+  function updateLocalPresence() {
+
+    if (!window.codeEditor) return;
+
+    const pos =
+        window.codeEditor.state.selection.main.head;
+
+    const localName =
+        user?.name ||
+        document.getElementById("joinName")?.value.trim() ||
+        "Host";
+
+    awareness.setLocalStateField("cursor", {
+        anchor: pos,
+        head: pos
+    });
+
+    awareness.setLocalStateField("user", {
+        name: localName,
+        color: getUserColor(),
+        picture: user?.picture || null
+    });
+      }
     
 function connectWebSocket(role, n) {
 
@@ -2247,7 +2316,7 @@ window.ws = ws;
     name: document.getElementById("joinName").value.trim()
 }));
         
-  
+  updateLocalPresence();
 
     if (role !== "host") {
         ws.send(JSON.stringify({
@@ -2262,19 +2331,54 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-      if (data.type === "presence_state") {
+if (data.type === "presence_state") {
 
-    const clientId =
-        data.guest_id || "host";
+    const users = data.users || {};
 
-    renderRemoteCursor(
-        clientId,
-        data.presence?.cursor,
-        data.presence?.user
+    const activeIds = new Set(
+        Object.keys(users)
+    );
+
+    // Remove cursors that no longer exist
+    document
+        .querySelectorAll(".remote-cursor")
+        .forEach(cursor => {
+
+            const id =
+                cursor.dataset.clientId;
+
+            if (!activeIds.has(id)) {
+
+                cursor.remove();
+
+                if (window.remoteCursors) {
+                    delete window.remoteCursors[id];
+                }
+            }
+        });
+
+    // Render/update current cursors
+    Object.entries(users).forEach(
+        ([clientId, presence]) => {
+
+            if (
+                !presence ||
+                !presence.cursor ||
+                !presence.user
+            ) {
+                return;
+            }
+
+            renderRemoteCursor(
+                clientId,
+                presence.cursor,
+                presence.user
+            );
+        }
     );
 
     return;
-      }
+}
       if (data.type === "participants") {
 
     updateParticipants(data.users);
@@ -2463,7 +2567,7 @@ async function startHost(customId) {
     document.getElementById("versionCardWrap");
 
 const current =
-    paste.current_version || 1;
+    res.current_version || 1;
 
 document.getElementById("editingVersion").textContent =
     `v${current} (Current)`;
