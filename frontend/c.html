@@ -2186,7 +2186,28 @@ async function joinApproved(
   }
 
   }
+function updateAllRemoteCursors() {
 
+    if (!window.remotePresence) return;
+
+    Object.entries(window.remotePresence).forEach(
+        ([clientId, presence]) => {
+
+            if (
+                clientId === window.guestId ||
+                !presence
+            ) {
+                return;
+            }
+
+            renderRemoteCursor(
+                clientId,
+                presence.cursor,
+                presence.user
+            );
+        }
+    );
+    }
   
     function joinRejected(){
     console.log("You are rejected")
@@ -2261,16 +2282,40 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-      if (data.type === "presence_state") {
+if (data.type === "presence_state") {
 
-    const clientId =
-        data.guest_id || "host";
+    window.remotePresence = data.users || {};
 
-    renderRemoteCursor(
-        clientId,
-        data.presence?.cursor,
-        data.presence?.user
-    );
+    const activeIds =
+        new Set(Object.keys(window.remotePresence));
+
+    // Remove old cursors
+    document
+        .querySelectorAll(".remote-cursor")
+        .forEach(el => {
+
+            const id =
+                el.id.replace("remote-cursor-", "");
+
+            if (!activeIds.has(id)) {
+                el.remove();
+            }
+        });
+
+    // Draw remote cursors
+    Object.entries(window.remotePresence)
+        .forEach(([clientId, presence]) => {
+
+            if (clientId === window.guestId) {
+                return;
+            }
+
+            renderRemoteCursor(
+                clientId,
+                presence.cursor,
+                presence.user
+            );
+        });
 
     return;
       }
