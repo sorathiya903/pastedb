@@ -23,7 +23,111 @@ users_collection = db["users"]
 api_keys_collection = db["api_keys"]
 versions_collection = db["pasteVersions"]
 
+async def handle_presence(
+    websocket,
+    invite_token,
+    guest_id,
+    role,
+    data
+):
+    presence = data.get("presence")
 
+    if not presence:
+        return
+
+    # Host uses "host" as its participant ID
+    participant_id = (
+        "host"
+        if role == "host"
+        else guest_id
+    )
+
+    # Guests must exist and be approved
+    if role != "host":
+
+        guest = (
+            GUESTS
+            .get(invite_token, {})
+            .get(guest_id)
+        )
+
+        if not guest:
+            return
+
+        if not guest.get("approved", False):
+            return
+
+    # Create room presence
+    room_presence = PRESENCE.setdefault(
+        invite_token,
+        {}
+    )
+
+    # Store/update participant presence
+    room_presence[participant_id] = presence
+
+    # -------------------------------------------------
+    # Send to host
+    # -------------------------------------------------
+
+    host_ws = HOSTS.get(invite_token)
+
+    if host_ws and host_ws != websocket:
+
+        try:
+            await host_ws.send_json({
+                "type": "presence",
+                "guest_id": participant_id,
+                "presence": presence
+            })
+
+        except Exception as e:
+            print(
+                "Failed to send presence to host:",
+                e
+            )
+
+    # -------------------------------------------------
+    # Send to approved guests
+    # -------------------------------------------------
+
+    guests = GUESTS.get(
+        invite_token,
+        {}
+    )
+
+    for gid, guest in list(guests.items()):
+
+        guest_ws = guest.get("websocket")
+
+        if not guest_ws:
+            continue
+
+        # Don't send back to sender
+        if guest_ws == websocket:
+            continue
+
+        # Only approved guests receive presence
+        if not guest.get("approved", False):
+            continue
+
+        try:
+
+            await guest_ws.send_json({
+                "type": "presence",
+                "guest_id": participant_id,
+                "presence": presence
+            })
+
+        except Exception as e:
+
+            print(
+                "Failed to send presence to guest:",
+                gid,
+                e
+	)
+
+		
 async def broadcast_members(invite_token):
 
     collab = collab_collection.find_one({
@@ -151,7 +255,7 @@ async def get_collaboration(invite_token: str):
 
 HOSTS = {}
 GUESTS = {}
-
+PRESENCE = {}
 
 def encode_bytes(data: bytes) -> str:
     return base64.b64encode(data).decode("ascii")
@@ -405,7 +509,8 @@ async def collab_ws(
             # =====================================================
             # JOIN APPROVED
             # =====================================================
-
+            elif message_type == "presence":
+				await handle_presence(    websocket,   invite_token,    guest_id,    role,     data		)
             elif message_type == "join_approved":
 
                 # Only host can approve
