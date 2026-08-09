@@ -1954,6 +1954,7 @@ window.setEditorEditable = function(editable) {
 // YJS → CODEMIRROR
 // =====================================================
 awareness.on("update", () => {
+awareness.on("update", () => {
 
     if (
         !window.ws ||
@@ -1962,52 +1963,34 @@ awareness.on("update", () => {
         return;
     }
 
-    const localState =
-        awareness.getLocalState();
+    const localState = awareness.getLocalState();
 
-    if (!localState) return;
-
-    if (!localState.user || !localState.cursor) {
+    if (
+        !localState ||
+        !localState.user ||
+        !localState.cursor
+    ) {
         return;
     }
 
-    const localState =
-    awareness.getLocalState();
-
-if (
-    localState &&
-    localState.user &&
-    localState.cursor
-) {
-
     window.ws.send(JSON.stringify({
-
         type: "presence",
 
         presence: {
             user: localState.user,
 
             cursor: {
-                anchor:
-                    uint8ToBase64(
-                        localState.cursor.anchor
-                    ),
+                anchor: uint8ToBase64(
+                    localState.cursor.anchor
+                ),
 
-                head:
-                    uint8ToBase64(
-                        localState.cursor.head
-                    )
+                head: uint8ToBase64(
+                    localState.cursor.head
+                )
             }
-
         }
-
     }));
-
-             }
-
 });
-
-
     
 ytext.observe(event => {
 
