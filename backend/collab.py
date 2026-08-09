@@ -23,6 +23,54 @@ users_collection = db["users"]
 api_keys_collection = db["api_keys"]
 versions_collection = db["pasteVersions"]
 
+
+async def broadcast_presence(invite_token):
+
+    room_presence = PRESENCE.get(
+        invite_token,
+        {}
+    )
+
+    message = {
+        "type": "presence_state",
+        "users": room_presence
+    }
+
+    host_ws = HOSTS.get(invite_token)
+
+    if host_ws:
+
+        try:
+            await host_ws.send_json(message)
+        except Exception as e:
+            print("Presence host error:", e)
+
+    guests = GUESTS.get(
+        invite_token,
+        {}
+    )
+
+    for gid, guest in list(guests.items()):
+
+        if not guest.get("approved", False):
+            continue
+
+        guest_ws = guest.get("websocket")
+
+        if not guest_ws:
+            continue
+
+        try:
+            await guest_ws.send_json(message)
+        except Exception as e:
+            print(
+                "Presence guest error:",
+                gid,
+                e
+			)
+
+
+
 async def handle_presence(
     websocket,
     invite_token,
@@ -35,14 +83,12 @@ async def handle_presence(
     if not presence:
         return
 
-    # Host uses "host" as its participant ID
     participant_id = (
         "host"
         if role == "host"
         else guest_id
     )
 
-    # Guests must exist and be approved
     if role != "host":
 
         guest = (
@@ -57,75 +103,15 @@ async def handle_presence(
         if not guest.get("approved", False):
             return
 
-    # Create room presence
-    room_presence = PRESENCE.setdefault(
+    PRESENCE.setdefault(
         invite_token,
         {}
-    )
+    )[participant_id] = presence
 
-    # Store/update participant presence
-    room_presence[participant_id] = presence
-
-    # -------------------------------------------------
-    # Send to host
-    # -------------------------------------------------
-
-    host_ws = HOSTS.get(invite_token)
-
-    if host_ws and host_ws != websocket:
-
-        try:
-            await host_ws.send_json({
-                "type": "presence",
-                "guest_id": participant_id,
-                "presence": presence
-            })
-
-        except Exception as e:
-            print(
-                "Failed to send presence to host:",
-                e
-            )
-
-    # -------------------------------------------------
-    # Send to approved guests
-    # -------------------------------------------------
-
-    guests = GUESTS.get(
-        invite_token,
-        {}
-    )
-
-    for gid, guest in list(guests.items()):
-
-        guest_ws = guest.get("websocket")
-
-        if not guest_ws:
-            continue
-
-        # Don't send back to sender
-        if guest_ws == websocket:
-            continue
-
-        # Only approved guests receive presence
-        if not guest.get("approved", False):
-            continue
-
-        try:
-
-            await guest_ws.send_json({
-                "type": "presence",
-                "guest_id": participant_id,
-                "presence": presence
-            })
-
-        except Exception as e:
-
-            print(
-                "Failed to send presence to guest:",
-                gid,
-                e
+    await broadcast_presence(
+        invite_token
 	)
+
 
 		
 async def broadcast_members(invite_token):
