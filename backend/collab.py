@@ -497,7 +497,8 @@ async def collab_ws(
             # =====================================================
             elif message_type == "presence":
 				await handle_presence(    websocket,   invite_token,    guest_id,    role,     data		)
-            elif message_type == "join_approved":
+           
+			elif message_type == "join_approved":
 
                 # Only host can approve
                 if role != "host":
