@@ -1705,59 +1705,10 @@ const CollabRemote = StateEffect.define();
 
 // =====================================================
 // YJS DOCUMENT
-   function base64ToUint8(base64) {
-
-    const binary = atob(base64);
-
-    const bytes =
-        new Uint8Array(binary.length);
-
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-
-    return bytes;
-  }
-
-    function uint8ToBase64(uint8) {
-
-    let binary = "";
-
-    for (let i = 0; i < uint8.length; i++) {
-        binary += String.fromCharCode(uint8[i]);
-    }
-
-    return btoa(binary);
-    }
-    function createRelativeCursor() {
-
-    if (!window.codeEditor) {
-        return null;
-    }
-
-    const selection =
-        window.codeEditor.state.selection.main;
-
-    const anchor =
-        Y.createRelativePositionFromTypeIndex(
-            window.ytext,
-            selection.anchor
-        );
-
-    const head =
-        Y.createRelativePositionFromTypeIndex(
-            window.ytext,
-            selection.head
-        );
-
-    return {
-        anchor: Y.encodeRelativePosition(anchor),
-        head: Y.encodeRelativePosition(head)
-    };
-    }
-
-
- 
+// =====================================================
+// =====================================================
+// YJS DOCUMENT
+// =====================================================
 
 const ydoc = new Y.Doc();
 const ytext = ydoc.getText("content");
@@ -1775,7 +1726,6 @@ let applyingRemoteUpdate = false;
 // CODEMIRROR
 // =====================================================
 const editableCompartment = new Compartment();
-
 const editor = new EditorView({
 
     state: EditorState.create({
@@ -1794,89 +1744,85 @@ const editor = new EditorView({
 
             EditorView.updateListener.of(update => {
 
-                /*
-                 * -----------------------------------------
-                 * 1. UPDATE LOCAL CURSOR / SELECTION
-                 * -----------------------------------------
-                 */
-
-                if (update.selectionSet || update.docChanged) {
-
-                    updateLocalPresence();
+                if (!update.docChanged) {
+                    return;
                 }
+                  if (update.selectionSet || update.docChanged) {
 
+        const pos =
+            update.state.selection.main.head;
 
-                /*
-                 * -----------------------------------------
-                 * 2. IGNORE CHANGES CAUSED BY YJS
-                 * -----------------------------------------
-                 */
+        awareness.setLocalStateField("cursor", {
+    anchor: pos,
+    head: pos
+});
 
-                if (
-                    update.transactions.some(tr =>
-                        tr.effects.some(effect =>
-                            effect.is(CollabRemote)
-                        )
+const localName =
+    user?.name ||
+    document.getElementById("joinName")?.value.trim() ||
+    "Host";
+
+awareness.setLocalStateField("user", {
+    name: localName,
+    color: getUserColor(),
+    picture: user?.picture || null
+}); }
+
+                if (update.transactions.some(tr =>
+                    tr.effects.some(effect =>
+                        effect.is(CollabRemote)
                     )
-                ) {
+                )) {
                     return;
                 }
 
+                const changes = [];
 
-                /*
-                 * -----------------------------------------
-                 * 3. LOCAL CODEMIRROR -> YJS
-                 * -----------------------------------------
-                 */
+                update.changes.iterChanges(
+                    (
+                        fromA,
+                        toA,
+                        fromB,
+                        toB,
+                        inserted
+                    ) => {
 
-                if (!update.docChanged) {
-    return;
-}
+                        changes.push({
+                            from: fromA,
+                            to: toA,
+                            text: inserted.toString()
+                        });
 
-const changes = [];
+                    }
+                );
 
-update.changes.iterChanges(
-    (fromA, toA, fromB, toB, inserted) => {
+                changes.reverse();
 
-        changes.push({
-            from: fromA,
-            to: toA,
-            text: inserted.toString()
-        });
+                ydoc.transact(() => {
 
-    }
-);
+                    for (const change of changes) {
 
-// IMPORTANT:
-// Apply from the end of the document toward the beginning.
-// CodeMirror positions are based on the original document.
-ydoc.transact(() => {
+                        if (change.to > change.from) {
 
-    for (let i = changes.length - 1; i >= 0; i--) {
+                            ytext.delete(
+                                change.from,
+                                change.to - change.from
+                            );
 
-        const change = changes[i];
+                        }
 
-        if (change.to > change.from) {
+                        if (change.text.length) {
 
-            ytext.delete(
-                change.from,
-                change.to - change.from
-            );
+                            ytext.insert(
+                                change.from,
+                                change.text
+                            );
 
-        }
+                        }
 
-        if (change.text.length > 0) {
+                    }
 
-            ytext.insert(
-                change.from,
-                change.text
-            );
-
-        }
-
-    }
-
-}, "codemirror");
+                }, "codemirror");
 
             })
 
@@ -1889,6 +1835,7 @@ ydoc.transact(() => {
 });
 
 window.codeEditor = editor;
+
 window.setEditorEditable = function(editable) {
 
     if (!window.codeEditor) {
@@ -1905,7 +1852,7 @@ window.setEditorEditable = function(editable) {
 };
 // =====================================================
 // YJS → CODEMIRROR
-
+// =====================================================
 awareness.on("update", () => {
 
     if (
@@ -1915,111 +1862,70 @@ awareness.on("update", () => {
         return;
     }
 
-    const localState = awareness.getLocalState();
+    const localState =
+        awareness.getLocalState();
 
-    if (
-        !localState ||
-        !localState.user ||
-        !localState.cursor
-    ) {
+    if (!localState) return;
+
+    if (!localState.user || !localState.cursor) {
         return;
     }
 
     window.ws.send(JSON.stringify({
+
         type: "presence",
 
         presence: {
             user: localState.user,
-
-            cursor: {
-                anchor: uint8ToBase64(
-                    localState.cursor.anchor
-                ),
-
-                head: uint8ToBase64(
-                    localState.cursor.head
-                )
-            }
+            cursor: localState.cursor
         }
+
     }));
+
 });
+
+
     
 ytext.observe(event => {
 
-    if (!window.codeEditor) {
-        return;
-    }
+    console.log("YJS OBSERVER FIRED");
 
-    const changes = [];
+    const newText = ytext.toString();
+    const currentText = editor.state.doc.toString();
 
-    let pos = 0;
+    console.log(
+        "YJS text:",
+        JSON.stringify(newText)
+    );
 
-    for (const delta of event.delta) {
+    console.log(
+        "CodeMirror text:",
+        JSON.stringify(currentText)
+    );
 
-        // Existing content
-        if (delta.retain) {
-            pos += delta.retain;
-        }
-
-        // Deletion
-        if (delta.delete) {
-
-            changes.push({
-                from: pos,
-                to: pos + delta.delete,
-                insert: ""
-            });
-
-            // IMPORTANT:
-            // Don't advance pos after delete.
-        }
-
-        // Insertion
-        if (delta.insert) {
-
-            const text =
-                typeof delta.insert === "string"
-                    ? delta.insert
-                    : delta.insert.join("");
-
-            // If the previous operation was a deletion
-            // starting at the same position, merge them.
-            const previous =
-                changes[changes.length - 1];
-
-            if (
-                previous &&
-                previous.from === pos &&
-                previous.to > previous.from &&
-                previous.insert === ""
-            ) {
-
-                previous.insert = text;
-
-            } else {
-
-                changes.push({
-                    from: pos,
-                    to: pos,
-                    insert: text
-                });
-
-            }
-
-            pos += text.length;
-        }
-    }
-
-    if (!changes.length) {
+    if (newText === currentText) {
+        console.log("Already synchronized");
         return;
     }
 
     editor.dispatch({
-        changes,
-        effects: CollabRemote.of(true)
-    });
+    changes: {
+        from: 0,
+        to: editor.state.doc.length,
+        insert: newText
+    },
+    effects: CollabRemote.of(true)
+});
+    console.log(
+        "CodeMirror updated:",
+        JSON.stringify(
+            editor.state.doc.toString()
+        )
+    );
 
 });
+    
+
 // =====================================================
 // SEND YJS UPDATES
 // =====================================================
@@ -2033,188 +1939,23 @@ ydoc.on("update", update => {
         return;
     }
 
-    const encoded =
-        btoa(
-            String.fromCharCode(...update)
-        );
+    const encoded = btoa(
+        String.fromCharCode(...update)
+    );
 
     window.ws.send(JSON.stringify({
-
         type: "yjs_update",
-
         update: encoded
-
     }));
 
 });
     window.EditorView = EditorView;
-
-    const editorScroller =
-    editor.dom.querySelector(".cm-scroller");
-
-if (editorScroller) {
-
-    editorScroller.addEventListener("scroll", () => {
-
-        document
-            .querySelectorAll(".remote-cursor")
-            .forEach(el => {
-
-                const clientId =
-                    el.dataset.clientId;
-
-                const cursorData =
-                    window.remoteCursors?.[clientId];
-
-                if (!cursorData) return;
-
-                renderRemoteCursor(
-                    clientId,
-                    cursorData.cursor,
-                    cursorData.user
-                );
-
-            });
-
-    });
-}
-
-                  
                           </script>
 
   
 <script>
-  window.yjsSynced = false;
-  function createRelativeCursor() {
-
-    if (!window.codeEditor) {
-        return null;
-    }
-
-    const selection =
-        window.codeEditor.state.selection.main;
-
-    const anchor =
-        Y.createRelativePositionFromTypeIndex(
-            window.ytext,
-            selection.anchor
-        );
-
-    const head =
-        Y.createRelativePositionFromTypeIndex(
-            window.ytext,
-            selection.head
-        );
-
-    return {
-        anchor: Y.encodeRelativePosition(anchor),
-        head: Y.encodeRelativePosition(head)
-    };
-    }
 
 
-     function updateLocalPresence() {
-
-    if (!window.codeEditor) {
-        return;
-    }
-
-    const cursor =
-        createRelativeCursor();
-
-    if (!cursor) {
-        return;
-    }
-
-    const localName =
-        user?.name ||
-        document
-            .getElementById("joinName")
-            ?.value
-            .trim() ||
-        "Host";
-
-
-    awareness.setLocalStateField(
-        "cursor",
-        cursor
-    );
-
-    awareness.setLocalStateField(
-        "user",
-        {
-            name: localName,
-            color: getUserColor(),
-            picture: user?.picture || null
-        }
-    );
-
-     }
-  
-      function base64ToUint8(base64) {
-
-    const binary = atob(base64);
-
-    const bytes =
-        new Uint8Array(binary.length);
-
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-
-    return bytes;
-  }
-
-    function uint8ToBase64(uint8) {
-
-    let binary = "";
-
-    for (let i = 0; i < uint8.length; i++) {
-        binary += String.fromCharCode(uint8[i]);
-    }
-
-    return btoa(binary);
-    }
-  function getAbsoluteCursorPosition(cursor) {
-
-    if (
-        !cursor ||
-        !cursor.head ||
-        !window.ydoc
-    ) {
-        return null;
-    }
-
-    try {
-
-        const headBytes = base64ToUint8(cursor.head);
-
-        const relative =
-            window.Y.decodeRelativePosition(headBytes);
-
-        const absolute =
-            window.Y.createAbsolutePositionFromRelativePosition(
-                relative,
-                window.ydoc
-            );
-
-        if (!absolute) {
-            return null;
-        }
-
-        return absolute.index;
-
-    } catch (error) {
-
-        console.warn(
-            "Remote cursor cannot be resolved yet:",
-            error
-        );
-
-        return null;
-    }
-  }
-  
   function escapeHtml(text) {
 
     const div = document.createElement("div");
@@ -2223,60 +1964,22 @@ if (editorScroller) {
 
     return div.innerHTML;
   }
-  window.remoteCursors = {};
+  function renderRemoteCursor(clientId, cursor, user) {
 
-function renderRemoteCursor(
-    clientId,
-    cursor,
-    user
-) {
-      if (!window.yjsSynced) {
-        return;
-    }
+    if (!window.codeEditor || !cursor || !user) return;
 
-    if (
-        !window.codeEditor ||
-        !cursor ||
-        !user
-    ) {
-        return;
-    }
+    const pos = cursor.head ?? cursor.anchor;
 
-    if (
-        !window.codeEditor ||
-        !cursor ||
-        !user
-    ) {
-        return;
-    }
+    const coords = window.codeEditor.coordsAtPos(pos);
 
-    const pos =
-        getAbsoluteCursorPosition(cursor);
-
-    if (pos === null) {
-        return;
-    }
-
-    const coords =
-        window.codeEditor.coordsAtPos(pos);
-
-    if (!coords) {
-        return;
-    }
+    if (!coords) return;
 
     const wrapper =
-        document.querySelector(
-            ".editor-wrapper"
-        );
+        document.querySelector(".editor-wrapper");
 
-    if (!wrapper) {
-        return;
-    }
+    if (!wrapper) return;
 
-    window.remoteCursors[clientId] = {
-        cursor,
-        user
-    };
+    const rect = wrapper.getBoundingClientRect();
 
     let el =
         document.getElementById(
@@ -2285,8 +1988,7 @@ function renderRemoteCursor(
 
     if (!el) {
 
-        el =
-            document.createElement("div");
+        el = document.createElement("div");
 
         el.id =
             `remote-cursor-${clientId}`;
@@ -2294,15 +1996,14 @@ function renderRemoteCursor(
         el.className =
             "remote-cursor";
 
-        el.dataset.clientId =
-            clientId;
-
         wrapper.appendChild(el);
-
     }
 
-    const rect =
-        wrapper.getBoundingClientRect();
+    /*
+     * coordsAtPos() gives viewport coordinates.
+     * Convert them to coordinates relative
+     * to editor-wrapper.
+     */
 
     el.style.left =
         `${coords.left - rect.left}px`;
@@ -2311,20 +2012,18 @@ function renderRemoteCursor(
         `${coords.top - rect.top}px`;
 
     el.style.background =
-        user.color ||
-        "#3b82f6";
+        user.color || "#3b82f6";
 
     el.innerHTML = `
         <span
             class="remote-cursor-label"
             style="background:${user.color || "#3b82f6"}"
         >
-            ${escapeHtml(
-                user.name || "Guest"
-            )}
+            ${escapeHtml(user.name || "Guest")}
         </span>
     `;
-  }
+      }
+
   
   function getUserColor() {
 
@@ -2529,8 +2228,7 @@ async function joinApproved(
         container.appendChild(avatar);
     });
       }
-
-  
+    
 function connectWebSocket(role, n) {
 
     ws = new WebSocket(
@@ -2549,7 +2247,7 @@ window.ws = ws;
     name: document.getElementById("joinName").value.trim()
 }));
         
-  updateLocalPresence();
+  
 
     if (role !== "host") {
         ws.send(JSON.stringify({
@@ -2564,54 +2262,19 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-if (data.type === "presence_state") {
+      if (data.type === "presence_state") {
 
-    const users = data.users || {};
+    const clientId =
+        data.guest_id || "host";
 
-    const activeIds = new Set(
-        Object.keys(users)
-    );
-
-    // Remove cursors that no longer exist
-    document
-        .querySelectorAll(".remote-cursor")
-        .forEach(cursor => {
-
-            const id =
-                cursor.dataset.clientId;
-
-            if (!activeIds.has(id)) {
-
-                cursor.remove();
-
-                if (window.remoteCursors) {
-                    delete window.remoteCursors[id];
-                }
-            }
-        });
-
-    // Render/update current cursors
-    Object.entries(users).forEach(
-        ([clientId, presence]) => {
-
-            if (
-                !presence ||
-                !presence.cursor ||
-                !presence.user
-            ) {
-                return;
-            }
-
-            renderRemoteCursor(
-                clientId,
-                presence.cursor,
-                presence.user
-            );
-        }
+    renderRemoteCursor(
+        clientId,
+        data.presence?.cursor,
+        data.presence?.user
     );
 
     return;
-}
+      }
       if (data.type === "participants") {
 
     updateParticipants(data.users);
@@ -2659,9 +2322,6 @@ if (data.type === "sync_request") {
         binary,
         "remote"
     );
-        
-    window.yjsSynced = true;
-
 
     return;
   }
@@ -2678,8 +2338,6 @@ if (data.type === "yjs_sync") {
         window.ydoc,
         binary
     );
-  window.yjsSynced = true;
-
 }
 
 if (data.type === "yjs_update") {
@@ -2805,7 +2463,7 @@ async function startHost(customId) {
     document.getElementById("versionCardWrap");
 
 const current =
-    res.current_version || 1;
+    paste.current_version || 1;
 
 document.getElementById("editingVersion").textContent =
     `v${current} (Current)`;
