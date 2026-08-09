@@ -1956,18 +1956,25 @@ ytext.observe(event => {
 
     for (const delta of event.delta) {
 
-        /*
-         * Existing text
-         */
+        // Existing content
         if (delta.retain) {
-
             pos += delta.retain;
         }
 
+        // Deletion
+        if (delta.delete) {
 
-        /*
-         * Text inserted remotely
-         */
+            changes.push({
+                from: pos,
+                to: pos + delta.delete,
+                insert: ""
+            });
+
+            // IMPORTANT:
+            // Don't advance pos after delete.
+        }
+
+        // Insertion
         if (delta.insert) {
 
             const text =
@@ -1975,54 +1982,44 @@ ytext.observe(event => {
                     ? delta.insert
                     : delta.insert.join("");
 
-            changes.push({
-                from: pos,
-                to: pos,
-                insert: text
-            });
+            // If the previous operation was a deletion
+            // starting at the same position, merge them.
+            const previous =
+                changes[changes.length - 1];
+
+            if (
+                previous &&
+                previous.from === pos &&
+                previous.to > previous.from &&
+                previous.insert === ""
+            ) {
+
+                previous.insert = text;
+
+            } else {
+
+                changes.push({
+                    from: pos,
+                    to: pos,
+                    insert: text
+                });
+
+            }
 
             pos += text.length;
         }
-
-
-        /*
-         * Text deleted remotely
-         */
-        if (delta.delete) {
-
-            changes.push({
-                from: pos,
-                to: pos + delta.delete
-            });
-
-        }
-
     }
-
 
     if (!changes.length) {
         return;
     }
 
-
-    /*
-     * Apply ONLY the remote changes.
-     *
-     * CodeMirror now knows how the document changed
-     * and automatically maps the local cursor.
-     */
-
     editor.dispatch({
-
         changes,
-
         effects: CollabRemote.of(true)
-
     });
 
 });
-    
-
 // =====================================================
 // SEND YJS UPDATES
 // =====================================================
