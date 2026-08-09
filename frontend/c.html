@@ -1695,8 +1695,11 @@ import {
     StateEffect,
   Compartment
 } from "https://esm.sh/@codemirror/state";
+  
     
-import {
+    import { Awareness } from "https://esm.sh/y-protocols/awareness";
+
+    import {
     javascript
 } from "https://esm.sh/@codemirror/lang-javascript";
 const CollabRemote = StateEffect.define();
@@ -1710,7 +1713,9 @@ const CollabRemote = StateEffect.define();
 
 const ydoc = new Y.Doc();
 const ytext = ydoc.getText("content");
+const awareness = new Awareness(ydoc);
 
+window.awareness = awareness;
 window.Y = Y;
 window.ydoc = ydoc;
 window.ytext = ytext;
@@ -1743,6 +1748,17 @@ const editor = new EditorView({
                 if (!update.docChanged) {
                     return;
                 }
+                  if (update.selectionSet || update.docChanged) {
+
+        const pos =
+            update.state.selection.main.head;
+
+        awareness.setLocalStateField("cursor", {
+            anchor: pos,
+            head: pos
+        });
+
+                  }
 
                 if (update.transactions.some(tr =>
                     tr.effects.some(effect =>
@@ -1829,7 +1845,40 @@ window.setEditorEditable = function(editable) {
 // =====================================================
 // YJS → CODEMIRROR
 // =====================================================
+awareness.on("update", ({ added, updated, removed }) => {
 
+    if (
+        !window.ws ||
+        window.ws.readyState !== WebSocket.OPEN
+    ) {
+        return;
+    }
+
+    const states = awareness.getStates();
+
+    const users = [];
+
+    states.forEach((state, clientId) => {
+
+        if (!state.user || !state.cursor)
+            return;
+
+        users.push({
+            client_id: clientId,
+            user: state.user,
+            cursor: state.cursor
+        });
+
+    });
+
+    window.ws.send(JSON.stringify({
+        type: "presence",
+        users
+    }));
+
+});
+
+    
 ytext.observe(event => {
 
     console.log("YJS OBSERVER FIRED");
@@ -1895,7 +1944,56 @@ ydoc.on("update", update => {
 });
     window.EditorView = EditorView;
                           </script>
+
+  
 <script>
+  function renderRemoteCursor(clientId, cursor, user) {
+
+    const pos = cursor.anchor;
+
+    const coords =
+        window.codeEditor.coordsAtPos(pos);
+
+    if (!coords) return;
+
+    let el =
+        document.getElementById(
+            `remote-cursor-${clientId}`
+        );
+
+    if (!el) {
+
+        el = document.createElement("div");
+
+        el.id =
+            `remote-cursor-${clientId}`;
+
+        el.className =
+            "remote-cursor";
+
+        document
+            .querySelector(".editor-wrapper")
+            .appendChild(el);
+    }
+
+    el.style.left =
+        `${coords.left}px`;
+
+    el.style.top =
+        `${coords.top}px`;
+
+    el.style.background =
+        user.color;
+
+    el.innerHTML = `
+        <span
+            class="remote-cursor-label"
+            style="background:${user.color}"
+        >
+            ${escapeHtml(user.name)}
+        </span>
+    `;
+  }
   const inviteToken = window.location.href
     .split("/c/")[1]
     .split("?")[0]
