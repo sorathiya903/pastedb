@@ -1744,62 +1744,88 @@ const editor = new EditorView({
 
             EditorView.updateListener.of(update => {
 
-    if (update.selectionSet || update.docChanged) {
-        updateLocalPresence();
-    }
+                if (!update.docChanged) {
+                    return;
+                }
+                  if (update.selectionSet || update.docChanged) {
 
-    if (!update.docChanged) {
-        return;
-    }
+        const pos =
+            update.state.selection.main.head;
 
-    if (
-        update.transactions.some(tr =>
-            tr.effects.some(effect =>
-                effect.is(CollabRemote)
-            )
-        )
-    ) {
-        return;
-    }
+        awareness.setLocalStateField("cursor", {
+    anchor: pos,
+    head: pos
+});
 
-    const changes = [];
+const localName =
+    user?.name ||
+    document.getElementById("joinName")?.value.trim() ||
+    "Host";
 
-    update.changes.iterChanges(
-        (fromA, toA, fromB, toB, inserted) => {
+awareness.setLocalStateField("user", {
+    name: localName,
+    color: getUserColor(),
+    picture: user?.picture || null
+}); }
 
-            changes.push({
-                from: fromA,
-                to: toA,
-                text: inserted.toString()
-            });
+                if (update.transactions.some(tr =>
+                    tr.effects.some(effect =>
+                        effect.is(CollabRemote)
+                    )
+                )) {
+                    return;
+                }
 
-        }
-    );
+                const changes = [];
 
-    changes.reverse();
+                update.changes.iterChanges(
+                    (
+                        fromA,
+                        toA,
+                        fromB,
+                        toB,
+                        inserted
+                    ) => {
 
-    ydoc.transact(() => {
+                        changes.push({
+                            from: fromA,
+                            to: toA,
+                            text: inserted.toString()
+                        });
 
-        for (const change of changes) {
-
-            if (change.to > change.from) {
-                ytext.delete(
-                    change.from,
-                    change.to - change.from
+                    }
                 );
-            }
 
-            if (change.text.length) {
-                ytext.insert(
-                    change.from,
-                    change.text
-                );
-            }
+                changes.reverse();
 
-        }
+                ydoc.transact(() => {
 
-    }, "codemirror");
-})
+                    for (const change of changes) {
+
+                        if (change.to > change.from) {
+
+                            ytext.delete(
+                                change.from,
+                                change.to - change.from
+                            );
+
+                        }
+
+                        if (change.text.length) {
+
+                            ytext.insert(
+                                change.from,
+                                change.text
+                            );
+
+                        }
+
+                    }
+
+                }, "codemirror");
+
+            })
+
         ]
 
     }),
@@ -2113,28 +2139,6 @@ window.ws = null;
     }
   }
 
-  function updateLocalPresence() {
-    if (!window.codeEditor) return;
-
-    const pos = window.codeEditor.state.selection.main.head;
-
-    const localUser = {
-        name:
-            window.user?.name ||
-            document.getElementById("joinName")?.value.trim() ||
-            "Guest",
-        color: getUserColor(),
-        picture: window.user?.picture || null
-    };
-
-    awareness.setLocalStateField("user", localUser);
-
-    awareness.setLocalStateField("cursor", {
-        anchor: pos,
-        head: pos
-    });
-  }
-
 async function joinApproved(
     guestId,
     role,
@@ -2186,28 +2190,7 @@ async function joinApproved(
   }
 
   }
-function updateAllRemoteCursors() {
 
-    if (!window.remotePresence) return;
-
-    Object.entries(window.remotePresence).forEach(
-        ([clientId, presence]) => {
-
-            if (
-                clientId === window.guestId ||
-                !presence
-            ) {
-                return;
-            }
-
-            renderRemoteCursor(
-                clientId,
-                presence.cursor,
-                presence.user
-            );
-        }
-    );
-    }
   
     function joinRejected(){
     console.log("You are rejected")
@@ -2258,16 +2241,13 @@ window.ws = ws;
     console.log("Connected");
 
     
-
       ws.send(JSON.stringify({
     type: "connect",
     role: role,
     name: document.getElementById("joinName").value.trim()
 }));
-      
         
-  updateLocalPresence();
-
+  
 
     if (role !== "host") {
         ws.send(JSON.stringify({
@@ -2282,40 +2262,16 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-if (data.type === "presence_state") {
+      if (data.type === "presence_state") {
 
-    window.remotePresence = data.users || {};
+    const clientId =
+        data.guest_id || "host";
 
-    const activeIds =
-        new Set(Object.keys(window.remotePresence));
-
-    // Remove old cursors
-    document
-        .querySelectorAll(".remote-cursor")
-        .forEach(el => {
-
-            const id =
-                el.id.replace("remote-cursor-", "");
-
-            if (!activeIds.has(id)) {
-                el.remove();
-            }
-        });
-
-    // Draw remote cursors
-    Object.entries(window.remotePresence)
-        .forEach(([clientId, presence]) => {
-
-            if (clientId === window.guestId) {
-                return;
-            }
-
-            renderRemoteCursor(
-                clientId,
-                presence.cursor,
-                presence.user
-            );
-        });
+    renderRemoteCursor(
+        clientId,
+        data.presence?.cursor,
+        data.presence?.user
+    );
 
     return;
       }
