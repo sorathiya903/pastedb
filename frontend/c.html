@@ -1757,43 +1757,7 @@ const CollabRemote = StateEffect.define();
     }
 
 
-    function updateLocalPresence() {
-
-    if (!window.codeEditor) {
-        return;
-    }
-
-    const cursor =
-        createRelativeCursor();
-
-    if (!cursor) {
-        return;
-    }
-
-    const localName =
-        user?.name ||
-        document
-            .getElementById("joinName")
-            ?.value
-            .trim() ||
-        "Host";
-
-
-    awareness.setLocalStateField(
-        "cursor",
-        cursor
-    );
-
-    awareness.setLocalStateField(
-        "user",
-        {
-            name: localName,
-            color: getUserColor(),
-            picture: user?.picture || null
-        }
-    );
-
-    }
+ 
 
 const ydoc = new Y.Doc();
 const ytext = ydoc.getText("content");
@@ -2124,6 +2088,43 @@ if (editorScroller) {
   
 <script>
   window.yjsSynced = false;
+     function updateLocalPresence() {
+
+    if (!window.codeEditor) {
+        return;
+    }
+
+    const cursor =
+        createRelativeCursor();
+
+    if (!cursor) {
+        return;
+    }
+
+    const localName =
+        user?.name ||
+        document
+            .getElementById("joinName")
+            ?.value
+            .trim() ||
+        "Host";
+
+
+    awareness.setLocalStateField(
+        "cursor",
+        cursor
+    );
+
+    awareness.setLocalStateField(
+        "user",
+        {
+            name: localName,
+            color: getUserColor(),
+            picture: user?.picture || null
+        }
+    );
+
+     }
   
       function base64ToUint8(base64) {
 
