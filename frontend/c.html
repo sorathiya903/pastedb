@@ -1866,60 +1866,53 @@ const editor = new EditorView({
                  */
 
                 if (!update.docChanged) {
-                    return;
-                }
+    return;
+}
 
-                const changes = [];
+const changes = [];
 
-                update.changes.iterChanges(
-                    (
-                        fromA,
-                        toA,
-                        fromB,
-                        toB,
-                        inserted
-                    ) => {
+update.changes.iterChanges(
+    (fromA, toA, fromB, toB, inserted) => {
 
-                        changes.push({
-                            from: fromA,
-                            to: toA,
-                            text: inserted.toString()
-                        });
+        changes.push({
+            from: fromA,
+            to: toA,
+            text: inserted.toString()
+        });
 
-                    }
-                );
+    }
+);
 
+// IMPORTANT:
+// Apply from the end of the document toward the beginning.
+// CodeMirror positions are based on the original document.
+ydoc.transact(() => {
 
-                /*
-                 * CodeMirror gives the changes in document
-                 * order. Apply them together.
-                 */
+    for (let i = changes.length - 1; i >= 0; i--) {
 
-                ydoc.transact(() => {
+        const change = changes[i];
 
-                    for (const change of changes) {
+        if (change.to > change.from) {
 
-                        if (change.to > change.from) {
+            ytext.delete(
+                change.from,
+                change.to - change.from
+            );
 
-                            ytext.delete(
-                                change.from,
-                                change.to - change.from
-                            );
+        }
 
-                        }
+        if (change.text.length > 0) {
 
-                        if (change.text.length > 0) {
+            ytext.insert(
+                change.from,
+                change.text
+            );
 
-                            ytext.insert(
-                                change.from,
-                                change.text
-                            );
+        }
 
-                        }
+    }
 
-                    }
-
-                }, "codemirror");
+}, "codemirror");
 
             })
 
