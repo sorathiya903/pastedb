@@ -1757,15 +1757,16 @@ const editor = new EditorView({
     head: pos
 });
 
-awareness.setLocalStateField("user", {
-    name:
-        document.getElementById("joinName")?.value.trim()
-        || "Host",
+const localName =
+    user?.name ||
+    document.getElementById("joinName")?.value.trim() ||
+    "Host";
 
-    color:
-        getUserColor()
-});
-                  }
+awareness.setLocalStateField("user", {
+    name: localName,
+    color: getUserColor(),
+    picture: user?.picture || null
+}); }
 
                 if (update.transactions.some(tr =>
                     tr.effects.some(effect =>
