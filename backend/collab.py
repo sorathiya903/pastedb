@@ -496,7 +496,7 @@ async def collab_ws(
             # JOIN APPROVED
             # =====================================================
             elif message_type == "presence":
-				await handle_presence(    websocket,   invite_token,    guest_id,    role,     data		)
+                await handle_presence(    websocket,   invite_token,    guest_id,    role,     data		)
            
 			elif message_type == "join_approved":
 
