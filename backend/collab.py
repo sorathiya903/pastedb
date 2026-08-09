@@ -23,6 +23,165 @@ users_collection = db["users"]
 api_keys_collection = db["api_keys"]
 versions_collection = db["pasteVersions"]
 
+async def cleanup_guest(
+    invite_token,
+    guest_id,
+    websocket
+):
+    print(
+        "Starting guest cleanup:",
+        invite_token,
+        guest_id
+    )
+
+    # =====================================================
+    # REMOVE FROM GUESTS
+    # =====================================================
+
+    guests = GUESTS.get(
+        invite_token,
+        {}
+    )
+
+    guest = guests.get(guest_id)
+
+    if guest:
+
+        # Make sure this is the same connection
+        if guest.get("websocket") == websocket:
+
+            guests.pop(
+                guest_id,
+                None
+            )
+
+            print(
+                "Removed from GUESTS:",
+                guest_id
+            )
+
+    if not guests:
+
+        GUESTS.pop(
+            invite_token,
+            None
+        )
+
+    # =====================================================
+    # REMOVE CURSOR / PRESENCE
+    # =====================================================
+
+    room_presence = PRESENCE.get(
+        invite_token,
+        {}
+    )
+
+    if guest_id in room_presence:
+
+        room_presence.pop(
+            guest_id,
+            None
+        )
+
+        print(
+            "Removed cursor/presence:",
+            guest_id
+        )
+
+    if not room_presence:
+
+        PRESENCE.pop(
+            invite_token,
+            None
+        )
+
+    # =====================================================
+    # REMOVE FROM MONGODB
+    # =====================================================
+
+    try:
+
+        result = collab_collection.update_one(
+            {
+                "invite_token": invite_token
+            },
+            {
+                "$pull": {
+                    "members": {
+                        "guest_id": guest_id
+                    }
+                }
+            }
+        )
+
+        print(
+            "MongoDB guest removal:",
+            guest_id,
+            "matched:",
+            result.matched_count,
+            "modified:",
+            result.modified_count
+        )
+
+    except Exception as e:
+
+        print(
+            "MongoDB cleanup ERROR:",
+            guest_id,
+            repr(e)
+        )
+
+    # =====================================================
+    # BROADCAST NEW PRESENCE
+    # =====================================================
+
+    try:
+
+        await broadcast_presence(
+            invite_token
+        )
+
+        print(
+            "Presence broadcast completed:",
+            guest_id
+        )
+
+    except Exception as e:
+
+        print(
+            "Presence broadcast ERROR:",
+            guest_id,
+            repr(e)
+        )
+
+    # =====================================================
+    # BROADCAST NEW MEMBER LIST
+    # =====================================================
+
+    try:
+
+        await broadcast_members(
+            invite_token
+        )
+
+        print(
+            "Members broadcast completed:",
+            guest_id
+        )
+
+    except Exception as e:
+
+        print(
+            "Members broadcast ERROR:",
+            guest_id,
+            repr(e)
+        )
+
+    print(
+        "Guest cleanup completed:",
+        guest_id
+	)
+
 
 async def broadcast_presence(invite_token):
 
@@ -926,105 +1085,7 @@ async def collab_ws(
         # GUEST DISCONNECTED
         # =========================================================
         elif guest_id:
-					
-					    # =========================================================
-					    # GUEST DISCONNECTED
-					    # =========================================================
-					
-					    guests = GUESTS.get(
-					        invite_token,
-					        {}
-					    )
-					
-					    guest = guests.get(guest_id)
-					
-					    # ---------------------------------------------------------
-					    # Remove guest from GUESTS
-					    # ---------------------------------------------------------
-					
-					    if guest:
-					
-					        # Important: only remove if this websocket
-					        # actually belongs to this guest
-					        if guest.get("websocket") == websocket:
-					
-					            guests.pop(
-					                guest_id,
-					                None
-					            )
-					
-					            print(
-					                "Guest removed from GUESTS:",
-					                guest_id
-					            )
-					
-					    if not guests:
-					
-					        GUESTS.pop(
-					            invite_token,
-					            None
-					        )
-					
-					    # ---------------------------------------------------------
-					    # Remove guest cursor / presence
-					    # ---------------------------------------------------------
-					
-					    room_presence = PRESENCE.get(
-					        invite_token
-					    )
-					
-					    if room_presence:
-					
-					        removed_presence = room_presence.pop(
-					            guest_id,
-					            None
-					        )
-					
-					        if removed_presence:
-					
-					            print(
-					                "Guest cursor removed:",
-					                guest_id
-					            )
-					
-					        # Remove empty room presence
-					        if not room_presence:
-					
-					            PRESENCE.pop(
-					                invite_token,
-					                None
-					            )
-					
-					    # ---------------------------------------------------------
-					    # Remove guest from MongoDB members
-					    # ---------------------------------------------------------
-					
-					    collab_collection.update_one(
-					        {
-					            "invite_token": invite_token
-					        },
-					        {
-					            "$pull": {
-					                "members": {
-					                    "guest_id": guest_id
-					                }
-					            }
-					        }
-					    )
-					
-					    print(
-					        "Guest removed from members:",
-					        guest_id
-					    )
-					
-					    # ---------------------------------------------------------
-					    # Tell everyone that the cursor disappeared
-					    # ---------------------------------------------------------
-					
-					    await broadcast_presence(
-					        invite_token
-					    )
-		
-		
-		
-		            
+			await cleanup_guest(
+            invite_token,
+            guest_id,
+            websocket   )
