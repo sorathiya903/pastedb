@@ -2331,41 +2331,54 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-      if (data.type === "presence_state") {
+if (data.type === "presence_state") {
 
     const users = data.users || {};
 
-    // Remove cursors that are no longer present
-    document.querySelectorAll(".remote-cursor").forEach(el => {
-        const id = el.id.replace("remote-cursor-", "");
+    const activeIds = new Set(
+        Object.keys(users)
+    );
 
-        if (!users[id]) {
-            el.remove();
+    // Remove cursors that no longer exist
+    document
+        .querySelectorAll(".remote-cursor")
+        .forEach(cursor => {
+
+            const id =
+                cursor.dataset.clientId;
+
+            if (!activeIds.has(id)) {
+
+                cursor.remove();
+
+                if (window.remoteCursors) {
+                    delete window.remoteCursors[id];
+                }
+            }
+        });
+
+    // Render/update current cursors
+    Object.entries(users).forEach(
+        ([clientId, presence]) => {
+
+            if (
+                !presence ||
+                !presence.cursor ||
+                !presence.user
+            ) {
+                return;
+            }
+
+            renderRemoteCursor(
+                clientId,
+                presence.cursor,
+                presence.user
+            );
         }
-    });
-
-    // Render every participant's cursor
-    Object.entries(users).forEach(([clientId, presence]) => {
-
-        if (!presence) return;
-
-        // Don't render our own cursor
-        if (
-            clientId === window.guestId ||
-            (window.guestRole === "host" && clientId === "host")
-        ) {
-            return;
-        }
-
-        renderRemoteCursor(
-            clientId,
-            presence.cursor,
-            presence.user
-        );
-    });
+    );
 
     return;
-                                 }
+}
       if (data.type === "participants") {
 
     updateParticipants(data.users);
