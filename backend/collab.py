@@ -1082,10 +1082,7 @@ async def collab_ws(
             )
 
         # =========================================================
-        # GUEST DISCONNECTED
+        # GUEST diSCONNECTED
         # =========================================================
         elif guest_id:
-			await cleanup_guest(
-            invite_token,
-            guest_id,
-            websocket   )
+            await cleanup_guest(     invite_token,     guest_id,    websocket   )
