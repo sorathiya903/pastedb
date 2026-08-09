@@ -2088,6 +2088,34 @@ if (editorScroller) {
   
 <script>
   window.yjsSynced = false;
+  function createRelativeCursor() {
+
+    if (!window.codeEditor) {
+        return null;
+    }
+
+    const selection =
+        window.codeEditor.state.selection.main;
+
+    const anchor =
+        Y.createRelativePositionFromTypeIndex(
+            window.ytext,
+            selection.anchor
+        );
+
+    const head =
+        Y.createRelativePositionFromTypeIndex(
+            window.ytext,
+            selection.head
+        );
+
+    return {
+        anchor: Y.encodeRelativePosition(anchor),
+        head: Y.encodeRelativePosition(head)
+    };
+    }
+
+
      function updateLocalPresence() {
 
     if (!window.codeEditor) {
