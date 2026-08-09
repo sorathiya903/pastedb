@@ -1747,35 +1747,36 @@ const editor = new EditorView({
                 if (!update.docChanged) {
                     return;
                 }
-                  if (update.selectionSet || update.docChanged) {
+                      if (update.selectionSet || update.docChanged) {
 
-        const pos =
-            update.state.selection.main.head;
+        const pos = update.state.selection.main.head;
 
         awareness.setLocalStateField("cursor", {
-    anchor: pos,
-    head: pos
-});
+            anchor: update.state.selection.main.anchor,
+            head: pos
+        });
 
-const localName =
-    user?.name ||
-    document.getElementById("joinName")?.value.trim() ||
-    "Host";
+        const localName =
+            user?.name ||
+            document.getElementById("joinName")?.value.trim() ||
+            "Host";
 
-awareness.setLocalStateField("user", {
-    name: localName,
-    color: getUserColor(),
-    picture: user?.picture || null
-}); }
+        awareness.setLocalStateField("user", {
+            name: localName,
+            color: getUserColor(),
+            picture: user?.picture || null
+        });
+    }
 
-                if (update.transactions.some(tr =>
-                    tr.effects.some(effect =>
-                        effect.is(CollabRemote)
-                    )
-                )) {
-                    return;
-                }
-
+    if (
+        update.transactions.some(tr =>
+            tr.effects.some(effect =>
+                effect.is(CollabRemote)
+            )
+        )
+    ) {
+        return;
+    }
                 const changes = [];
 
                 update.changes.iterChanges(
@@ -1950,6 +1951,38 @@ ydoc.on("update", update => {
 
 });
     window.EditorView = EditorView;
+
+    const editorScroller =
+    editor.dom.querySelector(".cm-scroller");
+
+if (editorScroller) {
+
+    editorScroller.addEventListener("scroll", () => {
+
+        document
+            .querySelectorAll(".remote-cursor")
+            .forEach(el => {
+
+                const clientId =
+                    el.dataset.clientId;
+
+                const cursorData =
+                    window.remoteCursors?.[clientId];
+
+                if (!cursorData) return;
+
+                renderRemoteCursor(
+                    clientId,
+                    cursorData.cursor,
+                    cursorData.user
+                );
+
+            });
+
+    });
+}
+
+                  
                           </script>
 
   
@@ -1964,8 +1997,9 @@ ydoc.on("update", update => {
 
     return div.innerHTML;
   }
-  
-      function renderRemoteCursor(clientId, cursor, user) {
+  window.remoteCursors = {};
+
+  function renderRemoteCursor(clientId, cursor, user) {
 
     if (!window.codeEditor || !cursor || !user) {
         return;
@@ -1973,7 +2007,8 @@ ydoc.on("update", update => {
 
     const pos = cursor.head ?? cursor.anchor;
 
-    const coords = window.codeEditor.coordsAtPos(pos);
+    const coords =
+        window.codeEditor.coordsAtPos(pos);
 
     if (!coords) {
         return;
@@ -1986,8 +2021,11 @@ ydoc.on("update", update => {
         return;
     }
 
-    const rect =
-        wrapper.getBoundingClientRect();
+    // Save latest position
+    window.remoteCursors[clientId] = {
+        cursor,
+        user
+    };
 
     let el =
         document.getElementById(
@@ -2004,11 +2042,13 @@ ydoc.on("update", update => {
         el.className =
             "remote-cursor";
 
+        el.dataset.clientId = clientId;
+
         wrapper.appendChild(el);
     }
 
-    const color =
-        user.color || "#3b82f6";
+    const rect =
+        wrapper.getBoundingClientRect();
 
     el.style.left =
         `${coords.left - rect.left}px`;
@@ -2016,22 +2056,19 @@ ydoc.on("update", update => {
     el.style.top =
         `${coords.top - rect.top}px`;
 
-    el.style.height =
-        `${Math.max(18, coords.bottom - coords.top)}px`;
-
     el.style.background =
-        color;
+        user.color || "#3b82f6";
 
     el.innerHTML = `
         <span
             class="remote-cursor-label"
-            style="background:${color}"
+            style="background:${user.color || "#3b82f6"}"
         >
             ${escapeHtml(user.name || "Guest")}
         </span>
     `;
-      }
-
+  }
+      
   
   function getUserColor() {
 
