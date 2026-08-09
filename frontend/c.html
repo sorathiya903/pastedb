@@ -1964,22 +1964,30 @@ ydoc.on("update", update => {
 
     return div.innerHTML;
   }
-  function renderRemoteCursor(clientId, cursor, user) {
+  
+      function renderRemoteCursor(clientId, cursor, user) {
 
-    if (!window.codeEditor || !cursor || !user) return;
+    if (!window.codeEditor || !cursor || !user) {
+        return;
+    }
 
     const pos = cursor.head ?? cursor.anchor;
 
     const coords = window.codeEditor.coordsAtPos(pos);
 
-    if (!coords) return;
+    if (!coords) {
+        return;
+    }
 
     const wrapper =
         document.querySelector(".editor-wrapper");
 
-    if (!wrapper) return;
+    if (!wrapper) {
+        return;
+    }
 
-    const rect = wrapper.getBoundingClientRect();
+    const rect =
+        wrapper.getBoundingClientRect();
 
     let el =
         document.getElementById(
@@ -1999,11 +2007,8 @@ ydoc.on("update", update => {
         wrapper.appendChild(el);
     }
 
-    /*
-     * coordsAtPos() gives viewport coordinates.
-     * Convert them to coordinates relative
-     * to editor-wrapper.
-     */
+    const color =
+        user.color || "#3b82f6";
 
     el.style.left =
         `${coords.left - rect.left}px`;
@@ -2011,13 +2016,16 @@ ydoc.on("update", update => {
     el.style.top =
         `${coords.top - rect.top}px`;
 
+    el.style.height =
+        `${Math.max(18, coords.bottom - coords.top)}px`;
+
     el.style.background =
-        user.color || "#3b82f6";
+        color;
 
     el.innerHTML = `
         <span
             class="remote-cursor-label"
-            style="background:${user.color || "#3b82f6"}"
+            style="background:${color}"
         >
             ${escapeHtml(user.name || "Guest")}
         </span>
@@ -2228,6 +2236,30 @@ async function joinApproved(
         container.appendChild(avatar);
     });
       }
+
+  function updateLocalPresence() {
+
+    if (!window.codeEditor) return;
+
+    const pos =
+        window.codeEditor.state.selection.main.head;
+
+    const localName =
+        user?.name ||
+        document.getElementById("joinName")?.value.trim() ||
+        "Host";
+
+    awareness.setLocalStateField("cursor", {
+        anchor: pos,
+        head: pos
+    });
+
+    awareness.setLocalStateField("user", {
+        name: localName,
+        color: getUserColor(),
+        picture: user?.picture || null
+    });
+      }
     
 function connectWebSocket(role, n) {
 
@@ -2247,7 +2279,7 @@ window.ws = ws;
     name: document.getElementById("joinName").value.trim()
 }));
         
-  
+  updateLocalPresence();
 
     if (role !== "host") {
         ws.send(JSON.stringify({
@@ -2264,17 +2296,39 @@ window.ws = ws;
     console.log(data);
       if (data.type === "presence_state") {
 
-    const clientId =
-        data.guest_id || "host";
+    const users = data.users || {};
 
-    renderRemoteCursor(
-        clientId,
-        data.presence?.cursor,
-        data.presence?.user
-    );
+    // Remove cursors that are no longer present
+    document.querySelectorAll(".remote-cursor").forEach(el => {
+        const id = el.id.replace("remote-cursor-", "");
+
+        if (!users[id]) {
+            el.remove();
+        }
+    });
+
+    // Render every participant's cursor
+    Object.entries(users).forEach(([clientId, presence]) => {
+
+        if (!presence) return;
+
+        // Don't render our own cursor
+        if (
+            clientId === window.guestId ||
+            (window.guestRole === "host" && clientId === "host")
+        ) {
+            return;
+        }
+
+        renderRemoteCursor(
+            clientId,
+            presence.cursor,
+            presence.user
+        );
+    });
 
     return;
-      }
+                                 }
       if (data.type === "participants") {
 
     updateParticipants(data.users);
