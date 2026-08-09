@@ -926,59 +926,110 @@ async def collab_ws(
         # GUEST DISCONNECTED
         # =========================================================
 
-        elif guest_id:
-
-            guests = GUESTS.get(
-                invite_token,
-                {}
-            )
-
-            guest = guests.get(
-                guest_id
-            )
-
-            # -----------------------------------------
-            # Remove guest from memory
-            # -----------------------------------------
-
-            guests.pop(
-                guest_id,
-                None
-            )
-
-            if not guests:
-
-                GUESTS.pop(
-                    invite_token,
-                    None
-                )
-
-            # -----------------------------------------
-            # Remove guest from MongoDB
-            # -----------------------------------------
-
-            collab_collection.update_one(
-                {
-                    "invite_token": invite_token
-                },
-                {
-                    "$pull": {
-                        "members": {
-                            "guest_id": guest_id
-                        }
-                    }
-                }
-            )
-
-            print(
-                "Guest removed from members:",
-                guest_id
-            )
-
-            # -----------------------------------------
-            # Broadcast updated list
-            # -----------------------------------------
-
-            await broadcast_members(
-                invite_token
-					)
+			elif guest_id:
+			
+			    # =========================================================
+			    # GUEST DISCONNECTED
+			    # =========================================================
+			
+			    guests = GUESTS.get(
+			        invite_token,
+			        {}
+			    )
+			
+			    guest = guests.get(guest_id)
+			
+			    # ---------------------------------------------------------
+			    # Remove guest from GUESTS
+			    # ---------------------------------------------------------
+			
+			    if guest:
+			
+			        # Important: only remove if this websocket
+			        # actually belongs to this guest
+			        if guest.get("websocket") == websocket:
+			
+			            guests.pop(
+			                guest_id,
+			                None
+			            )
+			
+			            print(
+			                "Guest removed from GUESTS:",
+			                guest_id
+			            )
+			
+			    if not guests:
+			
+			        GUESTS.pop(
+			            invite_token,
+			            None
+			        )
+			
+			    # ---------------------------------------------------------
+			    # Remove guest cursor / presence
+			    # ---------------------------------------------------------
+			
+			    room_presence = PRESENCE.get(
+			        invite_token
+			    )
+			
+			    if room_presence:
+			
+			        removed_presence = room_presence.pop(
+			            guest_id,
+			            None
+			        )
+			
+			        if removed_presence:
+			
+			            print(
+			                "Guest cursor removed:",
+			                guest_id
+			            )
+			
+			        # Remove empty room presence
+			        if not room_presence:
+			
+			            PRESENCE.pop(
+			                invite_token,
+			                None
+			            )
+			
+			    # ---------------------------------------------------------
+			    # Remove guest from MongoDB members
+			    # ---------------------------------------------------------
+			
+			    collab_collection.update_one(
+			        {
+			            "invite_token": invite_token
+			        },
+			        {
+			            "$pull": {
+			                "members": {
+			                    "guest_id": guest_id
+			                }
+			            }
+			        }
+			    )
+			
+			    print(
+			        "Guest removed from members:",
+			        guest_id
+			    )
+			
+			    # ---------------------------------------------------------
+			    # Tell everyone that the cursor disappeared
+			    # ---------------------------------------------------------
+			
+			    await broadcast_presence(
+			        invite_token
+			    )
+			
+			    # ---------------------------------------------------------
+			    # Tell everyone that the participant disappeared
+			    # ---------------------------------------------------------
+			
+			    await broadcast_members(
+			        invite_token
+		)
