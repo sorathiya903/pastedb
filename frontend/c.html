@@ -2130,6 +2130,7 @@ if (editorScroller) {
 
   
 <script>
+  window.yjsSynced = false;
   
       function base64ToUint8(base64) {
 
@@ -2157,22 +2158,23 @@ if (editorScroller) {
     }
   function getAbsoluteCursorPosition(cursor) {
 
-    if (!cursor) {
+    if (
+        !cursor ||
+        !cursor.head ||
+        !window.ydoc
+    ) {
         return null;
     }
 
     try {
 
-        const headBytes =
-            base64ToUint8(cursor.head);
+        const headBytes = base64ToUint8(cursor.head);
 
         const relative =
-            Y.decodeRelativePosition(
-                headBytes
-            );
+            window.Y.decodeRelativePosition(headBytes);
 
         const absolute =
-            Y.createAbsolutePositionFromRelativePosition(
+            window.Y.createAbsolutePositionFromRelativePosition(
                 relative,
                 window.ydoc
             );
@@ -2185,17 +2187,15 @@ if (editorScroller) {
 
     } catch (error) {
 
-        console.error(
-            "Failed to decode remote cursor:",
+        console.warn(
+            "Remote cursor cannot be resolved yet:",
             error
         );
 
         return null;
     }
-
   }
-
-
+  
   function escapeHtml(text) {
 
     const div = document.createElement("div");
@@ -2211,6 +2211,17 @@ function renderRemoteCursor(
     cursor,
     user
 ) {
+      if (!window.yjsSynced) {
+        return;
+    }
+
+    if (
+        !window.codeEditor ||
+        !cursor ||
+        !user
+    ) {
+        return;
+    }
 
     if (
         !window.codeEditor ||
@@ -2500,30 +2511,7 @@ async function joinApproved(
     });
       }
 
-  function updateLocalPresence() {
-
-    if (!window.codeEditor) return;
-
-    const pos =
-        window.codeEditor.state.selection.main.head;
-
-    const localName =
-        user?.name ||
-        document.getElementById("joinName")?.value.trim() ||
-        "Host";
-
-    awareness.setLocalStateField("cursor", {
-        anchor: pos,
-        head: pos
-    });
-
-    awareness.setLocalStateField("user", {
-        name: localName,
-        color: getUserColor(),
-        picture: user?.picture || null
-    });
-      }
-    
+  
 function connectWebSocket(role, n) {
 
     ws = new WebSocket(
@@ -2652,6 +2640,9 @@ if (data.type === "sync_request") {
         binary,
         "remote"
     );
+        
+    window.yjsSynced = true;
+
 
     return;
   }
@@ -2668,6 +2659,8 @@ if (data.type === "yjs_sync") {
         window.ydoc,
         binary
     );
+  window.yjsSynced = true;
+
 }
 
 if (data.type === "yjs_update") {
