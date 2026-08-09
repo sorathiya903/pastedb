@@ -1744,88 +1744,62 @@ const editor = new EditorView({
 
             EditorView.updateListener.of(update => {
 
-                if (!update.docChanged) {
-                    return;
-                }
-                  if (update.selectionSet || update.docChanged) {
+    if (update.selectionSet || update.docChanged) {
+        updateLocalPresence();
+    }
 
-        const pos =
-            update.state.selection.main.head;
+    if (!update.docChanged) {
+        return;
+    }
 
-        awareness.setLocalStateField("cursor", {
-    anchor: pos,
-    head: pos
-});
+    if (
+        update.transactions.some(tr =>
+            tr.effects.some(effect =>
+                effect.is(CollabRemote)
+            )
+        )
+    ) {
+        return;
+    }
 
-const localName =
-    user?.name ||
-    document.getElementById("joinName")?.value.trim() ||
-    "Host";
+    const changes = [];
 
-awareness.setLocalStateField("user", {
-    name: localName,
-    color: getUserColor(),
-    picture: user?.picture || null
-}); }
+    update.changes.iterChanges(
+        (fromA, toA, fromB, toB, inserted) => {
 
-                if (update.transactions.some(tr =>
-                    tr.effects.some(effect =>
-                        effect.is(CollabRemote)
-                    )
-                )) {
-                    return;
-                }
+            changes.push({
+                from: fromA,
+                to: toA,
+                text: inserted.toString()
+            });
 
-                const changes = [];
+        }
+    );
 
-                update.changes.iterChanges(
-                    (
-                        fromA,
-                        toA,
-                        fromB,
-                        toB,
-                        inserted
-                    ) => {
+    changes.reverse();
 
-                        changes.push({
-                            from: fromA,
-                            to: toA,
-                            text: inserted.toString()
-                        });
+    ydoc.transact(() => {
 
-                    }
+        for (const change of changes) {
+
+            if (change.to > change.from) {
+                ytext.delete(
+                    change.from,
+                    change.to - change.from
                 );
+            }
 
-                changes.reverse();
+            if (change.text.length) {
+                ytext.insert(
+                    change.from,
+                    change.text
+                );
+            }
 
-                ydoc.transact(() => {
+        }
 
-                    for (const change of changes) {
-
-                        if (change.to > change.from) {
-
-                            ytext.delete(
-                                change.from,
-                                change.to - change.from
-                            );
-
-                        }
-
-                        if (change.text.length) {
-
-                            ytext.insert(
-                                change.from,
-                                change.text
-                            );
-
-                        }
-
-                    }
-
-                }, "codemirror");
-
-            })
-
+    }, "codemirror");
+})
         ]
 
     }),
@@ -2139,6 +2113,28 @@ window.ws = null;
     }
   }
 
+  function updateLocalPresence() {
+    if (!window.codeEditor) return;
+
+    const pos = window.codeEditor.state.selection.main.head;
+
+    const localUser = {
+        name:
+            window.user?.name ||
+            document.getElementById("joinName")?.value.trim() ||
+            "Guest",
+        color: getUserColor(),
+        picture: window.user?.picture || null
+    };
+
+    awareness.setLocalStateField("user", localUser);
+
+    awareness.setLocalStateField("cursor", {
+        anchor: pos,
+        head: pos
+    });
+  }
+
 async function joinApproved(
     guestId,
     role,
@@ -2241,13 +2237,16 @@ window.ws = ws;
     console.log("Connected");
 
     
+
       ws.send(JSON.stringify({
     type: "connect",
     role: role,
     name: document.getElementById("joinName").value.trim()
 }));
+      
         
-  
+  updateLocalPresence();
+
 
     if (role !== "host") {
         ws.send(JSON.stringify({
