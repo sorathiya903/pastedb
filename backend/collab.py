@@ -1024,11 +1024,8 @@ async def collab_ws(
 			    await broadcast_presence(
 			        invite_token
 			    )
-			
-			    # ---------------------------------------------------------
-			    # Tell everyone that the participant disappeared
-			    # ---------------------------------------------------------
-			
-			    await broadcast_members(
-			        invite_token
-		)
+
+
+
+            else:
+				print("lastelse")
