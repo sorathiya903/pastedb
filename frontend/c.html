@@ -1742,95 +1742,111 @@ const editor = new EditorView({
                 EditorView.editable.of(true)
             ),
 
-            EditorView.updateListener.of(update => {
+            
+                EditorView.updateListener.of(update => {
 
-                if (!update.docChanged) {
-                    return;
-                }
-                      if (update.selectionSet || update.docChanged) {
+    // Update presence whenever cursor/selection changes
+    if (update.selectionSet || update.docChanged) {
 
-        const pos = update.state.selection.main.head;
-
-        awareness.setLocalStateField("cursor", {
-            anchor: update.state.selection.main.anchor,
-            head: pos
-        });
+        const selection =
+            update.state.selection.main;
 
         const localName =
             user?.name ||
-            document.getElementById("joinName")?.value.trim() ||
+            document
+                .getElementById("joinName")
+                ?.value.trim() ||
             "Host";
 
-        awareness.setLocalStateField("user", {
-            name: localName,
-            color: getUserColor(),
-            picture: user?.picture || null
-        });
+        awareness.setLocalStateField(
+            "cursor",
+            {
+                anchor: selection.anchor,
+                head: selection.head
+            }
+        );
+
+        awareness.setLocalStateField(
+            "user",
+            {
+                name: localName,
+                color: getUserColor(),
+                picture: user?.picture || null
+            }
+        );
     }
 
-if (applyingRemoteUpdate) {
-    return;
-}
 
-if (
-    update.transactions.some(tr =>
-        tr.effects.some(effect =>
-            effect.is(CollabRemote)
+    // Don't send remote changes back into Yjs
+    if (applyingRemoteUpdate) {
+        return;
+    }
+
+    if (
+        update.transactions.some(tr =>
+            tr.effects.some(effect =>
+                effect.is(CollabRemote)
+            )
         )
-    )
-) {
-    return;
-              }
-              
-                const changes = [];
+    ) {
+        return;
+    }
 
-                update.changes.iterChanges(
-                    (
-                        fromA,
-                        toA,
-                        fromB,
-                        toB,
-                        inserted
-                    ) => {
 
-                        changes.push({
-                            from: fromA,
-                            to: toA,
-                            text: inserted.toString()
-                        });
+    // Only document changes need to be converted to Yjs
+    if (!update.docChanged) {
+        return;
+    }
 
-                    }
+
+    const changes = [];
+
+    update.changes.iterChanges(
+        (
+            fromA,
+            toA,
+            fromB,
+            toB,
+            inserted
+        ) => {
+
+            changes.push({
+                from: fromA,
+                to: toA,
+                text: inserted.toString()
+            });
+
+        }
+    );
+
+    changes.reverse();
+
+    ydoc.transact(() => {
+
+        for (const change of changes) {
+
+            if (change.to > change.from) {
+
+                ytext.delete(
+                    change.from,
+                    change.to - change.from
                 );
 
-                changes.reverse();
+            }
 
-                ydoc.transact(() => {
+            if (change.text.length) {
 
-                    for (const change of changes) {
+                ytext.insert(
+                    change.from,
+                    change.text
+                );
 
-                        if (change.to > change.from) {
+            }
+        }
 
-                            ytext.delete(
-                                change.from,
-                                change.to - change.from
-                            );
+    }, "codemirror");
 
-                        }
-
-                        if (change.text.length) {
-
-                            ytext.insert(
-                                change.from,
-                                change.text
-                            );
-
-                        }
-
-                    }
-
-                }, "codemirror");
-
-            })
+})
 
         ]
 
@@ -2116,10 +2132,17 @@ if (editorScroller) {
   window.remoteCursors = {};
 
   function renderRemoteCursor(clientId, cursor, user) {
-const editor =
-        window.codeEditor;
 
-    if (!editor) return;
+    const editor = window.codeEditor;
+
+    if (!editor || !cursor) return;
+
+    const position =
+        typeof cursor.head === "number"
+            ? cursor.head
+            : cursor.anchor;
+
+    if (typeof position !== "number") return;
 
     const safePosition =
         Math.max(
@@ -2131,28 +2154,28 @@ const editor =
         );
 
     const coords =
-        editor.coordsAtPos(
-            safePosition
-        );
+        editor.coordsAtPos(safePosition);
 
     if (!coords) return;
+
     const wrapper =
         document.querySelector(".editor-wrapper");
 
-    if (!wrapper) {
-        return;
-    }
+    if (!wrapper) return;
 
-    // Save latest position
+
+    // Save latest state
     window.remoteCursors[clientId] = {
         cursor,
         user
     };
 
+
     let el =
         document.getElementById(
             `remote-cursor-${clientId}`
         );
+
 
     if (!el) {
 
@@ -2164,13 +2187,16 @@ const editor =
         el.className =
             "remote-cursor";
 
-        el.dataset.clientId = clientId;
+        el.dataset.clientId =
+            clientId;
 
         wrapper.appendChild(el);
     }
 
+
     const rect =
         wrapper.getBoundingClientRect();
+
 
     el.style.left =
         `${coords.left - rect.left}px`;
@@ -2180,6 +2206,7 @@ const editor =
 
     el.style.background =
         user.color || "#3b82f6";
+
 
     el.innerHTML = `
         <span
@@ -2454,11 +2481,11 @@ window.ws = ws;
 
     console.log(data);
       
-      if (data.type === "presence_state") {
+if (data.type === "presence_state") {
 
     const users = data.users || {};
 
-    // Remove users who left
+    // Remove cursors of users who left
     document
         .querySelectorAll(".remote-cursor")
         .forEach(el => {
@@ -2467,45 +2494,43 @@ window.ws = ws;
                 el.id.replace("remote-cursor-", "");
 
             if (!users[id]) {
+
                 el.remove();
 
-                if (window.remoteCursors) {
-                    delete window.remoteCursors[id];
-                }
+                delete window.remoteCursors[id];
             }
         });
 
 
-Object.entries(window.remoteCursors)
-    .forEach(([clientId, remote]) => {
+    // Render/update current remote cursors
+    Object.entries(users).forEach(
+        ([clientId, presence]) => {
 
-        if (
-            typeof remote.position !== "number"
-        ) {
-            return;
+            if (!presence) return;
+
+            const cursor =
+                presence.cursor;
+
+            const user =
+                presence.user || {};
+
+            if (!cursor) return;
+
+            window.remoteCursors[clientId] = {
+                cursor: cursor,
+                user: user
+            };
+
+            renderRemoteCursor(
+                clientId,
+                cursor,
+                user
+            );
         }
-
-        remote.position =
-            mapCursorPosition(
-                remote.position,
-                event.delta
-            );
-
-        remote.anchor =
-            mapCursorPosition(
-                remote.anchor,
-                event.delta
-            );
-
-        renderRemoteCursor(
-            clientId,
-            remote.position,
-            remote.user
-        );
-    });
+    );
 
     return;
-}
+  }
       if (data.type === "participants") {
 
     updateParticipants(data.users);
