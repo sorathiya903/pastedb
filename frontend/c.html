@@ -2134,7 +2134,7 @@ if (editorScroller) {
   function renderRemoteCursor(clientId, cursor, user) {
 
     const editor = window.codeEditor;
-
+    console.log("fn call")
     if (!editor || !cursor) return;
 
     const position =
@@ -2179,7 +2179,7 @@ const safePosition =
 
 
     if (!el) {
-
+      console.log("el create")
         el = document.createElement("div");
 
         el.id =
@@ -2190,7 +2190,7 @@ const safePosition =
 
         el.dataset.clientId =
             clientId;
-
+console.log("add to wrapper")
         wrapper.appendChild(el);
     }
 
