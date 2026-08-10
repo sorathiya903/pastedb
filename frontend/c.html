@@ -2476,36 +2476,33 @@ window.ws = ws;
         });
 
 
-    // Add/update users
-    Object.entries(users).forEach(
-        ([clientId, presence]) => {
+Object.entries(window.remoteCursors)
+    .forEach(([clientId, remote]) => {
 
-            if (
-                !presence ||
-                !presence.cursor
-            ) {
-                return;
-            }
-
-            const cursor =
-                presence.cursor;
-
-            window.remoteCursors[clientId] = {
-
-                position: cursor.head,
-
-                anchor: cursor.anchor,
-
-                user: presence.user
-            };
-
-            renderRemoteCursor(
-                clientId,
-                cursor.head,
-                presence.user
-            );
+        if (
+            typeof remote.position !== "number"
+        ) {
+            return;
         }
-    );
+
+        remote.position =
+            mapCursorPosition(
+                remote.position,
+                event.delta
+            );
+
+        remote.anchor =
+            mapCursorPosition(
+                remote.anchor,
+                event.delta
+            );
+
+        renderRemoteCursor(
+            clientId,
+            remote.position,
+            remote.user
+        );
+    });
 
     return;
 }
