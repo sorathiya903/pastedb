@@ -2133,53 +2133,77 @@ if (editorScroller) {
 
   function renderRemoteCursor(clientId, cursor, user) {
 
+    console.log("=== RENDER CURSOR ===");
+    console.log("clientId:", clientId);
+    console.log("cursor:", cursor);
+    console.log("user:", user);
+
     const editor = window.codeEditor;
-    console.log("fn call")
-    if (!editor || !cursor) return;
+
+    if (!editor) {
+        console.log("NO CODEMIRROR EDITOR");
+        return;
+    }
+
+    if (!cursor) {
+        console.log("NO CURSOR DATA");
+        return;
+    }
 
     const position =
         typeof cursor.head === "number"
             ? cursor.head
             : cursor.anchor;
 
-    if (typeof position !== "number") return;
+    console.log("POSITION:", position);
 
+    if (typeof position !== "number") {
+        console.log("INVALID POSITION");
+        return;
+    }
 
-
-const safePosition =
-    Math.max(
+    const safePosition = Math.max(
         0,
         Math.min(
             position,
             editor.state.doc.length
         )
     );
+
+    console.log(
+        "SAFE POSITION:",
+        safePosition,
+        "DOC LENGTH:",
+        editor.state.doc.length
+    );
+
     const coords =
         editor.coordsAtPos(safePosition);
 
-    if (!coords) return;
+    console.log("COORDS:", coords);
+
+    if (!coords) {
+        console.log("NO COORDINATES");
+        return;
+    }
 
     const wrapper =
         document.querySelector(".editor-wrapper");
 
-    if (!wrapper) return;
-
-
-    // Save latest state
-    window.remoteCursors[clientId] = {
-        cursor,
-        user
-    };
-
+    if (!wrapper) {
+        console.log("NO EDITOR WRAPPER");
+        return;
+    }
 
     let el =
         document.getElementById(
             `remote-cursor-${clientId}`
         );
 
-
     if (!el) {
-      console.log("el create")
+
+        console.log("CREATING CURSOR ELEMENT");
+
         el = document.createElement("div");
 
         el.id =
@@ -2190,14 +2214,12 @@ const safePosition =
 
         el.dataset.clientId =
             clientId;
-console.log("add to wrapper")
+
         wrapper.appendChild(el);
     }
 
-
     const rect =
         wrapper.getBoundingClientRect();
-
 
     el.style.left =
         `${coords.left - rect.left}px`;
@@ -2205,18 +2227,25 @@ console.log("add to wrapper")
     el.style.top =
         `${coords.top - rect.top}px`;
 
-    el.style.background =
-        user.color || "#3b82f6";
+    el.style.height = "22px";
+    el.style.width = "2px";
 
+    el.style.background =
+        user?.color || "#3b82f6";
 
     el.innerHTML = `
         <span
             class="remote-cursor-label"
-            style="background:${user.color || "#3b82f6"}"
+            style="background:${user?.color || "#3b82f6"}"
         >
-            ${escapeHtml(user.name || "Guest")}
+            ${escapeHtml(user?.name || "Guest")}
         </span>
     `;
+
+    console.log(
+        "CURSOR RENDERED:",
+        el
+    );
   }
       
   
