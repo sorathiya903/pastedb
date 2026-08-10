@@ -2144,15 +2144,16 @@ if (editorScroller) {
 
     if (typeof position !== "number") return;
 
-    const safePosition =
-        Math.max(
-            0,
-            Math.min(
-                position,
-                editor.state.doc.length
-            )
-        );
+const position = cursor.head;
 
+const safePosition =
+    Math.max(
+        0,
+        Math.min(
+            position,
+            editor.state.doc.length
+        )
+    );
     const coords =
         editor.coordsAtPos(safePosition);
 
