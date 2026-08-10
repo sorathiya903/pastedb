@@ -2116,20 +2116,26 @@ if (editorScroller) {
   window.remoteCursors = {};
 
   function renderRemoteCursor(clientId, cursor, user) {
+const editor =
+        window.codeEditor;
 
-    if (!window.codeEditor || !cursor || !user) {
-        return;
-    }
+    if (!editor) return;
 
-    const pos = cursor.head ?? cursor.anchor;
+    const safePosition =
+        Math.max(
+            0,
+            Math.min(
+                position,
+                editor.state.doc.length
+            )
+        );
 
     const coords =
-        window.codeEditor.coordsAtPos(pos);
+        editor.coordsAtPos(
+            safePosition
+        );
 
-    if (!coords) {
-        return;
-    }
-
+    if (!coords) return;
     const wrapper =
         document.querySelector(".editor-wrapper");
 
@@ -2447,41 +2453,62 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
+      
       if (data.type === "presence_state") {
 
     const users = data.users || {};
 
-    // Remove cursors that are no longer present
-    document.querySelectorAll(".remote-cursor").forEach(el => {
-        const id = el.id.replace("remote-cursor-", "");
+    // Remove users who left
+    document
+        .querySelectorAll(".remote-cursor")
+        .forEach(el => {
 
-        if (!users[id]) {
-            el.remove();
+            const id =
+                el.id.replace("remote-cursor-", "");
+
+            if (!users[id]) {
+                el.remove();
+
+                if (window.remoteCursors) {
+                    delete window.remoteCursors[id];
+                }
+            }
+        });
+
+
+    // Add/update users
+    Object.entries(users).forEach(
+        ([clientId, presence]) => {
+
+            if (
+                !presence ||
+                !presence.cursor
+            ) {
+                return;
+            }
+
+            const cursor =
+                presence.cursor;
+
+            window.remoteCursors[clientId] = {
+
+                position: cursor.head,
+
+                anchor: cursor.anchor,
+
+                user: presence.user
+            };
+
+            renderRemoteCursor(
+                clientId,
+                cursor.head,
+                presence.user
+            );
         }
-    });
-
-    // Render every participant's cursor
-    Object.entries(users).forEach(([clientId, presence]) => {
-
-        if (!presence) return;
-
-        // Don't render our own cursor
-        if (
-            clientId === window.guestId ||
-            (window.guestRole === "host" && clientId === "host")
-        ) {
-            return;
-        }
-
-        renderRemoteCursor(
-            clientId,
-            presence.cursor,
-            presence.user
-        );
-    });
+    );
 
     return;
-                                 }
+}
       if (data.type === "participants") {
 
     updateParticipants(data.users);
