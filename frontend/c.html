@@ -2144,7 +2144,7 @@ if (editorScroller) {
 
     if (typeof position !== "number") return;
 
-const position = cursor.head;
+
 
 const safePosition =
     Math.max(
@@ -2504,32 +2504,26 @@ if (data.type === "presence_state") {
 
 
     // Render/update current remote cursors
-    Object.entries(users).forEach(
-        ([clientId, presence]) => {
+    Object.entries(window.remoteCursors).forEach(
+    ([clientId, remote]) => {
 
-            if (!presence) return;
-
-            const cursor =
-                presence.cursor;
-
-            const user =
-                presence.user || {};
-
-            if (!cursor) return;
-
-            window.remoteCursors[clientId] = {
-                cursor: cursor,
-                user: user
-            };
-
-            renderRemoteCursor(
-                clientId,
-                cursor,
-                user
-            );
+        if (
+            !remote.cursor ||
+            typeof remote.cursor.head !== "number"
+        ) {
+            return;
         }
-    );
 
+        const position =
+            remote.cursor.head;
+
+        renderRemoteCursor(
+            clientId,
+            remote.cursor,
+            remote.user
+        );
+    }
+);
     return;
   }
       if (data.type === "participants") {
