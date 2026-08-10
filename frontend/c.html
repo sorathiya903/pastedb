@@ -1768,15 +1768,20 @@ const editor = new EditorView({
         });
     }
 
-    if (
-        update.transactions.some(tr =>
-            tr.effects.some(effect =>
-                effect.is(CollabRemote)
-            )
+if (applyingRemoteUpdate) {
+    return;
+}
+
+if (
+    update.transactions.some(tr =>
+        tr.effects.some(effect =>
+            effect.is(CollabRemote)
         )
-    ) {
-        return;
-    }
+    )
+) {
+    return;
+              }
+              
                 const changes = [];
 
                 update.changes.iterChanges(
@@ -1889,43 +1894,47 @@ awareness.on("update", () => {
     
 ytext.observe(event => {
 
-    console.log("YJS OBSERVER FIRED");
+    if (!window.codeEditor) return;
 
+    const editor = window.codeEditor;
+
+    // Current cursor/selection
+    const selection = editor.state.selection.main;
+
+    const oldAnchor = selection.anchor;
+    const oldHead = selection.head;
+
+    // Get the authoritative document from Yjs
     const newText = ytext.toString();
-    const currentText = editor.state.doc.toString();
 
-    console.log(
-        "YJS text:",
-        JSON.stringify(newText)
-    );
+    // Prevent our own update from being sent back to Yjs
+    applyingRemoteUpdate = true;
 
-    console.log(
-        "CodeMirror text:",
-        JSON.stringify(currentText)
-    );
+    try {
 
-    if (newText === currentText) {
-        console.log("Already synchronized");
-        return;
+        editor.dispatch({
+            changes: {
+                from: 0,
+                to: editor.state.doc.length,
+                insert: newText
+            },
+
+            // Keep cursor roughly where it was
+            selection: {
+                anchor: Math.min(oldAnchor, newText.length),
+                head: Math.min(oldHead, newText.length)
+            },
+
+            effects: CollabRemote.of(true)
+        });
+
+    } finally {
+
+        applyingRemoteUpdate = false;
+
     }
 
-    editor.dispatch({
-    changes: {
-        from: 0,
-        to: editor.state.doc.length,
-        insert: newText
-    },
-    effects: CollabRemote.of(true)
 });
-    console.log(
-        "CodeMirror updated:",
-        JSON.stringify(
-            editor.state.doc.toString()
-        )
-    );
-
-});
-    
 
 // =====================================================
 // SEND YJS UPDATES
