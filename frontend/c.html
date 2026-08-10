@@ -2481,51 +2481,84 @@ window.ws = ws;
     const data = JSON.parse(event.data);
 
     console.log(data);
-      
 if (data.type === "presence_state") {
 
     const users = data.users || {};
 
-    // Remove cursors of users who left
+    console.log("PRESENCE USERS:", users);
+
+    Object.entries(users).forEach(
+        ([clientId, presence]) => {
+
+            console.log(
+                "PRESENCE USER:",
+                clientId,
+                presence
+            );
+
+            if (!presence) return;
+
+            const cursor = presence.cursor;
+            const user = presence.user || {};
+
+            if (!cursor) {
+                console.log("NO CURSOR:", clientId);
+                return;
+            }
+
+            if (
+                typeof cursor.head !== "number" &&
+                typeof cursor.anchor !== "number"
+            ) {
+                console.log(
+                    "INVALID CURSOR:",
+                    clientId,
+                    cursor
+                );
+                return;
+            }
+
+            // Store it
+            window.remoteCursors[clientId] = {
+                cursor: cursor,
+                user: user
+            };
+
+            console.log(
+                "CALLING RENDER:",
+                clientId,
+                cursor,
+                user
+            );
+
+            // IMPORTANT: actually render it
+            renderRemoteCursor(
+                clientId,
+                cursor,
+                user
+            );
+        }
+    );
+
+
+    // Remove users who are no longer present
     document
         .querySelectorAll(".remote-cursor")
         .forEach(el => {
 
-            const id =
-                el.id.replace("remote-cursor-", "");
+            const clientId =
+                el.dataset.clientId;
 
-            if (!users[id]) {
+            if (!users[clientId]) {
 
                 el.remove();
 
-                delete window.remoteCursors[id];
+                delete window.remoteCursors[clientId];
             }
         });
 
-
-    // Render/update current remote cursors
-    Object.entries(window.remoteCursors).forEach(
-    ([clientId, remote]) => {
-
-        if (
-            !remote.cursor ||
-            typeof remote.cursor.head !== "number"
-        ) {
-            return;
-        }
-
-        const position =
-            remote.cursor.head;
-
-        renderRemoteCursor(
-            clientId,
-            remote.cursor,
-            remote.user
-        );
-    }
-);
     return;
-  }
+}
       if (data.type === "participants") {
 
     updateParticipants(data.users);
