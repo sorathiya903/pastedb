@@ -32,30 +32,38 @@ debug
 <link rel="icon" type="image/png" href="/favicon.png">
 
   <style>
-    .remote-cursor {
-    position: absolute;
-    width: 2px;
-    height: 22px;
-    pointer-events: none;
-    z-index: 100;
+.remote-editing-line {
+    background: rgba(59, 130, 246, 0.10);
+    border-left: 3px solid #3b82f6;
 }
 
-.remote-cursor-label {
+.remote-editing-gutter {
+    background: rgba(59, 130, 246, 0.18);
+    color: #3b82f6 !important;
+    font-weight: 800;
+}
+
+.remote-editing-label {
     position: absolute;
-    left: 3px;
-    top: -24px;
 
-    color: white;
+    left: 78px;
 
-    padding: 4px 7px;
-    border-radius: 6px;
+    padding: 4px 8px;
+
+    border-radius: 7px;
 
     font-size: 11px;
     font-weight: 600;
 
+    color: white;
+
+    pointer-events: none;
+
+    z-index: 50;
+
     white-space: nowrap;
 
-    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
 }
     .version-card-wrap {
     display: none;
@@ -1693,9 +1701,15 @@ import {
 import {
     EditorState,
     StateEffect,
-  Compartment
+    StateField,
+    Compartment,
+    RangeSetBuilder
 } from "https://esm.sh/@codemirror/state";
-  
+
+import {
+    Decoration,
+    gutterLineClass
+} from "https://esm.sh/@codemirror/view";
     
 import { Awareness } from "https://esm.sh/y-protocols/awareness?deps=yjs@13.6.27";
     import {
@@ -1721,7 +1735,94 @@ window.ytext = ytext;
 
 let applyingRemoteUpdate = false;
 
+const remoteLineEffect = StateEffect.define();
 
+const remoteLineField = StateField.define({
+    create() {
+        return {
+            lines: [],
+            gutter: []
+        };
+    },
+
+    update(value, tr) {
+
+        for (const effect of tr.effects) {
+
+            if (!effect.is(remoteLineEffect)) {
+                continue;
+            }
+
+            const builder = new RangeSetBuilder();
+            const gutterBuilder = new RangeSetBuilder();
+
+            effect.value.forEach(item => {
+
+                const line =
+                    tr.state.doc.lineAt(
+                        Math.max(
+                            0,
+                            Math.min(
+                                item.position,
+                                tr.state.doc.length
+                            )
+                        )
+                    );
+
+                const decoration =
+                    Decoration.line({
+                        attributes: {
+                            class: "remote-editing-line",
+                            "data-client-id":
+                                item.clientId
+                        }
+                    });
+
+                builder.add(
+                    line.from,
+                    line.from,
+                    decoration
+                );
+
+                const gutterDecoration =
+                    Decoration.line({
+                        attributes: {
+                            class:
+                                "remote-editing-gutter"
+                        }
+                    });
+
+                gutterBuilder.add(
+                    line.from,
+                    line.from,
+                    gutterDecoration
+                );
+            });
+
+            return {
+                lines: builder.finish(),
+                gutter: gutterBuilder.finish()
+            };
+        }
+
+        return value;
+    },
+
+    provide(field) {
+
+        return [
+            EditorView.decorations.from(
+                field,
+                value => value.lines
+            ),
+
+            gutterLineClass.from(
+                field,
+                value => value.gutter
+            )
+        ];
+    }
+});
 // =====================================================
 // CODEMIRROR
 // =====================================================
@@ -1737,6 +1838,7 @@ const editor = new EditorView({
             basicSetup,
 
             javascript(),
+          remoteLineField,
 
             editableCompartment.of(
                 EditorView.editable.of(true)
@@ -2133,20 +2235,9 @@ if (editorScroller) {
 
   function renderRemoteCursor(clientId, cursor, user) {
 
-    console.log("=== RENDER CURSOR ===");
-    console.log("clientId:", clientId);
-    console.log("cursor:", cursor);
-    console.log("user:", user);
-
     const editor = window.codeEditor;
 
-    if (!editor) {
-        console.log("NO CODEMIRROR EDITOR");
-        return;
-    }
-
-    if (!cursor) {
-        console.log("NO CURSOR DATA");
+    if (!editor || !cursor) {
         return;
     }
 
@@ -2155,10 +2246,7 @@ if (editorScroller) {
             ? cursor.head
             : cursor.anchor;
 
-    console.log("POSITION:", position);
-
     if (typeof position !== "number") {
-        console.log("INVALID POSITION");
         return;
     }
 
@@ -2170,82 +2258,118 @@ if (editorScroller) {
         )
     );
 
-    console.log(
-        "SAFE POSITION:",
-        safePosition,
-        "DOC LENGTH:",
-        editor.state.doc.length
-    );
+    // Store position for future document changes
+    window.remoteCursors[clientId] = {
+        cursor,
+        user,
+        position: safePosition
+    };
 
-    const coords =
-        editor.coordsAtPos(safePosition);
+    updateRemoteEditingLines();
+  }
+  function updateRemoteEditingLines() {
 
-    console.log("COORDS:", coords);
+    const editor = window.codeEditor;
 
-    if (!coords) {
-        console.log("NO COORDINATES");
-        return;
-    }
+    if (!editor) return;
+
+    const remoteLines = [];
+
+    Object.entries(
+        window.remoteCursors || {}
+    ).forEach(([clientId, remote]) => {
+
+        if (
+            !remote ||
+            typeof remote.position !== "number"
+        ) {
+            return;
+        }
+
+        remoteLines.push({
+            clientId,
+            position: remote.position,
+            user: remote.user || {}
+        });
+    });
+
+    editor.dispatch({
+        effects: remoteLineEffect.of(
+            remoteLines
+        )
+    });
+
+    updateRemoteLineLabels();
+  }
+  function updateRemoteLineLabels() {
+
+    const editor = window.codeEditor;
+
+    if (!editor) return;
+
+    document
+        .querySelectorAll(".remote-editing-label")
+        .forEach(el => el.remove());
 
     const wrapper =
         document.querySelector(".editor-wrapper");
 
-    if (!wrapper) {
-        console.log("NO EDITOR WRAPPER");
-        return;
-    }
+    if (!wrapper) return;
 
-    let el =
-        document.getElementById(
-            `remote-cursor-${clientId}`
-        );
-
-    if (!el) {
-
-        console.log("CREATING CURSOR ELEMENT");
-
-        el = document.createElement("div");
-
-        el.id =
-            `remote-cursor-${clientId}`;
-
-        el.className =
-            "remote-cursor";
-
-        el.dataset.clientId =
-            clientId;
-
-        wrapper.appendChild(el);
-    }
-
-    const rect =
+    const wrapperRect =
         wrapper.getBoundingClientRect();
 
-    el.style.left =
-        `${coords.left - rect.left}px`;
+    Object.entries(
+        window.remoteCursors || {}
+    ).forEach(([clientId, remote]) => {
 
-    el.style.top =
-        `${coords.top - rect.top}px`;
+        if (
+            !remote ||
+            typeof remote.position !== "number"
+        ) {
+            return;
+        }
 
-    el.style.height = "22px";
-    el.style.width = "2px";
+        const position = Math.max(
+            0,
+            Math.min(
+                remote.position,
+                editor.state.doc.length
+            )
+        );
 
-    el.style.background =
-        user?.color || "#3b82f6";
+        const line =
+            editor.state.doc.lineAt(position);
 
-    el.innerHTML = `
-        <span
-            class="remote-cursor-label"
-            style="background:${user?.color || "#3b82f6"}"
-        >
-            ${escapeHtml(user?.name || "Guest")}
-        </span>
-    `;
+        const coords =
+            editor.coordsAtPos(line.from);
 
-    console.log(
-        "CURSOR RENDERED:",
-        el
-    );
+        if (!coords) return;
+
+        const label =
+            document.createElement("div");
+
+        label.className =
+            "remote-editing-label";
+
+        label.dataset.clientId =
+            clientId;
+
+        const color =
+            remote.user?.color ||
+            "#3b82f6";
+
+        label.style.background =
+            color;
+
+        label.textContent =
+            `${remote.user?.name || "Guest"} is editing`;
+
+        label.style.top =
+            `${coords.top - wrapperRect.top}px`;
+
+        wrapper.appendChild(label);
+    });
   }
       
   
@@ -2517,41 +2641,34 @@ if (data.type === "presence_state") {
     console.log("PRESENCE USERS:", users);
 
     Object.entries(users).forEach(
-        ([clientId, presence]) => {
+    Object.values(window.remoteCursors).forEach(remote => {
 
-            console.log(
-                "PRESENCE USER:",
-                clientId,
-                presence
-            );
+    if (
+        typeof remote.position !== "number"
+    ) {
+        return;
+    }
 
-            if (!presence) return;
+    remote.position =
+        mapCursorThroughYjsDelta(
+            remote.position,
+            event.delta
+        );
 
-            const cursor = presence.cursor;
-            const user = presence.user || {};
+});
 
-            if (!cursor) {
-                console.log("NO CURSOR:", clientId);
-                return;
-            }
+updateRemoteEditingLines();
+  
+            const position =
+    typeof cursor.head === "number"
+        ? cursor.head
+        : cursor.anchor;
 
-            if (
-                typeof cursor.head !== "number" &&
-                typeof cursor.anchor !== "number"
-            ) {
-                console.log(
-                    "INVALID CURSOR:",
-                    clientId,
-                    cursor
-                );
-                return;
-            }
-
-            // Store it
-            window.remoteCursors[clientId] = {
-                cursor: cursor,
-                user: user
-            };
+window.remoteCursors[clientId] = {
+    cursor: cursor,
+    user: user,
+    position: position
+};
 
             console.log(
                 "CALLING RENDER:",
@@ -2571,20 +2688,15 @@ if (data.type === "presence_state") {
 
 
     // Remove users who are no longer present
-    document
-        .querySelectorAll(".remote-cursor")
-        .forEach(el => {
+    Object.keys(window.remoteCursors).forEach(clientId => {
 
-            const clientId =
-                el.dataset.clientId;
+    if (!users[clientId]) {
+        delete window.remoteCursors[clientId];
+    }
 
-            if (!users[clientId]) {
+});
 
-                el.remove();
-
-                delete window.remoteCursors[clientId];
-            }
-        });
+updateRemoteEditingLines();
 
     return;
 }
