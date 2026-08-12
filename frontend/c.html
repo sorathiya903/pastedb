@@ -2668,7 +2668,7 @@ window.remoteCursors[clientId] = {
         );
 
 window.codeEditor.dispatch({
-    effects: remoteLineEffect.of(remoteItems)
+    effects: window.remoteLineEffect.of(remoteItems)
 });
         }
     );
