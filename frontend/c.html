@@ -33,8 +33,8 @@ debug
 
   <style>
     .remote-editing-line {
-    background: rgba(59, 130, 246, 0.12);
-    border-left: 3px solid #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+    border-left: 3px solid var(--remote-color, #3b82f6);
     }
 
 
@@ -47,13 +47,13 @@ debug
 .remote-editing-label {
     position: absolute;
 
-    left: 78px;
+    left: 6px;
 
-    padding: 4px 8px;
+    padding: 3px 7px;
 
     border-radius: 7px;
 
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
 
     color: white;
@@ -65,6 +65,22 @@ debug
     white-space: nowrap;
 
     box-shadow: 0 4px 14px rgba(0,0,0,.18);
+
+    transform: translateY(-2px);
+
+    animation: remoteLabelIn .18s ease-out;
+}
+
+@keyframes remoteLabelIn {
+    from {
+        opacity: 0;
+        transform: translateY(3px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(-2px) scale(1);
+    }
 }
     .version-card-wrap {
     display: none;
@@ -2321,8 +2337,8 @@ function updateRemoteEditingLines() {
             color;
 
         label.textContent =
-            `${remote.user?.name || "Guest"} is editing`;
-
+    remote.user?.name || "Guest";
+      
         label.style.top =
             `${coords.top - wrapperRect.top}px`;
 
