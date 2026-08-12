@@ -2076,20 +2076,21 @@ ytext.observe(event => {
 
         Object.values(window.remoteCursors).forEach(remote => {
 
-            if (
-                typeof remote.position !== "number"
-            ) {
-                return;
-            }
+    if (
+        typeof remote.position !== "number"
+    ) {
+        return;
+    }
 
-            remote.position =
-                mapCursorThroughYjsDelta(
-                    remote.position,
-                    event.delta
-                );
+    remote.position =
+        mapCursorThroughYjsDelta(
+            remote.position,
+            event.delta
+        );
 
-        });
+});
 
+updateRemoteEditingLines();
     }
 
 
@@ -2193,26 +2194,15 @@ if (editorScroller) {
 
     editorScroller.addEventListener("scroll", () => {
 
-        document
-            .querySelectorAll(".remote-cursor")
-            .forEach(el => {
+        Object.keys(window.remoteCursors).forEach(clientId => {
 
-                const clientId =
-                    el.dataset.clientId;
+    if (!users[clientId]) {
+        delete window.remoteCursors[clientId];
+    }
 
-                const cursorData =
-                    window.remoteCursors?.[clientId];
+});
 
-                if (!cursorData) return;
-
-                renderRemoteCursor(
-                    clientId,
-                    cursorData.cursor,
-                    cursorData.user
-                );
-
-            });
-
+updateRemoteEditingLines();
     });
 }
 
@@ -2641,23 +2631,36 @@ if (data.type === "presence_state") {
     console.log("PRESENCE USERS:", users);
 
     Object.entries(users).forEach(
-    Object.values(window.remoteCursors).forEach(remote => {
+        ([clientId, presence]) => {
 
-    if (
-        typeof remote.position !== "number"
-    ) {
-        return;
-    }
+            console.log(
+                "PRESENCE USER:",
+                clientId,
+                presence
+            );
 
-    remote.position =
-        mapCursorThroughYjsDelta(
-            remote.position,
-            event.delta
-        );
+            if (!presence) return;
 
-});
+            const cursor = presence.cursor;
+            const user = presence.user || {};
 
-updateRemoteEditingLines();
+            if (!cursor) {
+                console.log("NO CURSOR:", clientId);
+                return;
+            }
+
+            if (
+                typeof cursor.head !== "number" &&
+                typeof cursor.anchor !== "number"
+            ) {
+                console.log(
+                    "INVALID CURSOR:",
+                    clientId,
+                    cursor
+                );
+                return;
+            }
+
   
             const position =
     typeof cursor.head === "number"
