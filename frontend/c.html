@@ -73,18 +73,57 @@ debug
 .remote-editing-dot {
     position: absolute;
 
-    left: 20px;
+    /* Center horizontally in the gutter */
+    left: 50%;
+    transform: translateX(-50%);
 
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
 
     border-radius: 50%;
 
     z-index: 51;
 
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: default;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    overflow: hidden;
 
     box-shadow: 0 0 0 3px rgba(255,255,255,.08);
+
+    transition:
+        width .22s ease,
+        height .22s ease,
+        border-radius .22s ease,
+        padding .22s ease,
+        transform .22s ease,
+        box-shadow .22s ease;
+}
+
+.remote-editing-dot:hover {
+
+    width: auto;
+    min-width: 70px;
+    height: 25px;
+
+    padding: 0 9px;
+
+    border-radius: 8px;
+
+    transform: translateX(-50%);
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.25),
+        0 0 0 2px rgba(255,255,255,.08);
 }
 @keyframes remoteLabelIn {
     from {
@@ -2292,13 +2331,13 @@ updateRemoteEditingLines();
 
     updateRemoteLineLabels();
   }
+
 function updateRemoteLineLabels() {
 
     const editor = window.codeEditor;
 
     if (!editor) return;
 
-    // Remove old dots
     document
         .querySelectorAll(".remote-editing-dot")
         .forEach(el => el.remove());
@@ -2338,7 +2377,6 @@ function updateRemoteLineLabels() {
 
         if (!coords) return;
 
-        // Create dot
         const dot =
             document.createElement("div");
 
@@ -2355,15 +2393,18 @@ function updateRemoteLineLabels() {
         dot.style.background =
             color;
 
-        // Position dot beside the line
+        // Name shown when hovered
+        dot.textContent =
+            remote.user?.name || "Guest";
+
+        // Center vertically on the CodeMirror line
         dot.style.top =
-            `${coords.top - wrapperRect.top + 8}px`;
+            `${coords.top - wrapperRect.top +
+              (coords.bottom - coords.top) / 2 - 12.5}px`;
 
         wrapper.appendChild(dot);
-
     });
-  }
-  
+              }
   
   function getUserColor() {
 
