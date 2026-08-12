@@ -1739,6 +1739,7 @@ let applyingRemoteUpdate = false;
 
 
 const remoteLineEffect = StateEffect.define();
+    window.remoteLineEffect = remoteLineEffect;
 
 const remoteLineField = StateField.define({
 
@@ -2226,11 +2227,11 @@ updateRemoteEditingLines();
 
     updateRemoteEditingLines();
   }
-  function updateRemoteEditingLines() {
+function updateRemoteEditingLines() {
 
     const editor = window.codeEditor;
 
-    if (!editor) return;
+    if (!editor || !window.remoteLineEffect) return;
 
     const remoteLines = [];
 
@@ -2253,13 +2254,11 @@ updateRemoteEditingLines();
     });
 
     editor.dispatch({
-        effects: remoteLineEffect.of(
-            remoteLines
-        )
+        effects: window.remoteLineEffect.of(remoteLines)
     });
 
     updateRemoteLineLabels();
-  }
+}
   function updateRemoteLineLabels() {
 
     const editor = window.codeEditor;
