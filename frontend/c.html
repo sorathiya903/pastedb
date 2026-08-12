@@ -70,7 +70,22 @@ debug
 
     animation: remoteLabelIn .18s ease-out;
 }
+.remote-editing-dot {
+    position: absolute;
 
+    left: 20px;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    z-index: 51;
+
+    pointer-events: none;
+
+    box-shadow: 0 0 0 3px rgba(255,255,255,.08);
+}
 @keyframes remoteLabelIn {
     from {
         opacity: 0;
@@ -2243,11 +2258,11 @@ updateRemoteEditingLines();
 
     updateRemoteEditingLines();
   }
-function updateRemoteEditingLines() {
+  function updateRemoteEditingLines() {
 
     const editor = window.codeEditor;
 
-    if (!editor || !window.remoteLineEffect) return;
+    if (!editor) return;
 
     const remoteLines = [];
 
@@ -2270,19 +2285,22 @@ function updateRemoteEditingLines() {
     });
 
     editor.dispatch({
-        effects: window.remoteLineEffect.of(remoteLines)
+        effects: remoteLineEffect.of(
+            remoteLines
+        )
     });
 
     updateRemoteLineLabels();
-}
-  function updateRemoteLineLabels() {
+  }
+function updateRemoteLineLabels() {
 
     const editor = window.codeEditor;
 
     if (!editor) return;
 
+    // Remove old dots
     document
-        .querySelectorAll(".remote-editing-label")
+        .querySelectorAll(".remote-editing-dot")
         .forEach(el => el.remove());
 
     const wrapper =
@@ -2320,32 +2338,32 @@ function updateRemoteEditingLines() {
 
         if (!coords) return;
 
-        const label =
+        // Create dot
+        const dot =
             document.createElement("div");
 
-        label.className =
-            "remote-editing-label";
+        dot.className =
+            "remote-editing-dot";
 
-        label.dataset.clientId =
+        dot.dataset.clientId =
             clientId;
 
         const color =
             remote.user?.color ||
             "#3b82f6";
 
-        label.style.background =
+        dot.style.background =
             color;
 
-        label.textContent =
-    remote.user?.name || "Guest";
-      
-        label.style.top =
-            `${coords.top - wrapperRect.top}px`;
+        // Position dot beside the line
+        dot.style.top =
+            `${coords.top - wrapperRect.top + 8}px`;
 
-        wrapper.appendChild(label);
+        wrapper.appendChild(dot);
+
     });
   }
-      
+  
   
   function getUserColor() {
 
