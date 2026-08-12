@@ -73,47 +73,115 @@ debug
 .remote-editing-dot {
     position: absolute;
 
+    /* Small dot */
     width: 9px;
     height: 9px;
 
-    border-radius: 50%;
+    padding: 0;
 
-    z-index: 100;
-    pointer-events: auto;
-    cursor: default;
+    border-radius: 50%;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: white;
-    font-size: 10px;
+    z-index: 100;
+
+    /* Important for the expanded name */
+    overflow: visible;
+
+    pointer-events: auto;
+    cursor: default;
+
+    /*
+     * Hide the name while it is a dot.
+     */
+    color: transparent;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", sans-serif;
+    font-size: 11px;
     font-weight: 600;
+    letter-spacing: -0.1px;
 
     white-space: nowrap;
-    overflow: hidden;
 
-    box-shadow: 0 0 0 3px rgba(255,255,255,.08);
+    box-shadow:
+        0 0 0 2px var(--card),
+        0 0 0 4px rgba(59, 130, 246, 0.14);
+
+    transform: translateX(-50%);
 
     transition:
-        width .2s ease,
-        height .2s ease,
-        border-radius .2s ease,
-        box-shadow .2s ease,
-        transform .2s ease;
+        width 220ms cubic-bezier(.2,.8,.2,1),
+        height 220ms cubic-bezier(.2,.8,.2,1),
+        padding 220ms cubic-bezier(.2,.8,.2,1),
+        border-radius 220ms ease,
+        color 120ms ease,
+        box-shadow 220ms ease,
+        transform 220ms cubic-bezier(.2,.8,.2,1);
+
+    box-sizing: border-box;
 }
 
+
+/* Hover → morph into name pill */
 .remote-editing-dot:hover {
-    width: 80px;
-    height: 24px;
+    width: max-content;
+    min-width: 44px;
+    height: 26px;
+
+    padding: 0 10px;
 
     border-radius: 8px;
 
+    color: #fff;
+
+    /*
+     * Remove the center-dot transform when expanded.
+     */
+    transform: translateX(-50%);
+
     box-shadow:
-        0 5px 15px rgba(0,0,0,.25),
-        0 0 0 2px rgba(255,255,255,.08);
+        0 8px 20px rgba(0, 0, 0, 0.22),
+        0 0 0 2px var(--card),
+        0 0 0 3px rgba(255,255,255,.08);
 }
 
+
+/* Dark mode */
+html.dark .remote-editing-dot {
+    box-shadow:
+        0 0 0 2px var(--card),
+        0 0 0 4px rgba(255,255,255,.08);
+}
+
+html.dark .remote-editing-dot:hover {
+    box-shadow:
+        0 8px 24px rgba(0,0,0,.45),
+        0 0 0 2px var(--card),
+        0 0 0 3px rgba(255,255,255,.10);
+}
+
+
+/* Optional: subtle glow when someone is actively editing */
+.remote-editing-dot:not(:hover) {
+    animation: remoteDotPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes remoteDotPulse {
+
+    0%, 100% {
+        box-shadow:
+            0 0 0 2px var(--card),
+            0 0 0 4px rgba(59,130,246,.12);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 2px var(--card),
+            0 0 0 5px rgba(59,130,246,.20);
+    }
+}
 @keyframes remoteLabelIn {
     from {
         opacity: 0;
