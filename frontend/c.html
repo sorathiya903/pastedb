@@ -73,17 +73,12 @@ debug
 .remote-editing-dot {
     position: absolute;
 
-    /* Center horizontally in the gutter */
-    left: 50%;
-    transform: translateX(-50%);
-
     width: 9px;
     height: 9px;
 
     border-radius: 50%;
 
-    z-index: 51;
-
+    z-index: 100;
     pointer-events: auto;
     cursor: default;
 
@@ -94,37 +89,31 @@ debug
     color: white;
     font-size: 10px;
     font-weight: 600;
-    white-space: nowrap;
 
+    white-space: nowrap;
     overflow: hidden;
 
     box-shadow: 0 0 0 3px rgba(255,255,255,.08);
 
     transition:
-        width .22s ease,
-        height .22s ease,
-        border-radius .22s ease,
-        padding .22s ease,
-        transform .22s ease,
-        box-shadow .22s ease;
+        width .2s ease,
+        height .2s ease,
+        border-radius .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
 }
 
 .remote-editing-dot:hover {
-
-    width: auto;
-    min-width: 70px;
-    height: 25px;
-
-    padding: 0 9px;
+    width: 80px;
+    height: 24px;
 
     border-radius: 8px;
 
-    transform: translateX(-50%);
-
     box-shadow:
-        0 5px 18px rgba(0,0,0,.25),
+        0 5px 15px rgba(0,0,0,.25),
         0 0 0 2px rgba(255,255,255,.08);
 }
+
 @keyframes remoteLabelIn {
     from {
         opacity: 0;
@@ -2332,23 +2321,29 @@ updateRemoteEditingLines();
     updateRemoteLineLabels();
   }
 
-function updateRemoteLineLabels() {
+
+  function updateRemoteLineLabels() {
 
     const editor = window.codeEditor;
 
     if (!editor) return;
 
-    document
+    // Remove old dots
+    editor.dom
         .querySelectorAll(".remote-editing-dot")
         .forEach(el => el.remove());
 
-    const wrapper =
-        document.querySelector(".editor-wrapper");
+    // CodeMirror's actual line-number gutter
+    const gutter =
+        editor.dom.querySelector(".cm-gutters");
 
-    if (!wrapper) return;
+    if (!gutter) return;
 
-    const wrapperRect =
-        wrapper.getBoundingClientRect();
+    // Make gutter the positioning container
+    gutter.style.position = "relative";
+
+    const gutterRect =
+        gutter.getBoundingClientRect();
 
     Object.entries(
         window.remoteCursors || {}
@@ -2369,6 +2364,7 @@ function updateRemoteLineLabels() {
             )
         );
 
+        // Get the actual line position
         const line =
             editor.state.doc.lineAt(position);
 
@@ -2390,21 +2386,35 @@ function updateRemoteLineLabels() {
             remote.user?.color ||
             "#3b82f6";
 
-        dot.style.background =
-            color;
+        dot.style.background = color;
 
-        // Name shown when hovered
+        // User name appears when hovered
         dot.textContent =
             remote.user?.name || "Guest";
 
-        // Center vertically on the CodeMirror line
-        dot.style.top =
-            `${coords.top - wrapperRect.top +
-              (coords.bottom - coords.top) / 2 - 12.5}px`;
+        /*
+         * Center horizontally inside
+         * the line-number gutter.
+         */
+        dot.style.left =
+            `${gutter.clientWidth / 2}px`;
 
-        wrapper.appendChild(dot);
+        /*
+         * Center vertically on the
+         * CodeMirror line.
+         */
+        const lineHeight =
+            coords.bottom - coords.top;
+
+        dot.style.top =
+            `${coords.top -
+              gutterRect.top +
+              lineHeight / 2 -
+              4.5}px`;
+
+        gutter.appendChild(dot);
     });
-              }
+      }
   
   function getUserColor() {
 
