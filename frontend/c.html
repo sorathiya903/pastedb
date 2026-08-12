@@ -32,10 +32,11 @@ debug
 <link rel="icon" type="image/png" href="/favicon.png">
 
   <style>
-.remote-editing-line {
-    background: rgba(59, 130, 246, 0.10);
+    .remote-editing-line {
+    background: rgba(59, 130, 246, 0.12);
     border-left: 3px solid #3b82f6;
-}
+    }
+
 
 .remote-editing-gutter {
     background: rgba(59, 130, 246, 0.18);
@@ -1695,7 +1696,8 @@ import * as Y from "https://esm.sh/yjs@13.6.27";
 
 import {
     EditorView,
-    basicSetup
+    basicSetup,
+    Decoration
 } from "https://esm.sh/codemirror";
 
 import {
@@ -1735,93 +1737,61 @@ window.ytext = ytext;
 
 let applyingRemoteUpdate = false;
 
+
+
 const remoteLineEffect = StateEffect.define();
 
 const remoteLineField = StateField.define({
+
     create() {
-        return {
-            lines: [],
-            gutter: []
-        };
+        return Decoration.none;
     },
 
     update(value, tr) {
 
         for (const effect of tr.effects) {
 
-            if (!effect.is(remoteLineEffect)) {
+            if (!effect.is(remoteLineEffect))
                 continue;
-            }
 
-            const builder = new RangeSetBuilder();
-            const gutterBuilder = new RangeSetBuilder();
+            const builder = [];
 
-            effect.value.forEach(item => {
+            for (const item of effect.value) {
+
+                if (typeof item.position !== "number")
+                    continue;
+
+                const pos = Math.max(
+                    0,
+                    Math.min(
+                        item.position,
+                        tr.state.doc.length
+                    )
+                );
 
                 const line =
-                    tr.state.doc.lineAt(
-                        Math.max(
-                            0,
-                            Math.min(
-                                item.position,
-                                tr.state.doc.length
-                            )
-                        )
-                    );
+                    tr.state.doc.lineAt(pos);
 
-                const decoration =
+                builder.push(
                     Decoration.line({
                         attributes: {
-                            class: "remote-editing-line",
-                            "data-client-id":
-                                item.clientId
+                            class: "remote-editing-line"
                         }
-                    });
-
-                builder.add(
-                    line.from,
-                    line.from,
-                    decoration
+                    }).range(line.from)
                 );
+            }
 
-                const gutterDecoration =
-                    Decoration.line({
-                        attributes: {
-                            class:
-                                "remote-editing-gutter"
-                        }
-                    });
-
-                gutterBuilder.add(
-                    line.from,
-                    line.from,
-                    gutterDecoration
-                );
-            });
-
-            return {
-                lines: builder.finish(),
-                gutter: gutterBuilder.finish()
-            };
+            return Decoration.set(
+                builder,
+                true
+            );
         }
 
-        return value;
+        return value.map(tr.changes);
     },
 
-    provide(field) {
-
-        return [
-            EditorView.decorations.from(
-                field,
-                value => value.lines
-            ),
-
-            gutterLineClass.from(
-                field,
-                value => value.gutter
-            )
-        ];
-    }
+    provide: field =>
+        EditorView.decorations.from(field)
 });
 // =====================================================
 // CODEMIRROR
@@ -2681,11 +2651,27 @@ window.remoteCursors[clientId] = {
             );
 
             // IMPORTANT: actually render it
-            renderRemoteCursor(
-                clientId,
-                cursor,
-                user
-            );
+            const remoteItems =
+    Object.values(window.remoteCursors)
+        .map(remote => {
+
+            const position =
+                typeof remote.cursor.head === "number"
+                    ? remote.cursor.head
+                    : remote.cursor.anchor;
+
+            return {
+                position,
+                user: remote.user
+            };
+        })
+        .filter(item =>
+            typeof item.position === "number"
+        );
+
+window.codeEditor.dispatch({
+    effects: remoteLineEffect.of(remoteItems)
+});
         }
     );
 
