@@ -97,23 +97,73 @@ Deployment
 - Render (Backend)
 
 ---
-## 🚀 Advanced Features
-- 🔥 Burn after read pastes
-- 📅 Custom expiration (10 min, 1 hour, 1 day, 1 week, 30 days, never)
-- 📂 Image uploads alongside text and code
-- 🎨 40+ syntax highlighting languages
-- 🏷️ Ready-made code templates (HTML, Flask, FastAPI, Django, Tailwind CSS, etc.)
-- 🔍 Public paste exploration and search
-- 📱 QR code generation for quick sharing
-- 🔗 Custom paste IDs
-- 📊 Paste analytics (views, creation date)
-- 🔑 API key management
-- 🌐 Official Python SDK for creating and managing pastes programmatically 
-- 🖥️ Official VS Code extension
-- 📄 One-click HTML preview
-- ⚡ Code execution for supported languages
+
 
 ---
+## 🚀 Advanced Features
+
+- 🔥 **Burn After Read** — Automatically destroy a paste after it has been viewed.
+- 📅 **Custom Expiration** — Choose from 10 minutes, 1 hour, 1 day, 1 week, 30 days, or never.
+- 📂 **Image Uploads** — Upload images alongside text and code.
+- 🎨 **40+ Syntax Highlighting Languages** — Support for a wide range of programming languages.
+- 🏷️ **Code Templates** — Ready-made templates for HTML, Flask, FastAPI, Django, Tailwind CSS, and more.
+- 🔍 **Public Paste Exploration** — Discover and search public pastes.
+- 📱 **QR Code Sharing** — Generate QR codes for quick paste sharing.
+- 🔗 **Custom Paste IDs** — Create memorable custom URLs for pastes.
+- 📊 **Paste Analytics** — View paste statistics such as views and creation date.
+- 🔑 **API Key Management** — Create and manage API keys for programmatic access.
+- 🌐 **Official Node.js SDK** — Create and manage PasteDB pastes programmatically from Node.js applications.
+- 🌐 **Official Python SDK** — Create and manage pastes directly from Python applications.
+- 🖥️ **Official VS Code Extension** — Upload code directly from Visual Studio Code.
+- 📄 **HTML Preview** — Preview HTML with one click.
+- ⚡ **Code Execution** — Run supported languages directly from PasteDB.
+
+### 🔗 Link Paste
+
+Create a paste that is stored directly inside the URL.
+
+- 📦 Paste content is compressed using URL-safe compression.
+- 🔗 No server-side storage is required for the paste content.
+- ⚡ Share the generated link instantly.
+- 📱 Works well with QR codes and link sharing.
+- 🔒 Useful for quickly sharing small pieces of text or code.
+
+### 📱 Device Management
+
+Manage devices that interact with your PasteDB account and nearby-transfer features.
+
+- 👥 View recognized devices.
+- ✅ Approve unknown devices before allowing transfers.
+- 🚫 Reject devices you don't recognize.
+- 🔐 Helps prevent unwanted nearby-transfer connections.
+- 📲 Designed for managing trusted devices across your workflow.
+
+### 📚 Version History
+
+Keep previous versions of your pastes when making changes.
+
+- 🕐 Save previous versions before updating a paste.
+- 📜 View historical versions of your content.
+- 🔢 Keep up to **10 historical versions**.
+- ♻️ Older versions are automatically removed when the limit is exceeded.
+- 🔒 Available for supported logged-in pastes.
+
+### 👥 Real-Time Collaboration
+
+> 🚧 **Collaboration is currently under development.**
+
+PasteDB is being expanded with collaborative editing capabilities that will allow multiple users to work on the same paste.
+
+Planned/experimental features include:
+
+- 👥 Multiple users editing the same paste.
+- 🟢 Real-time editing presence.
+- 📍 Line-level indicators showing which user is editing a particular line.
+- 🔐 Host-controlled access.
+- 👤 Editor and viewer roles.
+- ✅ Join-request approval by the host.
+
+
 
 ## 🖥️ VS Code Extension
 
