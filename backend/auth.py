@@ -106,25 +106,105 @@ async def google_auth(data: GoogleLogin, response: Response):
 
 def get_current_user(request: Request):
 
+    # ==========================================
+    # 1. NORMAL WEB LOGIN — session cookie
+    # ==========================================
     token = request.cookies.get("session")
 
-    if not token:
-        raise HTTPException(401, "Not authenticated")
+    if token:
+        payload = decode_token(token)
 
-    payload = decode_token(token)
+        if not payload:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token"
+            )
 
-    if not payload:
-        raise HTTPException(401, "Invalid token")
+        user = users_collection.find_one({
+            "email": payload.get("email")
+        })
+
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="User not found"
+            )
+
+        return payload
+
+    # ==========================================
+    # 2. CLI / SDK — API KEY
+    # ==========================================
+
+    # SDK already sends x-api-key
+    api_key = request.headers.get("x-api-key")
+
+    # Your unchanged SDK also sends:
+    # Authorization: Bearer <api_key>
+    if not api_key:
+
+        authorization = request.headers.get(
+            "Authorization"
+        )
+
+        if authorization and authorization.startswith(
+            "Bearer "
+        ):
+            api_key = authorization[7:].strip()
+
+    # No authentication at all
+    if not api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated"
+        )
+
+    # ==========================================
+    # Find API key
+    # ==========================================
+
+    key_doc = api_keys_collection.find_one({
+        "api_key": api_key
+    })
+
+    if not key_doc:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API key"
+        )
+
+    # ==========================================
+    # Find the owner of the API key
+    # ==========================================
+
+    email = key_doc.get("email")
+
+    if not email:
+        raise HTTPException(
+            status_code=401,
+            detail="API key has no associated user"
+        )
 
     user = users_collection.find_one({
-        "email": payload.get("email")
+        "email": email
     })
 
     if not user:
-        raise HTTPException(401, "User not found")
+        raise HTTPException(
+            status_code=401,
+            detail="User not found"
+        )
 
-    return payload
+    # ==========================================
+    # Return user-like payload
+    # ==========================================
 
+    return {
+        "email": email,
+        "name": user.get("name", "User"),
+        "picture": user.get("picture", ""),
+        "api_key": api_key
+        }
 def decode_token(token: str):
     try:
         payload = jwt.decode(
