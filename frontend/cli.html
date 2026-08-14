@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PasteDB CLI – Pastebin Command Line Tool for Developers</title>
+
+    <meta
+        name="description"
+        content="PasteDB CLI is a command-line pastebin tool for developers. Create, read, update, delete and explore code pastes directly from your terminal with API key authentication."
+    >
+
+    <meta
+        name="keywords"
+        content="PasteDB CLI, PasteDB command line, pastebin CLI, command line pastebin, CLI pastebin, upload code terminal, developer pastebin, code sharing CLI, terminal pastebin, PasteDB API"
+    >
+
+    <meta name="author" content="PasteDB">
+
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+
+    <link rel="canonical" href="https://pastedb.netlify.app/cli">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta
+        property="og:title"
+        content="PasteDB CLI – Pastebin Command Line Tool for Developers"
+    >
+    <meta
+        property="og:description"
+        content="Create and manage PasteDB pastes directly from your terminal with the PasteDB CLI."
+    >
+    <meta property="og:url" content="https://pastedb.netlify.app/cli">
+    <meta property="og:site_name" content="PasteDB">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta
+        name="twitter:title"
+        content="PasteDB CLI – Command Line Pastebin"
+    >
+    <meta
+        name="twitter:description"
+        content="Create, manage and share code pastes directly from your terminal using PasteDB CLI."
+    >
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#0b0d12">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "PasteDB CLI",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "PasteDB CLI is a command-line pastebin tool for developers that allows users to create, retrieve, update, delete and explore code and text pastes from a terminal.",
+        "url": "https://pastedb.netlify.app/cli",
+        "softwareVersion": "0.0.8"
+    }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080a0f;
+            --bg2: #0d1017;
+            --card: #11151d;
+            --card2: #151a23;
+            --border: #252b36;
+            --text: #f3f5f7;
+            --muted: #9aa3b2;
+            --primary: #7c5cff;
+            --primary2: #9a82ff;
+            --green: #39d98a;
+            --cyan: #48c6ff;
+            --red: #ff637d;
+            --max: 1120px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 50% -20%,
+                    rgba(124, 92, 255, .16),
+                    transparent 40%
+                ),
+                var(--bg);
+
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(var(--max), calc(100% - 40px));
+            margin: auto;
+        }
+
+        /* NAV */
+
+        nav {
+            height: 70px;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            background: rgba(8,10,15,.75);
+            backdrop-filter: blur(14px);
+
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-inner {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+
+            display: grid;
+            place-items: center;
+
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                #4d36d8
+            );
+
+            font-weight: 900;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-btn {
+            padding: 9px 15px;
+            border-radius: 8px;
+
+            background: #171b24;
+            border: 1px solid var(--border);
+
+            color: white !important;
+        }
+
+        /* HERO */
+
+        .hero {
+            text-align: center;
+            padding: 105px 0 75px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 7px 12px;
+
+            border: 1px solid rgba(124,92,255,.3);
+            background: rgba(124,92,255,.08);
+
+            border-radius: 999px;
+
+            color: #b9aaff;
+            font-size: 13px;
+            font-weight: 600;
+
+            margin-bottom: 25px;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px rgba(57,217,138,.7);
+        }
+
+        h1 {
+            font-size: clamp(42px, 7vw, 76px);
+            line-height: 1.03;
+            letter-spacing: -3px;
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .gradient {
+            background: linear-gradient(
+                110deg,
+                #ffffff,
+                #a99aff,
+                #7c5cff
+            );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 25px auto 0;
+
+            color: var(--muted);
+            font-size: 18px;
+        }
+
+        .hero-buttons {
+            margin-top: 32px;
+
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 12px 19px;
+
+            border-radius: 9px;
+
+            font-weight: 650;
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+
+            box-shadow:
+                0 8px 30px rgba(124,92,255,.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary2);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #131720;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #191e28;
+        }
+
+        /* TERMINAL */
+
+        .terminal-wrap {
+            max-width: 850px;
+            margin: 55px auto 0;
+        }
+
+        .terminal {
+            text-align: left;
+
+            background: #090b10;
+
+            border: 1px solid #252a34;
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 30px 100px rgba(0,0,0,.45);
+        }
+
+        .terminal-top {
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 0 15px;
+
+            border-bottom: 1px solid #1d212a;
+
+            background: #0e1117;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3b404a;
+        }
+
+        .terminal-title {
+            margin-left: 7px;
+            color: #777f8c;
+            font-size: 12px;
+        }
+
+        pre {
+            padding: 25px;
+
+            overflow-x: auto;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .prompt {
+            color: var(--green);
+        }
+
+        .command {
+            color: white;
+        }
+
+        .comment {
+            color: #626a78;
+        }
+
+        .url {
+            color: var(--cyan);
+        }
+
+        /* SECTIONS */
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 45px;
+        }
+
+        .section-heading h2 {
+            font-size: 36px;
+            letter-spacing: -1.5px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            margin-top: 10px;
+        }
+
+        /* FEATURES */
+
+        .features {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 16px;
+        }
+
+        .feature {
+            padding: 25px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.025),
+                    rgba(255,255,255,.01)
+                );
+
+            border: 1px solid var(--border);
+
+            border-radius: 13px;
+
+            transition: .2s;
+        }
+
+        .feature:hover {
+            transform: translateY(-3px);
+            border-color: #353c4a;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 10px;
+
+            background: rgba(124,92,255,.1);
+
+            color: #a898ff;
+
+            margin-bottom: 18px;
+
+            font-size: 20px;
+        }
+
+        .feature h3 {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .feature p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* COMMANDS */
+
+        .commands {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .command-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .command-header {
+            padding: 16px 18px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .command-header strong {
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .command-header span {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .command-card pre {
+            padding: 18px;
+            font-size: 13px;
+        }
+
+        /* INSTALL */
+
+        .install-box {
+            max-width: 750px;
+            margin: auto;
+
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+        }
+
+        .install-box .install-content {
+            padding: 25px;
+        }
+
+        .install-command {
+            margin-top: 15px;
+
+            padding: 17px;
+
+            border-radius: 9px;
+
+            background: #090b10;
+
+            border: 1px solid #252a34;
+
+            font-family: monospace;
+
+            color: #e8ebef;
+        }
+
+        /* SEO CONTENT */
+
+        .seo-content {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .seo-content h2 {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .seo-content h3 {
+            font-size: 21px;
+            margin: 30px 0 8px;
+        }
+
+        .seo-content p {
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .seo-content ul {
+            padding-left: 22px;
+            color: var(--muted);
+        }
+
+        .seo-content li {
+            margin: 8px 0;
+        }
+
+        /* CTA */
+
+        .cta {
+            text-align: center;
+
+            padding: 70px 30px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(124,92,255,.13),
+                    transparent 60%
+                ),
+                var(--card);
+        }
+
+        .cta h2 {
+            font-size: 38px;
+            letter-spacing: -1.5px;
+        }
+
+        .cta p {
+            color: var(--muted);
+            max-width: 600px;
+            margin: 12px auto 25px;
+        }
+
+        /* FOOTER */
+
+        footer {
+            padding: 45px 0;
+
+            border-top: 1px solid rgba(255,255,255,.06);
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 75px 0 55px;
+            }
+
+            h1 {
+                letter-spacing: -2px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .features,
+            .commands {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .section-heading h2 {
+                font-size: 30px;
+            }
+
+            .cta h2 {
+                font-size: 30px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            pre {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav>
+    <div class="container nav-inner">
+
+        <a href="/" class="logo">
+            <img src="/favicon.png">
+            PasteDB
+        </a>
+
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#commands">Commands</a>
+            <a href="#install">Installation</a>
+            <a href="#about">About</a>
+
+            <a
+                href="https://pastedb.netlify.app/"
+                class="nav-btn"
+            >
+                Open PasteDB
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+
+<!-- HERO -->
+
+<header class="hero">
+
+    <div class="container">
+
+        <div class="badge">
+            <span class="badge-dot"></span>
+            PasteDB CLI v0.0.8
+        </div>
+
+        <h1>
+            PasteDB,
+            <span class="gradient">
+                from your terminal.
+            </span>
+        </h1>
+
+        <p>
+            A simple command-line pastebin tool for developers.
+            Create, retrieve, update and delete code and text pastes
+            without leaving your terminal.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a
+                href="#install"
+                class="btn btn-primary"
+            >
+                Install PasteDB CLI
+            </a>
+
+            <a
+                href="#commands"
+                class="btn btn-secondary"
+            >
+                View Commands
+            </a>
+
+        </div>
+
+
+        <!-- TERMINAL -->
+
+        <div class="terminal-wrap">
+
+            <div class="terminal">
+
+                <div class="terminal-top">
+
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-dot"></span>
+
+                    <span class="terminal-title">
+                        terminal
+                    </span>
+
+                </div>
+
+                <pre><span class="prompt">$</span> <span class="command">pdb create app.py</span>
+
+<span class="comment">Uploading app.py...</span>
+
+<span class="prompt">✓</span> Paste created!
+
+<span class="url">https://pastedb.netlify.app/paste/abc123</span></pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- FEATURES -->
+
+<section id="features">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <h2>
+                Everything you need in the terminal
+            </h2>
+
+            <p>
+                PasteDB CLI brings common pastebin and code-sharing
+                workflows directly to your command line.
+            </p>
+
+        </div>
+
+
+        <div class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">↑</div>
+
+                <h3>Quick Paste Creation</h3>
+
+                <p>
+                    Upload source code, text and other files directly
+                    from your computer using a simple CLI command.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">⌘</div>
+
+                <h3>Developer Friendly</h3>
+
+                <p>
+                    Designed for developers who prefer working from
+                    terminals, shells and command-line environments.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">⚡</div>
+
+                <h3>Automatic Language Detection</h3>
+
+                <p>
+                    PasteDB CLI detects common programming languages
+                    from file extensions when creating a paste.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">🔑</div>
+
+                <h3>API Key Authentication</h3>
+
+                <p>
+                    Authenticate the CLI using a PasteDB API key and
+                    keep your credentials available for future commands.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">▶</div>
+
+                <h3>Run Code</h3>
+
+                <p>
+                    Send supported source code to PasteDB's execution
+                    service directly from your terminal.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">🌎</div>
+
+                <h3>Explore Public Pastes</h3>
+
+                <p>
+                    Browse publicly available PasteDB content without
+                    opening the web application.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- INSTALLATION -->
+
+<section id="install">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <h2>
+                Install PasteDB CLI
+            </h2>
+
+            <p>
+                Install the command-line tool and start managing
+                PasteDB pastes from your terminal.
+            </p>
+
+        </div>
+
+
+        <div class="install-box">
+
+            <div class="install-content">
+
+                <strong>
+                    Install with npm
+                </strong>
+
+                <div class="install-command">
+                    npm install -g pastedb-cli
+                </div>
+
+                <div class="install-command">
+                    pdb --version
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- COMMANDS -->
+
+<section id="commands">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <h2>
+                PasteDB CLI commands
+            </h2>
+
+            <p>
+                Manage your pastes, account and API keys from one
+                command-line interface.
+            </p>
+
+        </div>
+
+
+        <div class="commands">
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb auth</strong>
+                    <span>Authentication</span>
+                </div>
+
+                <pre>pdb auth</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb create</strong>
+                    <span>Create</span>
+                </div>
+
+                <pre>pdb create app.py</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb get</strong>
+                    <span>Retrieve</span>
+                </div>
+
+                <pre>pdb get abc123</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb update</strong>
+                    <span>Update</span>
+                </div>
+
+                <pre>pdb update abc123 app.py</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb delete</strong>
+                    <span>Delete</span>
+                </div>
+
+                <pre>pdb delete abc123</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb explore</strong>
+                    <span>Explore</span>
+                </div>
+
+                <pre>pdb explore</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb me</strong>
+                    <span>Account</span>
+                </div>
+
+                <pre>pdb me</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb run</strong>
+                    <span>Code execution</span>
+                </div>
+
+                <pre>pdb run python app.py</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb check-id</strong>
+                    <span>Custom ID</span>
+                </div>
+
+                <pre>pdb check-id my-project</pre>
+
+            </div>
+
+
+            <div class="command-card">
+
+                <div class="command-header">
+                    <strong>pdb key</strong>
+                    <span>API keys</span>
+                </div>
+
+                <pre>pdb key create my-laptop
+pdb key list
+pdb key delete &lt;key&gt;</pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ABOUT / SEO CONTENT -->
+
+<section id="about">
+
+    <div class="container">
+
+        <div class="seo-content">
+
+            <h2>
+                What is PasteDB CLI?
+            </h2>
+
+            <p>
+                PasteDB CLI is a command-line pastebin tool designed
+                for developers who want to share code, text and files
+                directly from a terminal. Instead of opening a browser
+                every time you need to create a paste, the PasteDB
+                command-line interface lets you work with pastes using
+                simple commands.
+            </p>
+
+            <p>
+                The CLI can be useful when working with servers,
+                development environments, scripts, code editors and
+                terminal-based workflows. A local source file can be
+                uploaded to PasteDB with a single command and the
+                resulting paste URL can then be shared with others.
+            </p>
+
+
+            <h3>
+                Pastebin from the command line
+            </h3>
+
+            <p>
+                Traditional pastebin services are commonly used through
+                a web browser. PasteDB CLI provides a terminal-based
+                alternative for developers who want a faster way to
+                create and manage code pastes.
+            </p>
+
+
+            <h3>
+                Share code directly from your terminal
+            </h3>
+
+            <p>
+                With PasteDB CLI, you can upload a local source file,
+                automatically detect its language and receive a PasteDB
+                URL. This makes it convenient for sharing snippets,
+                debugging examples, configuration files and other
+                developer content.
+            </p>
+
+
+            <h3>
+                PasteDB CLI for developers
+            </h3>
+
+            <p>
+                PasteDB CLI is built around a straightforward command
+                structure. Developers can create, retrieve, update and
+                delete pastes while also managing API keys and accessing
+                their PasteDB account.
+            </p>
+
+
+            <h3>
+                Why use PasteDB CLI?
+            </h3>
+
+            <ul>
+                <li>Create code pastes without opening a browser.</li>
+                <li>Upload files directly from the terminal.</li>
+                <li>Automatically detect common programming languages.</li>
+                <li>Retrieve existing pastes using their IDs.</li>
+                <li>Update existing code pastes.</li>
+                <li>Manage PasteDB API keys from the command line.</li>
+                <li>Check custom paste IDs.</li>
+                <li>Run supported code through PasteDB.</li>
+            </ul>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA -->
+
+<section>
+
+    <div class="container">
+
+        <div class="cta">
+
+            <h2>
+                Ready to use PasteDB from your terminal?
+            </h2>
+
+            <p>
+                Install the PasteDB CLI and start sharing and managing
+                code without leaving your command line.
+            </p>
+
+            <a
+                href="#install"
+                class="btn btn-primary"
+            >
+                Get Started
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="container footer-inner">
+
+        <div>
+            © 2026 PasteDB. Built for developers.
+        </div>
+
+        <div class="footer-links">
+
+            <a href="/">
+                PasteDB
+            </a>
+
+            <a href="#commands">
+                CLI
+            </a>
+
+            <a href="#install">
+                Installation
+            </a>
+
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
