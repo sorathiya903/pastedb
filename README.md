@@ -238,6 +238,7 @@ JavaScript (Node.js)
 Read the documentation [here](https://pastedb.netlify.app/cli)
 
 View Source Code [here](https://github.com/sorathiya903/pastedb-cli)
+
 ---
 
 ## 📡 Nearby Transfer
