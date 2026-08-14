@@ -25,6 +25,13 @@
         <changefreq>daily</changefreq>
     </url>
 
+        <url>
+        <loc>https://pastedb.netlify.app/cli</loc>
+        <priority>0.5</priority>
+        <changefreq>monthly</changefreq>
+        </url>
+
+
 
     <url>
         <loc>https://pastedb.netlify.app/docs</loc>
