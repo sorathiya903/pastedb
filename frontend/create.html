@@ -546,17 +546,19 @@ gap: 16px;
     }
 
     .editor {
+  background: var(--editor);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  
+  /* Add these two lines */
+  display: flex;
+  flex-direction: column;
+}
 
-      background: var(--editor);
+/* Make sure your 3rd element targets this class */
 
-      border: 1px solid var(--border);
-
-      border-radius: 30px;
-
-      overflow: hidden;
-
-      box-shadow: var(--shadow);
-    }
 
     .editor-top {
 
@@ -1926,7 +1928,7 @@ background:#ef4444;
     color:#ffb84d;
     }
 .image-upload-card {
-    align-self: end;
+  margin-top: auto;
 }
   </style>
 </head>
