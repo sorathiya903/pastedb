@@ -18,6 +18,7 @@ users_collection = db["users"]
 pastes_collection = db["pastes"]
 devices_collection = db["devices"]
 transfers_collection = db["transfers"]
+api_keys_collection = db["api_keys"]
 
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
