@@ -182,12 +182,62 @@ https://marketplace.visualstudio.com/items?itemName=adityasorathiya.pastedb
 
 ---
 
-## 🌍 OFFICIAL PYTHON SDK
+## 🖥️ PasteDB CLI
 
-PasteDB provides a Official Python SDK for creating and managing pastes programmatically.
+[![CLI](https://img.shields.io/badge/PasteDB-CLI-black?style=for-the-badge&logo=gnubash)](https://pastedb.netlify.app/cli)
+[![JavaScript](https://img.shields.io/badge/Built%20with-JavaScript-yellow?style=for-the-badge&logo=javascript)](https://github.com/sorathiya903/pastedb-cli)
 
-Read the documentation [here](https://pastedb.netlify.app/docs)
+PasteDB now also comes with a **developer-friendly CLI** for quickly creating and managing pastes directly from your terminal.
 
+Want to do this?
+
+```bash
+pdb create app.py
+```
+and instantly upload app.py to PasteDB and get a shareable link?
+
+Now you can. 🚀
+
+✨ What you can do
+
+📤 Create pastes directly from local files
+
+📥 Fetch existing pastes
+
+🗑️ Delete pastes
+
+🔑 Manage PasteDB API keys
+
+🔍 Check custom ID availability
+
+▶️ Run supported code through PasteDB
+
+🌐 Explore public pastes
+
+👤 View your account information
+
+
+### ⚡ Quick Example
+
+```
+pdb create app.py
+```
+
+PasteDB uploads the file and returns a shareable URL.
+
+```
+✓ Paste created!
+
+https://pastedb.netlify.app/paste/abc123
+```
+
+### 📦 Built with
+
+JavaScript (Node.js)
+
+Read the documentation [here](https://pastedb.netlify.app/cli)
+
+View Source Code [here](https://github.com/sorathiya903/pastedb-cli)
 ---
 
 ## 📡 Nearby Transfer
