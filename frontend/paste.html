@@ -2818,23 +2818,62 @@ setTimeout(() => {
 
 
   
-
-    
 let nearbySocket;
-let nearbyRefresh;
 
-let holdTimer = null;
-let sendTimer = null;
-let longPressTriggered = false;
-
-
-// ─────────────────────────────────────────────
-// Open Nearby Share
-// ─────────────────────────────────────────────
-
-async function openNearbyShare() {
+async function openNearbyShare(){
 
     document.getElementById("nearbyModal").style.display = "flex";
+
+    const list =
+        document.getElementById("nearbyDevices");
+
+    list.innerHTML = "Searching...";
+
+    nearbySocket = new WebSocket(
+        WS_URL + "/ws/nearby"
+    );
+
+    nearbySocket.onopen = () => {
+
+        navigator.geolocation.getCurrentPosition(
+
+            pos => {
+
+                nearbySocket.send(JSON.stringify({
+
+                    action: "find",
+
+                    lat: pos.coords.latitude,
+
+                    lon: pos.coords.longitude
+
+                }));
+
+            },
+
+            () => {
+
+                // Location denied
+                nearbySocket.send(JSON.stringify({
+
+                    action: "find",
+
+                    lat: null,
+
+                    lon: null
+
+                }));
+
+            }
+
+        );
+
+    };
+
+  
+nearbySocket.onmessage = e => {
+
+    const msg = JSON.parse(e.data);
 
     const list =
         document.getElementById("nearbyDevices");
@@ -2842,602 +2881,240 @@ async function openNearbyShare() {
     const status =
         document.getElementById("nearbyStatus");
 
-    list.innerHTML = "Searching...";
-    status.textContent = "Searching for nearby devices...";
+    if(msg.type === "devices"){
 
-    nearbySocket = new WebSocket(
-        WS_URL + "/ws/nearby"
-    );
+        if(msg.devices.length === 0){
 
+            status.textContent =
+                "No nearby devices found";
 
-    // ─────────────────────────────────────────
-    // Send paste
-    // ─────────────────────────────────────────
+            list.innerHTML = `
+<div class="nearby-empty">
 
-    function sendToDevice(card, device) {
+<div class="icon">📡</div>
 
-        if (
-            !nearbySocket ||
-            nearbySocket.readyState !== WebSocket.OPEN
-        ) {
+<h3>No devices found</h3>
+
+<p>
+Ask the other device to open Nearby Share
+and hold three fingers on the screen.
+</p>
+
+</div>
+`;
+
             return;
+
         }
 
         status.textContent =
-            "Sending paste...";
+            `${msg.devices.length} nearby device${msg.devices.length>1?"s":""} found`;
 
-        card.style.opacity = ".7";
+        list.innerHTML = "";
 
-        const arrow =
-            card.querySelector(".sendArrow");
+        msg.devices.forEach(device=>{
 
-        if (arrow) {
+            const card =
+                document.createElement("div");
 
-            arrow.innerHTML = `
-                <div
-                    class="nearby-loader"
-                    style="
-                        width:22px;
-                        height:22px;
-                        border-width:3px;
-                    "
-                ></div>
-            `;
+            card.className =
+                "deviceCard";
 
-        }
+            card.innerHTML = `
 
-        nearbySocket.send(JSON.stringify({
+<div class="deviceLeft">
 
-            action: "send",
+<div class="deviceIcon">
 
-            receiver: device.id,
+📱
 
-            url: location.href
+</div>
 
-        }));
+<div>
 
-    }
+<div class="deviceName">
+${device.name}
+</div>
 
+<div class="deviceDistance">
 
-    // ─────────────────────────────────────────
-    // Start long press
-    // ─────────────────────────────────────────
+${device.distance!=null
+?`${device.distance} m away`
+:"Distance unavailable"}
 
-    function startHold(card, device) {
+</div>
 
-        longPressTriggered = false;
+</div>
 
-        holdTimer = setTimeout(() => {
+</div>
 
-            holdTimer = null;
+<div class="sendArrow">
+➜
+</div>
 
-            // The user successfully held for 2 seconds
-            longPressTriggered = true;
+`;
 
-
-            // Silent 5-second delay
-            sendTimer = setTimeout(() => {
-
-                sendTimer = null;
-
-                sendToDevice(
-                    card,
-                    device
-                );
-
-            }, 5000);
-
-        }, 2000);
-
-    }
-
-
-    // ─────────────────────────────────────────
-    // Cancel unfinished hold
-    // ─────────────────────────────────────────
-
-    function cancelHold() {
-
-        if (holdTimer) {
-
-            clearTimeout(holdTimer);
-
-            holdTimer = null;
-
-        }
-
-        /*
-         * Important:
-         *
-         * If the 2-second hold has already completed,
-         * sendTimer is intentionally NOT cancelled.
-         *
-         * Therefore:
-         *
-         * Hold 2 seconds
-         *       ↓
-         * Silent 5-second timer
-         *       ↓
-         * Send
-         */
-
-    }
-
-
-    // ─────────────────────────────────────────
-    // Device card interactions
-    // ─────────────────────────────────────────
-
-    function setupCardInteraction(card, device) {
-
-
-        // Mouse
-        card.addEventListener(
-            "mousedown",
-            () => {
-
-                startHold(
-                    card,
-                    device
-                );
-
-            }
-        );
-
-
-        card.addEventListener(
-            "mouseup",
-            cancelHold
-        );
-
-
-        card.addEventListener(
-            "mouseleave",
-            cancelHold
-        );
-
-
-        // Touch
-        card.addEventListener(
-            "touchstart",
-            (e) => {
-
-                e.preventDefault();
-
-                startHold(
-                    card,
-                    device
-                );
-
-            },
-            {
-                passive: false
-            }
-        );
-
-
-        card.addEventListener(
-            "touchend",
-            cancelHold
-        );
-
-
-        card.addEventListener(
-            "touchcancel",
-            cancelHold
-        );
-
-
-        // ─────────────────────────────────────
-        // Normal single click
-        // ─────────────────────────────────────
-
-        card.addEventListener(
-            "click",
-            () => {
-
-                /*
-                 * A completed long press can also
-                 * generate a click event on mobile.
-                 *
-                 * Prevent that click from sending
-                 * the paste twice.
-                 */
-
-                if (longPressTriggered) {
-
-                    longPressTriggered = false;
-
-                    return;
-
-                }
-
-
-                // Normal one-click send
-                sendToDevice(
-                    card,
-                    device
-                );
-
-            }
-        );
-
-    }
-
-
-    // ─────────────────────────────────────────
-    // Socket opened
-    // ─────────────────────────────────────────
-
-    nearbySocket.onopen = () => {
-
-
-        const search = () => {
-
-            if (
-                !nearbySocket ||
-                nearbySocket.readyState !== WebSocket.OPEN
-            ) {
-                return;
-            }
-
-
-            navigator.geolocation.getCurrentPosition(
-
-                pos => {
-
-                    nearbySocket.send(
-                        JSON.stringify({
-
-                            action: "find",
-
-                            lat:
-                                pos.coords.latitude,
-
-                            lon:
-                                pos.coords.longitude
-
-                        })
-                    );
-
-                },
-
-                () => {
-
-                    // Location permission denied
-                    nearbySocket.send(
-                        JSON.stringify({
-
-                            action: "find",
-
-                            lat: null,
-
-                            lon: null
-
-                        })
-                    );
-
-                }
-
-            );
-
-        };
-
-
-        // Search immediately
-        search();
-
-
-        // Refresh device list every 2 seconds
-        nearbyRefresh =
-            setInterval(
-                search,
-                2000
-            );
-
-    };
-
-
-    // ─────────────────────────────────────────
-    // Socket messages
-    // ─────────────────────────────────────────
-
-    nearbySocket.onmessage = e => {
-
-        const msg =
-            JSON.parse(e.data);
-
-
-        // ─────────────────────────────────────
-        // Devices found
-        // ─────────────────────────────────────
-
-        if (msg.type === "devices") {
-
-
-            if (msg.devices.length === 0) {
+            card.onclick=()=>{
 
                 status.textContent =
-                    "No nearby devices found";
+                    "Sending paste...";
 
+                card.style.opacity=".7";
 
-                list.innerHTML = `
+                card.querySelector(".sendArrow")
+                    .innerHTML =
+                    `<div class="nearby-loader" style="width:22px;height:22px;border-width:3px"></div>`;
 
-                    <div class="nearby-empty">
+                nearbySocket.send(JSON.stringify({
 
-                        <div class="icon">
-                            📡
-                        </div>
+                    action:"send",
 
-                        <h3>
-                            No devices found
-                        </h3>
+                    receiver:device.id,
 
-                        <p>
-                            Ask the other device to open
-                            Nearby Share and hold three
-                            fingers on the screen.
-                        </p>
+                    url:location.href
 
-                    </div>
+                }));
 
-                `;
+            };
 
-                return;
+            list.appendChild(card);
+
+        });
+
+    }
+
+    else if(msg.type==="sent"){
+
+        document.getElementById(
+            "nearbyStatus"
+        ).textContent =
+        "Paste sent successfully";
+
+        document.getElementById(
+            "nearbyDevices"
+        ).innerHTML = `
+
+<div class="nearby-success">
+
+<div class="icon">✅</div>
+
+<h3>Transfer Complete</h3>
+
+<p>
+The paste has been sent to the selected device.
+</p>
+
+</div>
+
+`;
+
+        setTimeout(()=>{
+
+            closeNearbyShare();
+
+        },1500);
+
+    }
+
+    else if(msg.type==="full"){
+
+        status.textContent =
+            "Receiver limit reached";
+
+        list.innerHTML = `
+
+<div class="nearby-empty">
+
+<div class="icon">⚠️</div>
+
+<h3>Receiver list full</h3>
+
+<p>
+Try again in a few seconds.
+</p>
+
+</div>
+
+`;
+
+    }
+
+};
+
+  let nearbyRefresh;
+
+nearbySocket.onopen = () => {
+
+    const search = () => {
+
+        navigator.geolocation.getCurrentPosition(
+
+            pos => {
+
+                nearbySocket.send(JSON.stringify({
+
+                    action:"find",
+
+                    lat:pos.coords.latitude,
+
+                    lon:pos.coords.longitude
+
+                }));
+
+            },
+
+            () => {
+
+                nearbySocket.send(JSON.stringify({
+
+                    action:"find",
+
+                    lat:null,
+
+                    lon:null
+
+                }));
 
             }
 
-
-            status.textContent =
-                `${msg.devices.length} nearby device${
-                    msg.devices.length > 1
-                        ? "s"
-                        : ""
-                } found`;
-
-
-            list.innerHTML = "";
-
-
-            msg.devices.forEach(
-                device => {
-
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "deviceCard";
-
-
-                    card.innerHTML = `
-
-                        <div class="deviceLeft">
-
-                            <div class="deviceIcon">
-                                📱
-                            </div>
-
-                            <div>
-
-                                <div class="deviceName">
-                                    ${device.name}
-                                </div>
-
-                                <div class="deviceDistance">
-
-                                    ${
-                                        device.distance != null
-                                            ? `${device.distance} m away`
-                                            : "Distance unavailable"
-                                    }
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div class="sendArrow">
-                            ➜
-                        </div>
-
-                    `;
-
-
-                    // Add click + long-press behavior
-                    setupCardInteraction(
-                        card,
-                        device
-                    );
-
-
-                    list.appendChild(
-                        card
-                    );
-
-                }
-            );
-
-        }
-
-
-        // ─────────────────────────────────────
-        // Paste sent
-        // ─────────────────────────────────────
-
-        else if (msg.type === "sent") {
-
-
-            status.textContent =
-                "Paste sent successfully";
-
-
-            list.innerHTML = `
-
-                <div class="nearby-success">
-
-                    <div class="icon">
-                        ✅
-                    </div>
-
-                    <h3>
-                        Transfer Complete
-                    </h3>
-
-                    <p>
-                        The paste has been sent
-                        to the selected device.
-                    </p>
-
-                </div>
-
-            `;
-
-
-            setTimeout(() => {
-
-                closeNearbyShare();
-
-            }, 1500);
-
-        }
-
-
-        // ─────────────────────────────────────
-        // Receiver list full
-        // ─────────────────────────────────────
-
-        else if (msg.type === "full") {
-
-
-            status.textContent =
-                "Receiver limit reached";
-
-
-            list.innerHTML = `
-
-                <div class="nearby-empty">
-
-                    <div class="icon">
-                        ⚠️
-                    </div>
-
-                    <h3>
-                        Receiver list full
-                    </h3>
-
-                    <p>
-                        Try again in a few seconds.
-                    </p>
-
-                </div>
-
-            `;
-
-        }
-
-    };
-
-
-    // ─────────────────────────────────────────
-    // Socket closed
-    // ─────────────────────────────────────────
-
-    nearbySocket.onclose = () => {
-
-        clearInterval(
-            nearbyRefresh
-        );
-
-        nearbyRefresh = null;
-
-        console.log(
-            "Nearby socket closed"
         );
 
     };
 
-}
+    search();
+
+    nearbyRefresh = setInterval(search, 2000);
+
+};
+
+nearbySocket.onclose = () => {
+
+    clearInterval(nearbyRefresh);
+  console.log("Nearby socket closed");
+
+};
+    
+
+      }
 
 
-// ─────────────────────────────────────────────
-// Close Nearby Share
-// ─────────────────────────────────────────────
+  function closeNearbyShare(){
 
-function closeNearbyShare() {
+document.getElementById("nearbyModal").style.display="none";
 
-    document.getElementById(
-        "nearbyModal"
-    ).style.display = "none";
+if(nearbySocket){
 
-
-    if (holdTimer) {
-
-        clearTimeout(
-            holdTimer
-        );
-
-        holdTimer = null;
-
-    }
-
-
-    /*
-     * If the 2-second hold already completed,
-     * cancel the pending silent 5-second send
-     * when the modal is closed.
-     */
-
-    if (sendTimer) {
-
-        clearTimeout(
-            sendTimer
-        );
-
-        sendTimer = null;
-
-    }
-
-
-    longPressTriggered = false;
-
-
-    if (nearbyRefresh) {
-
-        clearInterval(
-            nearbyRefresh
-        );
-
-        nearbyRefresh = null;
-
-    }
-
-
-    if (nearbySocket) {
-
-        nearbySocket.close();
-
-        nearbySocket = null;
-
-    }
+nearbySocket.close();
 
 }
 
+  }
 
-// ─────────────────────────────────────────────
-// Nearby Share button
-// ─────────────────────────────────────────────
 
-document
-    .getElementById("nearbyShareBtn")
-    .addEventListener(
-        "click",
-        openNearbyShare
-    );
+  
+  document
+.getElementById("nearbyShareBtn")
+.addEventListener("click", openNearbyShare);
 </script>
 </body>
-                        </html>
+    </html>
