@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Trusted Devices & E2EE Sync — PasteDB</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #080a0f;
+    --bg2: #0d1017;
+    --card: #11151d;
+    --card2: #151a23;
+    --border: #252b36;
+    --text: #f3f5f7;
+    --muted: #929baa;
+
+    --primary: #7c5cff;
+    --primary2: #9b86ff;
+
+    --green: #39d98a;
+    --yellow: #f5c451;
+    --red: #ff637d;
+    --cyan: #48c6ff;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    color: var(--text);
+
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(124,92,255,.17),
+            transparent 42%
+        ),
+        var(--bg);
+
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* NAV */
+
+nav {
+    height: 70px;
+
+    border-bottom: 1px solid rgba(255,255,255,.06);
+
+    background: rgba(8,10,15,.78);
+
+    backdrop-filter: blur(16px);
+
+    position: sticky;
+    top: 0;
+
+    z-index: 20;
+}
+
+.nav {
+    max-width: 1100px;
+    height: 100%;
+
+    margin: auto;
+    padding: 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-weight: 800;
+    font-size: 19px;
+}
+
+.logo-icon {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #4e37d7
+        );
+}
+
+.back {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.back:hover {
+    color: white;
+}
+
+/* PAGE */
+
+.container {
+    width: min(1050px, calc(100% - 40px));
+    margin: auto;
+}
+
+.hero {
+    text-align: center;
+    padding: 85px 0 55px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 13px;
+
+    border-radius: 999px;
+
+    background: rgba(124,92,255,.08);
+    border: 1px solid rgba(124,92,255,.28);
+
+    color: #b9adff;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    margin-bottom: 22px;
+}
+
+.badge-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow: 0 0 12px rgba(57,217,138,.7);
+}
+
+h1 {
+    max-width: 850px;
+
+    margin: auto;
+
+    font-size: clamp(38px, 7vw, 68px);
+
+    line-height: 1.04;
+
+    letter-spacing: -2.5px;
+}
+
+.gradient {
+    background:
+        linear-gradient(
+            110deg,
+            #fff,
+            #aaa0ff,
+            #7c5cff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+.hero p {
+    max-width: 700px;
+
+    margin: 22px auto 0;
+
+    color: var(--muted);
+
+    font-size: 17px;
+}
+
+/* SECTION */
+
+section {
+    padding: 55px 0;
+}
+
+.heading {
+    text-align: center;
+
+    max-width: 720px;
+
+    margin: 0 auto 35px;
+}
+
+.heading h2 {
+    font-size: 32px;
+
+    letter-spacing: -1px;
+}
+
+.heading p {
+    color: var(--muted);
+
+    margin-top: 8px;
+}
+
+/* PROBLEM */
+
+.problem {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 16px;
+}
+
+.card {
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    padding: 26px;
+}
+
+.card-icon {
+    width: 45px;
+    height: 45px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 11px;
+
+    background: rgba(124,92,255,.1);
+
+    font-size: 21px;
+
+    margin-bottom: 17px;
+}
+
+.card h3 {
+    font-size: 19px;
+
+    margin-bottom: 9px;
+}
+
+.card p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* DEVICE FLOW */
+
+.device-flow {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin-top: 30px;
+}
+
+.device {
+    width: 205px;
+
+    padding: 24px 18px;
+
+    text-align: center;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+}
+
+.device-icon {
+    font-size: 35px;
+
+    margin-bottom: 8px;
+}
+
+.device h3 {
+    font-size: 16px;
+}
+
+.device p {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    margin-top: 4px;
+}
+
+.arrow {
+    color: var(--primary2);
+
+    font-size: 25px;
+}
+
+/* STEP FLOW */
+
+.steps {
+    display: grid;
+
+    gap: 13px;
+
+    max-width: 850px;
+
+    margin: auto;
+}
+
+.step {
+    display: grid;
+
+    grid-template-columns: 45px 1fr;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 13px;
+}
+
+.step-number {
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: rgba(124,92,255,.12);
+
+    color: #b8aaff;
+
+    font-weight: 800;
+}
+
+.step h3 {
+    font-size: 16px;
+
+    margin-bottom: 4px;
+}
+
+.step p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* DEVICES MOCKUP */
+
+.devices-panel {
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 20px;
+
+    background: #0b0e14;
+
+    border: 1px solid var(--border);
+
+    border-radius: 17px;
+
+    box-shadow: 0 25px 80px rgba(0,0,0,.3);
+}
+
+.panel-top {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 5px 4px 18px;
+}
+
+.panel-top h3 {
+    font-size: 18px;
+}
+
+.panel-status {
+    color: var(--green);
+
+    font-size: 12px;
+}
+
+.device-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 17px;
+
+    margin-top: 10px;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+}
+
+.device-details {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+.device-small-icon {
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 10px;
+
+    background: #191e28;
+
+    font-size: 20px;
+}
+
+.device-name {
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.device-meta {
+    color: #737c8a;
+
+    font-size: 12px;
+}
+
+.status {
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+.approved {
+    color: var(--green);
+
+    background: rgba(57,217,138,.09);
+
+    border: 1px solid rgba(57,217,138,.2);
+}
+
+.pending {
+    color: var(--yellow);
+
+    background: rgba(245,196,81,.08);
+
+    border: 1px solid rgba(245,196,81,.2);
+}
+
+.qr-btn {
+    border: 0;
+
+    padding: 9px 13px;
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: 650;
+
+    font-size: 12px;
+}
+
+.qr-btn:hover {
+    background: var(--primary2);
+}
+
+/* CRYPTO FLOW */
+
+.crypto {
+    max-width: 900px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 14px;
+}
+
+.crypto-card {
+    padding: 23px;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    text-align: center;
+}
+
+.crypto-icon {
+    font-size: 27px;
+
+    margin-bottom: 10px;
+}
+
+.crypto-card h3 {
+    font-size: 15px;
+
+    margin-bottom: 5px;
+}
+
+.crypto-card p {
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+/* QR */
+
+.qr-demo {
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 35px;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(124,92,255,.12),
+            transparent 65%
+        ),
+        var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 17px;
+}
+
+.fake-qr {
+    width: 150px;
+    height: 150px;
+
+    margin: 20px auto;
+
+    display: grid;
+
+    place-items: center;
+
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #fff 0px,
+            #fff 4px,
+            #111 4px,
+            #111 8px
+        );
+
+    border: 10px solid white;
+
+    color: transparent;
+
+    border-radius: 4px;
+}
+
+.qr-demo p {
+    max-width: 620px;
+
+    margin: auto;
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* SECURITY */
+
+.security {
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    border: 1px solid rgba(57,217,138,.18);
+
+    background: rgba(57,217,138,.035);
+}
+
+.security h3 {
+    color: var(--green);
+
+    margin-bottom: 10px;
+}
+
+.security p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* FOOTER */
+
+footer {
+    margin-top: 60px;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    border-top: 1px solid rgba(255,255,255,.06);
+
+    color: #707887;
+
+    font-size: 13px;
+}
+
+/* MOBILE */
+
+@media(max-width: 750px) {
+
+    .problem {
+        grid-template-columns: 1fr;
+    }
+
+    .crypto {
+        grid-template-columns: 1fr;
+    }
+
+    .device-row {
+        align-items: flex-start;
+    }
+
+    .device-flow {
+        flex-direction: column;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+    }
+
+    .device {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .hero {
+        padding-top: 65px;
+    }
+
+    h1 {
+        letter-spacing: -1.7px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+
+<nav>
+    <div class="nav">
+
+        <a href="/" class="logo">
+            <span class="logo-icon">P</span>
+            PasteDB
+        </a>
+
+        
+    </div>
+</nav>
+
+
+<!-- HERO -->
+
+<header class="hero">
+
+    <div class="container">
+
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Trusted Device Sync
+        </div>
+
+        <h1>
+            Your encrypted pastes,
+            <span class="gradient">
+                across your devices.
+            </span>
+        </h1>
+
+        <p>
+            PasteDB uses trusted devices to securely transfer your
+            account encryption key to a new device without sending
+            your plaintext encryption key to the server.
+        </p>
+
+    </div>
+
+</header>
+
+
+<!-- PROBLEM -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                Why does a new device need approval?
+            </h2>
+
+            <p>
+                End-to-end encryption means PasteDB cannot simply give
+                your encryption key to every device that logs into your account.
+            </p>
+
+        </div>
+
+
+        <div class="problem">
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🔐
+                </div>
+
+                <h3>
+                    Your first device has the KEK
+                </h3>
+
+                <p>
+                    During registration, your device generates a
+                    random account encryption key. The key is kept
+                    on the trusted device and is used to decrypt
+                    your encrypted pastes.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    📱
+                </div>
+
+                <h3>
+                    A new device does not have it
+                </h3>
+
+                <p>
+                    When you sign in on another device, that device
+                    generates its own cryptographic identity. It can
+                    authenticate your account, but it cannot immediately
+                    decrypt your existing E2EE pastes.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- DEVICE FLOW -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                The trusted-device flow
+            </h2>
+
+            <p>
+                A device that already has your account KEK can authorize
+                another device.
+            </p>
+
+        </div>
+
+
+        <div class="device-flow">
+
+            <div class="device">
+
+                <div class="device-icon">
+                    💻
+                </div>
+
+                <h3>
+                    Device 1
+                </h3>
+
+                <p>
+                    Trusted device<br>
+                    Has account KEK
+                </p>
+
+            </div>
+
+            <div class="arrow">
+                →
+            </div>
+
+            <div class="device">
+
+                <div class="device-icon">
+                    🔑
+                </div>
+
+                <h3>
+                    Encrypt KEK
+                </h3>
+
+                <p>
+                    Wrapped using Device 2's
+                    public key
+                </p>
+
+            </div>
+
+            <div class="arrow">
+                →
+            </div>
+
+            <div class="device">
+
+                <div class="device-icon">
+                    📱
+                </div>
+
+                <h3>
+                    Device 2
+                </h3>
+
+                <p>
+                    Uses its private key
+                    to decrypt the KEK
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- DEVICES PAGE -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                Manage trusted devices
+            </h2>
+
+            <p>
+                Your devices page shows which devices are already trusted
+                and which ones are waiting for approval.
+            </p>
+
+        </div>
+
+
+        <div class="devices-panel">
+
+            <div class="panel-top">
+
+                <h3>
+                    Your devices
+                </h3>
+
+                <span class="panel-status">
+                    ● E2EE enabled
+                </span>
+
+            </div>
+
+
+            <div class="device-row">
+
+                <div class="device-details">
+
+                    <div class="device-small-icon">
+                        💻
+                    </div>
+
+                    <div>
+
+                        <div class="device-name">
+                            Windows Laptop
+                        </div>
+
+                        <div class="device-meta">
+                            Trusted · Has account KEK
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <span class="status approved">
+                    Approved
+                </span>
+
+            </div>
+
+
+            <div class="device-row">
+
+                <div class="device-details">
+
+                    <div class="device-small-icon">
+                        📱
+                    </div>
+
+                    <div>
+
+                        <div class="device-name">
+                            Android Phone
+                        </div>
+
+                        <div class="device-meta">
+                            Waiting for trusted-device approval
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px">
+
+                    <button
+                        class="qr-btn"
+                        onclick="showQrDemo()"
+                    >
+                        Generate QR
+                    </button>
+
+                    <span class="status pending">
+                        Pending
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- INTERNAL PROCESS -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                What happens internally?
+            </h2>
+
+            <p>
+                The trusted-device system uses public-key cryptography
+                to transfer the account KEK.
+            </p>
+
+        </div>
+
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <div>
+
+                    <h3>
+                        A device creates an RSA key pair
+                    </h3>
+
+                    <p>
+                        When a device registers, it generates a public
+                        key and private key. The public key can be shared
+                        with the server, while the private key remains
+                        on the device.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <div>
+
+                    <h3>
+                        The public key is registered
+                    </h3>
+
+                    <p>
+                        The device sends its public key to PasteDB.
+                        The server associates that device with the
+                        user's account.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <div>
+
+                    <h3>
+                        Device 2 appears as pending
+                    </h3>
+
+                    <p>
+                        A trusted device can see the new device in
+                        the account's device management page.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <div>
+
+                    <h3>
+                        The trusted device generates a QR link
+                    </h3>
+
+                    <p>
+                        The trusted device takes the new device's
+                        public key and uses it to encrypt the account KEK.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    5
+                </div>
+
+                <div>
+
+                    <h3>
+                        The encrypted KEK is stored on the server
+                    </h3>
+
+                    <p>
+                        The server stores the wrapped KEK associated
+                        with the target device. The QR code contains
+                        a link that identifies this transfer.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    6
+                </div>
+
+                <div>
+
+                    <h3>
+                        Device 2 scans the QR code
+                    </h3>
+
+                    <p>
+                        The link opens the transfer page. The page
+                        requests the encrypted KEK associated with
+                        that device.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    7
+                </div>
+
+                <div>
+
+                    <h3>
+                        Device 2 decrypts the KEK locally
+                    </h3>
+
+                    <p>
+                        Device 2 uses its private key to decrypt the
+                        encrypted KEK. The resulting KEK is then stored
+                        locally for decrypting the account's E2EE pastes.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CRYPTO -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                The cryptographic handoff
+            </h2>
+
+            <p>
+                The important idea is that the trusted device does not
+                need to expose the plaintext KEK to the server.
+            </p>
+
+        </div>
+
+
+        <div class="crypto">
+
+            <div class="crypto-card">
+
+                <div class="crypto-icon">
+                    🔐
+                </div>
+
+                <h3>
+                    Account KEK
+                </h3>
+
+                <p>
+                    The key used to decrypt your encrypted pastes.
+                </p>
+
+            </div>
+
+
+            <div class="crypto-card">
+
+                <div class="crypto-icon">
+                    🔑
+                </div>
+
+                <h3>
+                    Device 2 Public Key
+                </h3>
+
+                <p>
+                    Used by the trusted device to wrap the KEK
+                    for the new device.
+                </p>
+
+            </div>
+
+
+            <div class="crypto-card">
+
+                <div class="crypto-icon">
+                    🛡️
+                </div>
+
+                <h3>
+                    Device 2 Private Key
+                </h3>
+
+                <p>
+                    Remains on Device 2 and is used locally
+                    to unwrap the KEK.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- QR -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                QR-based device approval
+            </h2>
+
+            <p>
+                The QR code is simply a convenient way to transfer
+                the approval link from one device to another.
+            </p>
+
+        </div>
+
+
+        <div class="qr-demo">
+
+            <h3>
+                Scan from the new device
+            </h3>
+
+            <div class="fake-qr" id="qr">
+                QR
+            </div>
+
+            <p id="qrText">
+                The QR contains a PasteDB transfer URL.
+                It does not contain the plaintext account KEK.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SECURITY -->
+
+<section>
+
+    <div class="container">
+
+        <div class="security">
+
+            <h3>
+                🛡️ Why this works with end-to-end encryption
+            </h3>
+
+            <p>
+                PasteDB can store the device public key and the
+                encrypted KEK required for a trusted-device transfer.
+                The target device's private key remains local and
+                is required to decrypt the wrapped KEK. This allows
+                a trusted device to authorize another device without
+                simply handing the account encryption key to the server.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+    © 2026 PasteDB · Trusted Devices & End-to-End Encryption
+</footer>
+
+
+<script>
+function showQrDemo() {
+
+    const qr = document.getElementById("qr");
+    const text = document.getElementById("qrText");
+
+    qr.style.background = `
+        repeating-linear-gradient(
+            45deg,
+            #fff 0px,
+            #fff 4px,
+            #111 4px,
+            #111 8px
+        )
+    `;
+
+    text.textContent =
+        "QR generated. Scan this transfer link from the pending device to retrieve its encrypted KEK.";
+}
+</script>
+
+</body>
+</html>
