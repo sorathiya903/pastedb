@@ -351,11 +351,116 @@ h1{
   <p><strong>1. No AI Training or Data Sale</strong><br>
   We do not use any pastes, images, or user content to train AI models. We do not sell, rent, or share your data with third parties for advertising or AI training purposes. Your content is only used to provide the PasteDB service to you.</p>
 
-  <p><strong>2. Data Storage & Liability</strong><br>
-  All pastes and uploaded images are stored using MongoDB Atlas and Cloudinary. While we take reasonable measures to secure your data, PasteDB is not liable for data loss, corruption, or breaches that occur due to MongoDB Atlas outages, security incidents, or factors outside our direct control. You are responsible for keeping your own backups of important pastes.</p>
-
+<p>
+  <strong>2. Data Storage & Liability</strong><br>
+  PasteDB uses third-party infrastructure providers, including MongoDB Atlas
+  and Cloudinary, to store and deliver data required to operate the service.
+  Depending on the paste's security settings, content may be stored either
+  in readable form or in encrypted form. For end-to-end encrypted (E2EE)
+  pastes, PasteDB is designed so that the plaintext content and encryption
+  keys are not available to the server during normal operation.
+  While we take reasonable measures to protect stored data, no online
+  service can guarantee absolute security or uninterrupted availability.
+  PasteDB is not responsible for data loss, corruption, service outages,
+  or security incidents caused by third-party infrastructure or events
+  outside our reasonable control. Users should keep backups of important
+  content.
+</p
   <p><strong>3. Password-Protected & Private Pastes</strong><br>
   When you mark a paste as "Private" or add a password, it is not listed publicly. Do not store highly sensitive information like passwords, bank details, or personal IDs on PasteDB.</p>
+  </div>
+
+
+  <div class="card">
+  <h2>8. End-to-End Encryption</h2>
+
+  <p>
+    PasteDB provides optional end-to-end encryption (E2EE) for supported
+    private content. When E2EE is enabled, encryption and decryption are
+    performed on the user's device using cryptographic keys.
+  </p>
+
+  <p>
+    PasteDB does not receive the plaintext encryption key used to protect
+    encrypted content. Because encryption keys are managed on the user's
+    devices, losing access to those keys may result in the inability to
+    decrypt previously encrypted content.
+  </p>
+
+  <p>
+    Users are responsible for maintaining access to their trusted devices
+    and any supported recovery or key-transfer mechanisms.
+  </p>
+  </div><div class="card">
+  <h2>9. Trusted Devices & Key Synchronization</h2>
+
+  <p>
+    PasteDB may allow users to authorize additional devices for access to
+    encrypted content. A previously trusted device may be used to securely
+    transfer the account's encryption key to an authorized new device.
+  </p>
+
+  <p>
+    Device authorization may use public-key cryptography and QR-based
+    transfer mechanisms. The private key associated with a device is
+    intended to remain on that device.
+  </p>
+
+  <p>
+    Users are responsible for approving only devices they recognize and
+    for removing devices they no longer control.
+  </p>
+  </div><div class="card">
+  <h2>10. CLI, API & Developer Tools</h2>
+
+  <p>
+    PasteDB may provide command-line tools, APIs, SDKs, and other developer
+    interfaces for creating, retrieving, updating, and managing content.
+  </p>
+
+  <p>
+    Users are responsible for protecting their API keys, authentication
+    credentials, and other access tokens. You should not intentionally
+    expose API keys in public repositories, client-side applications,
+    or shared content.
+  </p>
+
+  <p>
+    PasteDB may impose reasonable limits, modify APIs, or discontinue
+    developer features when necessary to maintain or improve the service.
+  </p>
+  </div><div class="card">
+  <h2>11. Security & Data Protection</h2>
+
+  <p>
+    PasteDB uses reasonable technical and organizational measures to
+    protect stored data and account information. However, no online
+    service can guarantee absolute security or uninterrupted availability.
+  </p>
+
+  <p>
+    Users should maintain their own backups of important content and
+    should not use PasteDB as the sole storage location for critical data.
+  </p>
+
+  <p>
+    If you discover a potential security vulnerability in PasteDB,
+    please report it through the available contact channel rather than
+    attempting to access, modify, or disclose other users' data.
+  </p>
+  </div><div class="card">
+  <h2>12. Service Availability</h2>
+
+  <p>
+    PasteDB is provided on an evolving basis. Features, APIs, storage
+    limits, integrations, and other parts of the service may change,
+    become temporarily unavailable, or be discontinued.
+  </p>
+
+  <p>
+    PasteDB does not guarantee that the service will always be available
+    or that stored content will always remain accessible.
+  </p>
   </div>
 
   
