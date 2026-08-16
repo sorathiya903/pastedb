@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nearby Transfer — Send Pastes Between Devices | PasteDB</title>
+
+<meta name="description"
+content="Learn how PasteDB Nearby Transfer lets you send public pastes directly to nearby devices without QR codes, copying links, or messaging apps.">
+
+<meta name="robots" content="index, follow">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #080a0f;
+    --card: #11151d;
+    --card2: #151a23;
+    --border: #252b36;
+
+    --text: #f4f6f8;
+    --muted: #929baa;
+
+    --primary: #7c5cff;
+    --primary2: #9b86ff;
+
+    --green: #39d98a;
+    --cyan: #48c6ff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    color: var(--text);
+
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(124,92,255,.18),
+            transparent 42%
+        ),
+        var(--bg);
+
+    line-height: 1.6;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    background-image:
+        radial-gradient(
+            rgba(255,255,255,.045) 1px,
+            transparent 1px
+        );
+
+    background-size: 28px 28px;
+
+    pointer-events: none;
+    z-index: -1;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* =========================
+   NAV
+========================= */
+
+nav {
+    height: 70px;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 50;
+
+    background: rgba(8,10,15,.78);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+
+    backdrop-filter: blur(16px);
+}
+
+.nav {
+    max-width: 1100px;
+    height: 100%;
+
+    margin: auto;
+    padding: 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.logo-icon {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #4e37d7
+        );
+
+    box-shadow:
+        0 8px 25px rgba(124,92,255,.25);
+}
+
+.back {
+    color: var(--muted);
+
+    font-size: 14px;
+
+    transition: .2s ease;
+}
+
+.back:hover {
+    color: white;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+    width: min(
+        1050px,
+        calc(100% - 40px)
+    );
+
+    margin: auto;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    text-align: center;
+
+    padding:
+        95px
+        0
+        70px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 13px;
+
+    border-radius: 999px;
+
+    color: #bdb2ff;
+
+    background:
+        rgba(124,92,255,.08);
+
+    border:
+        1px solid rgba(124,92,255,.27);
+
+    font-size: 13px;
+    font-weight: 650;
+
+    margin-bottom: 24px;
+}
+
+.badge-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 13px
+        rgba(57,217,138,.8);
+}
+
+.hero h1 {
+    max-width: 850px;
+
+    margin: auto;
+
+    font-size:
+        clamp(40px, 7vw, 68px);
+
+    line-height: 1.04;
+
+    letter-spacing: -2.7px;
+}
+
+.gradient {
+    background:
+        linear-gradient(
+            110deg,
+            #fff,
+            #aaa0ff,
+            #7c5cff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+.hero p {
+    max-width: 700px;
+
+    margin:
+        23px
+        auto
+        0;
+
+    color: var(--muted);
+
+    font-size: 17px;
+}
+
+.hero-buttons {
+    margin-top: 30px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        11px
+        17px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition:
+        transform .2s,
+        background .2s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary2);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--card);
+
+    border:
+        1px solid var(--border);
+
+    color: #ddd;
+}
+
+.btn-secondary:hover {
+    background: var(--card2);
+    transform: translateY(-2px);
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+section {
+    padding: 65px 0;
+}
+
+.heading {
+    max-width: 720px;
+
+    margin:
+        0
+        auto
+        35px;
+
+    text-align: center;
+}
+
+.heading h2 {
+    font-size: 32px;
+
+    letter-spacing: -1px;
+}
+
+.heading p {
+    color: var(--muted);
+
+    margin-top: 8px;
+}
+
+/* =========================
+   MAGIC CARD
+========================= */
+
+.magic {
+    max-width: 900px;
+
+    margin: auto;
+
+    padding: 30px;
+
+    border-radius: 18px;
+
+    border:
+        1px solid
+        rgba(124,92,255,.25);
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(124,92,255,.13),
+            transparent 65%
+        ),
+        var(--card);
+
+    text-align: center;
+
+    box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.25);
+}
+
+.magic-title {
+    font-size: 21px;
+
+    margin-bottom: 10px;
+}
+
+.magic-text {
+    max-width: 650px;
+
+    margin: auto;
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+.flow {
+    margin-top: 28px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+}
+
+.flow-item {
+    padding: 15px 20px;
+
+    border-radius: 12px;
+
+    background: #0c1017;
+
+    border:
+        1px solid var(--border);
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.flow-arrow {
+    color: var(--primary2);
+
+    font-size: 23px;
+}
+
+/* =========================
+   TWO COLUMNS
+========================= */
+
+.columns {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 16px;
+}
+
+.card {
+    padding: 27px;
+
+    background: var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 16px;
+
+    transition:
+        transform .25s,
+        border-color .25s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(124,92,255,.35);
+}
+
+.card-icon {
+    width: 46px;
+    height: 46px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 12px;
+
+    background:
+        rgba(124,92,255,.1);
+
+    font-size: 22px;
+
+    margin-bottom: 16px;
+}
+
+.card h3 {
+    font-size: 19px;
+
+    margin-bottom: 9px;
+}
+
+.card p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* =========================
+   STEPS
+========================= */
+
+.steps {
+    max-width: 850px;
+
+    margin: auto;
+
+    display: grid;
+
+    gap: 13px;
+}
+
+.step {
+    display: grid;
+
+    grid-template-columns:
+        45px 1fr;
+
+    gap: 15px;
+
+    padding: 21px;
+
+    background: var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 14px;
+}
+
+.step-number {
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: #bdb2ff;
+
+    background:
+        rgba(124,92,255,.12);
+
+    font-weight: 800;
+}
+
+.step h3 {
+    font-size: 16px;
+
+    margin-bottom: 4px;
+}
+
+.step p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* =========================
+   DEVICE DISCOVERY
+========================= */
+
+.discovery {
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 30px;
+
+    background: var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 17px;
+}
+
+.discovery-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+
+    margin-top: 22px;
+}
+
+.discovery-card {
+    padding: 22px;
+
+    background: #0c1017;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 13px;
+}
+
+.discovery-card h3 {
+    margin-bottom: 8px;
+
+    font-size: 16px;
+}
+
+.discovery-card p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+.highlight {
+    display: inline-block;
+
+    margin-top: 12px;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    color: #bdb2ff;
+
+    background:
+        rgba(124,92,255,.1);
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+/* =========================
+   PRIVACY
+========================= */
+
+.privacy {
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    border:
+        1px solid
+        rgba(72,198,255,.18);
+
+    background:
+        rgba(72,198,255,.035);
+}
+
+.privacy h3 {
+    color: var(--cyan);
+
+    margin-bottom: 9px;
+}
+
+.privacy p {
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* =========================
+   CTA
+========================= */
+
+.final-cta {
+    text-align: center;
+
+    max-width: 850px;
+
+    margin: auto;
+
+    padding: 45px 25px;
+
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(124,92,255,.13),
+            transparent 70%
+        ),
+        var(--card);
+
+    border:
+        1px solid var(--border);
+}
+
+.final-cta h2 {
+    font-size: 30px;
+
+    margin-bottom: 10px;
+}
+
+.final-cta p {
+    color: var(--muted);
+
+    margin-bottom: 24px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    margin-top: 60px;
+
+    padding:
+        35px
+        20px;
+
+    text-align: center;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.06);
+
+    color: #707887;
+
+    font-size: 13px;
+}
+
+.footer-links {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 20px;
+
+    flex-wrap: wrap;
+
+    margin-top: 12px;
+}
+
+.footer-links a {
+    color: #8b93a1;
+
+    transition: .2s;
+}
+
+.footer-links a:hover {
+    color: white;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width: 750px) {
+
+    .hero {
+        padding:
+            65px
+            0
+            50px;
+    }
+
+    .hero h1 {
+        letter-spacing: -1.8px;
+    }
+
+    .hero p {
+        font-size: 15px;
+    }
+
+    section {
+        padding: 45px 0;
+    }
+
+    .columns {
+        grid-template-columns: 1fr;
+    }
+
+    .discovery-row {
+        grid-template-columns: 1fr;
+    }
+
+    .flow {
+        flex-direction: column;
+    }
+
+    .flow-arrow {
+        transform: rotate(90deg);
+    }
+
+    .flow-item {
+        width: 100%;
+    }
+
+    .step {
+        grid-template-columns: 40px 1fr;
+    }
+
+    .magic,
+    .discovery,
+    .privacy {
+        padding: 22px;
+    }
+}
+
+  .footer {
+    margin-top: 60px;
+    padding: 55px 24px 0;
+
+    background: #0d1117;
+    color: #f0f6fc;
+
+    border-top: 1px solid #21262d;
+}
+
+.footer-container {
+    max-width: 1150px;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 70px;
+}
+
+/* Brand */
+
+.footer-brand {
+    max-width: 300px;
+}
+
+.footer-brand h3 {
+    margin: 0 0 12px;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    color: #ffffff;
+}
+
+.footer-brand p {
+    margin: 0;
+
+    color: #8b949e;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Link sections */
+
+.footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 55px;
+}
+
+.footer-links > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-links h4 {
+    margin: 0 0 16px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.footer-links a {
+    display: block;
+
+    width: fit-content;
+
+    margin-bottom: 10px;
+
+    color: #8b949e;
+    text-decoration: none;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: #58a6ff;
+    transform: translateX(2px);
+}
+
+/* GitHub link */
+
+.footer-links a[href*="github"] {
+    color: #c9d1d9;
+}
+
+.footer-links a[href*="github"]:hover {
+    color: #58a6ff;
+}
+
+.footer-links a svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* Bottom */
+
+.footer-bottom {
+    max-width: 1150px;
+
+    margin: 45px auto 0;
+    padding: 20px 0;
+
+    border-top: 1px solid #21262d;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    color: #6e7681;
+
+    font-size: 13px;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+.footer-bottom span {
+    color: #6e7681;
+}
+@media (max-width: 800px) {
+
+    .footer {
+        padding: 45px 20px 0;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .footer-brand {
+        max-width: 100%;
+    }
+
+    .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 35px 25px;
+    }
+
+    .footer-bottom {
+        margin-top: 35px;
+
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .footer-links {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .footer-links a {
+        margin-bottom: 9px;
+    }
+
+    .footer-bottom {
+        font-size: 12px;
+    }
+                }
+
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+
+<nav>
+    <div class="nav">
+
+        <a href="/" class="logo">
+            <img style="margin-left:-10px" width="70" height="70" src="/favicon.png">
+            PasteDB
+        </a>
+
+        <a href="/transfer" class="back">
+            Receive Now
+        </a>
+
+    </div>
+</nav>
+
+
+<!-- HERO -->
+
+<header class="hero">
+
+    <div class="container">
+
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Nearby Transfer
+        </div>
+
+        <h1>
+            Send pastes directly
+            <span class="gradient">
+                between nearby devices.
+            </span>
+        </h1>
+
+        <p>
+            Ever wanted to send a code snippet from one device to
+            another without generating a QR code, copying a link,
+            or messaging yourself?
+        </p>
+
+        <div class="hero-buttons">
+
+            <a
+                class="btn btn-primary"
+                href="/paste/guide"
+            >
+                Try Sending One
+            </a>
+
+            <a
+                class="btn btn-secondary"
+                href="#how"
+            >
+                How it works
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- INTRO -->
+
+<section>
+
+    <div class="container">
+
+        <div class="magic">
+
+            <div class="magic-title">
+                ✨ It feels a bit like magic.
+            </div>
+
+            <p class="magic-text">
+                PasteDB Nearby Transfer lets you send a public paste
+                directly to another nearby device. Instead of moving
+                a URL through another service, you select the nearby
+                device and send the paste.
+            </p>
+
+            <div class="flow">
+
+                <div class="flow-item">
+                    📋 Select Paste
+                </div>
+
+                <div class="flow-arrow">
+                    →
+                </div>
+
+                <div class="flow-item">
+                    📡 Nearby Device
+                </div>
+
+                <div class="flow-arrow">
+                    →
+                </div>
+
+                <div class="flow-item">
+                    ⚡ Paste Opens
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- WHY -->
+
+<section id="how">
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                No middleman workflow
+            </h2>
+
+            <p>
+                Traditional paste sharing often involves another
+                app or an extra step just to move a link between devices.
+            </p>
+
+        </div>
+
+
+        <div class="columns">
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🔗
+                </div>
+
+                <h3>
+                    The usual way
+                </h3>
+
+                <p>
+                    Copy the paste URL, open WhatsApp, Discord,
+                    email or another messaging service, send the
+                    link, and finally open it on the other device.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ⚡
+                </div>
+
+                <h3>
+                    Nearby Transfer
+                </h3>
+
+                <p>
+                    Make the receiving device discoverable,
+                    open the paste, choose Nearby Share and
+                    select the device. The paste opens on the
+                    receiving device without manually moving a URL.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- RECEIVER -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                🧑‍💻 Receiver
+            </h2>
+
+            <p>
+                First, make the device that should receive the paste
+                discoverable.
+            </p>
+
+        </div>
+
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <div>
+
+                    <h3>
+                        Open PasteDB
+                    </h3>
+
+                    <p>
+                        Open PasteDB on the device where you want
+                        to receive the paste.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <div>
+
+                    <h3>
+                        Open Nearby Transfer
+                    </h3>
+
+                    <p>
+                        Go to the PasteDB Transfer Page.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <div>
+
+                    <h3>
+                        Become discoverable
+                    </h3>
+
+                    <p>
+                        On mobile, hold three fingers on the screen
+                        for 3 seconds, or press and hold the
+                        <strong>Be Discoverable</strong> button for
+                        3 seconds.
+                    </p>
+
+                    <span class="highlight">
+                        Mobile
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <div>
+
+                    <h3>
+                        Desktop or laptop
+                    </h3>
+
+                    <p>
+                        Press and hold the
+                        <strong>Be Discoverable</strong>
+                        button for 3 seconds.
+                    </p>
+
+                    <span class="highlight">
+                        Desktop
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    5
+                </div>
+
+                <div>
+
+                    <h3>
+                        Wait for the sender
+                    </h3>
+
+                    <p>
+                        Your device becomes visible to nearby users
+                        for approximately <strong>10 seconds</strong>.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SENDER -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                📤 Sender
+            </h2>
+
+            <p>
+                Once the receiver is discoverable, sending a paste
+                only takes a few taps.
+            </p>
+
+        </div>
+
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <div>
+
+                    <h3>
+                        Open a public paste
+                    </h3>
+
+                    <p>
+                        Open the public PasteDB paste that you want
+                        to send.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <div>
+
+                    <h3>
+                        Select Nearby Share
+                    </h3>
+
+                    <p>
+                        Use the Nearby Share option available on
+                        the paste page.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <div>
+
+                    <h3>
+                        Choose the nearby device
+                    </h3>
+
+                    <p>
+                        Discoverable devices appear in the nearby
+                        device list. Select the intended receiver.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <div>
+
+                    <h3>
+                        Done
+                    </h3>
+
+                    <p>
+                        The paste opens on the receiving device.
+                        There is no need to manually copy the URL
+                        or send it through a messaging application.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- DISCOVERY -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                📡 How nearby discovery works
+            </h2>
+
+            <p>
+                A receiver temporarily makes their device available
+                for nearby discovery.
+            </p>
+
+        </div>
+
+
+        <div class="discovery">
+
+            <p style="color:var(--muted);font-size:14px;">
+                The receiver becomes discoverable for a short period.
+                This keeps the device from remaining continuously
+                visible when Nearby Transfer is not being used.
+            </p>
+
+
+            <div class="discovery-row">
+
+                <div class="discovery-card">
+
+                    <h3>
+                        ⏱️ Temporary discovery
+                    </h3>
+
+                    <p>
+                        The receiving device is visible for
+                        approximately 10 seconds after discovery
+                        is enabled.
+                    </p>
+
+                </div>
+
+
+                <div class="discovery-card">
+
+                    <h3>
+                        📍 Location permission
+                    </h3>
+
+                    <p>
+                        Nearby Transfer uses approximate location
+                        information to help discover nearby devices.
+                        Both devices should allow location access
+                        for the best experience.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PRIVACY -->
+
+<section>
+
+    <div class="container">
+
+        <div class="privacy">
+
+            <h3>
+                🔒 About your location
+            </h3>
+
+            <p>
+                Nearby Transfer may use approximate location
+                information for nearby device discovery.
+                Location information is used to improve the
+                nearby discovery experience and is not intended
+                to be used as a precise location-sharing feature.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- COMPARISON -->
+
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                What you don't need
+            </h2>
+
+            <p>
+                Nearby Transfer removes several manual sharing steps.
+            </p>
+
+        </div>
+
+
+        <div class="columns">
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🚫
+                </div>
+
+                <h3>
+                    No QR code
+                </h3>
+
+                <p>
+                    You don't need to generate a QR code and scan
+                    it with the other device.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🚫
+                </div>
+
+                <h3>
+                    No copy-paste
+                </h3>
+
+                <p>
+                    You don't have to copy a URL and manually
+                    move it to the other device.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🚫
+                </div>
+
+                <h3>
+                    No messaging app
+                </h3>
+
+                <p>
+                    You don't need WhatsApp, Discord, email,
+                    or another messaging service just to move
+                    the paste link.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ⚡
+                </div>
+
+                <h3>
+                    Just the nearby device
+                </h3>
+
+                <p>
+                    Select the discoverable device and send the
+                    paste directly through the PasteDB Nearby
+                    Transfer workflow.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA -->
+
+<section>
+
+    <div class="container">
+
+        <div class="final-cta">
+
+            <h2>
+                Ready to try it?
+            </h2>
+
+            <p>
+                Open PasteDB Nearby Transfer and send a paste
+                to another device without manually moving the URL.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a
+                    class="btn btn-primary"
+                    href="/transfer"
+                >
+                    Open Transfer Page
+                </a>
+
+                <a
+                    class="btn btn-secondary"
+                    href="/"
+                >
+                    Open PasteDB
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+
+<footer class="footer">
+  <div class="footer-container">
+
+    <div class="footer-brand">
+      <h3>PasteDB</h3>
+
+      <p>
+        A fast, secure and developer-first platform
+        for sharing text and code snippets.
+      </p>
+    </div>
+
+    <div class="footer-links">
+
+      <div>
+        <h4>Product</h4>
+<a href="/">Home</a>
+            <a href="/create">Create Paste</a>
+      <a href="/newLink">Create Link Paste</a> 
+    <a href="/explore">Explore Public Pastes</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/login">Sign In</a>
+        <a href="/scan">QR Scanner</a>
+    <a href="/extension">VS Code Extension</a>
+     
+     
+    <a href="/transfer">Transfer Page</a>
+  
+
+    </div>
+
+      
+      <div>
+        <h4>Resources</h4>
+
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+<a href="/contact">Contact</a>
+            <a href="/about">About PasteDB</a>
+  <a href="/trusted-devices-sync-explaination">Trusted Devices Sync</a>
+      
+  <a href="/cli">CLI Docs</a>
+        <a href="/docs">API Documentation</a>
+        <a href="/e2ee">End-to-End Encryption</a>
+   
+      </div>
+
+      
+      <div>
+      
+        <h4>Open Source</h4>
+        <a href="https://github.com/sorathiya903/pastedb-cli" target="_blank" style="display:flex;align-items:center">
+        <svg class="w-[40px] h-[40px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path fill-rule="evenodd" d="M12.006 2a9.847 9.847 0 0 0-6.484 2.44 10.32 10.32 0 0 0-3.393 6.17 10.48 10.48 0 0 0 1.317 6.955 10.045 10.045 0 0 0 5.4 4.418c.504.095.683-.223.683-.494 0-.245-.01-1.052-.014-1.908-2.78.62-3.366-1.21-3.366-1.21a2.711 2.711 0 0 0-1.11-1.5c-.907-.637.07-.621.07-.621.317.044.62.163.885.346.266.183.487.426.647.71.135.253.318.476.538.655a2.079 2.079 0 0 0 2.37.196c.045-.52.27-1.006.635-1.37-2.219-.259-4.554-1.138-4.554-5.07a4.022 4.022 0 0 1 1.031-2.75 3.77 3.77 0 0 1 .096-2.713s.839-.275 2.749 1.05a9.26 9.26 0 0 1 5.004 0c1.906-1.325 2.74-1.05 2.74-1.05.37.858.406 1.828.101 2.713a4.017 4.017 0 0 1 1.029 2.75c0 3.939-2.339 4.805-4.564 5.058a2.471 2.471 0 0 1 .679 1.897c0 1.372-.012 2.477-.012 2.814 0 .272.18.592.687.492a10.05 10.05 0 0 0 5.388-4.421 10.473 10.473 0 0 0 1.313-6.948 10.32 10.32 0 0 0-3.39-6.165A9.847 9.847 0 0 0 12.007 2Z" clip-rule="evenodd"/>
+</svg> &nbsp;
+  GitHub
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>
+      © 2026 PasteDB. Built for developers, teachers and students.
+    </p>
+
+    <span>
+      Made with passion by Aditya Sorathiya
+    </span>
+  </div>
+</footer>
+</body>
+</html>
