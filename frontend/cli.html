@@ -873,6 +873,176 @@ pre,pre span {
         font-size: 12px;
     }
                 }
+
+        /* DASHBOARD */
+
+.dashboard-section {
+    padding: 90px 0;
+}
+
+.dashboard-card {
+    max-width: 900px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow: 0 25px 80px rgba(0,0,0,.25);
+}
+
+.dashboard-info {
+    padding: 38px;
+}
+
+.dashboard-icon {
+    width: 50px;
+    height: 50px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 13px;
+
+    background: rgba(124,92,255,.12);
+    color: #a898ff;
+
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.dashboard-info h3 {
+    font-size: 25px;
+    margin-bottom: 12px;
+}
+
+.dashboard-info p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 22px;
+}
+
+.dashboard-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 11px 17px;
+
+    background: var(--primary);
+    color: white;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 650;
+
+    transition: .2s;
+}
+
+.dashboard-link:hover {
+    background: var(--primary2);
+    transform: translateY(-1px);
+}
+
+.dashboard-preview {
+    padding: 30px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(124,92,255,.12),
+            transparent 65%
+        ),
+        #0b0e14;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-window {
+    width: 100%;
+
+    background: #090b10;
+    border: 1px solid #252a34;
+
+    border-radius: 12px;
+    overflow: hidden;
+
+    box-shadow: 0 20px 50px rgba(0,0,0,.35);
+}
+
+.dashboard-window-top {
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 0 12px;
+
+    border-bottom: 1px solid #20242d;
+    background: #10131a;
+}
+
+.dashboard-window-top span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3b404a;
+}
+
+.dashboard-window-content {
+    padding: 20px;
+}
+
+.dashboard-paste {
+    padding: 14px;
+
+    margin-bottom: 10px;
+
+    border: 1px solid #252b36;
+    border-radius: 9px;
+
+    background: #11151d;
+}
+
+.dashboard-paste:last-child {
+    margin-bottom: 0;
+}
+
+.dashboard-paste-title {
+    font-weight: 650;
+    font-size: 14px;
+}
+
+.dashboard-paste-meta {
+    margin-top: 4px;
+
+    color: #737c8b;
+    font-size: 12px;
+}
+
+@media (max-width: 800px) {
+    .dashboard-card {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-info {
+        padding: 28px;
+    }
+
+    .dashboard-preview {
+        padding: 22px;
+    }
+    }
     </style>
 </head>
 
@@ -1281,6 +1451,120 @@ pre,pre span {
                 <pre>pdb key create my-laptop
 pdb key list
 pdb key delete &lt;key&gt;</pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+    <!-- DASHBOARD -->
+
+<section class="dashboard-section" id="dashboard">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <h2>
+                Your pastes, all in one place
+            </h2>
+
+            <p>
+                Pastes created through PasteDB CLI are connected to
+                your PasteDB account and can be managed from the web dashboard.
+            </p>
+
+        </div>
+
+        <div class="dashboard-card">
+
+            <div class="dashboard-info">
+
+                <div class="dashboard-icon">
+                    ▦
+                </div>
+
+                <h3>
+                    Manage your CLI pastes from the dashboard
+                </h3>
+
+                <p>
+                    When you create a paste using the PasteDB CLI while
+                    authenticated with your API key, the paste is added
+                    to your PasteDB account. You can then open the
+                    PasteDB dashboard to view and manage your pastes.
+                </p>
+
+                <p>
+                    This gives you the flexibility of creating pastes
+                    from the terminal while still having a complete
+                    web interface for managing them.
+                </p>
+
+                <a
+                    href="https://pastedb.netlify.app/dashboard"
+                    target="_blank"
+                    rel="noopener"
+                    class="dashboard-link"
+                >
+                    Open Dashboard →
+                </a>
+
+            </div>
+
+            <div class="dashboard-preview">
+
+                <div class="dashboard-window">
+
+                    <div class="dashboard-window-top">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="dashboard-window-content">
+
+                        <div class="dashboard-paste">
+
+                            <div class="dashboard-paste-title">
+                                app.py
+                            </div>
+
+                            <div class="dashboard-paste-meta">
+                                Python · Created from CLI
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-paste">
+
+                            <div class="dashboard-paste-title">
+                                config.json
+                            </div>
+
+                            <div class="dashboard-paste-meta">
+                                JSON · Created from CLI
+                            </div>
+
+                        </div>
+
+                        <div class="dashboard-paste">
+
+                            <div class="dashboard-paste-title">
+                                server.js
+                            </div>
+
+                            <div class="dashboard-paste-meta">
+                                JavaScript · Created from CLI
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
