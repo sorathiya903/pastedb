@@ -30,7 +30,18 @@
         <priority>0.5</priority>
         <changefreq>monthly</changefreq>
         </url>
+    
+        <url>
+        <loc>https://pastedb.netlify.app/nearby-transfer-explanation</loc>
+        <priority>0.5</priority>
+        <changefreq>monthly</changefreq>
+        </url>
 
+        <url>
+        <loc>https://pastedb.netlify.app/trusted-devices-sync-explanation</loc>
+        <priority>0.5</priority>
+        <changefreq>monthly</changefreq>
+        </url>
 
 
     <url>
