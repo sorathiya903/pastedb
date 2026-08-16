@@ -238,17 +238,17 @@ PasteDB respects your privacy and is committed to protecting
 your personal information while providing a secure platform
 for sharing text, code snippets, notes and images.
 </p>
-
 <h2>Information We Collect</h2>
 
 <ul>
-<li>Google account information when you sign in.</li>
-<li>Email address and profile information.</li>
-<li>Pastes, images and content you create.</li>
-<li>Usage analytics such as views and visitors.</li>
-<li>Device and browser information.</li>
-<li>IP addresses for abuse prevention and security.</li>
+<li>Google account information when you sign in, such as your email address, name and profile information.</li>
+<li>Paste metadata and content necessary to provide the PasteDB service.</li>
+<li>Images and other files that you choose to upload.</li>
+<li>Authentication information, such as session cookies and API keys used to access the service.</li>
+<li>Usage information, such as page views and service interactions, where analytics are enabled.</li>
+<li>Technical information such as browser, device and network information where required for security, reliability or abuse prevention.</li>
 </ul>
+
 
 <h2>How We Use Information</h2>
 
@@ -281,36 +281,54 @@ Application servers process requests but are not intended
 to act as long-term storage for user content.
 </p>
 
-  <h2>End-to-End Encryption (E2EE)</h2>
+<h2>End-to-End Encryption (E2EE)</h2>
 
 <p>
-PasteDB offers optional end-to-end encryption for private and
-unlisted pastes. Public pastes are not end-to-end encrypted.
+PasteDB offers optional end-to-end encryption for supported private
+and unlisted pastes. Public pastes are not end-to-end encrypted.
 </p>
 
 <p>
-For guest users, encrypted pastes use a symmetric encryption
-key. The decryption key is included only in the URL fragment
-(the portion after <code>#</code>) and is never sent to the
-PasteDB servers during normal requests.
+For encrypted pastes, PasteDB uses a layered encryption system.
+The account-level Key Encryption Key (KEK) is not used to directly
+decrypt the paste content. Instead, the KEK is used as part of the
+process of protecting and recovering the paste's encryption key
+(PEK). The PEK then decrypts the encrypted paste content.
 </p>
 
 <p>
-For registered users, PasteDB uses a hybrid encryption system.
-Each account has its own cryptographic keys generated during
-registration. Paste content is encrypted using a unique
-symmetric key, while account keys are used to securely protect
-that encryption key. This allows encrypted pastes to be
-accessed across the user's signed-in devices without exposing
-their contents to the server.
+In simplified form, the encryption hierarchy is:
+<strong>KEK → PEK → Paste</strong>.
 </p>
 
 <p>
-PasteDB stores encrypted data but does not store the plaintext
-content of end-to-end encrypted pastes. Users are responsible
-for safeguarding access to their encrypted data.
+For registered users, the encryption keys are generated and managed
+on the user's devices. The server stores the encrypted data and the
+information required to support encrypted synchronization, but does
+not receive the plaintext content or plaintext encryption keys during
+normal E2EE operations.
 </p>
 
+<p>
+Trusted-device synchronization allows an existing trusted device to
+securely authorize a new device. The new device's public key can be
+used to protect the account KEK for that device, while the
+corresponding private key remains on the new device.
+</p>
+
+<p>
+For guest encrypted pastes, the decryption information is contained
+in the URL fragment where applicable. URL fragments are normally
+processed by the browser and are not included in ordinary HTTP
+requests to the PasteDB server.
+</p>
+
+<p>
+E2EE depends on the security of the user's devices, browser,
+authentication credentials and encryption keys. Users are responsible
+for protecting access to their devices and keeping important
+encrypted data recoverable.
+</p>
 <h2>Cookies</h2>
 
 <p>
