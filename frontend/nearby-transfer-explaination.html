@@ -1794,7 +1794,250 @@ section {
 
 </section>
 
+<section class="comparison-section">
 
+  <div class="comparison-header">
+    <span class="comparison-badge">⚡ Nearby Transfer</span>
+    <h2>PasteDB vs AirDrop</h2>
+    <p>
+      AirDrop isn't the only way to share with nearby devices.
+      PasteDB takes a different approach, focusing on sharing
+      paste links directly through the web.
+    </p>
+  </div>
+
+  <div class="comparison-grid">
+
+    <!-- AirDrop -->
+    <div class="comparison-card">
+      <div class="comparison-icon"></div>
+
+      <h3>AirDrop</h3>
+
+      <p class="comparison-description">
+        Apple's nearby sharing feature for transferring files,
+        photos and other content between compatible Apple devices.
+      </p>
+
+      <div class="comparison-row">
+        <span>📏 Range</span>
+        <strong>Approx. 10 m</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>📱 Devices</span>
+        <strong>Apple devices</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>📡 Connection</span>
+        <strong>Bluetooth + Wi-Fi</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>🌐 Internet</span>
+        <strong>Not required for the transfer</strong>
+      </div>
+
+      <div class="privacy-note warning">
+        ⚠️ <strong>Privacy note:</strong>
+        AirDrop's receiving settings matter. Leaving AirDrop
+        available to everyone in public places can result in
+        unwanted or spam sharing requests.
+      </div>
+    </div>
+
+
+    <!-- PasteDB -->
+    <div class="comparison-card pastedb-card">
+
+      <div class="comparison-icon">📋</div>
+
+      <h3>PasteDB Nearby Transfer</h3>
+
+      <p class="comparison-description">
+        Send a public PasteDB paste directly to a nearby
+        discoverable device without copying a URL, scanning
+        a QR code, or using a messaging app.
+      </p>
+
+      <div class="comparison-row">
+        <span>📏 Range</span>
+        <strong>Up to ~100 m*</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>📱 Devices</span>
+        <strong>Any device with a modern browser</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>🌐 Connection</span>
+        <strong>Internet connection</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>📍 Location</span>
+        <strong>Optional</strong>
+      </div>
+
+      <div class="comparison-row">
+        <span>⏱️ Discovery</span>
+        <strong>Visible for only 10 seconds</strong>
+      </div>
+
+      <div class="privacy-note safe">
+        🔒 <strong>Privacy-focused:</strong>
+        A receiver only becomes discoverable for a short
+        10-second window, reducing the time your device
+        is exposed to nearby discovery.
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="comparison-footnote">
+    *Actual PasteDB range depends on the network, location,
+    browser and surrounding conditions. The ~100 m figure
+    should be treated as an approximate maximum rather than
+    a guaranteed distance.
+  </p>
+
+</section>
+
+<style>
+
+.comparison-section{
+    margin-top:32px;
+    padding:32px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+}
+
+.comparison-header{
+    text-align:center;
+    max-width:700px;
+    margin:0 auto 30px;
+}
+
+.comparison-badge{
+    display:inline-block;
+    padding:7px 12px;
+    border-radius:999px;
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    font-size:13px;
+    margin-bottom:12px;
+}
+
+.comparison-header h2{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.comparison-header p{
+    color:var(--text-secondary);
+    line-height:1.7;
+}
+
+.comparison-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:20px;
+}
+
+.comparison-card{
+    padding:24px;
+    border-radius:22px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.025);
+}
+
+.pastedb-card{
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.055),
+        rgba(255,255,255,.015)
+    );
+}
+
+.comparison-icon{
+    font-size:30px;
+    margin-bottom:12px;
+}
+
+.comparison-card h3{
+    font-size:22px;
+    margin-bottom:8px;
+}
+
+.comparison-description{
+    color:var(--text-secondary);
+    line-height:1.65;
+    margin-bottom:22px;
+}
+
+.comparison-row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:13px 0;
+    border-top:1px solid var(--border);
+    font-size:14px;
+}
+
+.comparison-row span{
+    color:var(--text-secondary);
+}
+
+.comparison-row strong{
+    text-align:right;
+}
+
+.privacy-note{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:15px;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.privacy-note.warning{
+    background:rgba(255,180,0,.08);
+    border:1px solid rgba(255,180,0,.2);
+}
+
+.privacy-note.safe{
+    background:rgba(100,220,170,.07);
+    border:1px solid rgba(100,220,170,.18);
+}
+
+.comparison-footnote{
+    margin-top:20px;
+    color:var(--text-secondary);
+    font-size:12px;
+    line-height:1.6;
+    text-align:center;
+}
+
+@media(max-width:700px){
+    .comparison-section{
+        padding:22px;
+    }
+
+    .comparison-grid{
+        grid-template-columns:1fr;
+    }
+
+    .comparison-header h2{
+        font-size:25px;
+    }
+}
+
+</style>
 
 
 <footer class="footer">
