@@ -311,11 +311,11 @@ In simplified form, the encryption hierarchy is:
 </p>
 
 <p>
-For registered users, the encryption keys are generated and managed
-on the user's devices. The server stores the encrypted data and the
-information required to support encrypted synchronization, but does
-not receive the plaintext content or plaintext encryption keys during
-normal E2EE operations.
+For registered users, encryption keys are generated and managed on the
+user's devices. PasteDB stores encrypted data and the information
+required to support encrypted synchronization. During normal E2EE
+operations, PasteDB is designed not to receive plaintext paste content
+or plaintext encryption keys.
 </p>
 
 <p>
@@ -358,6 +358,12 @@ hosting, storage, image delivery and analytics.
 <li><strong>Netlify</strong> for web application hosting.</li>
 <li><strong>Google Analytics</strong> for website usage analytics, where enabled.</li>
 </ul>
+  <p>
+When analytics are enabled, PasteDB may use Google Analytics to
+understand website usage, such as page views, visitors and interactions.
+Analytics information may include technical information about the
+device or browser used to access the service.
+  </p>
 
 <h2>User Content</h2>
 
@@ -395,9 +401,10 @@ from children in violation of applicable laws.
 <h2>Policy Updates</h2>
 
 <p>
-This Privacy Policy may be updated periodically.
-Continued use of PasteDB after changes means acceptance
-of the updated policy.
+This Privacy Policy may be updated periodically to reflect changes
+to PasteDB, our services, or applicable requirements. When appropriate,
+we may provide notice of significant changes. The latest version will
+be published on this page with its updated date.
 </p>
 
 <h2>Contact</h2>
