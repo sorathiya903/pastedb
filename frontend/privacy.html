@@ -263,23 +263,32 @@ for sharing text, code snippets, notes and images.
 <h2>Data Storage</h2>
 
 <p>
-PasteDB does not permanently store user content directly on
-its application servers.
-</p>
-
-<p>
-Data is securely stored using trusted third-party services:
+PasteDB uses third-party infrastructure providers to operate the
+service and store application data.
 </p>
 
 <ul>
-<li><strong>MongoDB</strong> for application and user data.</li>
-<li><strong>Cloudinary</strong> for image storage and delivery.</li>
+<li><strong>MongoDB</strong> is used for application data, account information,
+paste metadata and other database records.</li>
+
+<li><strong>Cloudinary</strong> may be used for uploaded image storage and
+delivery.</li>
+
+<li><strong>Netlify</strong> is used to host the PasteDB web application.</li>
 </ul>
 
 <p>
-Application servers process requests but are not intended
-to act as long-term storage for user content.
+Depending on the paste's security settings, content may be stored
+in readable form or in encrypted form. For end-to-end encrypted
+pastes, PasteDB stores encrypted content rather than plaintext
+paste content.
 </p>
+
+<p>
+Third-party infrastructure providers may process technical data as
+necessary to provide their services. Their handling of information
+is subject to their respective privacy policies and terms.
+  </p>
 
 <h2>End-to-End Encryption (E2EE)</h2>
 
@@ -335,23 +344,38 @@ encrypted data recoverable.
 PasteDB uses cookies and authentication tokens to keep users
 logged in and provide a personalized experience.
 </p>
-
 <h2>Third-Party Services</h2>
 
+<p>
+PasteDB may use third-party services to provide authentication,
+hosting, storage, image delivery and analytics.
+</p>
+
 <ul>
-<li>Google Authentication</li>
-<li>MongoDB</li>
-<li>Cloudinary</li>
-<li>Netlify</li>
-<li>Analytics Providers</li>
-<li>Advertising Partners (if enabled)</li>
+<li><strong>Google</strong> for authentication when users choose to sign in with Google.</li>
+<li><strong>MongoDB Atlas</strong> for database storage.</li>
+<li><strong>Cloudinary</strong> for image storage and delivery.</li>
+<li><strong>Netlify</strong> for web application hosting.</li>
+<li><strong>Google Analytics</strong> for website usage analytics, where enabled.</li>
 </ul>
 
 <h2>User Content</h2>
 
 <p>
-Users are responsible for the content they upload or publish.
-Public pastes may be visible to anyone who has access to the link.
+Users retain responsibility for the content they create, upload or
+share through PasteDB.
+</p>
+
+<p>
+Public pastes may be accessible to other people and may be indexed
+or shared depending on their visibility and configuration. Users
+should not publish confidential information in public pastes.
+</p>
+
+<p>
+For encrypted pastes, PasteDB is designed to store the encrypted
+content without receiving the plaintext content during normal E2EE
+operations.
 </p>
 
 <h2>Security</h2>
@@ -383,6 +407,35 @@ If you have privacy-related questions, please visit the
 Contact page.
 </p>
 
+  <h2>Data Retention and Deletion</h2>
+
+<p>
+PasteDB retains information for as long as reasonably necessary to
+provide the service, maintain accounts, prevent abuse, comply with
+legal obligations and maintain security.
+</p>
+
+<p>
+Users may delete eligible pastes and account information through
+available PasteDB features. Some information may remain temporarily
+in backups, logs or other systems after deletion and may be retained
+where necessary for security, legal or operational purposes.
+</p>
+<h2>API and CLI</h2>
+
+<p>
+PasteDB provides developer interfaces including an API and command-line
+tools. When users access PasteDB through these interfaces, the service
+may process API keys, authentication information, request data,
+paste content and technical information necessary to fulfill the
+requested operation.
+</p>
+
+<p>
+API keys should be treated as confidential credentials. Users are
+responsible for protecting their API keys and should revoke keys that
+are no longer required or may have been exposed.
+</p>
 </div>
 
 </div>
