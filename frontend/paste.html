@@ -44,11 +44,13 @@ if(debug){
   <link rel="icon" type="image/png" href="/favicon.png">
 <style>
     #nearbyBtn.ripple-effect {
+#nearbyShareBtn.ripple-effect {
     position: relative;
+    overflow: visible;
 }
 
-#nearbyBtn.ripple-effect::before,
-#nearbyBtn.ripple-effect::after {
+#nearbyShareBtn.ripple-effect::before,
+#nearbyShareBtn.ripple-effect::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -58,7 +60,7 @@ if(debug){
     animation: nearbyRipple 1.6s ease-out infinite;
 }
 
-#nearbyBtn.ripple-effect::after {
+#nearbyShareBtn.ripple-effect::after {
     animation-delay: .8s;
 }
 
@@ -2514,7 +2516,6 @@ if (data.visibility === "public") {
     const par = new URLSearchParams(window.location.search);
 
     if (par.get("ripple") === "true") {
-        alert("rippling")
         nearbyBtn.classList.add("ripple-effect");
     }
     }else{
