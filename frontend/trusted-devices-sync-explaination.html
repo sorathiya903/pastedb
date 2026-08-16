@@ -986,7 +986,73 @@ section {
     </div>
 
 </section>
+<!-- WHAT THE KEK MEANS -->
 
+<section>
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h2>
+                What does the KEK actually do?
+            </h2>
+
+            <p>
+                The KEK is an important part of the E2EE decryption process,
+                but it does not directly decrypt the paste itself.
+            </p>
+
+        </div>
+
+        <div class="security">
+
+            <h3>
+                🔐 The KEK is part of the decryption chain
+            </h3>
+
+            <p>
+                PasteDB uses a layered encryption system. The account
+                <strong>KEK</strong> is used to decrypt or unlock the
+                <strong>PEK</strong>, and the PEK is then used to decrypt
+                the encrypted paste. In simple terms:
+            </p>
+
+            <div class="key-chain">
+
+                <div class="key-box">
+                    <strong>KEK</strong>
+                    <span>Used to unlock the PEK</span>
+                </div>
+
+                <div class="key-arrow">↓</div>
+
+                <div class="key-box">
+                    <strong>PEK</strong>
+                    <span>Used to decrypt the paste</span>
+                </div>
+
+                <div class="key-arrow">↓</div>
+
+                <div class="key-box">
+                    <strong>Encrypted Paste</strong>
+                    <span>Becomes readable</span>
+                </div>
+
+            </div>
+
+            <p style="margin-top:18px;">
+                Therefore, saying that the KEK is used to decrypt E2EE
+                pastes means that the KEK participates in the decryption
+                process <strong>indirectly</strong>. The KEK unlocks the
+                key needed to decrypt the actual paste.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
 
 <!-- DEVICE FLOW -->
 
