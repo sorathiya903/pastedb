@@ -1152,32 +1152,38 @@ async def delete_paste(
     paste_id: str,
     user=Depends(get_current_user)
 ):
-
     try:
-
         email_key = user["email"].replace(".", "_")
 
         print("Payload:", user)
         print("Payload email:", user.get("email"))
-        print("Paste owner:", paste.get("user_email_key"))
 
+        # Find the paste FIRST
         paste = pastes_collection.find_one({
             "_id": ObjectId(paste_id)
         })
 
         if not paste:
-            raise HTTPException(404, "Paste not found")
+            raise HTTPException(
+                status_code=404,
+                detail="Paste not found"
+            )
+
+        print("Paste owner:", paste.get("user_email_key"))
 
         # SECURITY CHECK
         if paste.get("user_email_key") != email_key:
-            raise HTTPException(403, "Unauthorized")
+            raise HTTPException(
+                status_code=403,
+                detail="Unauthorized"
+            )
 
-        # DELETE FROM PASTES COLLECTION
+        # Delete paste
         pastes_collection.delete_one({
             "_id": ObjectId(paste_id)
         })
 
-        # REMOVE FROM USER DOCUMENT
+        # Remove paste ID from user's document
         users_collection.update_one(
             {"email_key": email_key},
             {
@@ -1192,14 +1198,17 @@ async def delete_paste(
             "message": "Paste deleted"
         }
 
+    except HTTPException:
+        raise
+
     except Exception as e:
+        print("Delete error:", e)
 
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-
-
+        
 @app.get("/paste/{paste_id}/versions")
 def get_versions(
     paste_id: str,
