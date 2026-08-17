@@ -1094,11 +1094,11 @@ pre,pre span {
             </span>
         </h1>
 
-        <p>
-            A simple command-line pastebin tool for developers.
-            Create, retrieve, update and delete code and text pastes
-            without leaving your terminal.
-        </p>
+<p>
+    A modern command-line pastebin tool for developers.
+    Create, retrieve, update and delete pastes, then browse and
+    manage them through an interactive terminal dashboard.
+</p>
 
         <div class="hero-buttons">
 
@@ -1256,6 +1256,18 @@ pre,pre span {
                     Browse publicly available PasteDB content without
                     opening the web application.
                 </p>
+
+            </div>
+            <div class="feature">
+
+    <div class="feature-icon">▦</div>
+
+    <h3>Interactive CLI Dashboard</h3>
+
+    <p>
+        Browse and manage your PasteDB pastes through an interactive,
+        keyboard-driven dashboard directly inside your terminal.
+    </p>
 
             </div>
 
@@ -1459,7 +1471,7 @@ pdb key delete &lt;key&gt;</pre>
     </div>
 
 </section>
-    <!-- DASHBOARD -->
+    
 
 <section class="dashboard-section" id="dashboard">
 
@@ -1468,12 +1480,12 @@ pdb key delete &lt;key&gt;</pre>
         <div class="section-heading">
 
             <h2>
-                Your pastes, all in one place
+                An interactive dashboard, right in your terminal
             </h2>
 
             <p>
-                Pastes created through PasteDB CLI are connected to
-                your PasteDB account and can be managed from the web dashboard.
+                Browse and manage your PasteDB pastes without leaving
+                the command line.
             </p>
 
         </div>
@@ -1487,29 +1499,26 @@ pdb key delete &lt;key&gt;</pre>
                 </div>
 
                 <h3>
-                    Manage your CLI pastes from the dashboard
+                    Interactive Paste Management
                 </h3>
 
                 <p>
-                    When you create a paste using the PasteDB CLI while
-                    authenticated with your API key, the paste is added
-                    to your PasteDB account. You can then open the
-                    PasteDB dashboard to view and manage your pastes.
+                    PasteDB CLI now includes an interactive terminal
+                    dashboard for browsing your pastes in a fast,
+                    keyboard-driven interface.
                 </p>
 
                 <p>
-                    This gives you the flexibility of creating pastes
-                    from the terminal while still having a complete
-                    web interface for managing them.
+                    Navigate through your pastes with the arrow keys,
+                    open a selected paste with <strong>Ctrl+Enter</strong>,
+                    and delete pastes directly from the dashboard.
                 </p>
 
                 <a
-                    href="https://pastedb.netlify.app/dashboard"
-                    target="_blank"
-                    rel="noopener"
+                    href="#commands"
                     class="dashboard-link"
                 >
-                    Open Dashboard
+                    Explore CLI Commands →
                 </a>
 
             </div>
@@ -1525,6 +1534,28 @@ pdb key delete &lt;key&gt;</pre>
                     </div>
 
                     <div class="dashboard-window-content">
+
+                        <div style="
+                            color:#9aa3b2;
+                            font-family:monospace;
+                            font-size:12px;
+                            margin-bottom:14px;
+                        ">
+                            PasteDB Interactive Dashboard
+                        </div>
+
+                        <div class="dashboard-paste"
+                             style="border-color:#7c5cff;">
+
+                            <div class="dashboard-paste-title">
+                                websocket.js
+                            </div>
+
+                            <div class="dashboard-paste-meta">
+                                JavaScript · Selected
+                            </div>
+
+                        </div>
 
                         <div class="dashboard-paste">
 
@@ -1550,16 +1581,17 @@ pdb key delete &lt;key&gt;</pre>
 
                         </div>
 
-                        <div class="dashboard-paste">
-
-                            <div class="dashboard-paste-title">
-                                server.js
-                            </div>
-
-                            <div class="dashboard-paste-meta">
-                                JavaScript
-                            </div>
-
+                        <div style="
+                            margin-top:16px;
+                            padding-top:12px;
+                            border-top:1px solid #252b36;
+                            color:#737c8b;
+                            font-family:monospace;
+                            font-size:12px;
+                        ">
+                            ↑ ↓ Navigate &nbsp; · &nbsp;
+                            Ctrl+Enter Open &nbsp; · &nbsp;
+                            d Delete
                         </div>
 
                     </div>
@@ -1573,7 +1605,6 @@ pdb key delete &lt;key&gt;</pre>
     </div>
 
 </section>
-
 
 <!-- ABOUT / SEO CONTENT -->
 
