@@ -282,6 +282,20 @@ if(debug){
     transform: translateX(100%) scale(.96);
     opacity: 0;
  }
+ .tilt-screen {
+    width: min(900px, 92vw);
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+}
+
+.tilt-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 /* =========================
    BASE THEME
 ========================= */
