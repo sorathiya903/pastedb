@@ -126,6 +126,164 @@ if(debug){
 
 
 <style>
+ .tilt-showcase {
+    padding: 100px 20px 110px;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+}
+
+.tilt-showcase-content {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.showcase-label {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    opacity: .55;
+    margin-bottom: 12px;
+}
+
+.tilt-showcase h2 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 52px);
+    letter-spacing: -1.5px;
+}
+
+.tilt-showcase p {
+    max-width: 550px;
+    margin: 15px auto 45px;
+    opacity: .65;
+    line-height: 1.6;
+}
+
+
+/* Device frame */
+
+.tilt-device {
+    width: min(850px, 92vw);
+    margin: auto;
+    perspective: 1400px;
+}
+
+.tilt-screen {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background: #0b0b0b;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.25),
+        0 5px 20px rgba(0,0,0,.12);
+
+    transform-style: preserve-3d;
+}
+
+
+/* Screenshots */
+
+.tilt-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    will-change: transform, opacity;
+
+    user-select: none;
+    pointer-events: none;
+}
+
+
+/* Main screenshot */
+
+.image-center {
+    z-index: 3;
+    transform: translateX(0) scale(1);
+    opacity: 1;
+}
+
+
+/* Left screenshot */
+
+.image-left {
+    z-index: 2;
+    transform: translateX(-100%) scale(.96);
+    opacity: 0;
+}
+
+
+/* Right screenshot */
+
+.image-right {
+    z-index: 2;
+    transform: translateX(100%) scale(.96);
+    opacity: 0;
+}
+
+
+/* Tilt hint */
+
+.tilt-hint {
+    margin-top: 25px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 13px;
+    opacity: .5;
+}
+
+
+/* Motion permission button */
+
+.tilt-permission {
+    margin-top: 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    padding: 11px 18px;
+
+    background: #111;
+    color: white;
+
+    cursor: pointer;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .tilt-showcase {
+        padding: 70px 15px 80px;
+    }
+
+    .tilt-showcase p {
+        margin-bottom: 30px;
+    }
+
+    .tilt-screen {
+        border-radius: 12px;
+    }
+
+    .tilt-hint {
+        font-size: 11px;
+    }
+ }
 /* =========================
    BASE THEME
 ========================= */
@@ -1114,6 +1272,50 @@ window.addEventListener("scroll", ()=>{
   });
 });
 </script>
+ <section class="tilt-showcase">
+  <div class="tilt-showcase-content">
+    <span class="showcase-label">EXPLORE PASTEDB</span>
+    <h2>Tilt to explore</h2>
+    <p>
+      Tilt your phone left or right to discover PasteDB's features.
+    </p>
+
+    <div class="tilt-device" id="tiltDevice">
+      <div class="tilt-screen">
+        <img
+          src="/images/create-page.png"
+          class="tilt-image image-center"
+          id="imageCenter"
+          alt="PasteDB Create page"
+        >
+
+        <img
+          src="/images/dashboard-page.png"
+          class="tilt-image image-left"
+          id="imageLeft"
+          alt="PasteDB Dashboard"
+        >
+
+        <img
+          src="/images/transfer-page.png"
+          class="tilt-image image-right"
+          id="imageRight"
+          alt="PasteDB Nearby Transfer"
+        >
+      </div>
+    </div>
+
+    <div class="tilt-hint">
+      <span>← Tilt left</span>
+      <span>•</span>
+      <span>Tilt right →</span>
+    </div>
+
+    <button id="tiltPermissionBtn" class="tilt-permission" style="display:none">
+      Enable Motion
+    </button>
+  </div>
+</section>
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-container">
@@ -1188,6 +1390,185 @@ window.addEventListener("scroll", ()=>{
     </span>
   </div>
 </footer>
+ <script>
+const imageCenter = document.getElementById("imageCenter");
+const imageLeft = document.getElementById("imageLeft");
+const imageRight = document.getElementById("imageRight");
+
+const permissionBtn = document.getElementById("tiltPermissionBtn");
+
+let currentTilt = 0;
+let smoothTilt = 0;
+
+
+/*
+    Tilt range used for the animation.
+
+    -30 = strong left
+     0  = phone upright
+    +30 = strong right
+*/
+
+function updateTilt(gamma) {
+
+    // Clamp tilt
+    const target = Math.max(-30, Math.min(30, gamma));
+
+    currentTilt = target;
+
+    animate();
+}
+
+
+function animate() {
+
+    // Smooth movement
+    smoothTilt += (currentTilt - smoothTilt) * 0.12;
+
+    /*
+        Convert tilt into a value from -1 to +1
+    */
+
+    const progress = smoothTilt / 30;
+
+    if (progress < 0) {
+
+        // LEFT
+
+        const amount = Math.min(1, Math.abs(progress));
+
+        imageCenter.style.transform =
+            `translateX(${amount * 100}%) scale(${1 - amount * .04})`;
+
+        imageCenter.style.opacity =
+            1 - amount;
+
+        imageLeft.style.transform =
+            `translateX(${(1 - amount) * -100}%) scale(${.96 + amount * .04})`;
+
+        imageLeft.style.opacity =
+            amount;
+
+        imageRight.style.transform =
+            `translateX(100%) scale(.96)`;
+
+        imageRight.style.opacity =
+            0;
+
+    } else {
+
+        // RIGHT
+
+        const amount = Math.min(1, progress);
+
+        imageCenter.style.transform =
+            `translateX(${-amount * 100}%) scale(${1 - amount * .04})`;
+
+        imageCenter.style.opacity =
+            1 - amount;
+
+        imageRight.style.transform =
+            `translateX(${(1 - amount) * 100}%) scale(${.96 + amount * .04})`;
+
+        imageRight.style.opacity =
+            amount;
+
+        imageLeft.style.transform =
+            `translateX(-100%) scale(.96)`;
+
+        imageLeft.style.opacity =
+            0;
+    }
+
+    requestAnimationFrame(animate);
+}
+
+
+/*
+    Device orientation
+*/
+
+function handleOrientation(event) {
+
+    /*
+        gamma:
+        left/right tilt of the phone
+    */
+
+    if (typeof event.gamma !== "number") return;
+
+    updateTilt(event.gamma);
+}
+
+
+/*
+    iPhone/iPad requires permission
+*/
+
+async function enableMotion() {
+
+    try {
+
+        if (
+            typeof DeviceOrientationEvent !== "undefined" &&
+            typeof DeviceOrientationEvent.requestPermission === "function"
+        ) {
+
+            const permission =
+                await DeviceOrientationEvent.requestPermission();
+
+            if (permission !== "granted") {
+                return;
+            }
+        }
+
+        window.addEventListener(
+            "deviceorientation",
+            handleOrientation,
+            true
+        );
+
+        permissionBtn.style.display = "none";
+
+    } catch (error) {
+
+        console.log("Motion permission error:", error);
+    }
+}
+
+
+/*
+    Detect whether permission is required
+*/
+
+if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+) {
+
+    permissionBtn.style.display = "inline-block";
+
+    permissionBtn.addEventListener(
+        "click",
+        enableMotion
+    );
+
+} else {
+
+    window.addEventListener(
+        "deviceorientation",
+        handleOrientation,
+        true
+    );
+}
+
+
+/*
+    Start animation
+*/
+
+animate();
+ </script>
 
 </body>
   </html>
