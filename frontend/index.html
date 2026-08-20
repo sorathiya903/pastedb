@@ -1418,60 +1418,65 @@ const RIGHT_TRIGGER = 15;
 // Return to center only when phone comes close to upright
 const CENTER_LIMIT = 7;
 
-
-// Apply a page state
 function showPage(page) {
 
     if (page === currentPage) return;
 
     currentPage = page;
 
+    const screen = document.querySelector(".tilt-screen");
+
+    // Start magical transition
+    screen.classList.add("morphing");
+
+    setTimeout(() => {
+        screen.classList.remove("morphing");
+    }, 500);
+
+
     if (page === "left") {
 
         imageCenter.style.transform =
-            "translateX(100%) scale(.96)";
+            "translateX(35%) scale(.88) rotateY(12deg)";
+
         imageCenter.style.opacity = "0";
+        imageCenter.style.filter = "blur(10px)";
 
         imageLeft.style.transform =
-            "translateX(0) scale(1)";
+            "translateX(0) scale(1) rotateY(0)";
+
         imageLeft.style.opacity = "1";
+        imageLeft.style.filter = "blur(0)";
 
-        imageRight.style.transform =
-            "translateX(100%) scale(.96)";
         imageRight.style.opacity = "0";
-
     }
 
     else if (page === "right") {
 
         imageCenter.style.transform =
-            "translateX(-100%) scale(.96)";
-        imageCenter.style.opacity = "0";
+            "translateX(-35%) scale(.88) rotateY(-12deg)";
 
-        imageLeft.style.transform =
-            "translateX(-100%) scale(.96)";
-        imageLeft.style.opacity = "0";
+        imageCenter.style.opacity = "0";
+        imageCenter.style.filter = "blur(10px)";
 
         imageRight.style.transform =
-            "translateX(0) scale(1)";
-        imageRight.style.opacity = "1";
+            "translateX(0) scale(1) rotateY(0)";
 
+        imageRight.style.opacity = "1";
+        imageRight.style.filter = "blur(0)";
+
+        imageLeft.style.opacity = "0";
     }
 
     else {
 
-        // CENTER
-
         imageCenter.style.transform =
-            "translateX(0) scale(1)";
+            "translateX(0) scale(1) rotateY(0)";
+
         imageCenter.style.opacity = "1";
+        imageCenter.style.filter = "blur(0)";
 
-        imageLeft.style.transform =
-            "translateX(-100%) scale(.96)";
         imageLeft.style.opacity = "0";
-
-        imageRight.style.transform =
-            "translateX(100%) scale(.96)";
         imageRight.style.opacity = "0";
     }
 }
