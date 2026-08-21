@@ -2522,6 +2522,49 @@ background:#ef4444;
 const params =
   new URLSearchParams(window.location.search)
 
+if (params.get("t") === "r") {
+    const texta = document.getElementById("code");
+
+    if (texta) {
+        texta.value = `# PDB Hackathon August 2026 — Submission
+
+## Project Name
+Enter your project name here.
+
+## Participant
+Your name / username
+
+## Project Description
+Briefly describe what your project does.
+
+## Features
+- Feature 1
+- Feature 2
+- Feature 3
+
+## Tech Stack
+HTML, CSS, JavaScript, etc.
+
+## GitHub
+https://github.com/your-username/your-repository
+
+## Demo
+Add your demo link here if available.
+
+## How It Works Offline
+Explain how your web app works without an internet connection.
+
+## How to Run
+Explain how judges can download/run your project and test it offline.
+
+## Why Is It Useful?
+Explain the problem your project solves and why it is useful.
+
+## Additional Information
+Anything else you want the judges to know.
+`;
+    }
+}
 const editId =
   params.get("edit")
     if (editId) {
