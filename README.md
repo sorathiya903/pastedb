@@ -297,6 +297,7 @@ Through this project, I gained hands-on experience with:
 - 📊 Analytics, SEO, and performance optimization
 
 PasteDB continues to evolve as I learn new technologies and build features that make sharing code, notes, and files faster, simpler, and more secure.
+
 ---
 
 📄 License
