@@ -285,7 +285,7 @@ PasteDB began as a personal learning project with a simple goal: build a modern,
 - 👥 User Base: 12,000+ active users per month (28-day rolling average).📊 
 - Analytics: Tracked and verified via Google Analytics 4 (GA4).
 
-![Google Analytics 4 screen](IMG_2483)
+![Google Analytics 4 screen](IMG_2483.png)
 
 
 Instead of creating another basic CRUD project, I wanted to build something that people could actually use every day. Along the way, PasteDB became a platform for experimenting with new ideas, improving my development skills, and solving practical problems.
