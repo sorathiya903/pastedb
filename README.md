@@ -277,7 +277,14 @@ Nearby Transfer requires **location permission on both the sender and receiver**
 
 ## 🎯 Why PasteDB?
 
-PasteDB began as a personal learning project with a simple goal: build a modern, production-style web application while exploring real-world software development.
+PasteDB began as a personal learning project with a simple goal: build a modern, production-style web application while exploring real-world software development. 
+
+
+### But now the metrics (5/9/26)
+
+- 👥 User Base: 12,000+ active users per month (28-day rolling average).📊 
+- Analytics: Tracked and verified via Google Analytics 4 (GA4).
+
 
 Instead of creating another basic CRUD project, I wanted to build something that people could actually use every day. Along the way, PasteDB became a platform for experimenting with new ideas, improving my development skills, and solving practical problems.
 
