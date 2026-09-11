@@ -3153,6 +3153,281 @@ nearbySocket.close();
   document
 .getElementById("nearbyShareBtn")
 .addEventListener("click", openNearbyShare);
+
+const wrapBtn =
+  document.getElementById("wrapBtn");
+
+const fontSizeRange =
+  document.getElementById("fontSizeRange");
+
+const fontSizeValue =
+  document.getElementById("fontSizeValue");
+
+const codeContainer =
+  document.getElementById("codeContainer");
+
+const outputBlock =
+  document.getElementById("outputBlock");
+
+
+// WORD WRAP
+
+let wordWrapEnabled =
+  localStorage.getItem("pastedb_word_wrap") === "true";
+
+function updateWordWrap(){
+
+  codeContainer.classList.toggle(
+    "word-wrap",
+    wordWrapEnabled
+  );
+
+  wrapBtn.style.background =
+    wordWrapEnabled
+      ? "var(--accent-soft)"
+      : "";
+
+  wrapBtn.title =
+    wordWrapEnabled
+      ? "Disable Word Wrap"
+      : "Enable Word Wrap";
+
+}
+
+wrapBtn.addEventListener("click", () => {
+
+  wordWrapEnabled =
+    !wordWrapEnabled;
+
+  localStorage.setItem(
+    "pastedb_word_wrap",
+    wordWrapEnabled
+  );
+
+  updateWordWrap();
+
+});
+
+
+// FONT SIZE
+
+const savedFontSize =
+  localStorage.getItem("pastedb_font_size") || "14";
+
+fontSizeRange.value =
+  savedFontSize;
+
+function updateFontSize(){
+
+  const size =
+    fontSizeRange.value + "px";
+
+  fontSizeValue.textContent =
+    size;
+
+  codeBlock.style.fontSize =
+    size;
+
+  outputBlock.style.fontSize =
+    size;
+
+  localStorage.setItem(
+    "pastedb_font_size",
+    fontSizeRange.value
+  );
+
+}
+
+fontSizeRange.addEventListener(
+  "input",
+  updateFontSize
+);
+
+
+// INITIALIZE
+
+updateWordWrap();
+updateFontSize();
+
+
+<script>
+
+const moreOptionsBtn =
+  document.getElementById("moreOptionsBtn");
+
+const moreMenu =
+  document.getElementById("moreMenu");
+
+const wordWrapToggle =
+  document.getElementById("wordWrapToggle");
+
+const fontSizeRange =
+  document.getElementById("fontSizeRange");
+
+const fontSizeValue =
+  document.getElementById("fontSizeValue");
+
+const codeContainer =
+  document.getElementById("codeContainer");
+
+const codeBlock =
+  document.getElementById("codeBlock");
+
+
+/* =========================
+   MORE MENU
+========================= */
+
+moreOptionsBtn.addEventListener("click", (e) => {
+
+  e.stopPropagation();
+
+  moreMenu.classList.toggle("show");
+
+});
+
+
+document.addEventListener("click", (e) => {
+
+  if(
+    !moreMenu.contains(e.target) &&
+    !moreOptionsBtn.contains(e.target)
+  ){
+
+    moreMenu.classList.remove("show");
+
+  }
+
+});
+
+
+/* =========================
+   WORD WRAP
+========================= */
+
+wordWrapToggle.addEventListener(
+  "change",
+  () => {
+
+    if(wordWrapToggle.checked){
+
+      codeContainer.style.overflowX =
+        "hidden";
+
+      codeBlock.style.whiteSpace =
+        "pre-wrap";
+
+      codeBlock.style.wordBreak =
+        "break-word";
+
+      codeBlock.style.overflowWrap =
+        "anywhere";
+
+      localStorage.setItem(
+        "pastedb_word_wrap",
+        "true"
+      );
+
+    }else{
+
+      codeContainer.style.overflowX =
+        "auto";
+
+      codeBlock.style.whiteSpace =
+        "pre";
+
+      codeBlock.style.wordBreak =
+        "normal";
+
+      codeBlock.style.overflowWrap =
+        "normal";
+
+      localStorage.setItem(
+        "pastedb_word_wrap",
+        "false"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================
+   FONT SIZE
+========================= */
+
+fontSizeRange.addEventListener(
+  "input",
+  () => {
+
+    const size =
+      fontSizeRange.value;
+
+    fontSizeValue.textContent =
+      `${size}px`;
+
+    codeBlock.style.fontSize =
+      `${size}px`;
+
+    localStorage.setItem(
+      "pastedb_font_size",
+      size
+    );
+
+  }
+);
+
+
+/* =========================
+   RESTORE SETTINGS
+========================= */
+
+const savedWrap =
+  localStorage.getItem(
+    "pastedb_word_wrap"
+  );
+
+const savedFontSize =
+  localStorage.getItem(
+    "pastedb_font_size"
+  );
+
+
+if(savedWrap === "true"){
+
+  wordWrapToggle.checked = true;
+
+  codeBlock.style.whiteSpace =
+    "pre-wrap";
+
+  codeBlock.style.wordBreak =
+    "break-word";
+
+  codeBlock.style.overflowWrap =
+    "anywhere";
+
+  codeContainer.style.overflowX =
+    "hidden";
+
+}
+
+
+if(savedFontSize){
+
+  fontSizeRange.value =
+    savedFontSize;
+
+  fontSizeValue.textContent =
+    `${savedFontSize}px`;
+
+  codeBlock.style.fontSize =
+    `${savedFontSize}px`;
+
+}
+
+</script>
+
 </script>
 </body>
     </html>
