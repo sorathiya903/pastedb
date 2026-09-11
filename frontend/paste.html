@@ -43,6 +43,252 @@ if(debug){
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
   <link rel="icon" type="image/png" href="/favicon.png">
 <style>
+
+
+    /* =========================
+   MORE OPTIONS
+========================= */
+
+.more-options{
+  position:relative;
+}
+
+.more-btn{
+  position:relative;
+}
+
+.more-menu{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+
+  width:300px;
+
+  padding:8px;
+
+  background:var(--surface-solid);
+
+  border:1px solid var(--border);
+  border-radius:18px;
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.35);
+
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+
+  opacity:0;
+  visibility:hidden;
+
+  transform:
+    translateY(-6px)
+    scale(.97);
+
+  transform-origin:top right;
+
+  transition:
+    opacity .2s ease,
+    transform .2s ease,
+    visibility .2s;
+
+  z-index:100;
+}
+
+.more-menu.show{
+  opacity:1;
+  visibility:visible;
+
+  transform:
+    translateY(0)
+    scale(1);
+}
+
+
+/* OPTION ROW */
+
+.option-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:16px;
+
+  padding:14px;
+
+  border-radius:14px;
+
+  transition:.2s;
+}
+
+.option-row:hover{
+  background:rgba(255,255,255,.04);
+}
+
+body.light .option-row:hover{
+  background:rgba(0,0,0,.04);
+}
+
+
+/* TEXT */
+
+.option-info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+
+  min-width:0;
+}
+
+.option-title{
+  font-size:14px;
+  font-weight:600;
+
+  color:var(--text);
+}
+
+.option-subtitle{
+  font-size:12px;
+
+  color:var(--text-secondary);
+}
+
+
+/* =========================
+   TOGGLE
+========================= */
+
+.switch{
+  position:relative;
+
+  width:44px;
+  height:24px;
+
+  flex-shrink:0;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+
+  cursor:pointer;
+
+  background:#30343d;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  border-radius:999px;
+
+  transition:.25s;
+}
+
+.slider::before{
+  content:"";
+
+  position:absolute;
+
+  width:18px;
+  height:18px;
+
+  left:2px;
+  top:2px;
+
+  background:#fff;
+
+  border-radius:50%;
+
+  transition:.25s;
+
+  box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+
+.switch input:checked + .slider{
+  background:#8d95a5;
+}
+
+.switch input:checked + .slider::before{
+  transform:translateX(20px);
+}
+
+
+/* =========================
+   FONT SIZE
+========================= */
+
+.font-size-option{
+  padding:14px;
+
+  border-radius:14px;
+
+  transition:.2s;
+}
+
+.font-size-option:hover{
+  background:rgba(255,255,255,.04);
+}
+
+body.light .font-size-option:hover{
+  background:rgba(0,0,0,.04);
+}
+
+.font-size-control{
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+
+  margin-top:13px;
+}
+
+.font-size-control input[type="range"]{
+  flex:1;
+
+  height:4px;
+
+  accent-color:#8d95a5;
+
+  cursor:pointer;
+}
+
+.font-small{
+  font-size:11px;
+  color:var(--text-secondary);
+  font-weight:600;
+}
+
+.font-large{
+  font-size:18px;
+  color:var(--text);
+  font-weight:600;
+}
+
+
+/* Mobile */
+
+@media(max-width:520px){
+
+  .more-menu{
+    position:fixed;
+
+    top:auto;
+    right:16px;
+    bottom:16px;
+
+    width:
+      calc(100vw - 32px);
+
+    border-radius:20px;
+
+    transform-origin:bottom right;
+  }
+
+      }
+
     
 #nearbyShareBtn.ripple-effect {
     position: relative;
@@ -1279,6 +1525,88 @@ background:#384152;
     <path fill="currentColor" d="M3 16.5q-.2 0-.375-.075T2.3 16.2q-.15-.15-.225-.325Q2 15.7 2 15.5t.075-.375q.075-.175.225-.325l5.55-5.575q.8-.8 1.912-1.263Q10.875 7.5 12 7.5t2.238.462q1.112.463 1.912 1.263l.475.475l-1.425 1.4l-.45-.45q-.525-.5-1.275-.825Q12.725 9.5 12 9.5q-.725 0-1.462.312q-.738.313-1.288.838L3.7 16.2q-.15.15-.325.225Q3.2 16.5 3 16.5Zm1.025-5.55L2.3 9.2q-.15-.15-.225-.325Q2 8.7 2 8.5t.075-.375Q2.15 7.95 2.3 7.8q.15-.15.325-.225Q2.8 7.5 3 7.5t.375.075q.175.075.325.225l1.75 1.725ZM12 16.5q-1.125 0-2.238-.475Q8.65 15.55 7.85 14.75l-.275-.275l1.4-1.425l.3.3q.525.525 1.263.838q.737.312 1.462.312t1.463-.312q.737-.313 1.287-.838L20.3 7.8q.15-.15.325-.225Q20.8 7.5 21 7.5t.375.075q.175.075.325.225q.15.15.225.325Q22 8.3 22 8.5t-.062.375q-.063.175-.213.325l-5.575 5.55q-.8.8-1.912 1.275q-1.113.475-2.238.475Zm9 0q-.2 0-.375-.075T20.3 16.2l-1.725-1.725l1.4-1.425L21.7 14.8q.15.15.225.325q.075.175.075.375t-.075.375q-.075.175-.225.325q-.15.15-.325.225q-.175.075-.375.075Z"/>
         </svg>
       </button>
+
+        <!-- MORE OPTIONS -->
+<div class="more-options">
+
+  <button
+    class="btn more-btn"
+    id="moreOptionsBtn"
+    aria-label="More options"
+    title="More options"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+      <circle cx="5" cy="12" r="1"/>
+      <circle cx="12" cy="12" r="1"/>
+      <circle cx="19" cy="12" r="1"/>
+    </svg>
+  </button>
+
+  <div class="more-menu" id="moreMenu">
+
+    <!-- WORD WRAP -->
+    <div class="option-row">
+
+      <div class="option-info">
+        <span class="option-title">Word Wrap</span>
+        <span class="option-subtitle">
+          Wrap long lines
+        </span>
+      </div>
+
+      <label class="switch">
+        <input
+          type="checkbox"
+          id="wordWrapToggle"
+        >
+        <span class="slider"></span>
+      </label>
+
+    </div>
+
+
+    <!-- FONT SIZE -->
+    <div class="font-size-option">
+
+      <div class="option-info">
+        <span class="option-title">Font Size</span>
+
+        <span
+          class="option-subtitle"
+          id="fontSizeValue"
+        >
+          14px
+        </span>
+      </div>
+
+      <div class="font-size-control">
+
+        <span class="font-small">A</span>
+
+        <input
+          type="range"
+          id="fontSizeRange"
+          min="10"
+          max="24"
+          value="14"
+          step="1"
+        >
+
+        <span class="font-large">A</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 <!-- FORK BUTTON -->
 <button id="forkBtn" style="display:none" class="">
   <span class="fork-icon">⑂</span>
