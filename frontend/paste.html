@@ -1202,8 +1202,47 @@ background:#384152;
   pre{
   margin:0;
   padding:28px !important;
-  background:transparent !important;
-}  
+
+  width:100%;
+  max-width:100%;
+
+  min-width:0;
+
+  box-sizing:border-box;
+    }
+
+    #codeBlock{
+  display:block;
+
+  width:100%;
+  max-width:100%;
+
+  box-sizing:border-box;
+
+  font-family:"JetBrains Mono", monospace !important;
+
+  font-size:14px;
+  line-height:1.75;
+    }
+
+
+.code-container.word-wrap{
+  overflow-x:hidden;
+}
+
+.code-container.word-wrap pre{
+  min-width:0;
+  width:100%;
+}
+
+.code-container.word-wrap code{
+  white-space:pre-wrap !important;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+
+  display:block;
+  width:100%;
+    }
   </style>
 </head>
 
@@ -3511,38 +3550,9 @@ const wordWrapToggle =
 let wordWrapEnabled =
   localStorage.getItem("pastedb_word_wrap") === "true";
 
-function updateWordWrap(){
 
-  codeContainer.classList.toggle(
-    "word-wrap",
-    wordWrapEnabled
-  );
 
-  wrapBtn.style.background =
-    wordWrapEnabled
-      ? "var(--accent-soft)"
-      : "";
 
-  wrapBtn.title =
-    wordWrapEnabled
-      ? "Disable Word Wrap"
-      : "Enable Word Wrap";
-
-}
-
-wrapBtn.addEventListener("click", () => {
-
-  wordWrapEnabled =
-    !wordWrapEnabled;
-
-  localStorage.setItem(
-    "pastedb_word_wrap",
-    wordWrapEnabled
-  );
-
-  updateWordWrap();
-
-});
 
 
 // FONT SIZE
@@ -3615,58 +3625,84 @@ document.addEventListener("click", (e) => {
 });
 
 
-/* =========================
-   WORD WRAP
-========================= */
+
+function updateWordWrap(){
+
+  codeContainer.classList.toggle(
+    "word-wrap",
+    wordWrapEnabled
+  );
+
+  wrapBtn.style.background =
+    wordWrapEnabled
+      ? "var(--accent-soft)"
+      : "";
+
+  wrapBtn.title =
+    wordWrapEnabled
+      ? "Disable Word Wrap"
+      : "Enable Word Wrap";
+
+
+  if(wordWrapEnabled){
+
+    codeBlock.style.whiteSpace = "pre-wrap";
+    codeBlock.style.wordBreak = "break-word";
+    codeBlock.style.overflowWrap = "anywhere";
+
+    codeContainer.style.overflowX = "hidden";
+
+  }else{
+
+    codeBlock.style.whiteSpace = "pre";
+    codeBlock.style.wordBreak = "normal";
+    codeBlock.style.overflowWrap = "normal";
+
+    codeContainer.style.overflowX = "auto";
+
+  }
+
+}
+
+
+/* Toolbar wrap button */
+
+wrapBtn.addEventListener("click", () => {
+
+  wordWrapEnabled = !wordWrapEnabled;
+
+  localStorage.setItem(
+    "pastedb_word_wrap",
+    wordWrapEnabled
+  );
+
+  updateWordWrap();
+
+});
+
+
+/* More-menu toggle */
+
+wordWrapToggle.checked =
+  wordWrapEnabled;
+
 
 wordWrapToggle.addEventListener(
   "change",
   () => {
 
-    if(wordWrapToggle.checked){
+    wordWrapEnabled =
+      wordWrapToggle.checked;
 
-      codeContainer.style.overflowX =
-        "hidden";
+    localStorage.setItem(
+      "pastedb_word_wrap",
+      wordWrapEnabled
+    );
 
-      codeBlock.style.whiteSpace =
-        "pre-wrap";
-
-      codeBlock.style.wordBreak =
-        "break-word";
-
-      codeBlock.style.overflowWrap =
-        "anywhere";
-
-      localStorage.setItem(
-        "pastedb_word_wrap",
-        "true"
-      );
-
-    }else{
-
-      codeContainer.style.overflowX =
-        "auto";
-
-      codeBlock.style.whiteSpace =
-        "pre";
-
-      codeBlock.style.wordBreak =
-        "normal";
-
-      codeBlock.style.overflowWrap =
-        "normal";
-
-      localStorage.setItem(
-        "pastedb_word_wrap",
-        "false"
-      );
-
-    }
+    updateWordWrap();
 
   }
 );
-
-
 /* =========================
    FONT SIZE
 ========================= */
