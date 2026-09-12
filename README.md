@@ -1,4 +1,4 @@
-# ![Logo](frontend/favicon.png) PasteDB
+# <div style="display:flex;align-items:center"> <img src="frontend/favicon.png" alt="Alt text" width="50" height="50"> PasteDB</div>
 
 > PasteDB is a modern paste-sharing platform built for quickly sharing code, notes, text snippets, and images through simple links.
 
