@@ -2740,137 +2740,255 @@ async def api_delete_paste(
 
 @app.put("/api/paste/{paste_id}")
 async def api_update_paste(
-    paste_id: str,
-    data: dict,
-    api_user=Depends(get_api_user)
+paste_id: str,
+data: dict,
+api_user=Depends(get_api_user)
 ):
+
+# --------------------------------
+# Find paste
+# --------------------------------
+
+paste = None
+
+if ObjectId.is_valid(paste_id):
 
     paste = pastes_collection.find_one({
         "_id": ObjectId(paste_id)
     })
 
-    if not paste:
+if not paste:
 
-        raise HTTPException(
-            status_code=404,
-            detail="Paste not found"
-        )
+    paste = pastes_collection.find_one({
+        "custom_id": paste_id
+    })
 
-    email_key = (
-        api_user["email"]
-        .replace(".", "_")
+if not paste:
+
+    raise HTTPException(
+        status_code=404,
+        detail="Paste not found"
     )
 
-    if (
-        paste.get("user_email_key")
-        !=
-        email_key
-    ):
+# --------------------------------
+# Verify ownership
+# --------------------------------
 
-        raise HTTPException(
-            status_code=403,
-            detail="Unauthorized"
-        )
+email_key = (
+    api_user["email"]
+    .replace(".", "_")
+)
 
-    now = datetime.now(
-        timezone.utc
+if paste.get("user_email_key") != email_key:
+
+    raise HTTPException(
+        status_code=403,
+        detail="You do not own this paste"
     )
 
-    expire_at = None
+# --------------------------------
+# Read update data
+# --------------------------------
 
-    expiration = data.get(
-        "expiration",
-        "never"
+title = data.get(
+    "title",
+    paste.get("title", "Untitled Paste")
+)
+
+content = data.get(
+    "content",
+    paste.get("content", "")
+)
+
+syntax = data.get(
+    "syntax",
+    paste.get("syntax", "text")
+)
+
+visibility = data.get(
+    "visibility",
+    paste.get("visibility", "public")
+)
+
+expiration = data.get(
+    "expiration",
+    paste.get("expiration", "never")
+)
+
+# --------------------------------
+# Validation
+# --------------------------------
+
+if not title.strip():
+
+    raise HTTPException(
+        status_code=400,
+        detail="Title cannot be empty"
     )
-    burn_after_read = False
 
-    if expiration == "burn":
-        burn_after_read = True
+if visibility not in [
+    "public",
+    "unlisted",
+    "private"
+]:
 
-    elif expiration in ["10m", "10min"]:
+    raise HTTPException(
+        status_code=400,
+        detail="Invalid visibility"
+    )
 
-        expire_at = (
-            now +
-            timedelta(minutes=10)
+allowed_expirations = [
+    "never",
+    "10m",
+    "30m",
+    "1h",
+    "6h",
+    "12h",
+    "1d",
+    "3d",
+    "1w",
+    "30d",
+    "burn"
+]
+
+if expiration not in allowed_expirations:
+
+    raise HTTPException(
+        status_code=400,
+        detail="Invalid expiration"
+    )
+
+# --------------------------------
+# Calculate expiration
+# --------------------------------
+
+now = datetime.now(timezone.utc)
+
+expire_at = None
+burn_after_read = False
+
+if expiration == "burn":
+
+    burn_after_read = True
+
+elif expiration == "10m":
+
+    expire_at = now + timedelta(minutes=10)
+
+elif expiration == "30m":
+
+    expire_at = now + timedelta(minutes=30)
+
+elif expiration == "1h":
+
+    expire_at = now + timedelta(hours=1)
+
+elif expiration == "6h":
+
+    expire_at = now + timedelta(hours=6)
+
+elif expiration == "12h":
+
+    expire_at = now + timedelta(hours=12)
+
+elif expiration == "1d":
+
+    expire_at = now + timedelta(days=1)
+
+elif expiration == "3d":
+
+    expire_at = now + timedelta(days=3)
+
+elif expiration == "1w":
+
+    expire_at = now + timedelta(days=7)
+
+elif expiration == "30d":
+
+    expire_at = now + timedelta(days=30)
+
+# --------------------------------
+# Build update
+# --------------------------------
+
+update_data = {
+
+    "title": title.strip(),
+
+    "content": content,
+
+    "syntax": syntax,
+
+    "visibility": visibility,
+
+    "expiration": expiration,
+
+    "expire_at": expire_at,
+
+    "burn_after_read": burn_after_read,
+
+    "updated_at": now.timestamp()
+}
+
+# --------------------------------
+# Optional password
+# --------------------------------
+
+if "password" in data:
+
+    password = data.get("password")
+
+    if password:
+
+        update_data["password"] = hash_password(
+            password
         )
 
-    elif expiration in ["1h", "1hour"]:
+    else:
 
-        expire_at = (
-            now +
-            timedelta(hours=1)
-        )
+        update_data["password"] = None
 
-    elif expiration in ["1d", "1day"]:
+# --------------------------------
+# Update
+# --------------------------------
 
-        expire_at = (
-            now +
-            timedelta(days=1)
-        )
+result = pastes_collection.update_one(
 
-    elif expiration in ["1w", "1week"]:
+    {
+        "_id": paste["_id"]
+    },
 
-        expire_at = (
-            now +
-            timedelta(days=7)
-        )
-
-    update_data = {
-
-        "title":
-            data.get("title"),
-
-        "content":
-            data.get("content"),
-
-        "syntax":
-            data.get("syntax"),
-
-        "visibility":
-            data.get("visibility"),
-
-        "expiration":
-            expiration,
-
-        "expire_at":
-            expire_at,
-        "burn_after_read": burn_after_read,
-
-        "updated_at":
-            now.timestamp()
+    {
+        "$set": update_data
     }
+)
 
-    # Password handling
-    if "password" in data:
+if result.matched_count == 0:
 
-        if data.get("password"):
-
-            update_data["password"] = (
-                hash_password(
-                    data["password"]
-                )
-            )
-
-        else:
-
-            update_data["password"] = None
-
-    pastes_collection.update_one(
-        {"_id": ObjectId(paste_id)},
-        {
-            "$set": update_data
-        }
+    raise HTTPException(
+        status_code=404,
+        detail="Paste not found"
     )
 
-    return {
-        "status": "success",
-        "message": "Paste updated"
-    }
+return {
 
+    "status": "success",
 
-# =========================
-# API USER PASTES
-# =========================
+    "message": "Paste updated",
+
+    "paste_id": str(
+        paste["_id"]
+    ),
+
+    "custom_id":
+        paste.get("custom_id"),
+
+    "title":
+        title,
+
+    "url":
+        f"https://pastedb.netlify.app/paste/{paste.get('custom_id')}"
+}
 
 @app.get("/api/pastes")
 async def api_user_pastes(
