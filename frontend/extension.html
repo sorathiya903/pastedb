@@ -126,7 +126,10 @@ Install from Marketplace
 <section class="section install">
 <h2>Install</h2><br>
 <pre id="cmd"><code>ext install adityasorathiya.pastedb</code></pre><br>
-<button onclick="copyCmd()">Copy VS Code Command</button>
+
+<button id="copyButton" onclick="copyCmd(event)">
+    Copy VS Code Command
+</button>
 </section>
 
 
@@ -580,8 +583,21 @@ item.classList.toggle("active");
 </footer>
 
 <script>
-function copyCmd(){navigator.clipboard.writeText(cmd.innerText);const b=event.target;b.innerText="Copied ✓";setTimeout(()=>b.innerText="Copy VS Code Command",1500);}
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")}),{threshold:.15});
+function copyCmd(event) {
+    navigator.clipboard.writeText(
+        document.getElementById("cmd").innerText
+    );
+
+    const b = event.currentTarget;
+
+    b.innerText = "Copied!";
+
+    setTimeout(() => {
+        b.innerText = "Copy VS Code Command";
+    }, 1500);
+                           }
+   
+   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")}),{threshold:.15});
 document.querySelectorAll(".card").forEach(c=>io.observe(c));
 </script>
 
