@@ -21,7 +21,27 @@
 <meta property="og:image" content="https://pastedb.netlify.app/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
-
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PasteDB VS Code Extension",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Windows, Linux, macOS",
+  "url": "https://pastedb.netlify.app/extension",
+  "description": "Official PasteDB VS Code Extension for uploading, updating and managing code pastes directly from Visual Studio Code.",
+  "author": {
+    "@type": "Person",
+    "name": "Aditya Sorathiya"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Aditya Sorathiya"
+  },
+  "softwareVersion": "0.3.0",
+  "license": "https://marketplace.visualstudio.com/items/adityasorathiya.pastedb/license"
+}
+</script>
    <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
 body{background:#0a0a0a;color:#fff;overflow-x:hidden}
@@ -82,9 +102,24 @@ Install from Marketplace
 <div class="card"><h3>⚡ One-click Upload</h3><p>Upload current file or selected text.</p></div>
 <div class="card"><h3>🔐 Secure API Key</h3><p>Stored in VS Code Secret Storage.</p></div>
 <div class="card"><h3>📋 Copy Link</h3><p>Automatically copy paste URL.</p></div>
-<div class="card"><h3>📚 Recent Pastes</h3><p>Quickly access previous uploads.</p></div>
-<div class="card"><h3>⏱ Expiration</h3><p>Choose default expiry.</p></div>
+<div class="card">
+    <h3>📚 Recent Pastes</h3>
+    <p>
+        Access previous uploads quickly and update existing pastes directly
+        from the PasteDB sidebar.
+    </p>
+</div>
+   
+   <div class="card"><h3>⏱ Expiration</h3><p>Choose default expiry.</p></div>
 <div class="card"><h3>🎨 Dashboard</h3><p>Configure all settings visually.</p></div>
+<div class="card">
+    <h3>✏️ Update Pastes</h3>
+    <p>
+        Edit an existing PasteDB paste directly from VS Code,
+        then update its content and metadata without creating a new paste.
+    </p>
+</div>
+
 </div>
 </section>
 
@@ -244,6 +279,81 @@ animation:bounce 2s infinite;
 
 </section>
 
+   <section class="section">
+
+<h2 style="text-align:center;margin-bottom:50px;">
+✏️ Update an Existing Paste
+</h2>
+
+<div class="timeline">
+
+<div class="step show">
+<div class="circle">①</div>
+<h3>Select a Recent Paste</h3>
+<p>
+Open the PasteDB sidebar in VS Code and choose the paste you want to update.
+</p>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="step show">
+<div class="circle">②</div>
+<h3>Click "Update Paste"</h3>
+<p>
+Right-click the paste and choose <strong>Update Paste</strong>.
+PasteDB opens the existing content in a new editor.
+</p>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="step show">
+<div class="circle">③</div>
+<h3>Edit the Code</h3>
+<p>
+Modify the code directly in the new VS Code editor.
+Your existing paste content is loaded automatically.
+</p>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="step show">
+<div class="circle">④</div>
+<h3>Press Ctrl + Shift + U</h3>
+<p>
+When you're ready, press <strong>Ctrl + Shift + U</strong>
+to start the update process.
+</p>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="step show">
+<div class="circle">⑤</div>
+<h3>Update Metadata</h3>
+<p>
+Configure the paste title, visibility, expiration and other metadata
+from the update panel.
+</p>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="step show">
+<div class="circle">✓</div>
+<h3>Update Paste</h3>
+<p>
+Click <strong>Update</strong> and your existing PasteDB paste is updated
+without creating a new paste.
+</p>
+</div>
+
+</div>
+
+   </section>
+
 <script>
 
 const steps = document.querySelectorAll(".step");
@@ -384,7 +494,48 @@ OR Simply go to the <a href="/api-keys" style="text-decoration:none;color:hsl(0,
 <div class="faq-answer"><p>You can contact the developer through the <a href="/contact" style="text-decoration:none;color:white">Contact page</a> or the GitHub repository linked in the footer.</div></p>
 </div>
 
+<div class="faq-item">
+<button class="faq-question">
+Can I update an existing paste?
+<span>+</span>
+</button>
 
+<div class="faq-answer">
+<p>
+Yes. Open a recent paste from the PasteDB sidebar, right-click it,
+and choose <strong>Update Paste</strong>.
+</p>
+</div>
+   </div>
+
+   <div class="faq-item">
+<button class="faq-question">
+How do I update the code?
+<span>+</span>
+</button>
+
+<div class="faq-answer">
+<p>
+After selecting <strong>Update Paste</strong>, the existing paste content
+opens in a new VS Code editor. Edit the code and press
+<strong>Ctrl + Shift + U</strong> to continue.
+</p>
+</div>
+   </div>
+
+   <div class="faq-item">
+<button class="faq-question">
+Can I change the paste metadata when updating?
+<span>+</span>
+</button>
+
+<div class="faq-answer">
+<p>
+Yes. After editing the content, you can update metadata such as the
+title, and expiration before confirming the update.
+</p>
+</div>
+   </div>
 
 </section>
 
