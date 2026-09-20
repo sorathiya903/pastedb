@@ -399,6 +399,112 @@ html:not(.dark).auth-block{background:repeating-linear-gradient(45deg, #fff, #ff
     max-width:100%;
   }
   }
+
+    /* QUICK START STEPS */
+.steps{
+  display:grid;
+  gap:14px;
+  width:100%;
+  min-width:0;
+}
+
+.step{
+  display:grid;
+  grid-template-columns:72px minmax(0,1fr);
+  width:100%;
+  max-width:100%;
+  min-width:0;
+
+  border:2px solid var(--border);
+  background:var(--bg);
+  overflow:hidden;
+}
+
+.step-n{
+  min-width:0;
+  width:72px;
+
+  font-family:var(--mono);
+  font-weight:900;
+  font-size:28px;
+
+  background:var(--yellow);
+  color:#000;
+
+  display:grid;
+  place-items:center;
+
+  border-right:2px solid var(--border);
+}
+
+.step-content{
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  padding:12px 14px;
+}
+
+.step-label{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+/* Prevent code from expanding the step */
+.step .code-wrap{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+.step .code-wrap pre{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
+  white-space:pre;
+}
+
+.step .code-wrap code{
+  white-space:pre;
+  }
+
+  @media(max-width:900px){
+  .steps,
+  .step,
+  .step-content{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .step{
+    grid-template-columns:72px minmax(0,1fr);
+  }
+
+  .step-content{
+    overflow:hidden;
+  }
+  }
+
+  .sec-body{
+  padding:18px;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+                                     }
+
+  .section{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  }
 </style>
 </head>
 <body>
