@@ -69,6 +69,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <style>
+
+  @media(max-width:600px){
+  .topbar{
+    gap:8px;
+  }
+
+  .topbar .crumb{
+    font-size:9px;
+    letter-spacing:.08em;
+  }
+
+  .topbar > div:last-child{
+    display:none;
+  }
+
+  .mob-menu{
+    flex-shrink:0;
+  }
+  }
 :root{
   --bg:#000000; --panel:#0A0A0A; --panel2:#111111;
   --text:#FFFFFF; --muted:#A3A3A3; --border:#FFFFFF; --border-soft:#2A2A2A;
