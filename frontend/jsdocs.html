@@ -69,7 +69,68 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <style>
+/* SEO / ABOUT CONTENT */
 
+.seo-content {
+    max-width: 900px;
+    margin: 100px auto 70px;
+    padding: 0 20px;
+}
+
+.seo-content h2 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 18px;
+    letter-spacing: -1px;
+}
+
+.seo-content h3 {
+    font-size: 21px;
+    line-height: 1.3;
+    margin: 35px 0 10px;
+}
+
+.seo-content p {
+    color: #a3a3a3;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+}
+
+.seo-content ul {
+    margin: 15px 0 0;
+    padding-left: 24px;
+    color: #a3a3a3;
+}
+
+.seo-content li {
+    margin: 9px 0;
+    line-height: 1.7;
+}
+
+.seo-content strong {
+    color: #ffffff;
+}
+
+@media (max-width: 700px) {
+    .seo-content {
+        margin: 70px auto 50px;
+        padding: 0 16px;
+    }
+
+    .seo-content h2 {
+        font-size: 27px;
+    }
+
+    .seo-content h3 {
+        font-size: 19px;
+    }
+
+    .seo-content p,
+    .seo-content li {
+        font-size: 14px;
+    }
+}
   @media(max-width:600px){
   .topbar{
     gap:8px;
@@ -669,7 +730,140 @@ async function run() {
 run();</code></pre><button class="copy-btn copy">COPY</button></div>
       </div>
     </section>
+<!-- SEO / ABOUT CONTENT -->
 
+<section id="about" class="seo-content">
+
+    <h2>
+        What is the PasteDB Node.js SDK?
+    </h2>
+
+    <p>
+        The PasteDB Node.js SDK is an official JavaScript library for
+        interacting with the PasteDB API from Node.js applications.
+        It provides a simple interface for developers who want to create,
+        retrieve, update and manage PasteDB pastes without manually
+        constructing HTTP requests for every API operation.
+    </p>
+
+    <p>
+        The SDK can be used in Node.js projects, backend applications,
+        developer tools, automation scripts and other JavaScript
+        environments that need to work with PasteDB programmatically.
+        Authentication is handled through a PasteDB API key, allowing
+        applications to access the API using a straightforward client.
+    </p>
+
+
+    <h3>
+        PasteDB API for Node.js
+    </h3>
+
+    <p>
+        PasteDB provides a developer-focused API for working with
+        code and text pastes. The Node.js SDK provides a convenient
+        JavaScript interface over this API, making it easier to
+        integrate PasteDB functionality into Node.js applications.
+    </p>
+
+
+    <h3>
+        Create and manage pastes with JavaScript
+    </h3>
+
+    <p>
+        Developers can use the PasteDB Node.js SDK to create new
+        pastes, retrieve existing pastes and update paste content
+        directly from JavaScript code. This can be useful for
+        applications that need programmatic code sharing, text
+        storage or PasteDB integration.
+    </p>
+
+
+    <h3>
+        Retrieve PasteDB pastes programmatically
+    </h3>
+
+    <p>
+        Instead of opening the PasteDB web application manually,
+        a Node.js application can retrieve paste information through
+        the SDK. This makes PasteDB suitable for scripts, internal
+        developer tools and automated workflows that need access to
+        paste data.
+    </p>
+
+
+    <h3>
+        PasteDB API key authentication
+    </h3>
+
+    <p>
+        The PasteDB Node.js SDK supports API key authentication.
+        Developers can initialize the client with their PasteDB API
+        key and then use the available SDK methods to interact with
+        authenticated API endpoints.
+    </p>
+
+
+    <h3>
+        Node.js SDK for developers
+    </h3>
+
+    <p>
+        The SDK is designed to keep PasteDB API operations simple
+        from JavaScript. Instead of repeatedly writing request
+        handling code, developers can use methods provided by the
+        PasteDB client to work with pastes, account information,
+        API keys and other supported PasteDB functionality.
+    </p>
+
+
+    <h3>
+        What can you do with the PasteDB Node.js SDK?
+    </h3>
+
+    <ul>
+        <li>Create PasteDB pastes from Node.js applications.</li>
+        <li>Retrieve existing pastes using their IDs.</li>
+        <li>Update paste content programmatically.</li>
+        <li>View paste statistics where supported by the API.</li>
+        <li>Explore publicly available PasteDB pastes.</li>
+        <li>Run supported code through PasteDB.</li>
+        <li>Check whether custom paste IDs are available.</li>
+        <li>Generate and manage PasteDB API keys.</li>
+        <li>Retrieve authenticated account information.</li>
+        <li>Integrate PasteDB into JavaScript developer tools and scripts.</li>
+    </ul>
+
+
+    <h3>
+        Why use a Node.js SDK instead of direct API requests?
+    </h3>
+
+    <p>
+        Direct HTTP requests can be useful when building custom
+        integrations, but an SDK can provide a more convenient
+        programming interface for common operations. The PasteDB
+        Node.js SDK groups supported API operations into a reusable
+        client so developers can work with PasteDB using familiar
+        JavaScript methods.
+    </p>
+
+
+    <h3>
+        PasteDB for JavaScript developers
+    </h3>
+
+    <p>
+        Whether you are building a backend service, automation script,
+        developer utility or another Node.js application, the PasteDB
+        Node.js SDK provides a programmatic way to connect your project
+        with PasteDB. The documentation above contains installation
+        instructions, authentication details, available methods and
+        complete usage examples.
+    </p>
+
+</section>
     <footer class="footer">
       <div class="footer-top">
         <div class="footer-brand"><h3>PASTEDB<br>DEVELOPER INFRASTRUCTURE</h3><p style="margin-top:10px; font-family:var(--mono); font-size:12px; color:var(--muted)">A fast, secure and developer-first platform for sharing text and code snippets.</p>
