@@ -3,557 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PasteDB Node.js SDK — Official JavaScript & Node.js API Documentation</title>
-
-<meta name="description" content="Official PasteDB Node.js SDK documentation. Learn how to install and use pastedb-js to create, read, update, explore, and manage pastes, API keys, code execution, and more from Node.js.">
-
-<meta name="keywords" content="PasteDB, PasteDB Node.js SDK, pastedb-js, Node.js SDK, JavaScript SDK, PasteDB API, PasteDB API documentation, Node.js API, JavaScript API, pastebin API, code sharing API, developer API">
-
-<meta name="author" content="Aditya Sorathiya">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
-<meta name="theme-color" content="#000000">
-
-<!-- Canonical URL -->
-<link rel="canonical" href="https://pastedb.netlify.app/jsdocs">
-
-<!-- Open Graph / Facebook / Discord / LinkedIn -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="PasteDB Node.js SDK — Official API Documentation">
-<meta property="og:description" content="Build with PasteDB from Node.js using the official pastedb-js SDK. Explore installation, authentication, paste methods, API keys, error handling, and complete examples.">
-<meta property="og:url" content="https://pastedb.netlify.app/nodejs-sdk">
-<meta property="og:site_name" content="PasteDB">
-<meta property="og:locale" content="en_US">
-
-<!-- Twitter / X -->
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PasteDB Node.js SDK — Official API Documentation">
-<meta name="twitter:description" content="Official documentation for the PasteDB Node.js SDK. Install pastedb-js and start working with the PasteDB API from Node.js.">
-
-<!-- Mobile / Browser -->
-<meta name="application-name" content="PasteDB Node.js SDK">
-<meta name="apple-mobile-web-app-title" content="PasteDB SDK">
-
-<!-- Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "PasteDB Node.js SDK — Official API Documentation",
-  "description": "Official documentation for the PasteDB Node.js SDK, including installation, authentication, paste methods, API keys, error handling, and examples.",
-  "author": {
-    "@type": "Person",
-    "name": "Aditya Sorathiya"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "PasteDB",
-    "url": "https://pastedb.netlify.app/"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://pastedb.netlify.app/jsdocs"
-  },
-  "about": {
-    "@type": "SoftwareApplication",
-    "name": "PasteDB Node.js SDK",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "Node.js"
-  },
-  "inLanguage": "en",
-  "isAccessibleForFree": true
-}
-</script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<title>PASTEDB / NODE.JS SDK v1.0.4 — The Terminal Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <style>
-/* SEO / ABOUT CONTENT */
-
-.seo-content {
-    max-width: 900px;
-    margin: 100px auto 70px;
-    padding: 0 20px;
-}
-
-.seo-content h2 {
-    font-size: 32px;
-    line-height: 1.2;
-    margin-bottom: 18px;
-    letter-spacing: -1px;
-}
-
-.seo-content h3 {
-    font-size: 21px;
-    line-height: 1.3;
-    margin: 35px 0 10px;
-}
-
-.seo-content p {
-    color: #a3a3a3;
-    font-size: 15px;
-    line-height: 1.8;
-    margin-bottom: 18px;
-}
-
-.seo-content ul {
-    margin: 15px 0 0;
-    padding-left: 24px;
-    color: #a3a3a3;
-}
-
-.seo-content li {
-    margin: 9px 0;
-    line-height: 1.7;
-}
-
-.seo-content strong {
-    color: #ffffff;
-}
-
-@media (max-width: 700px) {
-    .seo-content {
-        margin: 70px auto 50px;
-        padding: 0 16px;
-    }
-
-    .seo-content h2 {
-        font-size: 27px;
-    }
-
-    .seo-content h3 {
-        font-size: 19px;
-    }
-
-    .seo-content p,
-    .seo-content li {
-        font-size: 14px;
-    }
-}
-  @media(max-width:600px){
-  .topbar{
-    gap:8px;
-  }
-
-  .topbar .crumb{
-    font-size:9px;
-    letter-spacing:.08em;
-  }
-
-  .topbar > div:last-child{
-    display:none;
-  }
-
-  .mob-menu{
-    flex-shrink:0;
-  }
-  }
-:root{
-  --bg:#000000; --panel:#0A0A0A; --panel2:#111111;
-  --text:#FFFFFF; --muted:#A3A3A3; --border:#FFFFFF; --border-soft:#2A2A2A;
-  --neon:#39FF14; --yellow:#F5FF00; --blue:#00E5FF;
-  --mono:'JetBrains Mono', monospace; --sans:'Archivo', 'Space Grotesk', sans-serif;
-}
-html:not(.dark){
-  --bg:#F4F4F0; --panel:#FFFFFF; --panel2:#FFFFFF; --text:#111111; --muted:#5A5A5A;
-  --border:#111111; --border-soft:#111111;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden; line-height:1.5}
-::selection{background:var(--yellow);color:#000}
-code,pre,kbd{font-family:var(--mono)}
-
-/* LAYOUT */
-.shell{display:grid; grid-template-columns:300px 1fr 240px; min-height:100vh}
-@media(max-width:1280px){.shell{grid-template-columns:280px 1fr}.right{ display:none } }
-@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{position:fixed; inset:0; z-index:90; transform:translateX(-100%); transition:.2s steps(4)}.sidebar.open{transform:translateX(0)} }
-
-/* SIDEBAR */
-.sidebar{background:var(--panel); border-right:3px solid var(--border); padding:0; position:sticky; top:0; height:100vh; overflow-y:auto; display:flex; flex-direction:column}
-.sb-top{padding:22px 18px; border-bottom:3px solid var(--border)}
-.sb-logo{font-weight:900; font-size:28px; line-height:.9; letter-spacing:-1px}
-.sb-logo span{display:block}
-.sb-logo i{font-style:normal; color:var(--neon)}
-.sb-status{margin-top:14px; display:inline-flex; align-items:center; gap:8px; border:2px solid var(--border); padding:6px 10px; font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.08em; background:var(--bg)}
-.sb-status b{width:8px; height:8px; background:var(--neon); display:inline-block; border-radius:50%; box-shadow:0 0 0 3px rgba(57,255,20,.2); animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1} 50%{opacity:.4}}
-.sb-search-wrap{padding:14px 14px; border-bottom:3px solid var(--border)}
-.sb-search{width:100%; background:var(--bg); border:2px solid var(--border); color:var(--text); font-family:var(--mono); font-size:13px; padding:12px 12px; text-transform:uppercase; outline:none}
-.sb-search:focus{border-color:var(--neon); box-shadow:4px 4px 0 var(--neon)}
-.sb-nav{padding:14px}
-.sb-label{font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--muted); margin:18px 0 10px 4px}
-.sb-link{display:flex; justify-content:space-between; align-items:center; border:2px solid transparent; padding:10px 10px; font-family:var(--mono); font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); text-decoration:none; margin-bottom:6px}
-.sb-link:hover{border-color:var(--border); color:var(--text); background:var(--panel2); transform:translate(-1px,-1px); box-shadow:3px 3px 0 var(--border)}
-.sb-link.active{background:var(--yellow); color:#000; border-color:var(--border); box-shadow:4px 4px 0 #000}
-html:not(.dark).sb-link.active{box-shadow:4px 4px 0 var(--border)}
-.sb-bottom{margin-top:auto; padding:14px; border-top:3px solid var(--border); display:flex; gap:10px}
-.btn-brut{border:2.5px solid var(--border); background:var(--bg); color:var(--text); font-family:var(--mono); font-weight:800; font-size:12px; text-transform:uppercase; padding:10px 14px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.08s steps(2)}
-.btn-brut:hover{transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--neon)}
-.btn-brut:active{transform:translate(1px,1px); box-shadow:0 0 0 transparent}
-.btn-brut.primary{background:var(--neon); color:#000}
-.btn-brut.yellow{background:var(--yellow); color:#000}
-
-  .main{
-  width:100%;
-  max-width:880px;
-  min-width:0;
-  margin:0 auto;
-  padding:0 28px 40px;
-  }
-  @media(max-width:900px){.main{padding:0 16px 40px}}
-.topbar{position:sticky; top:0; z-index:20; background:var(--bg); border-bottom:3px solid var(--border); padding:12px 0; display:flex; align-items:center; gap:14px; margin-bottom:28px}
-.topbar.crumb{font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase}
-.topbar.crumb span{opacity:.5}
-.mob-menu{display:none}
-@media(max-width:900px){.mob-menu{display:inline-flex}}
-
-/* HERO */
-.hero{border:3px solid var(--border); background:var(--panel); box-shadow:8px 8px 0 var(--neon); padding:28px 26px; margin-bottom:28px; position:relative}
-.hero::after{content:'NODE.JS >=18 / TRANSPORT:HTTPS / API:PASTEDB'; position:absolute; right:12px; top:-10px; background:var(--yellow); color:#000; border:2px solid var(--border); font-family:var(--mono); font-size:9px; font-weight:800; padding:4px 8px; letter-spacing:.1em}
-.hero h1{font-size:54px; line-height:.9; font-weight:900; letter-spacing:-2px; text-transform:uppercase}
-@media(max-width:900px){.hero h1{font-size:36px}}
-.hero h1.outline{-webkit-text-stroke:1.5px var(--text); color:transparent}
-.hero.sub{margin-top:14px; font-size:18px; color:var(--muted); max-width:56ch; font-weight:600}
-.hero.sub b{color:var(--text)}
-.install{display:grid; grid-template-columns:1fr auto; gap:0; margin-top:22px; border:3px solid var(--border); background:#000; box-shadow:6px 6px 0 var(--text)}
-html:not(.dark).install{background:#000; color:#fff}
-.install-head{display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:2px solid #222; font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:#fff}
-.install-head i{color:var(--neon)}
-.install pre{margin:0; background:transparent!important; border:0!important; border-radius:0!important; padding:16px 14px!important; font-size:14px; color:#fff}
-.install.copy{margin:10px; align-self:center}
-
-/* SECTIONS */
-.section{margin-top:42px; border:3px solid var(--border); background:var(--panel); box-shadow:6px 6px 0 var(--border-soft)}
-.sec-head{display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:3px solid var(--border); background:var(--panel2)}
-.sec-num{width:36px; height:36px; display:grid; place-items:center; background:var(--neon); color:#000; border:2px solid var(--border); font-family:var(--mono); font-weight:900}
-.sec-title{font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:-.02em}
-.sec-body{padding:18px 18px}
-.kicker{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:8px}
-p.desc{color:var(--muted); font-family:var(--mono); font-size:13.5px; line-height:1.6; margin-bottom:14px}
-
-/* STEPS */
-.steps{display:grid; gap:14px}
-.step{display:grid; grid-template-columns:72px 1fr; border:2px solid var(--border); background:var(--bg)}
-.step-n{font-family:var(--mono); font-weight:900; font-size:28px; background:var(--yellow); color:#000; display:grid; place-items:center; border-right:2px solid var(--border)}
-.step-content{padding:12px 14px}
-.step-label{font-family:var(--mono); font-size:11px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; margin-bottom:6px}
-
-/* CODE */
-.code-wrap{position:relative; border:2.5px solid var(--neon); background:#000; box-shadow:5px 5px 0 #fff; margin:12px 0 14px; overflow:hidden}
-html:not(.dark).code-wrap{box-shadow:5px 5px 0 #111}
-.code-top{display:flex; justify-content:space-between; align-items:center; background:#0f0f0f; border-bottom:2px solid #222; padding:8px 10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:#A3A3A3}
-.code-top b{color:var(--neon)}
-.code-wrap pre{margin:0!important; background:transparent!important; border:0!important; border-radius:0!important; padding:14px!important; font-size:13px!important; line-height:1.6}
-.copy-btn{border:2px solid #fff; background:#fff; color:#000; font-family:var(--mono); font-size:11px; font-weight:800; text-transform:uppercase; padding:6px 10px; cursor:pointer}
-.copy-btn:hover{background:var(--neon); border-color:var(--neon)}
-
-/* METHOD GRID */
-.grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.m-card{border:3px solid var(--border); background:var(--bg); box-shadow:5px 5px 0 var(--border); padding:0; transition:.08s steps(2)}
-.m-card:hover{transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--neon)}
-.m-card-head{padding:12px 14px; border-bottom:2px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--panel2)}
-.m-method{font-family:var(--mono); font-weight:800; font-size:13px}
-.m-method.verb{border:2px solid var(--border); padding:2px 6px; font-size:10px; margin-right:8px; background:var(--yellow); color:#000}
-.m-card-body{padding:12px 14px}
-.m-desc{font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-bottom:10px}
-
-/* KEYS SECTION */
-.auth-block{border:3px dashed var(--yellow); background:repeating-linear-gradient(45deg, var(--panel), var(--panel) 10px, #121200 10px, #121200 20px)}
-html:not(.dark).auth-block{background:repeating-linear-gradient(45deg, #fff, #fff 10px, #fffbe6 10px, #fffbe6 20px)}
-
-/* ERROR */
-.err-wrap{border:3px solid #FF2E2E; background:#0a0000; color:#fff; box-shadow:6px 6px 0 #FF2E2E}
-.err-wrap.code-top{background:#1a0000; border-bottom-color:#FF2E2E; color:#FF8A8A}
-
-/* FULL EXAMPLE */
-.big-code{border:3px solid var(--border); box-shadow:8px 8px 0 var(--blue)}
-
-/* RIGHT */
-.right{position:sticky; top:0; height:100vh; border-left:3px solid var(--border); background:var(--panel); padding:18px 14px; overflow:auto}
-.right-title{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:12px}
-.right a{display:block; font-family:var(--mono); font-size:11.5px; text-transform:uppercase; color:var(--muted); text-decoration:none; padding:8px 8px; border:2px solid transparent; margin-bottom:4px}
-.right a:hover{border-color:var(--border); color:var(--text); background:var(--bg)}
-.right a.active{background:var(--text); color:var(--bg); border-color:var(--border)}
-
-/* FOOTER */
-.footer{margin-top:60px; border:3px solid var(--border); background:var(--panel); box-shadow:8px 8px 0 var(--border)}
-.footer-top{padding:24px 20px; display:grid; grid-template-columns:1.2fr 2fr; gap:20px; border-bottom:3px solid var(--border)}
-@media(max-width:900px){.footer-top{grid-template-columns:1fr}}
-.footer-brand h3{font-size:28px; font-weight:900; text-transform:uppercase; line-height:.9}
-.footer-links{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
-@media(max-width:600px){.footer-links{grid-template-columns:1fr}}
-.footer-links h4{font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; margin-bottom:10px; border-bottom:2px solid var(--border); display:inline-block; padding-bottom:4px}
-.footer-links a{display:block; font-family:var(--mono); font-size:12.5px; color:var(--muted); text-decoration:none; margin-bottom:8px}
-.footer-links a:hover{color:var(--text); text-decoration:underline; text-decoration-thickness:2px}
-.footer-bottom{padding:14px 20px; display:flex; justify-content:space-between; gap:12px; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted)}
-@media(max-width:600px){.footer-bottom{flex-direction:column}}
-
-/* TOAST */
-#toast{position:fixed; bottom:18px; right:18px; background:var(--yellow); color:#000; border:3px solid #000; padding:12px 16px; font-family:var(--mono); font-weight:900; text-transform:uppercase; font-size:12px; box-shadow:5px 5px 0 #000; opacity:0; transform:translateY(20px); transition:.2s steps(3); z-index:99}
-#toast.show{opacity:1; transform:translateY(0)}
-/* DESKTOP LAYOUT */
-.shell{
-  display:grid;
-  grid-template-columns:300px minmax(0, 1fr) 240px;
-  min-height:100vh;
-}
-
-/* TABLET */
-@media(max-width:1280px){
-  .shell{
-    grid-template-columns:280px minmax(0, 1fr);
-  }
-
-  .right{
-    display:none;
-  }
-}
-
-/* MOBILE */
-@media(max-width:900px){
-  html,
-  body{
-    width:100%;
-    min-width:0;
-    overflow-x:hidden;
-  }
-
-  .shell{
-    display:block;
-    width:100%;
-    min-height:100vh;
-  }
-
-  .sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    bottom:0;
-    width:min(320px, 88vw);
-    height:100vh;
-
-    z-index:9999;
-
-    transform:translateX(-105%);
-    transition:transform .2s steps(4);
-
-    overflow-y:auto;
-  }
-
-  .sidebar.open{
-    transform:translateX(0);
-  }
-
-  .main{
-    display:block;
-    width:100%;
-    max-width:none;
-    margin:0;
-    padding:0 16px 40px;
-  }
-
-  .topbar{
-    position:sticky;
-    top:0;
-    z-index:100;
-
-    width:100%;
-    margin-bottom:28px;
-  }
-                 }
-
-
-       /* METHOD GRID */
-.grid{
-  display:grid;
-  grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
-  gap:14px;
-  width:100%;
-  min-width:0;
-}
-
-.m-card{
-  min-width:0;
-  width:100%;
-  max-width:100%;
-  overflow:hidden;
-  border:3px solid var(--border);
-  background:var(--bg);
-  box-shadow:5px 5px 0 var(--border);
-  padding:0;
-  transition:.08s steps(2);
-}
-
-.m-card:hover{
-  transform:translate(-2px,-2px);
-  box-shadow:7px 7px 0 var(--neon);
-}
-
-.m-card-head{
-  min-width:0;
-  overflow:hidden;
-  padding:12px 14px;
-  border-bottom:2px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:var(--panel2);
-}
-
-.m-method{
-  min-width:0;
-  overflow:hidden;
-  font-family:var(--mono);
-  font-weight:800;
-  font-size:13px;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.m-card-body{
-  min-width:0;
-  width:100%;
-  max-width:100%;
-  overflow:hidden;
-  padding:12px 14px;
-}
-
-.m-desc{
-  font-family:var(--mono);
-  font-size:12.5px;
-  color:var(--muted);
-  margin-bottom:10px;
-}
-
-/* CODE INSIDE CARDS */
-.m-card .code-wrap{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow:hidden;
-}
-
-.m-card .code-wrap pre{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow-x:auto;
-  overflow-y:hidden;
-  white-space:pre;
-}
-
-.m-card .code-wrap code{
-  white-space:pre;
-  }
-
-  @media(max-width:900px){
-  .grid{
-    grid-template-columns:minmax(0, 1fr);
-    width:100%;
-  }
-
-  .m-card{
-    width:100%;
-    max-width:100%;
-  }
-  }
-
-    /* QUICK START STEPS */
-.steps{
-  display:grid;
-  gap:14px;
-  width:100%;
-  min-width:0;
-}
-
-.step{
-  display:grid;
-  grid-template-columns:72px minmax(0,1fr);
-  width:100%;
-  max-width:100%;
-  min-width:0;
-
-  border:2px solid var(--border);
-  background:var(--bg);
-  overflow:hidden;
-}
-
-.step-n{
-  min-width:0;
-  width:72px;
-
-  font-family:var(--mono);
-  font-weight:900;
-  font-size:28px;
-
-  background:var(--yellow);
-  color:#000;
-
-  display:grid;
-  place-items:center;
-
-  border-right:2px solid var(--border);
-}
-
-.step-content{
-  min-width:0;
-  width:100%;
-  max-width:100%;
-  overflow:hidden;
-  padding:12px 14px;
-}
-
-.step-label{
-  font-family:var(--mono);
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-  margin-bottom:6px;
-}
-
-/* Prevent code from expanding the step */
-.step .code-wrap{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow:hidden;
-}
-
-.step .code-wrap pre{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow-x:auto;
-  overflow-y:hidden;
-  white-space:pre;
-}
-
-.step .code-wrap code{
-  white-space:pre;
-  }
-
-  @media(max-width:900px){
-  .steps,
-  .step,
-  .step-content{
-    width:100%;
-    max-width:100%;
-    min-width:0;
-  }
-
-  .step{
-    grid-template-columns:72px minmax(0,1fr);
-  }
-
-  .step-content{
-    overflow:hidden;
-  }
-  }
-
+:root{--bg:#000;--panel:#0A0A0A;--panel2:#111;--text:#FFF;--muted:#A3A3A3;--border:#FFF;--soft:#2A2A2A;--neon:#39FF14;--yellow:#F5FF00;--blue:#00E5FF;--red:#FF2E2E;--mono:'JetBrains Mono',monospace;--sans:'Archivo',sans-serif}
+html:not(.dark){--bg:#F4F4F0;--panel:#FFF;--panel2:#FFF;--text:#111;--muted:#555;--border:#111;--soft:#111}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
+code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000}
+.shell{display:grid;grid-template-columns:310px 1fr 240px;min-height:100vh}
+@media(max-width:1280px){.shell{grid-template-columns:300px 1fr}.right{display:none}}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{position:fixed;inset:0;z-index:99;transform:translateX(-100%);transition:.2s steps(4)}.sidebar.open{transform:translateX(0)}}
+.sidebar{background:var(--panel);border-right:3px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.sb-top{padding:20px 18px;border-bottom:3px solid var(--border)}.logo{font-weight:900;font-size:28px;line-height:.9;letter-spacing:-1.5px}.logo span{display:block}.logo i{color:var(--neon);font-style:normal}
+.status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;border:2px solid var(--border);padding:6px 10px;font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.08em;background:var(--bg)}.status b{width:8px;height:8px;background:var(--neon);display:inline-block;border-radius:50%;box-shadow:0 0 0 3px rgba(57,255,20,.2);animation:p 1.4s infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.search-wrap{padding:12px;border-bottom:3px solid var(--border)}.search{width:100%;background:var(--bg);border:2px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:12px;text-transform:uppercase;outline:none}.search:focus{border-color:var(--neon);box-shadow:4px 4px 0 var(--neon)}
+.nav{padding:12px}.label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);margin:18px 0 8px 4px}
+.link{display:flex;justify-content:space-between;align-items:center;border:2px solid transparent;padding:9px 10px;font-family:var(--mono);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-decoration:none;margin-bottom:5px}
+.link:hover{border-color:var(--border);color:var(--text);background:var(--panel2);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--border)}.link.active{background:var(--yellow);color:#000;border-color:var(--border);box-shadow:4px 4px 0 #000}
+.sb-bot{margin-top:auto;padding:12px;border-top:3px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:2.5px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:800;font-size:11px;text-transform:uppercase;padding:10px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.08s steps(2)}.btn:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--neon)}.btn:active{transform:translate(1px,1px);box-shadow:none}.btn.neon{background:var(--neon);color:#000}.btn.yellow{background:var(--yellow);color:#000}
+.main{max-width:880px;width:100%;margin:0 auto;padding:0 26px 40px}@media(max-width:900px){.main{padding:0 14px 30px}}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:3px solid var(--border);padding:10px 0;margin-bottom:24px;display:flex;align-items:center;gap:12px}.crumb{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.mob{display:none}@media(max-width:900px){.mob{display:inline-flex}}
+.hero{border:3px solid var(--border);background:var(--panel);box-shadow:8px 8px 0 var(--neon);padding:26px;position:relative;margin-bottom:24px}.hero:after{content:'v1.0.4 / NODE>=18 / FETCH NATIVE / OFFICIAL';position:absolute;right:10px;top:-10px;background:var(--yellow);color:#000;border:2px solid var(--border);font-family:var(--mono);font-size:9px;font-weight:900;padding:4px 8px;letter-spacing:.1em}
+.hero h1{font-size:52px;line-height:.9;font-weight:900;text-transform:uppercase;letter-spacing:-2px}@media(max-width:900px){.hero h1{font-size:34px}}.hero h1.o{ -webkit-text-stroke:1.5px var(--text);color:transparent}
+.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:62ch;font-weight:600}.sub b{color:var(--text)}
+.install{margin-top:20px;border:3px solid var(--border);background:#000;box-shadow:6px 6px 0 var(--text);display:grid;grid-template-columns:1fr auto}.install-h{display:flex;justify-content:space-between;padding:9px 12px;border-bottom:2px solid #222;background:#0f0f0f;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#999}.install-h i{color:var(--neon)}.install pre{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:14px!important;color:#fff!important;font-size:14px!important}
+.section{margin-top:36px;border:3px solid var(--border);background:var(--panel);box-shadow:6px 6px 0 var(--soft)}.s-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:3px solid var(--border);background:var(--panel2)}.s-num{width:34px;height:34px;display:grid;place-items:center;background:var(--neon);color:#000;border:2px solid var(--border);font-family:var(--mono);font-weight:900;font-size:13px}.s-title{font-size:18px;font-weight:900;text-transform:uppercase}.s-body{padding:16px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.desc{color:var(--muted);font-family:var(--mono);font-size:13px;line-height:1.65;margin-bottom:12px}
+.code-wrap{position:relative;border:2.5px solid var(--neon);background:#000;box-shadow:5px 5px 0 #fff;margin:10px 0 14px;overflow:hidden}html:not(.dark).code-wrap{box-shadow:5px 5px 0 #111}
+.code-top{display:flex;justify-content:space-between;align-items:center;background:#0f0f0f;border-bottom:2px solid #222;padding:7px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#999}.code-top b{color:var(--neon)}
+.code-wrap pre{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:13px!important;font-size:13px!important;line-height:1.6}
+.copy-btn{border:2px solid #fff;background:#fff;color:#000;font-family:var(--mono);font-size:11px;font-weight:900;text-transform:uppercase;padding:6px 10px;cursor:pointer}.copy-btn:hover{background:var(--neon);border-color:var(--neon)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{border:3px solid var(--border);background:var(--bg);box-shadow:5px 5px 0 var(--border);transition:.08s steps(2)}.card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--neon)}
+.card-h{padding:11px 12px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--panel2)}.method{font-family:var(--mono);font-weight:900;font-size:12.5px;display:flex;align-items:center;gap:6px}.verb{border:2px solid var(--border);padding:2px 6px;font-size:10px;background:var(--yellow);color:#000}.card-b{padding:12px}
+.endpoint{display:inline-flex;border:2px solid var(--border);padding:4px 8px;font-family:var(--mono);font-size:10.5px;font-weight:800;margin-bottom:10px;background:var(--panel2)}
+.steps{display:grid;gap:12px}.step{display:grid;grid-template-columns:64px 1fr;border:2px solid var(--border);background:var(--bg)}.step-n{font-family:var(--mono);font-weight:900;font-size:26px;background:var(--yellow);color:#000;display:grid;place-items:center;border-right:2px solid var(--border)}.step-c{padding:11px 12px}
+.warn{border:2px dashed var(--yellow);background:var(--bg);padding:10px 12px;font-family:var(--mono);font-size:11.5px;margin:10px 0}
+.err{border:3px solid var(--red);background:#0a0000;box-shadow:6px 6px 0 var(--red);color:#fff}.err.s-head{background:#200}.err.code-top b{color:var(--red)}
+.right{position:sticky;top:0;height:100vh;border-left:3px solid var(--border);background:var(--panel);padding:16px 12px;overflow:auto}.rt{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}.right a{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:7px 8px;border:2px solid transparent;margin-bottom:3px}.right a:hover{border-color:var(--border);color:var(--text);background:var(--bg)}.right a.active{background:var(--text);color:var(--bg)}
+.footer{margin-top:50px;border:3px solid var(--border);background:var(--panel);box-shadow:8px 8px 0 var(--border)}.f-top{padding:20px;display:grid;grid-template-columns:1.2fr 2fr;gap:20px;border-bottom:3px solid var(--border)}@media(max-width:900px){.f-top{grid-template-columns:1fr}}.f-brand h3{font-size:26px;font-weight:900;text-transform:uppercase;line-height:.9}.f-links{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:600px){.f-links{grid-template-columns:1fr}}.f-links h4{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;border-bottom:2px solid var(--border);display:inline-block;padding-bottom:3px}.f-links a{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:7px}.f-links a:hover{color:var(--text);text-decoration:underline;text-decoration-thickness:2px}.f-bot{padding:12px 20px;display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted)}@media(max-width:600px){.f-bot{flex-direction:column}}
+#toast{position:fixed;bottom:16px;right:16px;background:var(--yellow);color:#000;border:3px solid #000;padding:10px 14px;font-family:var(--mono);font-weight:900;text-transform:uppercase;font-size:11px;box-shadow:5px 5px 0 #000;opacity:0;transform:translateY(18px);transition:.2s steps(3);z-index:99}#toast.show{opacity:1;transform:translateY(0)}
+.mono{font-family:var(--mono)}
   .sec-body{
   padding:18px;
   min-width:0;
@@ -565,174 +59,334 @@ html:not(.dark).auth-block{background:repeating-linear-gradient(45deg, #fff, #ff
   min-width:0;
   max-width:100%;
   overflow:hidden;
-  }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                         }
+  
 </style>
 </head>
 <body>
-
 <div class="shell">
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-top">
-      <div class="sb-logo"><span>PASTEDB</span><span class="outline">NODE.JS <i>SDK</i></span></div>
-      <div class="sb-status"><b></b> SDK ONLINE — v1 / NODE.JS >=18</div>
-    </div>
-    <div class="sb-search-wrap"><input id="search" class="sb-search" placeholder="«SEARCH DOCS_»"></div>
-    <div class="sb-nav" id="sidebarNav">
-      <div class="sb-label">01 / GETTING STARTED</div>
-      <a href="#quickstart" class="sb-link active">00 QUICKSTART <span>→</span></a>
-      <a href="#auth" class="sb-link">01 AUTH <span>→</span></a>
-      <div class="sb-label">02 / CORE API</div>
-      <a href="#paste" class="sb-link">02 PASTE METHODS <span>08</span></a>
-      <a href="#keys" class="sb-link">03 API KEYS <span>03</span></a>
-      <div class="sb-label">03 / SYSTEM</div>
-      <a href="#error" class="sb-link">04 ERRORS <span>!</span></a>
-      <a href="#example" class="sb-link">05 FULL EXAMPLE <span>★</span></a>
-    </div>
-    <div class="sb-bottom">
-      <button id="themeToggle" class="btn-brut">◐ THEME</button>
-      <a href="https://github.com/sorathiya903/pastedb-nodejs-sdk" target="_blank" class="btn-brut primary" style="text-decoration:none">↗ GITHUB</a>
-    </div>
-  </aside>
+<aside class="sidebar" id="sidebar">
+<div class="sb-top"><div class="logo"><span>PASTEDB</span><span class="o">NODE.JS <i>SDK</i></span><span style="font-size:12px;letter-spacing:.3em;margin-top:4px">v1.0.4</span></div><div class="status"><b></b> SDK ONLINE / pastedb-js</div></div>
+<div class="search-wrap"><input id="search" class="search" placeholder="«SEARCH DOCS_»"></div>
+<div class="nav" id="sidebarNav">
+<div class="label">01 / START</div>
+<a href="#install" class="link active">00 INSTALL <span>→</span></a>
+<a href="#requirements" class="link">01 REQUIREMENTS <span>→</span></a>
+<a href="#quickstart" class="link">02 QUICKSTART <span>→</span></a>
+<a href="#config" class="link">03 CONFIG <span>→</span></a>
+<div class="label">02 / API REFERENCE</div>
+<a href="#api-me" class="link">04 me() <span>GET</span></a>
+<a href="#api-create" class="link">05 createPaste() <span>POST</span></a>
+<a href="#api-get" class="link">06 getPaste() <span>GET</span></a>
+<a href="#api-update" class="link">07 updatePaste() <span>PUT</span></a>
+<a href="#api-explore" class="link">08 explore() <span>GET</span></a>
+<a href="#api-run" class="link">09 runCode() <span>POST</span></a>
+<a href="#api-images" class="link">10 getImages() <span>GET</span></a>
+<a href="#api-stats" class="link">11 pasteStats() <span>GET</span></a>
+<a href="#api-check" class="link">12 checkCustomId() <span>GET</span></a>
+<div class="label">03 / KEYS & SYSTEM</div>
+<a href="#keys" class="link">13 API KEYS <span>03</span></a>
+<a href="#direct" class="link">14 DIRECT API <span>06</span></a>
+<a href="#error" class="link">15 ERRORS <span>!</span></a>
+<a href="#example" class="link">16 EXAMPLE <span>★</span></a>
+<a href="#export" class="link">17 EXPORTS / STRUCT <span>→</span></a>
+</div>
+<div class="sb-bot"><button id="themeToggle" class="btn">◐ THEME</button><a href="https://github.com/sorathiya903/pastedb-nodejs-sdk" target="_blank" class="btn neon" style="text-decoration:none">↗ GITHUB</a><a href="https://pastedb.netlify.app" target="_blank" class="btn yellow" style="text-decoration:none">↗ PASTEDB</a></div>
+</aside>
 
-  <main class="main">
-    <div class="topbar">
-       <div class="crumb">PASTEDB <span>/</span> NODE.JS SDK <span>/</span> THE TERMINAL BLUEPRINT</div>
-      <div style="margin-left:auto; font-family:var(--mono); font-size:10px; font-weight:800; border:2px solid var(--border); padding:6px 8px;">API: PASTEDB / TRANSPORT: HTTPS</div>
-      <button class="btn-brut mob-menu" id="mobMenu">☰ MENU</button>
-     
-    </div>
+<main class="main">
+<div class="topbar"><button class="btn mob" id="mobMenu">☰ MENU</button><div class="crumb">PASTEDB <span>/</span> NODE.JS SDK <span>/</span> v1.0.4 <span>/</span> BLUEPRINT</div><div style="margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:800;border:2px solid var(--border);padding:5px 8px;display:flex;gap:8px"><span>NODE>=18</span><span style="color:var(--neon)">● ONLINE</span></div></div>
 
-    <div class="hero">
-      <div class="kicker">[ OFFICIAL SDK / DOCUMENTATION / 2026 ]</div>
-      <h1>PASTEDB <br><span class="outline">NODE.JS SDK</span></h1>
-      <div class="sub"><b>Build with PasteDB from Node.js.</b> The official Node.js SDK for interacting with the PasteDB API. Minimal, fast, typed — built for developers, teachers and students.</div>
+<div class="hero">
+<div class="kicker">[ OFFICIAL / PASTEDB-JS / README SOURCE OF TRUTH ]</div>
+<h1>PASTEDB<br><span class="o">NODE.JS SDK</span></h1>
+<div class="sub"><b>Official Node.js SDK for interacting with PasteDB API.</b> Create, retrieve, update, delete, explore pastes, execute code, manage API keys, retrieve stats and more — directly from Node.js.</div>
+<div class="install" id="install">
+<div class="install-h" style="grid-column:1/-1"><span><i>BASH</i> — INSTALL / pastedb-js</span><span>v1.0.4</span></div>
+<pre><code class="language-bash">$ npm install pastedb-js</code></pre>
+<button class="copy-btn copy" data-copy="npm install pastedb-js">COPY</button>
+</div>
+</div>
 
-      <div class="install">
-        <div style="grid-column:1 / -1" class="install-head"><span><i>BASH</i> — INSTALL</span><span>npm / yarn / pnpm</span></div>
-        <pre><code class="language-bash">$ npm install pastedb-js</code></pre>
-        <button class="copy copy-btn" data-copy="npm install pastedb-js">COPY</button>
-      </div>
-    </div>
+<section class="section" id="requirements">
+<div class="s-head"><div class="s-num">01</div><div class="s-title">REQUIREMENTS</div></div>
+<div class="s-body">
+<p class="desc">Node.js 18+ recommended — SDK uses built-in fetch API. A PasteDB API key for authenticated operations.</p>
+<div class="grid"><div class="card"><div class="card-h"><div class="method">NODE.JS >=18</div></div><div class="card-b"><p class="desc">Uses native fetch(), no extra dependencies.</p></div></div><div class="card"><div class="card-h"><div class="method">API KEY OPTIONAL</div></div><div class="card-b"><p class="desc">Sends both x-api-key and Authorization: Bearer &lt;KEY&gt;</p></div></div></div>
+</div>
+</section>
 
-    <section class="section" id="quickstart">
-      <div class="sec-head"><div class="sec-num">00</div><div class="sec-title">QUICK START — 30 SECONDS</div></div>
-      <div class="sec-body">
-        <div class="steps">
-          <div class="step"><div class="step-n">01</div><div class="step-content"><div class="step-label">INSTALL</div><p class="desc">Install the SDK from npm.</p>
-            <div class="code-wrap"><div class="code-top"><b>BASH</b><span>TERMINAL</span></div><pre><code class="language-bash">npm install pastedb-js</code></pre><button class="copy-btn copy">COPY</button></div>
-          </div></div>
-          <div class="step"><div class="step-n">02</div><div class="step-content"><div class="step-label">IMPORT</div><p class="desc">CommonJS import — ESM also supported.</p>
-            <div class="code-wrap"><div class="code-top"><b>JS</b><span>COMMONJS</span></div><pre><code class="language-js">const { Client } = require("pastedb-js");</code></pre><button class="copy-btn copy">COPY</button></div>
-          </div></div>
-          <div class="step"><div class="step-n">03</div><div class="step-content"><div class="step-label">CREATE CLIENT</div><p class="desc">API key is optional. Pass it to constructor for authenticated requests.</p>
-            <div class="code-wrap"><div class="code-top"><b>JS</b><span>CLIENT</span></div><pre><code class="language-js">const client = new Client("YOUR_API_KEY");</code></pre><button class="copy-btn copy">COPY</button></div>
-          </div></div>
-          <div class="step"><div class="step-n">04</div><div class="step-content"><div class="step-label">FIRST REQUEST</div><p class="desc">Verify authentication and get your profile.</p>
-            <div class="code-wrap"><div class="code-top"><b>JS</b><span>REQUEST</span></div><pre><code class="language-js">async function main() {
-  const me = await client.me();
-  console.log(me);
-}
-main();</code></pre><button class="copy-btn copy">COPY</button></div>
-          </div></div>
-          <div class="step"><div class="step-n">05</div><div class="step-content"><div class="step-label">RESPONSE</div><p class="desc">Expected output from me().</p>
-            <div class="code-wrap"><div class="code-top"><b>JSON</b><span>RESPONSE</span></div><pre><code class="language-json">{
-  "email": "user@example.com",
-  "id": "usr_123"
-}</code></pre><button class="copy-btn copy">COPY</button></div>
-          </div></div>
-        </div>
-      </div>
-    </section>
+<section class="section" id="quickstart">
+<div class="s-head"><div class="s-num">02</div><div class="s-title">QUICK START</div></div>
+<div class="s-body">
+<div class="code-wrap"><div class="code-top"><b>JS</b><span>QUICKSTART.JS</span></div><pre><code class="language-js">const { Client } = require("pastedb-js");
 
-    <section class="section" id="auth">
-      <div class="sec-head"><div class="sec-num" style="background:var(--blue)">01</div><div class="sec-title">AUTHENTICATION</div></div>
-      <div class="sec-body">
-        <p class="desc">API key is optional. Pass it to the constructor. Uses native fetch() — Node 18+ required.</p>
-        <div class="code-wrap"><div class="code-top"><b>JS</b><span>AUTH</span></div><pre><code class="language-js">const user = await client.me();</code></pre><button class="copy-btn copy">COPY</button></div>
-      </div>
-    </section>
-
-    <section class="section" id="paste">
-      <div class="sec-head"><div class="sec-num" style="background:var(--yellow)">02</div><div class="sec-title">PASTE METHODS — 08 ENDPOINTS</div></div>
-      <div class="sec-body">
-        <div class="grid">
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">POST</span>createPaste()</div><span style="font-family:var(--mono);font-size:10px">📄</span></div><div class="m-card-body"><div class="m-desc">Create a new paste in seconds.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const { Client } = require("pastedb-js");
 const client = new Client("YOUR_API_KEY");
+
 async function main() {
-    const paste = await client.createPaste({
-        title: "Hello",
-        content: "Hello World",
-        language: "javascript",
-        images:[]
-    });
-    console.log(paste);
+    const user = await client.me();
+    console.log(user);
 }
-main().catch(console.error);</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">GET</span>getPaste(id)</div><span>📥</span></div><div class="m-card-body"><div class="m-desc">Fetch a paste by ID.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const paste = await client.getPaste("abc123");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+main().catch(console.error);</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">PUT</span>updatePaste(id, data)</div><span>✏️</span></div><div class="m-card-body"><div class="m-desc">Update title, content, etc.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.updatePaste("abc123", { title: "Updated" });</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<section class="section" id="config">
+<div class="s-head"><div class="s-num" style="background:var(--blue)">03</div><div class="s-title">CONFIGURATION / CLIENT</div></div>
+<div class="s-body">
+<p class="desc">Both parameters are optional. Default API URL is <b style="color:var(--text)">https://pastedb-rw62.onrender.com</b></p>
+<div class="code-wrap"><div class="code-top"><b>JS</b><span>CLIENT CONFIG</span></div><pre><code class="language-js">const { Client } = require("pastedb-js");
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">GET</span>pasteStats(id)</div><span>📊</span></div><div class="m-card-body"><div class="m-desc">Get views, copies, etc.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const stats = await client.pasteStats("abc123");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+const client = new Client(
+    "YOUR_API_KEY",
+    "https://pastedb-rw62.onrender.com"
+);
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">GET</span>getImages(id)</div><span>🖼️</span></div><div class="m-card-body"><div class="m-desc">Get all images attached to a paste.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const images = await client.getImages("abc123");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+// Both optional
+const client2 = new Client();</code></pre><button class="copy-btn copy">COPY</button></div>
+<div class="warn"><b>AUTH HEADERS:</b> If API key provided, SDK automatically sends it using both x-api-key and Authorization: Bearer &lt;API_KEY&gt;</div>
+</div>
+</section>
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">GET</span>explore()</div><span>🔍</span></div><div class="m-card-body"><div class="m-desc">Get public trending pastes.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const posts = await client.explore();</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<section class="section" id="api-me">
+<div class="s-head"><div class="s-num">04</div><div class="s-title">GET CURRENT USER — me()</div></div>
+<div class="s-body"><span class="endpoint">GET /api/me</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b><span>me()</span></div><pre><code class="language-js">const user = await client.me();</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">RUN</span>runCode(lang, code)</div><span>▶️</span></div><div class="m-card-body"><div class="m-desc">Execute code in the sandbox.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const result = await client.runCode("python", "print('Hi')");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<section class="section" id="api-create">
+<div class="s-head"><div class="s-num">05</div><div class="s-title">CREATE A PASTE — createPaste()</div></div>
+<div class="s-body"><span class="endpoint">POST /create</span><p class="desc">The data object is passed directly to API, allowing you to provide fields supported by PasteDB.</p>
+<div class="code-wrap"><div class="code-top"><b>JS</b><span>createPaste()</span></div><pre><code class="language-js">const paste = await client.createPaste({
+    title: "My Paste",
+    content: "Hello from PasteDB!",
+    images:[]
+});</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
 
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">CHECK</span>checkCustomId(id)</div><span>🔗</span></div><div class="m-card-body"><div class="m-desc">Check if a custom URL is available.</div><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const available = await client.checkCustomId("my-paste");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
-        </div>
-      </div>
-    </section>
+<section class="section" id="api-get">
+<div class="s-head"><div class="s-num">06</div><div class="s-title">GET A PASTE — getPaste(id)</div></div>
+<div class="s-body"><span class="endpoint">GET /p/:pasteId</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const paste = await client.getPaste("paste-id");</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
 
-    <section class="section auth-block" id="keys">
-      <div class="sec-head"><div class="sec-num" style="background:var(--yellow)">03</div><div class="sec-title">AUTH / API KEYS — SECURE SUBSYSTEM</div></div>
-      <div class="sec-body">
-        <div class="grid">
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">POST</span>generateApiKey(name)</div></div><div class="m-card-body"><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.generateApiKey("My App");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">LIST</span>myApiKeys()</div></div><div class="m-card-body"><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.myApiKeys();</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
-          <div class="m-card"><div class="m-card-head"><div class="m-method"><span class="verb">DEL</span>deleteApiKey(key)</div></div><div class="m-card-body"><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.deleteApiKey(API_KEY);</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
-        </div>
-      </div>
-    </section>
+<section class="section" id="api-update">
+<div class="s-head"><div class="s-num">07</div><div class="s-title">UPDATE A PASTE — updatePaste()</div></div>
+<div class="s-body"><span class="endpoint">PUT /api/paste/:pasteId</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const updated = await client.updatePaste("paste-id", {
+    title: "Updated Title",
+    content: "Updated content",
+    images:["url1","url2"]
+});</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
 
-    <section class="section err-wrap" id="error">
-      <div class="sec-head" style="background:#200"><div class="sec-num" style="background:#FF2E2E">!</div><div class="sec-title" style="color:#fff">ERROR HANDLING — TERMINAL OUTPUT</div></div>
-      <div class="sec-body">
-        <p class="desc" style="color:#FFA0A0">Throws PasteDBError for API and timeout errors. Uses native fetch() Node 18+</p>
-        <div class="code-wrap"><div class="code-top"><b style="color:#FF2E2E">ERROR</b><span>JS / PasteDBError</span></div><pre><code class="language-js">const { Client, PasteDBError } = require("pastedb-js");
-try {
-    await client.me();
-} catch (err) {
-    if (err instanceof PasteDBError) {
-        console.log(err.message);
-    }
+<section class="section" id="api-explore">
+<div class="s-head"><div class="s-num">08</div><div class="s-title">EXPLORE PUBLIC PASTES — explore()</div></div>
+<div class="s-body"><span class="endpoint">GET /explore</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const pastes = await client.explore();</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
+
+<section class="section" id="api-run">
+<div class="s-head"><div class="s-num">09</div><div class="s-title">RUN CODE — runCode(lang, code)</div></div>
+<div class="s-body"><span class="endpoint">POST /run</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const result = await client.runCode(
+    "javascript",
+    'console.log("Hello, PasteDB!")'
+);</code></pre><button class="copy-btn copy">COPY</button></div>
+<div class="code-wrap" style="border-color:var(--blue)"><div class="code-top"><b style="color:var(--blue)">JSON</b><span>REQUEST BODY</span></div><pre><code class="language-json">{
+    "language": "javascript",
+    "code": "console.log(\"Hello, PasteDB!\")"
 }</code></pre><button class="copy-btn copy">COPY</button></div>
-      </div>
-    </section>
+</div>
+</section>
 
-    <section class="section big-code" id="example">
-      <div class="sec-head"><div class="sec-num" style="background:var(--blue)">★</div><div class="sec-title">FULL EXAMPLE — END-TO-END</div></div>
-      <div class="sec-body">
-        <p class="desc">Production-ready snippet — create a paste and log its ID.</p>
-        <div class="code-wrap" style="border-color:var(--blue)"><div class="code-top"><b style="color:var(--blue)">JS</b><span>EXAMPLE.JS — 12 LINES</span></div><pre><code class="language-js">const { Client } = require("pastedb-js");
+<section class="section" id="api-images">
+<div class="s-head"><div class="s-num">10</div><div class="s-title">GET PASTE IMAGES — getImages()</div></div>
+<div class="s-body"><span class="endpoint">GET /images/:pasteId</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const images = await client.getImages("paste-id");</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
+
+<section class="section" id="api-stats">
+<div class="s-head"><div class="s-num">11</div><div class="s-title">GET PASTE STATISTICS — pasteStats()</div></div>
+<div class="s-body"><span class="endpoint">GET /stats/:pasteId</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const stats = await client.pasteStats("paste-id");</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
+
+<section class="section" id="api-check">
+<div class="s-head"><div class="s-num">12</div><div class="s-title">CHECK CUSTOM ID — checkCustomId()</div></div>
+<div class="s-body"><span class="endpoint">GET /check-id?id=my-custom-id</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const result = await client.checkCustomId("my-custom-id");</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
+
+<section class="section" id="keys" style="border-style:dashed;border-color:var(--yellow)">
+<div class="s-head"><div class="s-num" style="background:var(--yellow)">13</div><div class="s-title">AUTH / API KEY MANAGEMENT</div></div>
+<div class="s-body">
+<div class="grid">
+<div class="card"><div class="card-h"><div class="method"><span class="verb">POST</span>generateApiKey(name)</div></div><div class="card-b"><span class="endpoint">POST /generate-api-key</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const apiKey = await client.generateApiKey("My Application");</code></pre><button class="copy-btn copy">COPY</button></div>
+<div class="code-wrap" style="border-color:var(--yellow)"><div class="code-top"><b style="color:var(--yellow)">JSON</b><span>BODY</span></div><pre><code class="language-json">{
+  "name": "My Application"
+}</code></pre><button class="copy-btn copy">COPY</button></div>
+</div></div>
+
+<div class="card"><div class="card-h"><div class="method"><span class="verb">GET</span>myApiKeys()</div></div><div class="card-b"><span class="endpoint">GET /my-api-keys</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const keys = await client.myApiKeys();</code></pre><button class="copy-btn copy">COPY</button></div>
+</div></div>
+
+<div class="card"><div class="card-h"><div class="method"><span class="verb">DEL</span>deleteApiKey(key)</div></div><div class="card-b"><span class="endpoint">DELETE /delete-api-key/:apiKey</span>
+<div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.deleteApiKey("API_KEY");</code></pre><button class="copy-btn copy">COPY</button></div>
+<div class="warn">Keep API keys private and never commit them to source control.</div>
+</div></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="direct">
+<div class="s-head"><div class="s-num" style="background:var(--blue)">14</div><div class="s-title">DIRECT API METHODS — /api/*</div></div>
+<div class="s-body">
+<p class="desc">SDK also exposes methods corresponding to /api endpoints.</p>
+<div class="grid">
+<div class="card"><div class="card-h"><div class="method"><span class="verb">GET</span>apiMe()</div></div><div class="card-b"><span class="endpoint">GET /api/me</span><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const user = await client.apiMe();</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<div class="card"><div class="card-h"><div class="method"><span class="verb">POST</span>apiCreatePaste()</div></div><div class="card-b"><span class="endpoint">POST /api/create</span><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const paste = await client.apiCreatePaste({
+    title: "API Paste",
+    content: "Created through the API"
+});</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<div class="card"><div class="card-h"><div class="method"><span class="verb">GET</span>apiGetPaste()</div></div><div class="card-b"><span class="endpoint">GET /api/paste/:pasteId</span><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const paste = await client.apiGetPaste("paste-id");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<div class="card"><div class="card-h"><div class="method"><span class="verb">DEL</span>apiDeletePaste()</div></div><div class="card-b"><span class="endpoint">DELETE /api/paste/:pasteId</span><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.apiDeletePaste("paste-id");</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<div class="card"><div class="card-h"><div class="method"><span class="verb">PUT</span>apiUpdatePaste()</div></div><div class="card-b"><span class="endpoint">PUT /api/paste/:pasteId</span><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const paste = await client.apiUpdatePaste("paste-id", {
+    title: "Updated Paste"
+});</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<div class="card"><div class="card-h"><div class="method"><span class="verb">GET</span>apiUserPastes()</div></div><div class="card-b"><span class="endpoint">GET /api/pastes</span><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const pastes = await client.apiUserPastes();</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+</div>
+</div>
+</section>
+
+<section class="section err" id="error">
+<div class="s-head"><div class="s-num" style="background:var(--red)">!</div><div class="s-title">ERROR HANDLING — PasteDBError</div></div>
+<div class="s-body">
+<p class="desc" style="color:#FFA0A0">Throws PasteDBError for API and timeout errors. Requests timeout after 30 seconds.</p>
+<div class="code-wrap" style="border-color:var(--red)"><div class="code-top"><b style="color:var(--red)">JS</b><span>ERROR / TIMEOUT</span></div><pre><code class="language-js">const { Client, PasteDBError } = require("pastedb-js");
+
 const client = new Client("YOUR_API_KEY");
 
-async function run() {
-  const paste = await client.createPaste({
-    title: "Test",
-    content: "Hello from SDK",
-    language: "js"
-  });
-  console.log("Created:", paste.id);
+try {
+    const paste = await client.getPaste("invalid-id");
+    console.log(paste);
+} catch (error) {
+    if (error instanceof PasteDBError) {
+        console.error("PasteDB error:", error.message);
+    } else {
+        console.error("Unexpected error:", error);
+    }
 }
-run();</code></pre><button class="copy-btn copy">COPY</button></div>
-      </div>
-    </section>
-<!-- SEO / ABOUT CONTENT -->
 
-<section id="about" class="seo-content">
+// Timeout throws:
+// PasteDBError: Request timed out.</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
+
+<section class="section" id="example" style="box-shadow:8px 8px 0 var(--blue)">
+<div class="s-head"><div class="s-num" style="background:var(--blue)">★</div><div class="s-title">COMPLETE EXAMPLE — FULL FLOW</div></div>
+<div class="s-body">
+<div class="code-wrap" style="border-color:var(--blue)"><div class="code-top"><b style="color:var(--blue)">JS</b><span>COMPLETE.JS — PRODUCTION READY</span></div><pre><code class="language-js">const { Client, PasteDBError } = require("pastedb-js");
+
+const client = new Client(process.env.PASTEDB_API_KEY);
+
+async function main() {
+    try {
+        // Check the authenticated user
+        const user = await client.me();
+        console.log("User:", user);
+
+        // Create a paste
+        const paste = await client.createPaste({
+            title: "My First Paste",
+            content: "Hello from pastedb-js!",
+            images:[]
+        });
+
+        console.log("Created paste:", paste);
+
+        // Retrieve the paste
+        const fetched = await client.getPaste(paste.id);
+
+        console.log("Fetched paste:", fetched);
+
+        // Get statistics
+        const stats = await client.pasteStats(paste.id);
+
+        console.log("Stats:", stats);
+    } catch (error) {
+        if (error instanceof PasteDBError) {
+            console.error("PasteDB error:", error.message);
+        } else {
+            console.error(error);
+        }
+    }
+}
+
+main();</code></pre><button class="copy-btn copy">COPY</button></div>
+</div>
+</section>
+
+<section class="section" id="export">
+<div class="s-head"><div class="s-num">17</div><div class="s-title">EXPORTED CLASSES / STRUCTURE / LICENSE</div></div>
+<div class="s-body">
+<div class="grid">
+<div class="card"><div class="card-h"><div class="method">EXPORTED CLASSES</div></div><div class="card-b"><div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const {
+    Client,
+    PasteDBError
+} = require("pastedb-js");
+
+// Client - Main SDK client
+// PasteDBError - Custom error class</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+<div class="card"><div class="card-h"><div class="method">PROJECT STRUCTURE</div></div><div class="card-b"><div class="code-wrap"><div class="code-top"><b>TREE</b></div><pre><code class="language-text">pastedb-js/
+├── lib/
+│ └── client.js
+├── index.js
+├── LICENSE
+├── package.json
+└── README.md</code></pre><button class="copy-btn copy">COPY</button></div></div></div>
+</div>
+<div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="border:2px solid var(--border);padding:12px"><div class="kicker">LICENSE</div><p class="mono" style="font-size:12px">MIT License — see LICENSE file.</p></div>
+<div style="border:2px solid var(--border);padding:12px"><div class="kicker">AUTHOR / PACKAGE</div><p class="mono" style="font-size:12px"><b>Aditya Sorathiya</b><br>pastedb-js — Official PasteDB Node.js SDK v1.0.4</p></div>
+</div>
+</div>
+</section>
+
+<footer class="footer">
+<div class="f-top">
+<div class="f-brand"><h3>PASTEDB<br>DEVELOPER INFRASTRUCTURE</h3><p style="margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--muted)">A fast, secure and developer-first platform for sharing text and code snippets.</p><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><span class="btn">SDK STATUS: ONLINE</span><span class="btn yellow">NODE.JS SDK / v1.0.4</span><span class="btn neon">FETCH NATIVE</span></div></div>
+<div class="f-links">
+<div><h4>PRODUCT</h4><a href="/">Home</a><a href="create">Create Paste</a><a href="newLink">Create Link Paste</a><a href="explore">Explore Public Pastes</a><a href="dashboard">Dashboard</a><a href="login">Sign In</a><a href="scan">QR Scanner</a><a href="extension">VS Code Extension</a><a href="transfer">Transfer Page</a></div>
+<div><h4>RESOURCES</h4><a href="terms">Terms</a><a href="privacy">Privacy</a><a href="/contact">Contact</a><a href="about">About</a><a href="docs">API Docs</a><a href="e2ee">E2EE</a></div>
+<div><h4>OPEN SOURCE</h4><a href="https://github.com/sorathiya903/pastedb-nodejs-sdk" target="_blank">↗ GitHub Repository</a><a href="https://pastedb.netlify.app" target="_blank">↗ PasteDB Live</a><a href="https://www.npmjs.com/package/pastedb-js" target="_blank">↗ NPM: pastedb-js</a></div>
+</div>
+</div>
+<div class="f-bot"><p>© 2026 PasteDB. Built for developers, teachers and students.</p><span>Made with passion by Aditya Sorathiya</span></div>
+</footer>
+</main>
+
+<aside class="right">
+<div class="rt">ON THIS PAGE / README SYNC</div>
+<a href="#install">INSTALL</a><a href="#requirements">REQUIREMENTS</a><a href="#quickstart">QUICKSTART</a><a href="#config">CONFIG</a><a href="#api-me">me()</a><a href="#api-create">createPaste()</a><a href="#api-get">getPaste()</a><a href="#api-update">updatePaste()</a><a href="#api-explore">explore()</a><a href="#api-run">runCode()</a><a href="#api-images">getImages()</a><a href="#api-stats">pasteStats()</a><a href="#api-check">checkCustomId()</a><a href="#keys">API KEYS</a><a href="#direct">DIRECT API</a><a href="#error">ERRORS</a><a href="#example">FULL EXAMPLE</a><a href="#export">EXPORTS</a>
+<div style="margin-top:16px;border:2px solid var(--border);padding:10px;font-family:var(--mono);font-size:10px;line-height:1.5">PACKAGE<br>pastedb-js<br>v1.0.4<br><br>AUTHOR<br>Aditya Sorathiya<br><br>LICENSE<br>MIT<br><br>STATUS<br><b style="color:var(--neon)">● ONLINE</b></div>
+</aside>
+</div>
+
+<div id="toast">COPIED_</div>
+
+  <section id="about" class="seo-content">
 
     <h2>
         What is the PasteDB Node.js SDK?
@@ -864,63 +518,16 @@ run();</code></pre><button class="copy-btn copy">COPY</button></div>
     </p>
 
 </section>
-    <footer class="footer">
-      <div class="footer-top">
-        <div class="footer-brand"><h3>PASTEDB<br>DEVELOPER INFRASTRUCTURE</h3><p style="margin-top:10px; font-family:var(--mono); font-size:12px; color:var(--muted)">A fast, secure and developer-first platform for sharing text and code snippets.</p>
-        <div style="margin-top:14px; display:flex; gap:8px"><span class="btn-brut" style="font-size:10px">SDK STATUS: ONLINE</span><span class="btn-brut yellow" style="font-size:10px">NODE.JS SDK / v1</span></div>
-        </div>
-        <div class="footer-links">
-          <div><h4>PRODUCT</h4><a href="/">Home</a><a href="create">Create Paste</a><a href="newLink">Create Link Paste</a><a href="explore">Explore Public Pastes</a><a href="dashboard">Dashboard</a><a href="login">Sign In</a><a href="scan">QR Scanner</a><a href="extension">VS Code Extension</a><a href="transfer">Transfer Page</a></div>
-          <div><h4>RESOURCES</h4><a href="terms">Terms of Service</a><a href="privacy">Privacy Policy</a><a href="/contact">Contact</a><a href="about">About PasteDB</a><a href="docs">API Documentation</a><a href="e2ee">End-to-End Encryption</a></div>
-          <div><h4>OPEN SOURCE</h4><a href="https://github.com/sorathiya903/pastedb-nodejs-sdk" target="_blank" style="display:flex;align-items:center; gap:6px"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.1.68-.22.68-.48v-1.7c-2.77.6-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1.07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.1-.62.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.1.39-1.99 1.03-2.69-.1-.25-.45-1.26.1-2.64 0 0.84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.39.1 2.64.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.69-4.57 4.94.36.3.68.9.68 1.82v2.69c0.27.18.59.68.48A10 10 0 0 0 12 2Z"/></svg> GitHub Repository</a></div>
-        </div>
-      </div>
-      <div class="footer-bottom"><p>© 2026 PasteDB. Built for developers, teachers and students.</p><span>Made with passion by Aditya Sorathiya</span></div>
-    </footer>
-  </main>
-
-  <aside class="right" id="rightToc">
-    <div class="right-title">ON THIS PAGE</div>
-    <a href="#quickstart">00 / QUICKSTART</a>
-    <a href="#auth">01 / AUTH</a>
-    <a href="#paste">02 / PASTE METHODS</a>
-    <a href="#keys">03 / API KEYS</a>
-    <a href="#error">04 / ERRORS</a>
-    <a href="#example">05 / EXAMPLE</a>
-    <div style="margin-top:20px; border:2px solid var(--border); padding:10px; font-family:var(--mono); font-size:10px; line-height:1.5">SDK<br>PASTEDB-JS<br><br>NODE >=18<br>FETCH NATIVE<br>ESM + CJS<br><br>STATUS: <b style="color:var(--neon)">ONLINE</b></div>
-  </aside>
-</div>
-
-<div id="toast">COPIED TO CLIPBOARD_</div>
-
+  
 <script>
 hljs.highlightAll();
-function showToast(){
-  const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1400);
-}
-document.querySelectorAll('.copy').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const code = btn.parentElement.querySelector('code')? btn.parentElement.querySelector('code').innerText : btn.getAttribute('data-copy');
-    navigator.clipboard.writeText(code); showToast(); const o=btn.textContent; btn.textContent='COPIED_'; setTimeout(()=>btn.textContent=o,1000);
-  });
-});
-const themeBtn=document.getElementById('themeToggle');
-themeBtn.addEventListener('click',()=>{
-  document.documentElement.classList.toggle('dark');
-  localStorage.theme=document.documentElement.classList.contains('dark')?'dark':'light';
-});
-if(localStorage.theme==='light'){ document.documentElement.classList.remove('dark'); }
-const mobBtn=document.getElementById('mobMenu'); const sb=document.getElementById('sidebar');
-mobBtn.addEventListener('click',()=> sb.classList.toggle('open'));
-document.getElementById('search').addEventListener('input', e=>{
-  const q=e.target.value.toLowerCase(); document.querySelectorAll('#sidebarNav a').forEach(a=>{ a.style.display=a.textContent.toLowerCase().includes(q)?'flex':'none'; });
-});
-const sections=document.querySelectorAll('section[id]');
-const links=document.querySelectorAll('.sb-link,.right a');
-window.addEventListener('scroll',()=>{
-  let cur=''; sections.forEach(s=>{ if(window.scrollY>=s.offsetTop-140) cur=s.id; });
-  links.forEach(a=>{ a.classList.toggle('active', a.getAttribute('href')==='#'+cur); });
-});
+const toast=document.getElementById('toast');function showToast(){toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1300)}
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const c=b.parentElement.querySelector('code')?b.parentElement.querySelector('code').innerText:b.dataset.copy;navigator.clipboard.writeText(c);showToast();const o=b.textContent;b.textContent='COPIED_';setTimeout(()=>b.textContent=o,900)})});
+document.getElementById('themeToggle').addEventListener('click',()=>{document.documentElement.classList.toggle('dark');localStorage.theme=document.documentElement.classList.contains('dark')?'dark':'light'});
+if(localStorage.theme==='light')document.documentElement.classList.remove('dark');
+document.getElementById('mobMenu').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#sidebarNav a').forEach(a=>{a.style.display=a.textContent.toLowerCase().includes(q)?'flex':'none'})});
+const secs=document.querySelectorAll('section[id]');const links=document.querySelectorAll('.link,.right a');window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(scrollY>=s.offsetTop-150)cur=s.id});links.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
 </script>
 </body>
-      </html>
+  </html>
