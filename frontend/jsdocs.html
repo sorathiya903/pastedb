@@ -122,7 +122,182 @@ code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000
   min-width:0;
   max-width:100%;
   overflow:hidden;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                         }
+  }
+ 
+ /* ===== PASTEDB / SEO-CONTENT — TERMINAL BLUEPRINT ===== */
+#about.seo-content{
+  --bg:#0A0A0A;
+  --text:#FFFFFF;
+  --muted:#A3A3A3;
+  --border:#FFFFFF;
+  --neon:#39FF14;
+  --yellow:#F5FF00;
+  --blue:#00E5FF;
+  --mono:'JetBrains Mono', monospace;
+  --sans:'Archivo', 'Space Grotesk', sans-serif;
+
+  margin-top:36px;
+  border:3px solid var(--border);
+  background:var(--bg);
+  box-shadow:8px 8px 0 var(--border);
+  padding:0;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Top bar */
+#about.seo-content::before{
+  content:'ABOUT / PASTEDB-JS / SEO — DOCUMENTATION MANIFEST';
+  display:block;
+  background:#111;
+  border-bottom:3px solid var(--border);
+  padding:10px 16px;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#888;
+}
+
+/* Inner padding wrapper for all content */
+#about.seo-content > *{
+  margin-left:22px;
+  margin-right:22px;
+}
+#about.seo-content > *:first-child{margin-top:22px}
+
+/* H2 - Main */
+#about.seo-content h2{
+  font-family:var(--sans);
+  font-size:28px;
+  font-weight:900;
+  line-height:.95;
+  text-transform:uppercase;
+  letter-spacing:-1px;
+  margin:0 0 18px 0 !important;
+  padding:14px 16px;
+  border:3px solid var(--border);
+  background:var(--yellow);
+  color:#000;
+  box-shadow:5px 5px 0 #000;
+  display:inline-block;
+  max-width:100%;
+}
+
+/* H3 - Sections */
+#about.seo-content h3{
+  font-family:var(--sans);
+  font-size:16px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:-.02em;
+  margin:28px 0 10px 0 !important;
+  padding:10px 12px;
+  border:2.5px solid var(--border);
+  background:#000;
+  color:#fff;
+  box-shadow:4px 4px 0 var(--neon);
+  position:relative;
+}
+#about.seo-content h3::before{
+  content:'//';
+  color:var(--neon);
+  margin-right:8px;
+  font-family:var(--mono);
+}
+
+/* Paragraphs */
+#about.seo-content p{
+  font-family:var(--mono);
+  font-size:13px;
+  line-height:1.75;
+  color:var(--muted);
+  margin:0 0 14px 0 !important;
+  max-width:72ch;
+  border-left:3px solid #222;
+  padding-left:12px;
+}
+#about.seo-content p:hover{border-left-color:var(--neon)}
+
+/* List */
+#about.seo-content ul{
+  list-style:none;
+  padding:0;
+  margin:12px 0 20px 0 !important;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  max-width:100%;
+}
+@media(max-width:700px){
+  #about.seo-content ul{grid-template-columns:1fr}
+}
+
+#about.seo-content ul li{
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:700;
+  line-height:1.5;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  color:var(--text);
+  background:#000;
+  border:2px solid var(--border);
+  padding:10px 10px 10px 32px;
+  position:relative;
+  box-shadow:3px 3px 0 var(--border);
+  transition:.08s steps(2);
+}
+#about.seo-content ul li::before{
+  content:'✓';
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:24px;
+  display:grid;
+  place-items:center;
+  background:var(--neon);
+  color:#000;
+  font-weight:900;
+  border-right:2px solid var(--border);
+}
+#about.seo-content ul li:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:5px 5px 0 var(--yellow);
+}
+#about.seo-content ul li:nth-child(even):hover{
+  box-shadow:5px 5px 0 var(--blue);
+}
+
+/* Light mode support */
+html:not(.dark) #about.seo-content{
+  --bg:#FFFFFF;
+  --text:#111111;
+  --muted:#555555;
+  --border:#111111;
+}
+html:not(.dark) #about.seo-content::before{
+  background:#F4F4F0;
+  color:#555;
+}
+html:not(.dark) #about.seo-content h3{
+  background:#111;
+  color:#fff;
+}
+html:not(.dark) #about.seo-content p{
+  border-left-color:#ddd;
+}
+html:not(.dark) #about.seo-content ul li{
+  background:#fff;
+  color:#111;
+}
+
+/* Last element spacing */
+#about.seo-content > *:last-child{
+  margin-bottom:22px !important;
+}}
   
 </style>
 </head>
