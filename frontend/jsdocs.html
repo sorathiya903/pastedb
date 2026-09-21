@@ -3,149 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
-
   <title>PasteDB Node.js SDK — Official JavaScript & Node.js API Documentation</title>
-
 <meta name="description" content="Official PasteDB Node.js SDK documentation. Learn how to install and use pastedb-js to create, read, update, explore, and manage pastes, API keys, code execution, and more from Node.js.">
-
 <meta name="keywords" content="PasteDB, PasteDB Node.js SDK, pastedb-js, Node.js SDK, JavaScript SDK, PasteDB API, PasteDB API documentation, Node.js API, JavaScript API, pastebin API, code sharing API, developer API">
-
 <meta name="author" content="Aditya Sorathiya">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
 <meta name="theme-color" content="#000000">
-
-<!-- Canonical URL -->
 <link rel="canonical" href="https://pastedb.netlify.app/jsdocs">
-
-<!-- Open Graph / Facebook / Discord / LinkedIn -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="PasteDB Node.js SDK — Official API Documentation">
 <meta property="og:description" content="Build with PasteDB from Node.js using the official pastedb-js SDK. Explore installation, authentication, paste methods, API keys, error handling, and complete examples.">
 <meta property="og:url" content="https://pastedb.netlify.app/jsdocs">
 <meta property="og:site_name" content="PasteDB">
 <meta property="og:locale" content="en_US">
-
-<!-- Twitter / X -->
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PasteDB Node.js SDK — Official API Documentation">
 <meta name="twitter:description" content="Official documentation for the PasteDB Node.js SDK. Install pastedb-js and start working with the PasteDB API from Node.js.">
-
-<!-- Mobile / Browser -->
 <meta name="application-name" content="PasteDB Node.js SDK">
 <meta name="apple-mobile-web-app-title" content="PasteDB SDK">
-
-<!-- Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "PasteDB Node.js SDK — Official API Documentation",
   "description": "Official documentation for the PasteDB Node.js SDK, including installation, authentication, paste methods, API keys, error handling, and examples.",
-  "author": {
-    "@type": "Person",
-    "name": "Aditya Sorathiya"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "PasteDB",
-    "url": "https://pastedb.netlify.app/"
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://pastedb.netlify.app/jsdocs"
-  },
-  "about": {
-    "@type": "SoftwareApplication",
-    "name": "PasteDB Node.js SDK",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "Node.js"
-  },
-  "inLanguage": "en",
-  "isAccessibleForFree": true
+  "author": {"@type": "Person","name": "Aditya Sorathiya"},
+  "publisher": {"@type": "Organization","name": "PasteDB","url": "https://pastedb.netlify.app/"},
+  "mainEntityOfPage": {"@type": "WebPage","@id": "https://pastedb.netlify.app/jsdocs"},
+  "about": {"@type": "SoftwareApplication","name": "PasteDB Node.js SDK","applicationCategory": "DeveloperApplication","operatingSystem": "Node.js"},
+  "inLanguage": "en","isAccessibleForFree": true
 }
 </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <style>
+/* RESET + FIX SHRINK + GAP */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;max-width:100%;overflow-x:hidden;margin:0}
 :root{--bg:#000;--panel:#0A0A0A;--panel2:#111;--text:#FFF;--muted:#A3A3A3;--border:#FFF;--soft:#2A2A2A;--neon:#39FF14;--yellow:#F5FF00;--blue:#00E5FF;--red:#FF2E2E;--mono:'JetBrains Mono',monospace;--sans:'Archivo',sans-serif}
 html:not(.dark){--bg:#F4F4F0;--panel:#FFF;--panel2:#FFF;--text:#111;--muted:#555;--border:#111;--soft:#111}
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
-code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000}
-.shell{display:grid;grid-template-columns:310px 1fr 240px;min-height:100vh}
-@media(max-width:1280px){.shell{grid-template-columns:300px 1fr}.right{display:none}}
-@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{position:fixed;inset:0;z-index:99;transform:translateX(-100%);transition:.2s steps(4)}.sidebar.open{transform:translateX(0)}}
-.sidebar{background:var(--panel);border-right:3px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
-.sb-top{padding:20px 18px;border-bottom:3px solid var(--border)}.logo{font-weight:900;font-size:28px;line-height:.9;letter-spacing:-1.5px}.logo span{display:block}.logo i{color:var(--neon);font-style:normal}
-.status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;border:2px solid var(--border);padding:6px 10px;font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.08em;background:var(--bg)}.status b{width:8px;height:8px;background:var(--neon);display:inline-block;border-radius:50%;box-shadow:0 0 0 3px rgba(57,255,20,.2);animation:p 1.4s infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
-.search-wrap{padding:12px;border-bottom:3px solid var(--border)}.search{width:100%;background:var(--bg);border:2px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:12px;text-transform:uppercase;outline:none}.search:focus{border-color:var(--neon);box-shadow:4px 4px 0 var(--neon)}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5}
+code,pre{font-family:var(--mono)}
+::selection{background:var(--yellow);color:#000}
+
+/* SHELL - minmax fixes shrink */
+.shell{display:grid;grid-template-columns:310px minmax(0,1fr) 240px;min-height:100vh;width:100%;gap:0}
+.main{width:100%;min-width:0;max-width:100%;margin:0 auto;padding:0 26px 40px}
+.section,.hero,.footer,#about.seo-content{width:100%;min-width:0;max-width:100%}
+
+@media(max-width:1280px){.shell{grid-template-columns:300px minmax(0,1fr)}.right{display:none}}
+@media(max-width:900px){
+.shell{display:block;width:100%}
+.main{padding:0 14px 30px;max-width:100vw}
+.sidebar{position:fixed!important;top:0;left:0;bottom:0;width:86%;max-width:340px;height:100dvh;z-index:100;transform:translateX(-110%);visibility:hidden;pointer-events:none;transition:transform.22s steps(4),visibility.22s}
+.sidebar.open{transform:translateX(0);visibility:visible;pointer-events:auto;box-shadow:20px 0 0 rgba(0,0,0,.7)}
+}
+
+/* SIDEBAR */
+.sidebar{background:var(--panel);border-right:3px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:50}
+.sb-top{padding:20px 18px;border-bottom:3px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.logo{font-weight:900;font-size:28px;line-height:.9;letter-spacing:-1.5px}.logo span{display:block}.logo i{color:var(--neon);font-style:normal}
+.status{margin-top:12px;display:inline-flex;align-items:center;gap:8px;border:2px solid var(--border);padding:6px 10px;font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.08em;background:var(--bg)}
+.status b{width:8px;height:8px;background:var(--neon);display:inline-block;border-radius:50%;box-shadow:0 0 0 3px rgba(57,255,20,.2);animation:p 1.4s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.sb-close{display:none;border:2.5px solid var(--border);background:var(--yellow);color:#000;font-family:var(--mono);font-weight:900;padding:6px 10px;cursor:pointer}
+@media(max-width:900px){.sb-close{display:inline-flex}}
+.search-wrap{padding:12px;border-bottom:3px solid var(--border)}
+.search{width:100%;background:var(--bg);border:2px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:12px;text-transform:uppercase;outline:none}
+.search:focus{border-color:var(--neon);box-shadow:4px 4px 0 var(--neon)}
 .nav{padding:12px}.label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);margin:18px 0 8px 4px}
 .link{display:flex;justify-content:space-between;align-items:center;border:2px solid transparent;padding:9px 10px;font-family:var(--mono);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-decoration:none;margin-bottom:5px}
-.link:hover{border-color:var(--border);color:var(--text);background:var(--panel2);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--border)}.link.active{background:var(--yellow);color:#000;border-color:var(--border);box-shadow:4px 4px 0 #000}
+.link:hover{border-color:var(--border);color:var(--text);background:var(--panel2);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--border)}
+.link.active{background:var(--yellow);color:#000;border-color:var(--border);box-shadow:4px 4px 0 #000}
 .sb-bot{margin-top:auto;padding:12px;border-top:3px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
-.btn{border:2.5px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:800;font-size:11px;text-transform:uppercase;padding:10px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.08s steps(2)}.btn:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--neon)}.btn:active{transform:translate(1px,1px);box-shadow:none}.btn.neon{background:var(--neon);color:#000}.btn.yellow{background:var(--yellow);color:#000}
-.main{max-width:880px;width:100%;margin:0 auto;padding:0 26px 40px}@media(max-width:900px){.main{padding:0 14px 30px}}
-.topbar{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:3px solid var(--border);padding:10px 0;margin-bottom:24px;display:flex;align-items:center;gap:12px}.crumb{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.mob{display:none}@media(max-width:900px){.mob{display:inline-flex}}
-.hero{border:3px solid var(--border);background:var(--panel);box-shadow:8px 8px 0 var(--neon);padding:26px;position:relative;margin-bottom:24px}.hero:after{content:'v1.0.4 / NODE>=18 / FETCH NATIVE / OFFICIAL';position:absolute;right:10px;top:-10px;background:var(--yellow);color:#000;border:2px solid var(--border);font-family:var(--mono);font-size:9px;font-weight:900;padding:4px 8px;letter-spacing:.1em}
-.hero h1{font-size:52px;line-height:.9;font-weight:900;text-transform:uppercase;letter-spacing:-2px}@media(max-width:900px){.hero h1{font-size:34px}}.hero h1.o{ -webkit-text-stroke:1.5px var(--text);color:transparent}
-.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:62ch;font-weight:600}.sub b{color:var(--text)}
-.install{margin-top:20px;border:3px solid var(--border);background:#000;box-shadow:6px 6px 0 var(--text);display:grid;grid-template-columns:1fr auto}.install-h{display:flex;justify-content:space-between;padding:9px 12px;border-bottom:2px solid #222;background:#0f0f0f;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#999}.install-h i{color:var(--neon)}.install pre{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:14px!important;color:#fff!important;font-size:14px!important}
-.section{margin-top:36px;border:3px solid var(--border);background:var(--panel);box-shadow:6px 6px 0 var(--soft)}.s-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:3px solid var(--border);background:var(--panel2)}.s-num{width:34px;height:34px;display:grid;place-items:center;background:var(--neon);color:#000;border:2px solid var(--border);font-family:var(--mono);font-weight:900;font-size:13px}.s-title{font-size:18px;font-weight:900;text-transform:uppercase}.s-body{padding:16px}
+.btn{border:2.5px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:800;font-size:11px;text-transform:uppercase;padding:10px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.08s steps(2);text-decoration:none}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--neon)}.btn:active{transform:translate(1px,1px);box-shadow:none}
+.btn.neon{background:var(--neon);color:#000}.btn.yellow{background:var(--yellow);color:#000}
+
+/* TOPBAR - no gap */
+.topbar{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:3px solid var(--border);padding:10px 0;margin:0 0 20px 0;display:flex;align-items:center;gap:12px;width:100%}
+@media(max-width:900px){.topbar{top:0;margin:0 0 16px 0;z-index:30}}
+.crumb{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mob{display:none}
+@media(max-width:900px){.mob{display:inline-flex;flex-shrink:0;position:relative;z-index:31}}
+
+.hero{border:3px solid var(--border);background:var(--panel);box-shadow:8px 8px 0 var(--neon);padding:26px;position:relative;margin-bottom:24px}
+@media(max-width:900px){.hero{box-shadow:5px 5px 0 var(--neon);padding:16px}}
+.hero:after{content:'v1.0.4 / NODE>=18 / FETCH NATIVE / OFFICIAL';position:absolute;right:10px;top:-10px;background:var(--yellow);color:#000;border:2px solid var(--border);font-family:var(--mono);font-size:9px;font-weight:900;padding:4px 8px;letter-spacing:.1em}
+.hero h1{font-size:52px;line-height:.9;font-weight:900;text-transform:uppercase;letter-spacing:-2px;word-break:break-word}
+@media(max-width:900px){.hero h1{font-size:32px}}
+.hero h1.o{-webkit-text-stroke:1.5px var(--text);color:transparent}
+.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:62ch;font-weight:600;word-break:break-word}.sub b{color:var(--text)}
+.install{margin-top:20px;border:3px solid var(--border);background:#000;box-shadow:6px 6px 0 var(--text);display:flex;flex-wrap:wrap;width:100%}
+.install-h{width:100%;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:2px solid #222;background:#0f0f0f;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#999}
+.install-h i{color:var(--neon)}
+.install pre{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:14px!important;color:#fff!important;font-size:14px!important;flex:1;min-width:0;overflow-x:auto}
+
+/* SECTIONS */
+.section{margin-top:28px;border:3px solid var(--border);background:var(--panel);box-shadow:6px 6px 0 var(--soft);overflow:hidden}
+@media(max-width:900px){.section{box-shadow:4px 4px 0 var(--soft);margin-top:22px}}
+.s-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:3px solid var(--border);background:var(--panel2);flex-wrap:wrap}
+.s-num{width:34px;height:34px;flex-shrink:0;display:grid;place-items:center;background:var(--neon);color:#000;border:2px solid var(--border);font-family:var(--mono);font-weight:900;font-size:13px}
+.s-title{font-size:18px;font-weight:900;text-transform:uppercase;word-break:break-word}
+.s-body,.sec-body{padding:18px;min-width:0;max-width:100%;overflow:hidden}
 .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.desc{color:var(--muted);font-family:var(--mono);font-size:13px;line-height:1.65;margin-bottom:12px}
-.code-wrap{position:relative;border:2.5px solid var(--neon);background:#000;box-shadow:5px 5px 0 #fff;margin:10px 0 14px;overflow:hidden}html:not(.dark).code-wrap{box-shadow:5px 5px 0 #111}
-.code-top{display:flex;justify-content:space-between;align-items:center;background:#0f0f0f;border-bottom:2px solid #222;padding:7px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#999}.code-top b{color:var(--neon)}
-.code-wrap pre{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:13px!important;font-size:13px!important;line-height:1.6}
-.copy-btn{border:2px solid #fff;background:#fff;color:#000;font-family:var(--mono);font-size:11px;font-weight:900;text-transform:uppercase;padding:6px 10px;cursor:pointer}.copy-btn:hover{background:var(--neon);border-color:var(--neon)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{border:3px solid var(--border);background:var(--bg);box-shadow:5px 5px 0 var(--border);transition:.08s steps(2)}.card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--neon)}
-.card-h{padding:11px 12px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--panel2)}.method{font-family:var(--mono);font-weight:900;font-size:12.5px;display:flex;align-items:center;gap:6px}.verb{border:2px solid var(--border);padding:2px 6px;font-size:10px;background:var(--yellow);color:#000}.card-b{padding:12px}
-.endpoint{display:inline-flex;border:2px solid var(--border);padding:4px 8px;font-family:var(--mono);font-size:10.5px;font-weight:800;margin-bottom:10px;background:var(--panel2)}
-.steps{display:grid;gap:12px}.step{display:grid;grid-template-columns:64px 1fr;border:2px solid var(--border);background:var(--bg)}.step-n{font-family:var(--mono);font-weight:900;font-size:26px;background:var(--yellow);color:#000;display:grid;place-items:center;border-right:2px solid var(--border)}.step-c{padding:11px 12px}
-.warn{border:2px dashed var(--yellow);background:var(--bg);padding:10px 12px;font-family:var(--mono);font-size:11.5px;margin:10px 0}
-.err{border:3px solid var(--red);background:#0a0000;box-shadow:6px 6px 0 var(--red);color:#fff}.err.s-head{background:#200}.err.code-top b{color:var(--red)}
-.right{position:sticky;top:0;height:100vh;border-left:3px solid var(--border);background:var(--panel);padding:16px 12px;overflow:auto}.rt{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}.right a{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:7px 8px;border:2px solid transparent;margin-bottom:3px}.right a:hover{border-color:var(--border);color:var(--text);background:var(--bg)}.right a.active{background:var(--text);color:var(--bg)}
-.footer{margin-top:50px;border:3px solid var(--border);background:var(--panel);box-shadow:8px 8px 0 var(--border)}.f-top{padding:20px;display:grid;grid-template-columns:1.2fr 2fr;gap:20px;border-bottom:3px solid var(--border)}@media(max-width:900px){.f-top{grid-template-columns:1fr}}.f-brand h3{font-size:26px;font-weight:900;text-transform:uppercase;line-height:.9}.f-links{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:600px){.f-links{grid-template-columns:1fr}}.f-links h4{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;border-bottom:2px solid var(--border);display:inline-block;padding-bottom:3px}.f-links a{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:7px}.f-links a:hover{color:var(--text);text-decoration:underline;text-decoration-thickness:2px}.f-bot{padding:12px 20px;display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted)}@media(max-width:600px){.f-bot{flex-direction:column}}
-#toast{position:fixed;bottom:16px;right:16px;background:var(--yellow);color:#000;border:3px solid #000;padding:10px 14px;font-family:var(--mono);font-weight:900;text-transform:uppercase;font-size:11px;box-shadow:5px 5px 0 #000;opacity:0;transform:translateY(18px);transition:.2s steps(3);z-index:99}#toast.show{opacity:1;transform:translateY(0)}
+.desc{color:var(--muted);font-family:var(--mono);font-size:13px;line-height:1.65;margin-bottom:12px;word-break:break-word}
+
+/* CODE */
+.code-wrap{position:relative;border:2.5px solid var(--neon);background:#000;box-shadow:5px 5px 0 #fff;margin:10px 0 14px;overflow:hidden;width:100%;min-width:0}
+html:not(.dark).code-wrap{box-shadow:5px 5px 0 #111}
+.code-top{display:flex;justify-content:space-between;align-items:center;background:#0f0f0f;border-bottom:2px solid #222;padding:7px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#999;flex-wrap:wrap;gap:6px}
+.code-top b{color:var(--neon)}
+.code-wrap pre{margin:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:13px!important;font-size:13px!important;line-height:1.6;overflow-x:auto;max-width:100%;white-space:pre}
+.copy-btn{border:2px solid #fff;background:#fff;color:#000;font-family:var(--mono);font-size:11px;font-weight:900;text-transform:uppercase;padding:6px 10px;cursor:pointer;flex-shrink:0}
+.copy-btn:hover{background:var(--neon);border-color:var(--neon)}
+
+/* GRID FIX - proper flex */
+.grid{display:flex;flex-wrap:wrap;gap:12px;width:100%}
+.grid>.card{flex:1 1 320px;min-width:0;max-width:100%}
+@media(max-width:900px){.grid{flex-direction:column}.grid>.card{flex:1 1 100%}}
+.card{border:3px solid var(--border);background:var(--bg);box-shadow:5px 5px 0 var(--border);transition:.08s steps(2);display:flex;flex-direction:column;min-width:0;width:100%}
+.card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--neon)}
+.card-h{padding:11px 12px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--panel2);flex-wrap:wrap;gap:8px}
+.method{font-family:var(--mono);font-weight:900;font-size:12.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;word-break:break-all}
+.verb{border:2px solid var(--border);padding:2px 6px;font-size:10px;background:var(--yellow);color:#000;flex-shrink:0}
+.card-b{padding:12px;min-width:0;flex:1}
+.endpoint{display:inline-flex;flex-wrap:wrap;border:2px solid var(--border);padding:4px 8px;font-family:var(--mono);font-size:10.5px;font-weight:800;margin-bottom:10px;background:var(--panel2);word-break:break-all}
+.steps{display:grid;gap:12px;width:100%}.step{display:grid;grid-template-columns:64px minmax(0,1fr);border:2px solid var(--border);background:var(--bg);width:100%;min-width:0}
+.step-n{font-family:var(--mono);font-weight:900;font-size:26px;background:var(--yellow);color:#000;display:grid;place-items:center;border-right:2px solid var(--border)}
+.step-c{padding:11px 12px;min-width:0}
+.warn{border:2px dashed var(--yellow);background:var(--bg);padding:10px 12px;font-family:var(--mono);font-size:11.5px;margin:10px 0;word-break:break-word}
+.err{border:3px solid var(--red);background:#0a0000;box-shadow:6px 6px 0 var(--red);color:#fff}.err.s-head{background:#200}
+.right{position:sticky;top:0;height:100vh;border-left:3px solid var(--border);background:var(--panel);padding:16px 12px;overflow:auto}
+.rt{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.right a{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:7px 8px;border:2px solid transparent;margin-bottom:3px}
+.right a:hover{border-color:var(--border);color:var(--text);background:var(--bg)}.right a.active{background:var(--text);color:var(--bg)}
+.footer{margin-top:50px;border:3px solid var(--border);background:var(--panel);box-shadow:8px 8px 0 var(--border)}
+.f-top{padding:20px;display:grid;grid-template-columns:1.2fr 2fr;gap:20px;border-bottom:3px solid var(--border)}@media(max-width:900px){.f-top{grid-template-columns:1fr}}
+.f-brand h3{font-size:26px;font-weight:900;text-transform:uppercase;line-height:.9;word-break:break-word}
+.f-links{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:600px){.f-links{grid-template-columns:1fr}}
+.f-links h4{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;border-bottom:2px solid var(--border);display:inline-block;padding-bottom:3px}
+.f-links a{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:7px}
+.f-links a:hover{color:var(--text);text-decoration:underline;text-decoration-thickness:2px}
+.f-bot{padding:12px 20px;display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--muted);flex-wrap:wrap}
+@media(max-width:600px){.f-bot{flex-direction:column}}
+#toast{position:fixed;bottom:16px;right:16px;background:var(--yellow);color:#000;border:3px solid #000;padding:10px 14px;font-family:var(--mono);font-weight:900;text-transform:uppercase;font-size:11px;box-shadow:5px 5px 0 #000;opacity:0;transform:translateY(18px);transition:.2s steps(3);z-index:200}
+#toast.show{opacity:1;transform:translateY(0)}
 .mono{font-family:var(--mono)}
-  .sec-body{
-  padding:18px;
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-                                     }
 
-  .section{
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-  }
- 
- /* ===== PASTEDB / SEO-CONTENT — TERMINAL BLUEPRINT ===== */
+/* SEO CONTENT - same design */
 #about.seo-content{
-  --bg:#0A0A0A;
-  --text:#FFFFFF;
-  --muted:#A3A3A3;
-  --border:#FFFFFF;
-  --neon:#39FF14;
-  --yellow:#F5FF00;
-  --blue:#00E5FF;
-  --mono:'JetBrains Mono', monospace;
-  --sans:'Archivo', 'Space Grotesk', sans-serif;
-
-  margin-top:36px;
+  margin-top:32px;
   border:3px solid var(--border);
-  background:var(--bg);
+  background:var(--panel);
   box-shadow:8px 8px 0 var(--border);
   padding:0;
   position:relative;
   overflow:hidden;
 }
-
-/* Top bar */
 #about.seo-content::before{
   content:'ABOUT / PASTEDB-JS / SEO — DOCUMENTATION MANIFEST';
   display:block;
@@ -158,16 +175,11 @@ code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#888;
+  word-break:break-all;
 }
-
-/* Inner padding wrapper for all content */
-#about.seo-content > *{
-  margin-left:22px;
-  margin-right:22px;
-}
+#about.seo-content > *{margin-left:22px;margin-right:22px}
+@media(max-width:900px){#about.seo-content > *{margin-left:14px;margin-right:14px}}
 #about.seo-content > *:first-child{margin-top:22px}
-
-/* H2 - Main */
 #about.seo-content h2{
   font-family:var(--sans);
   font-size:28px;
@@ -175,7 +187,7 @@ code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000
   line-height:.95;
   text-transform:uppercase;
   letter-spacing:-1px;
-  margin:0 0 18px 0 !important;
+  margin:0 0 18px 0!important;
   padding:14px 16px;
   border:3px solid var(--border);
   background:var(--yellow);
@@ -183,58 +195,48 @@ code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000
   box-shadow:5px 5px 0 #000;
   display:inline-block;
   max-width:100%;
+  word-break:break-word;
 }
-
-/* H3 - Sections */
+@media(max-width:900px){#about.seo-content h2{font-size:22px;padding:12px}}
 #about.seo-content h3{
   font-family:var(--sans);
   font-size:16px;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:-.02em;
-  margin:28px 0 10px 0 !important;
+  margin:28px 0 10px 0!important;
   padding:10px 12px;
   border:2.5px solid var(--border);
   background:#000;
   color:#fff;
   box-shadow:4px 4px 0 var(--neon);
   position:relative;
+  word-break:break-word;
 }
-#about.seo-content h3::before{
-  content:'//';
-  color:var(--neon);
-  margin-right:8px;
-  font-family:var(--mono);
-}
-
-/* Paragraphs */
+#about.seo-content h3::before{content:'//';color:var(--neon);margin-right:8px;font-family:var(--mono)}
 #about.seo-content p{
   font-family:var(--mono);
   font-size:13px;
   line-height:1.75;
   color:var(--muted);
-  margin:0 0 14px 0 !important;
+  margin:0 0 14px 0!important;
   max-width:72ch;
   border-left:3px solid #222;
   padding-left:12px;
+  word-break:break-word;
 }
 #about.seo-content p:hover{border-left-color:var(--neon)}
-
-/* List */
 #about.seo-content ul{
   list-style:none;
   padding:0;
-  margin:12px 0 20px 0 !important;
-  display:grid;
-  grid-template-columns:1fr 1fr;
+  margin:12px 0 20px 0!important;
+  display:flex;
+  flex-wrap:wrap;
   gap:10px;
   max-width:100%;
 }
-@media(max-width:700px){
-  #about.seo-content ul{grid-template-columns:1fr}
-}
-
 #about.seo-content ul li{
+  flex:1 1 280px;
   font-family:var(--mono);
   font-size:12px;
   font-weight:700;
@@ -248,13 +250,12 @@ code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000
   position:relative;
   box-shadow:3px 3px 0 var(--border);
   transition:.08s steps(2);
+  min-width:0;
 }
 #about.seo-content ul li::before{
   content:'✓';
   position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
+  left:0;top:0;bottom:0;
   width:24px;
   display:grid;
   place-items:center;
@@ -263,48 +264,16 @@ code,pre{font-family:var(--mono)}::selection{background:var(--yellow);color:#000
   font-weight:900;
   border-right:2px solid var(--border);
 }
-#about.seo-content ul li:hover{
-  transform:translate(-2px,-2px);
-  box-shadow:5px 5px 0 var(--yellow);
-}
-#about.seo-content ul li:nth-child(even):hover{
-  box-shadow:5px 5px 0 var(--blue);
-}
-
-/* Light mode support */
-html:not(.dark) #about.seo-content{
-  --bg:#FFFFFF;
-  --text:#111111;
-  --muted:#555555;
-  --border:#111111;
-}
-html:not(.dark) #about.seo-content::before{
-  background:#F4F4F0;
-  color:#555;
-}
-html:not(.dark) #about.seo-content h3{
-  background:#111;
-  color:#fff;
-}
-html:not(.dark) #about.seo-content p{
-  border-left-color:#ddd;
-}
-html:not(.dark) #about.seo-content ul li{
-  background:#fff;
-  color:#111;
-}
-
-/* Last element spacing */
-#about.seo-content > *:last-child{
-  margin-bottom:22px !important;
-}}
-  
+#about.seo-content ul li:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--yellow)}
+#about.seo-content > *:last-child{margin-bottom:22px!important}
+html:not(.dark) #about.seo-content::before{background:#F4F4F0;color:#555}
+html:not(.dark) #about.seo-content ul li{background:#fff;color:#111}
 </style>
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar" id="sidebar">
-<div class="sb-top"><div class="logo"><span>PASTEDB</span><span class="o">NODE.JS <i>SDK</i></span><span style="font-size:12px;letter-spacing:.3em;margin-top:4px">v1.0.4</span></div><div class="status"><b></b> SDK ONLINE / pastedb-js</div></div>
+<div class="sb-top"><div><div class="logo"><span>PASTEDB</span><span class="o">NODE.JS <i>SDK</i></span><span style="font-size:12px;letter-spacing:.3em;margin-top:4px">v1.0.4</span></div><div class="status"><b></b> SDK ONLINE / pastedb-js</div></div><button class="sb-close" id="sbClose">✕ CLOSE</button></div>
 <div class="search-wrap"><input id="search" class="search" placeholder="«SEARCH DOCS_»"></div>
 <div class="nav" id="sidebarNav">
 <div class="label">01 / START</div>
@@ -329,18 +298,18 @@ html:not(.dark) #about.seo-content ul li{
 <a href="#example" class="link">16 EXAMPLE <span>★</span></a>
 <a href="#export" class="link">17 EXPORTS / STRUCT <span>→</span></a>
 </div>
-<div class="sb-bot"><button id="themeToggle" class="btn">◐ THEME</button><a href="https://github.com/sorathiya903/pastedb-nodejs-sdk" target="_blank" class="btn neon" style="text-decoration:none">↗ GITHUB</a><a href="https://pastedb.netlify.app" target="_blank" class="btn yellow" style="text-decoration:none">↗ PASTEDB</a></div>
+<div class="sb-bot"><button id="themeToggle" class="btn">◐ THEME</button><a href="https://github.com/sorathiya903/pastedb-nodejs-sdk" target="_blank" class="btn neon">↗ GITHUB</a><a href="https://pastedb.netlify.app" target="_blank" class="btn yellow">↗ PASTEDB</a></div>
 </aside>
 
 <main class="main">
-<div class="topbar"><button class="btn mob" id="mobMenu">☰ MENU</button><div class="crumb">PASTEDB <span>/</span> NODE.JS SDK <span>/</span> v1.0.4 <span>/</span> BLUEPRINT</div><div style="margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:800;border:2px solid var(--border);padding:5px 8px;display:flex;gap:8px"><span>NODE>=18</span><span style="color:var(--neon)">● ONLINE</span></div></div>
+<div class="topbar"><button class="btn yellow mob" id="mobMenu">☰ MENU</button><div class="crumb">PASTEDB <span>/</span> NODE.JS SDK <span>/</span> v1.0.4 <span>/</span> BLUEPRINT</div><div style="margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:800;border:2px solid var(--border);padding:5px 8px;display:flex;gap:8px;flex-shrink:0"><span>NODE>=18</span><span style="color:var(--neon)">● ONLINE</span></div></div>
 
 <div class="hero">
 <div class="kicker">[ OFFICIAL / PASTEDB-JS / README SOURCE OF TRUTH ]</div>
 <h1>PASTEDB<br><span class="o">NODE.JS SDK</span></h1>
 <div class="sub"><b>Official Node.js SDK for interacting with PasteDB API.</b> Create, retrieve, update, delete, explore pastes, execute code, manage API keys, retrieve stats and more — directly from Node.js.</div>
 <div class="install" id="install">
-<div class="install-h" style="grid-column:1/-1"><span><i>BASH</i> — INSTALL / pastedb-js</span><span>v1.0.4</span></div>
+<div class="install-h"><span><i>BASH</i> — INSTALL / pastedb-js</span><span>v1.0.4</span></div>
 <pre><code class="language-bash">$ npm install pastedb-js</code></pre>
 <button class="copy-btn copy" data-copy="npm install pastedb-js">COPY</button>
 </div>
@@ -475,11 +444,9 @@ const client2 = new Client();</code></pre><button class="copy-btn copy">COPY</bu
   "name": "My Application"
 }</code></pre><button class="copy-btn copy">COPY</button></div>
 </div></div>
-
 <div class="card"><div class="card-h"><div class="method"><span class="verb">GET</span>myApiKeys()</div></div><div class="card-b"><span class="endpoint">GET /my-api-keys</span>
 <div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">const keys = await client.myApiKeys();</code></pre><button class="copy-btn copy">COPY</button></div>
 </div></div>
-
 <div class="card"><div class="card-h"><div class="method"><span class="verb">DEL</span>deleteApiKey(key)</div></div><div class="card-b"><span class="endpoint">DELETE /delete-api-key/:apiKey</span>
 <div class="code-wrap"><div class="code-top"><b>JS</b></div><pre><code class="language-js">await client.deleteApiKey("API_KEY");</code></pre><button class="copy-btn copy">COPY</button></div>
 <div class="warn">Keep API keys private and never commit them to source control.</div>
@@ -601,96 +568,22 @@ main();</code></pre><button class="copy-btn copy">COPY</button></div>
 </div>
 </div>
 </section>
-   <section id="about" class="seo-content">
 
-    <h2>
-        What is the PasteDB Node.js SDK?
-    </h2>
-
-    <p>
-        The PasteDB Node.js SDK is an official JavaScript library for
-        interacting with the PasteDB API from Node.js applications.
-        It provides a simple interface for developers who want to create,
-        retrieve, update and manage PasteDB pastes without manually
-        constructing HTTP requests for every API operation.
-    </p>
-
-    <p>
-        The SDK can be used in Node.js projects, backend applications,
-        developer tools, automation scripts and other JavaScript
-        environments that need to work with PasteDB programmatically.
-        Authentication is handled through a PasteDB API key, allowing
-        applications to access the API using a straightforward client.
-    </p>
-
-
-    <h3>
-        PasteDB API for Node.js
-    </h3>
-
-    <p>
-        PasteDB provides a developer-focused API for working with
-        code and text pastes. The Node.js SDK provides a convenient
-        JavaScript interface over this API, making it easier to
-        integrate PasteDB functionality into Node.js applications.
-    </p>
-
-
-    <h3>
-        Create and manage pastes with JavaScript
-    </h3>
-
-    <p>
-        Developers can use the PasteDB Node.js SDK to create new
-        pastes, retrieve existing pastes and update paste content
-        directly from JavaScript code. This can be useful for
-        applications that need programmatic code sharing, text
-        storage or PasteDB integration.
-    </p>
-
-
-    <h3>
-        Retrieve PasteDB pastes programmatically
-    </h3>
-
-    <p>
-        Instead of opening the PasteDB web application manually,
-        a Node.js application can retrieve paste information through
-        the SDK. This makes PasteDB suitable for scripts, internal
-        developer tools and automated workflows that need access to
-        paste data.
-    </p>
-
-
-    <h3>
-        PasteDB API key authentication
-    </h3>
-
-    <p>
-        The PasteDB Node.js SDK supports API key authentication.
-        Developers can initialize the client with their PasteDB API
-        key and then use the available SDK methods to interact with
-        authenticated API endpoints.
-    </p>
-
-
-    <h3>
-        Node.js SDK for developers
-    </h3>
-
-    <p>
-        The SDK is designed to keep PasteDB API operations simple
-        from JavaScript. Instead of repeatedly writing request
-        handling code, developers can use methods provided by the
-        PasteDB client to work with pastes, account information,
-        API keys and other supported PasteDB functionality.
-    </p>
-
-
-    <h3>
-        What can you do with the PasteDB Node.js SDK?
-    </h3>
-
+<section id="about" class="seo-content">
+    <h2>What is the PasteDB Node.js SDK?</h2>
+    <p>The PasteDB Node.js SDK is an official JavaScript library for interacting with the PasteDB API from Node.js applications. It provides a simple interface for developers who want to create, retrieve, update and manage PasteDB pastes without manually constructing HTTP requests for every API operation.</p>
+    <p>The SDK can be used in Node.js projects, backend applications, developer tools, automation scripts and other JavaScript environments that need to work with PasteDB programmatically. Authentication is handled through a PasteDB API key, allowing applications to access the API using a straightforward client.</p>
+    <h3>PasteDB API for Node.js</h3>
+    <p>PasteDB provides a developer-focused API for working with code and text pastes. The Node.js SDK provides a convenient JavaScript interface over this API, making it easier to integrate PasteDB functionality into Node.js applications.</p>
+    <h3>Create and manage pastes with JavaScript</h3>
+    <p>Developers can use the PasteDB Node.js SDK to create new pastes, retrieve existing pastes and update paste content directly from JavaScript code. This can be useful for applications that need programmatic code sharing, text storage or PasteDB integration.</p>
+    <h3>Retrieve PasteDB pastes programmatically</h3>
+    <p>Instead of opening the PasteDB web application manually, a Node.js application can retrieve paste information through the SDK. This makes PasteDB suitable for scripts, internal developer tools and automated workflows that need access to paste data.</p>
+    <h3>PasteDB API key authentication</h3>
+    <p>The PasteDB Node.js SDK supports API key authentication. Developers can initialize the client with their PasteDB API key and then use the available SDK methods to interact with authenticated API endpoints.</p>
+    <h3>Node.js SDK for developers</h3>
+    <p>The SDK is designed to keep PasteDB API operations simple from JavaScript. Instead of repeatedly writing request handling code, developers can use methods provided by the PasteDB client to work with pastes, account information, API keys and other supported PasteDB functionality.</p>
+    <h3>What can you do with the PasteDB Node.js SDK?</h3>
     <ul>
         <li>Create PasteDB pastes from Node.js applications.</li>
         <li>Retrieve existing pastes using their IDs.</li>
@@ -703,35 +596,10 @@ main();</code></pre><button class="copy-btn copy">COPY</button></div>
         <li>Retrieve authenticated account information.</li>
         <li>Integrate PasteDB into JavaScript developer tools and scripts.</li>
     </ul>
-
-
-    <h3>
-        Why use a Node.js SDK instead of direct API requests?
-    </h3>
-
-    <p>
-        Direct HTTP requests can be useful when building custom
-        integrations, but an SDK can provide a more convenient
-        programming interface for common operations. The PasteDB
-        Node.js SDK groups supported API operations into a reusable
-        client so developers can work with PasteDB using familiar
-        JavaScript methods.
-    </p>
-
-
-    <h3>
-        PasteDB for JavaScript developers
-    </h3>
-
-    <p>
-        Whether you are building a backend service, automation script,
-        developer utility or another Node.js application, the PasteDB
-        Node.js SDK provides a programmatic way to connect your project
-        with PasteDB. The documentation above contains installation
-        instructions, authentication details, available methods and
-        complete usage examples.
-    </p>
-
+    <h3>Why use a Node.js SDK instead of direct API requests?</h3>
+    <p>Direct HTTP requests can be useful when building custom integrations, but an SDK can provide a more convenient programming interface for common operations. The PasteDB Node.js SDK groups supported API operations into a reusable client so developers can work with PasteDB using familiar JavaScript methods.</p>
+    <h3>PasteDB for JavaScript developers</h3>
+    <p>Whether you are building a backend service, automation script, developer utility or another Node.js application, the PasteDB Node.js SDK provides a programmatic way to connect your project with PasteDB. The documentation above contains installation instructions, authentication details, available methods and complete usage examples.</p>
 </section>
 
 <footer class="footer">
@@ -746,27 +614,26 @@ main();</code></pre><button class="copy-btn copy">COPY</button></div>
 <div class="f-bot"><p>© 2026 PasteDB. Built for developers, teachers and students.</p><span>Made with passion by Aditya Sorathiya</span></div>
 </footer>
 </main>
-
 <aside class="right">
 <div class="rt">ON THIS PAGE / README SYNC</div>
-<a href="#install">INSTALL</a><a href="#requirements">REQUIREMENTS</a><a href="#quickstart">QUICKSTART</a><a href="#config">CONFIG</a><a href="#api-me">me()</a><a href="#api-create">createPaste()</a><a href="#api-get">getPaste()</a><a href="#api-update">updatePaste()</a><a href="#api-explore">explore()</a><a href="#api-run">runCode()</a><a href="#api-images">getImages()</a><a href="#api-stats">pasteStats()</a><a href="#api-check">checkCustomId()</a><a href="#keys">API KEYS</a><a href="#direct">DIRECT API</a><a href="#error">ERRORS</a><a href="#example">FULL EXAMPLE</a><a href="#export">EXPORTS</a>
+<a href="#install">INSTALL</a><a href="#requirements">REQUIREMENTS</a><a href="#quickstart">QUICKSTART</a><a href="#config">CONFIG</a><a href="#api-me">me()</a><a href="#api-create">createPaste()</a><a href="#api-get">getPaste()</a><a href="#api-update">updatePaste()</a><a href="#api-explore">explore()</a><a href="#api-run">runCode()</a><a href="#api-images">getImages()</a><a href="#api-stats">pasteStats()</a><a href="#api-check">checkCustomId()</a><a href="#keys">API KEYS</a><a href="#direct">DIRECT API</a><a href="#error">ERRORS</a><a href="#example">FULL EXAMPLE</a><a href="#export">EXPORTS</a><a href="#about">ABOUT</a>
 <div style="margin-top:16px;border:2px solid var(--border);padding:10px;font-family:var(--mono);font-size:10px;line-height:1.5">PACKAGE<br>pastedb-js<br>v1.0.4<br><br>AUTHOR<br>Aditya Sorathiya<br><br>LICENSE<br>MIT<br><br>STATUS<br><b style="color:var(--neon)">● ONLINE</b></div>
 </aside>
 </div>
-
 <div id="toast">COPIED_</div>
-
-
-  
 <script>
 hljs.highlightAll();
 const toast=document.getElementById('toast');function showToast(){toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1300)}
 document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const c=b.parentElement.querySelector('code')?b.parentElement.querySelector('code').innerText:b.dataset.copy;navigator.clipboard.writeText(c);showToast();const o=b.textContent;b.textContent='COPIED_';setTimeout(()=>b.textContent=o,900)})});
 document.getElementById('themeToggle').addEventListener('click',()=>{document.documentElement.classList.toggle('dark');localStorage.theme=document.documentElement.classList.contains('dark')?'dark':'light'});
 if(localStorage.theme==='light')document.documentElement.classList.remove('dark');
-document.getElementById('mobMenu').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+const sidebar=document.getElementById('sidebar');
+document.getElementById('mobMenu').addEventListener('click',()=>sidebar.classList.add('open'));
+document.getElementById('sbClose').addEventListener('click',()=>sidebar.classList.remove('open'));
 document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#sidebarNav a').forEach(a=>{a.style.display=a.textContent.toLowerCase().includes(q)?'flex':'none'})});
-const secs=document.querySelectorAll('section[id]');const links=document.querySelectorAll('.link,.right a');window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(scrollY>=s.offsetTop-150)cur=s.id});links.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
+const secs=document.querySelectorAll('section[id]');const links=document.querySelectorAll('.link,.right a');
+window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(scrollY>=s.offsetTop-150)cur=s.id});links.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
+document.querySelectorAll('.nav a').forEach(a=>{a.addEventListener('click',()=>{if(window.innerWidth<=900)sidebar.classList.remove('open')})});
 </script>
 </body>
-  </html>
+</html>
