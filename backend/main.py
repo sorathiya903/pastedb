@@ -1808,15 +1808,26 @@ def paste_stats(
     user=Depends(get_current_user)
 ):
 
-    paste = pastes_collection.find_one({
-        "_id": ObjectId(paste_id)
-    })
+    paste = None
 
+    # Search by MongoDB ObjectId
+    if ObjectId.is_valid(paste_id):
+        paste = pastes_collection.find_one({
+            "_id": ObjectId(paste_id)
+        })
+
+    # Search by custom ID
+    if not paste:
+        paste = pastes_collection.find_one({
+            "custom_id": paste_id
+        })
+
+    # Not found
     if not paste:
         raise HTTPException(
             status_code=404,
             detail="Paste not found"
-        )
+        ) 
 
     email_key = user["email"].replace(".", "_")
     if paste.get("user_email_key") != email_key:
