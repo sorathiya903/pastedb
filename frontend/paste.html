@@ -3867,6 +3867,15 @@ const explanationBlock =
 
 
 async function explainCode() {
+   setTimeout(() => {
+
+      explanationWrapper.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 100);
+ 
 
   const code = codeBlock.textContent.trim();
 
@@ -3948,16 +3957,8 @@ async function explainCode() {
         hljs.highlightElement(block);
       });
 
-    // Scroll to explanation
-    setTimeout(() => {
 
-      explanationWrapper.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    }, 100);
-
+    
   }
 
   catch (error) {
