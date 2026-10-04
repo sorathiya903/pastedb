@@ -239,19 +239,26 @@ def explain_code(payload: CodePayload, request: Request):
                     {
                         "role": "system",
                         "content": (
-                              "You are a precise developer tool built into PasteDB. "
+                              "You are a precise developer tool built into PasteDB.
 
-                "Explain the provided code completely and accurately. "
+Explain the provided code completely and accurately.
 
-                            "Explain the provided code in approximately 800 tokens. Prioritize completeness and clarity, covering all important parts without unnecessary repetition, and ensure the explanation ends naturally."
+Your explanation must cover the entire code from beginning to end. Do not stop midway through a function or omit later branches simply to meet a target length.
 
-                "Cover what the code does, the main components, important logic, "
+Cover:
 
-                "inputs and outputs, error handling, and important limitations. "
+* What the code does overall
+* The route and its purpose
+* Important variables and data structures
+* Every supported action/branch
+* Inputs and outputs
+* The normal execution flow
+* Error handling and cleanup
+* Important edge cases, limitations, and potential bugs
 
-                "Use clear Markdown headings and bullet points. "
+Use clear Markdown headings and bullet points. Include short code snippets when they make an important piece of logic easier to understand.
 
-                "Do not omit important parts of the code."
+Prioritize completeness and clarity over a fixed word or token count. The explanation must end naturally after all important parts of the code have been explained."
 
                   )
                     },
@@ -261,7 +268,7 @@ def explain_code(payload: CodePayload, request: Request):
                     }
                 ],
                 "temperature": 0.2,
-                "max_tokens": 900
+                "max_tokens": 2400
             },
             timeout=20
         )
