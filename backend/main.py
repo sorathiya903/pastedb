@@ -194,7 +194,7 @@ def is_rate_limited(ip_address: str) -> bool:
     ]
 
     # Maximum 3 requests per minute
-    if len(request_history[ip_address]) >= 3:
+    if len(request_history[ip_address]) >= 30:
         return True
 
     request_history[ip_address].append(current_time)
@@ -203,10 +203,9 @@ def is_rate_limited(ip_address: str) -> bool:
 
 @app.post("/api/explain-code")
 def explain_code(payload: CodePayload, request: Request):
-    # Get user's IP address
     client_ip = request.client.host
 
-    # Rate limit: 3 requests per minute per IP
+    # Rate limit
     if is_rate_limited(client_ip):
         raise HTTPException(
             status_code=429,
@@ -214,7 +213,7 @@ def explain_code(payload: CodePayload, request: Request):
         )
 
     # Validate code
-    if not payload.code_snippet.strip():
+    if not payload.code_snippet or not payload.code_snippet.strip():
         raise HTTPException(
             status_code=400,
             detail="No code snippet provided"
@@ -235,7 +234,7 @@ def explain_code(payload: CodePayload, request: Request):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama-3.1-8b-instant",
+                "model": "openai/gpt-oss-20b",
                 "messages": [
                     {
                         "role": "system",
@@ -253,36 +252,65 @@ def explain_code(payload: CodePayload, request: Request):
                 "temperature": 0.2,
                 "max_tokens": 250
             },
-            timeout=10
+            timeout=20
         )
 
-        # Handle API errors
-        if response.status_code != 200:
+        # Log provider errors
+        if not response.ok:
+            print("Groq status:", response.status_code)
+            print("Groq response:", response.text)
+
+            try:
+                error_data = response.json()
+                error_message = error_data.get("error", {}).get(
+                    "message",
+                    response.text
+                )
+            except ValueError:
+                error_message = response.text
+
             raise HTTPException(
                 status_code=502,
-                detail="Failed to communicate with AI provider"
+                detail=f"AI provider error: {error_message}"
             )
 
-        result = response.json()
+        # Parse JSON
+        try:
+            result = response.json()
+        except ValueError:
+            raise HTTPException(
+                status_code=502,
+                detail="Invalid response received from AI provider"
+            )
 
-        # Correct response structure
-        explanation = result["choices"][0]["message"]["content"]
+        # Get explanation
+        try:
+            explanation = result["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            print("Unexpected Groq response:", result)
+
+            raise HTTPException(
+                status_code=502,
+                detail="Unexpected response from AI provider"
+            )
 
         return {
             "success": True,
             "explanation": explanation
         }
 
-    except requests.RequestException:
+    except requests.Timeout:
         raise HTTPException(
-            status_code=502,
-            detail="AI provider is temporarily unavailable"
+            status_code=504,
+            detail="AI provider request timed out"
         )
 
-    except KeyError:
+    except requests.RequestException as e:
+        print("Groq connection error:", str(e))
+
         raise HTTPException(
             status_code=502,
-            detail="Unexpected response from AI provider"
+            detail="Could not connect to AI provider"
         )
 
 def build_update_data(data: dict):
