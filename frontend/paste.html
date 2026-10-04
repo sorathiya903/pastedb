@@ -1596,6 +1596,24 @@ background:#384152;
     </g>
         </svg>
       </button>
+       <button
+  data-ga-event="explain_code_clicked"
+  class="btn"
+  id="explainCodeBtn"
+  title="Explain this code"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       viewBox="0 0 24 24"
+       fill="none"
+       stroke="currentColor"
+       stroke-width="2"
+       stroke-linecap="round"
+       stroke-linejoin="round">
+    <path d="M9 18h6"/>
+    <path d="M10 22h4"/>
+    <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.8.6-1.5 1.5-1.5 2.5h-4c0-1-.7-1.9-1.5-2.5Z"/>
+  </svg>
+</button> 
 <button data-ga-event="run_code_clicked" class="btn" id="runBtn">
     <b>Run</b>
   </button>
@@ -1961,6 +1979,26 @@ id="codeBlock"
   </div>
 
 </section>
+  <section
+  class="code-wrapper"
+  id="explanationWrapper"
+  style="margin-top:20px; display:none;"
+>
+  <div class="code-toolbar">
+    <div class="toolbar-left">
+      AI Explanation
+    </div>
+  </div>
+
+  <div
+    id="explanationBlock"
+    style="
+      padding:24px 28px;
+      line-height:1.7;
+      color:var(--text);
+    "
+  ></div>
+</section>  
 
   <div
   id="htmlPreviewWrapper"
