@@ -171,7 +171,119 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class CodePayload(BaseModel):
+    code_snippet: str
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# A tiny in-memory store to track user requests by IP address
+# Structure: { "user_ip": [timestamp1, timestamp2, ...] }
+request_history = {}
+
+
+def is_rate_limited(ip_address: str) -> bool:
+    current_time = time.time()
+
+    if ip_address not in request_history:
+        request_history[ip_address] = []
+
+    # Remove requests older than 60 seconds
+    request_history[ip_address] = [
+        t for t in request_history[ip_address]
+        if current_time - t < 60
+    ]
+
+    # Maximum 3 requests per minute
+    if len(request_history[ip_address]) >= 3:
+        return True
+
+    request_history[ip_address].append(current_time)
+    return False
+
+
+@app.post("/api/explain-code")
+def explain_code(payload: CodePayload, request: Request):
+    # Get user's IP address
+    client_ip = request.client.host
+
+    # Rate limit: 3 requests per minute per IP
+    if is_rate_limited(client_ip):
+        raise HTTPException(
+            status_code=429,
+            detail="You have reached the limit. Please wait a minute before trying again."
+        )
+
+    # Validate code
+    if not payload.code_snippet.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="No code snippet provided"
+        )
+
+    # Check API key
+    if not GROQ_API_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="Server configuration error: Missing API Key"
+        )
+
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a precise developer tool built into PasteDB. "
+                            "Explain the provided code briefly using short, clean "
+                            "Markdown bullet points."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Explain this code:\n\n{payload.code_snippet}"
+                    }
+                ],
+                "temperature": 0.2,
+                "max_tokens": 250
+            },
+            timeout=10
+        )
+
+        # Handle API errors
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=502,
+                detail="Failed to communicate with AI provider"
+            )
+
+        result = response.json()
+
+        # Correct response structure
+        explanation = result["choices"][0]["message"]["content"]
+
+        return {
+            "success": True,
+            "explanation": explanation
+        }
+
+    except requests.RequestException:
+        raise HTTPException(
+            status_code=502,
+            detail="AI provider is temporarily unavailable"
+        )
+
+    except KeyError:
+        raise HTTPException(
+            status_code=502,
+            detail="Unexpected response from AI provider"
+        )
 
 def build_update_data(data: dict):
     now = datetime.now(timezone.utc)
