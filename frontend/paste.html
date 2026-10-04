@@ -3818,7 +3818,162 @@ if(savedFontSize){
     `${savedFontSize}px`;
 
 }
+const explainCodeBtn =
+  document.getElementById("explainCodeBtn");
 
+const explanationWrapper =
+  document.getElementById("explanationWrapper");
+
+const explanationBlock =
+  document.getElementById("explanationBlock");
+
+
+async function explainCode() {
+
+  const code = codeBlock.textContent.trim();
+
+  if (!code) {
+    explanationWrapper.style.display = "block";
+
+    explanationBlock.innerHTML = `
+      <p style="color:#f87171;">
+        No code available to explain.
+      </p>
+    `;
+
+    return;
+  }
+
+  // Loading state
+  explainCodeBtn.disabled = true;
+
+  explainCodeBtn.innerHTML = `
+    <span class="spinner"></span>
+  `;
+
+  explanationWrapper.style.display = "block";
+
+  explanationBlock.innerHTML = `
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--text-secondary);
+    ">
+      <span class="spinner"></span>
+      <span>Analyzing your code...</span>
+    </div>
+  `;
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/api/explain-code`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          code_snippet: code
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.detail ||
+        "Failed to generate explanation"
+      );
+
+    }
+
+    // Convert Markdown → HTML
+    const html =
+      marked.parse(data.explanation || "");
+
+    // Sanitize AI-generated HTML
+    const clean =
+      DOMPurify.sanitize(html);
+
+    explanationBlock.innerHTML = clean;
+
+    // Highlight code blocks inside explanation
+    explanationBlock
+      .querySelectorAll("pre code")
+      .forEach(block => {
+        hljs.highlightElement(block);
+      });
+
+    // Scroll to explanation
+    setTimeout(() => {
+
+      explanationWrapper.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 100);
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Explain code error:",
+      error
+    );
+
+    explanationBlock.innerHTML = `
+      <div style="
+        color:#f87171;
+        line-height:1.6;
+      ">
+        <strong>Unable to explain this code.</strong>
+        <br>
+        <span style="
+          color:var(--text-secondary);
+          font-size:13px;
+        ">
+          ${escapeHtml(error.message)}
+        </span>
+      </div>
+    `;
+
+  }
+
+  finally {
+
+    explainCodeBtn.disabled = false;
+
+    explainCodeBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <path d="M9 18h6"/>
+        <path d="M10 22h4"/>
+        <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.8.6-1.5 1.5-1.5 2.5h-4c0-1-.7-1.9-1.5-2.5Z"/>
+      </svg>
+    `;
+
+  }
+
+}
+
+
+explainCodeBtn.addEventListener(
+  "click",
+  explainCode
+);
 </script>
 </body>
     </html>
