@@ -194,7 +194,7 @@ def is_rate_limited(ip_address: str) -> bool:
     ]
 
     # Maximum 3 requests per minute
-    if len(request_history[ip_address]) >= 30:
+    if len(request_history[ip_address]) >= 3:
         return True
 
     request_history[ip_address].append(current_time)
@@ -239,10 +239,21 @@ def explain_code(payload: CodePayload, request: Request):
                     {
                         "role": "system",
                         "content": (
-                            "You are a precise developer tool built into PasteDB. "
-                            "Explain the provided code briefly using short, clean "
-                            "Markdown bullet points."
-                        )
+                              "You are a precise developer tool built into PasteDB. "
+
+                "Explain the provided code completely and accurately. "
+
+                            "Explain the provided code in approximately 800 tokens. Prioritize completeness and clarity, covering all important parts without unnecessary repetition, and ensure the explanation ends naturally."
+
+                "Cover what the code does, the main components, important logic, "
+
+                "inputs and outputs, error handling, and important limitations. "
+
+                "Use clear Markdown headings and bullet points. "
+
+                "Do not omit important parts of the code."
+
+                  )
                     },
                     {
                         "role": "user",
@@ -250,7 +261,7 @@ def explain_code(payload: CodePayload, request: Request):
                     }
                 ],
                 "temperature": 0.2,
-                "max_tokens": 250
+                "max_tokens": 900
             },
             timeout=20
         )
