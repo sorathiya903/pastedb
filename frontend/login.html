@@ -495,6 +495,54 @@ display:flex;
 
             return;
         }
+       let AUTH_API = API_URL;
+
+// Check whether the Render session cookie works
+let sessionWorks = await checkSession(API_URL);
+
+if (!sessionWorks) {
+
+    console.warn("Render cookie unavailable. Switching to Netlify proxy.");
+
+    AUTH_API = "/api";
+
+    // IMPORTANT:
+    // Authenticate again through Netlify so the browser
+    // receives a cookie belonging to the Netlify domain.
+
+    const proxyLoginRes = await fetch(
+        `${AUTH_API}/auth/google`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                token: response.credential
+            })
+        }
+    );
+
+    const proxyLoginData = await proxyLoginRes.json();
+
+    if (!proxyLoginRes.ok ||
+        proxyLoginData.status !== "success") {
+        throw new Error(
+            proxyLoginData.detail ||
+            "Proxy authentication failed."
+        );
+    }
+
+    // Verify the proxy session
+    sessionWorks = await checkSession(AUTH_API);
+
+    if (!sessionWorks) {
+        throw new Error("Could not establish a login session.");
+    }
+}
+
+// Use AUTH_API for authenticated requests from here onward.
 
         // Ensure RSA keys exist
         const keys =
@@ -507,7 +555,7 @@ display:flex;
 
         // Register device
         const registerRes = await fetch(
-            `${API_URL}/device/register`,
+            `${AUTH_URL}/device/register`,
             {
                 method: "POST",
                 credentials: "include",
@@ -580,7 +628,7 @@ if (
 
             // Save encrypted KEK
             await fetch(
-                `${API_URL}/device/register`,
+                `${AUTH_URL}/device/register`,
                 {
                     method: "POST",
                     credentials: "include",
