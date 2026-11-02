@@ -4,14 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PasteDB Dashboard</title>
+       
 <script src="/encryption.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
        <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8NDTL7KT9"></script>
 
+  
      <script src="config.js"></script>
+<script>
+let BACKEND = API_URL;
 
-     
+async function initializeBackend() {
+    try {
+        // First try the direct Render backend
+        const response = await fetch(`${API_URL}/auth/me`, {
+            credentials: "include"
+        });
+
+        if (response.ok) {
+            BACKEND = API_URL;
+            console.log("Using direct Render backend");
+            return true;
+        }
+
+        console.warn("Direct backend authentication failed. Trying proxy...");
+    } catch (error) {
+        console.warn("Direct backend unavailable. Trying proxy...", error);
+    }
+
+    try {
+        // Retry through Netlify proxy
+        const response = await fetch("/api/auth/me", {
+            credentials: "include"
+        });
+
+        if (response.ok) {
+            BACKEND = "/api";
+            console.log("Using Netlify proxy backend");
+            return true;
+        }
+
+        console.error("Proxy authentication failed:", response.status);
+        return false;
+
+    } catch (error) {
+        console.error("Proxy backend unavailable:", error);
+        return false;
+    }
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>
@@ -2573,7 +2615,16 @@ renderPastes(allPastes);
     grid.innerHTML = "<p>Error loading dashboard</p>";
   }
    }
-loadDashboard();
+(async () => {
+    const authenticated = await initializeBackend();
+
+    if (!authenticated) {
+        window.location.href = "/login.html";
+        return;
+    }
+
+    await loadDashboard();
+})();
 
    let deletePasteId = null;
 
@@ -2638,7 +2689,16 @@ document
 
     closeDeleteDialog();
 
-    loadDashboard();
+    (async () => {
+    const authenticated = await initializeBackend();
+
+    if (!authenticated) {
+        window.location.href = "/login.html";
+        return;
+    }
+
+    await loadDashboard();
+})();
      showToast("Paste deleted successfully!");
 
   } catch (err) {
