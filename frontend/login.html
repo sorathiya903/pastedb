@@ -567,7 +567,7 @@ if (!sessionWorks) {
 
         // Register device
         const registerRes = await fetch(
-            `${AUTH_URL}/device/register`,
+            `${AUTH_API}/device/register`,
             {
                 method: "POST",
                 credentials: "include",
@@ -640,7 +640,7 @@ if (
 
             // Save encrypted KEK
             await fetch(
-                `${AUTH_URL}/device/register`,
+                `${AUTH_API}/device/register`,
                 {
                     method: "POST",
                     credentials: "include",
