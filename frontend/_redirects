@@ -1,3 +1,4 @@
 /paste/*    /paste.html   200
 /stats/*    /stats.html   200
 /c/*   /c.html  200
+/api/* https://pastedb-rw62.onrender.com/:splat 200
