@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PasteDB Dashboard</title>
        
-<script src="/encryption.js"></script>
+<script src="/encryption.js"></script>script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
        <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8NDTL7KT9"></script>
@@ -13,17 +13,17 @@
   
      <script src="config.js"></script>
 <script>
-let BACKEND = API_URL;
+let BACKEND = BACKEND;
 
 async function initializeBackend() {
     try {
         // First try the direct Render backend
-        const response = await fetch(`${API_URL}/auth/me`, {
+        const response = await fetch(`${BACKEND}/auth/me`, {
             credentials: "include"
         });
 
         if (response.ok) {
-            BACKEND = API_URL;
+            BACKEND = BACKEND;
             console.log("Using direct Render backend");
             return true;
         }
@@ -1796,7 +1796,7 @@ alert("Invite link copied!");
 
 
 async function generateLink() {
-    const res = await fetch(`${API_URL}/collab/create/${currentCollabPaste}`, {
+    const res = await fetch(`${BACKEND}/collab/create/${currentCollabPaste}`, {
         method: "POST",
         credentials: "include"
         
@@ -2527,7 +2527,7 @@ async function loadDashboard() {
   try {
     const res = await fetch(
        
-       `${API_URL}/user/dashboard`, 
+       `${BACKEND}/user/dashboard`, 
        {
       method: "GET",
       credentials: "include",
@@ -2674,7 +2674,7 @@ document
   try {
 
     const res = await fetch(
-      `${API_URL}/delete/${deletePasteId}`,
+      `${BACKEND}/delete/${deletePasteId}`,
       {
         method: "DELETE",
         credentials: "include"
@@ -2768,7 +2768,7 @@ async function deleteAccount(){
   try{
 
     const res = await fetch(
-      `${API_URL}/delete-account`,
+      `${BACKEND}/delete-account`,
       {
         method: "DELETE",
         credentials: "include"
@@ -2798,7 +2798,7 @@ async function logout(){
   try{
 
     await fetch(
-      `${API_URL}/logout`,
+      `${BACKEND}/logout`,
       {
         method: "POST",
         credentials: "include"
