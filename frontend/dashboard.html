@@ -13,7 +13,7 @@
   
      <script src="config.js"></script>
 <script>
-let BACKEND = BACKEND;
+let BACKEND = API_URL;
 
 async function initializeBackend() {
     try {
@@ -23,7 +23,7 @@ async function initializeBackend() {
         });
 
         if (response.ok) {
-            BACKEND = BACKEND;
+            BACKEND = API_URL;
             console.log("Using direct Render backend");
             return true;
         }
