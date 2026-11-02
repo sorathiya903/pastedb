@@ -433,6 +433,18 @@ display:flex;
    </div>
 
   <script>
+     async function checkSession(api) {
+    try {
+        const res = await fetch(`${api}/auth/me`, {
+            credentials: "include"
+        });
+
+        return res.ok;
+    } catch (err) {
+        console.error("Session check failed:", err);
+        return false;
+    }
+}
     function toggleTheme() {
       document.body.classList.toggle("dark");
       localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
