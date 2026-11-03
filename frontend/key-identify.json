@@ -138,34 +138,22 @@
         }
       ]
     },
-
     {
-      "id": "slack",
-      "name": "Slack",
+      "id": "pastedb",
+      "name": "PasteDB",
       "credentials": [
         {
-          "id": "slack_bot_token",
-          "name": "Slack Bot Token",
-          "prefixes": ["xoxb-"],
+          "id": "pastedb_api_key",
+          "name": "PasteDB API Key",
+          "prefixes": ["pdb_"],
           "context_keywords": [
-            "SLACK_BOT_TOKEN"
+            "PASTEDB_API_KEY"
           ],
           "minimum_length": 30,
           "severity": "critical"
-        },
-        {
-          "id": "slack_user_token",
-          "name": "Slack User Token",
-          "prefixes": ["xoxp-"],
-          "context_keywords": [
-            "SLACK_USER_TOKEN"
-          ],
-          "minimum_length": 30,
-          "severity": "critical"
-        }
+               }
       ]
-    },
-
+    }},
     {
       "id": "generic",
       "name": "Generic Credentials",
