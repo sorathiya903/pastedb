@@ -28,17 +28,39 @@ const SCANNER_CONFIG = {
 let identifierDatabase = null;
 
 async function loadKeyIdentifiers() {
-    if (identifierDatabase) return identifierDatabase;
-
-    const response = await fetch(KEY_IDENTIFIERS_URL);
-
-    if (!response.ok) {
-        throw new Error("Unable to load key-identify.json");
+    if (keyIdentifiersCache) {
+        return keyIdentifiersCache;
     }
 
-    identifierDatabase = await response.json();
+    const response = await fetch(KEY_IDENTIFIERS_URL, {
+        cache: "no-cache"
+    });
 
-    return identifierDatabase;
+    console.log("Scanner config status:", response.status);
+    console.log("Scanner config URL:", response.url);
+    console.log("Scanner config content type:",
+        response.headers.get("content-type")
+    );
+
+    const raw = await response.text();
+
+    console.log("Scanner config response:", raw.slice(0, 500));
+
+    if (!response.ok) {
+        throw new Error(
+            `Could not load key-identify.json: HTTP ${response.status}`
+        );
+    }
+
+    try {
+        keyIdentifiersCache = JSON.parse(raw);
+    } catch (error) {
+        throw new Error(
+            `key-identify.json contains invalid JSON: ${error.message}`
+        );
+    }
+
+    return keyIdentifiersCache;
 }
 
 // -------------------------------
