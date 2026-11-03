@@ -3484,6 +3484,11 @@ const pasteData = {
   e2ee: visibility === "private" || visibility === "unlisted",
   images:[]
 };
+  const allowed = await checkSecrets(pasteData.content);
+
+if (!allowed) {
+    return;
+}
   let newUrls = [];
 
 if (selectedImages.length > 0) {
