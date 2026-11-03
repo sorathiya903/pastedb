@@ -3401,11 +3401,6 @@ if (editId) {
     // CREATE PASTE
 
 async function createPaste(pasteData){
-const content = document.getElementById("code").value;
-
-    const allowed = await checkSecrets(content);
-
-    if (!allowed) return;
   const response = await fetch(
     `${API_URL}/create`,
     {
