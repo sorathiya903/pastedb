@@ -153,7 +153,7 @@
           "severity": "critical"
                }
       ]
-    }},
+    },
     {
       "id": "generic",
       "name": "Generic Credentials",
