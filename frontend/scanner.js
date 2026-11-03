@@ -405,14 +405,16 @@ async function checkSecrets(content) {
         return await showSecretWarning(findings);
 
     } catch (error) {
-        console.error("PasteDB security scanner error:", error);
+    console.error("PasteDB scanner error:", error);
+    console.error("Error name:", error?.name);
+    console.error("Error message:", error?.message);
+    console.error("Error stack:", error?.stack);
 
-        // Fail closed: do not silently skip scanning.
-        alert(
-            "Paste security scanning could not complete. " +
-            "Please try again before creating your paste."
-        );
+    alert(
+        `Scanner error: ${error?.name || "Unknown"}\n` +
+        `${error?.message || String(error)}`
+    );
 
-        return false;
-    }
+    return false;
+}
 }
