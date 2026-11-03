@@ -1,0 +1,259 @@
+
+{
+
+  "description": "Known credential identifiers for PasteDB's local security scanner",
+
+  "settings": {
+    "case_insensitive_context": true,
+    "hide_detected_values": true,
+    "minimum_match_length": 8
+  },
+
+  "providers": [
+    {
+      "id": "github",
+      "name": "GitHub",
+      "credentials": [
+        {
+          "id": "github_pat_classic",
+          "name": "Personal Access Token (Classic)",
+          "prefixes": ["ghp_"],
+          "context_keywords": [
+            "GITHUB_TOKEN",
+            "GITHUB_PAT",
+            "GH_TOKEN"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        },
+        {
+          "id": "github_oauth",
+          "name": "OAuth Access Token",
+          "prefixes": ["gho_"],
+          "context_keywords": [
+            "GITHUB_OAUTH_TOKEN",
+            "GITHUB_OAUTH"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        },
+        {
+          "id": "github_app",
+          "name": "GitHub App Token",
+          "prefixes": ["ghs_", "ghu_"],
+          "context_keywords": [
+            "GITHUB_APP_TOKEN",
+            "GITHUB_INSTALLATION_TOKEN"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        },
+        {
+          "id": "github_fine_grained_pat",
+          "name": "Fine-grained Personal Access Token",
+          "prefixes": ["github_pat_"],
+          "context_keywords": [
+            "GITHUB_TOKEN",
+            "GITHUB_PAT"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        }
+      ]
+    },
+
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "credentials": [
+        {
+          "id": "openai_api_key",
+          "name": "OpenAI API Key",
+          "prefixes": ["sk-"],
+          "context_keywords": [
+            "OPENAI_API_KEY",
+            "OPENAI_SECRET_KEY",
+            "CHATGPT_API_KEY"
+          ],
+          "minimum_length": 30,
+          "severity": "critical",
+          "requires_context": true
+        }
+      ]
+    },
+
+    {
+      "id": "aws",
+      "name": "Amazon Web Services",
+      "credentials": [
+        {
+          "id": "aws_access_key_id",
+          "name": "AWS Access Key ID",
+          "prefixes": ["AKIA"],
+          "context_keywords": [
+            "AWS_ACCESS_KEY_ID",
+            "AWS_ACCESS_KEY"
+          ],
+          "minimum_length": 20,
+          "severity": "critical"
+        },
+        {
+          "id": "aws_secret_access_key",
+          "name": "AWS Secret Access Key",
+          "prefixes": [],
+          "context_keywords": [
+            "AWS_SECRET_ACCESS_KEY"
+          ],
+          "minimum_length": 30,
+          "severity": "critical",
+          "requires_context": true
+        }
+      ]
+    },
+
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "credentials": [
+        {
+          "id": "stripe_secret_key",
+          "name": "Stripe Secret Key",
+          "prefixes": ["sk_live_", "rk_live_"],
+          "context_keywords": [
+            "STRIPE_SECRET_KEY",
+            "STRIPE_API_KEY"
+          ],
+          "minimum_length": 20,
+          "severity": "critical"
+        },
+        {
+          "id": "stripe_test_key",
+          "name": "Stripe Test Key",
+          "prefixes": ["sk_test_"],
+          "context_keywords": [
+            "STRIPE_TEST_KEY"
+          ],
+          "minimum_length": 20,
+          "severity": "medium"
+        }
+      ]
+    },
+
+    {
+      "id": "slack",
+      "name": "Slack",
+      "credentials": [
+        {
+          "id": "slack_bot_token",
+          "name": "Slack Bot Token",
+          "prefixes": ["xoxb-"],
+          "context_keywords": [
+            "SLACK_BOT_TOKEN"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        },
+        {
+          "id": "slack_user_token",
+          "name": "Slack User Token",
+          "prefixes": ["xoxp-"],
+          "context_keywords": [
+            "SLACK_USER_TOKEN"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        }
+      ]
+    },
+
+    {
+      "id": "generic",
+      "name": "Generic Credentials",
+      "credentials": [
+        {
+          "id": "jwt",
+          "name": "JSON Web Token",
+          "prefixes": ["eyJ"],
+          "context_keywords": [
+            "JWT",
+            "ACCESS_TOKEN",
+            "AUTH_TOKEN"
+          ],
+          "minimum_length": 30,
+          "severity": "high",
+          "requires_structure": true
+        },
+        {
+          "id": "private_key",
+          "name": "Private Key",
+          "prefixes": [
+            "-----BEGIN PRIVATE KEY-----",
+            "-----BEGIN RSA PRIVATE KEY-----",
+            "-----BEGIN EC PRIVATE KEY-----",
+            "-----BEGIN OPENSSH PRIVATE KEY-----"
+          ],
+          "context_keywords": [
+            "PRIVATE_KEY",
+            "SSH_PRIVATE_KEY"
+          ],
+          "minimum_length": 30,
+          "severity": "critical"
+        },
+        {
+          "id": "database_url",
+          "name": "Database Connection String",
+          "prefixes": [
+            "mongodb://",
+            "mongodb+srv://",
+            "postgres://",
+            "postgresql://",
+            "mysql://",
+            "redis://"
+          ],
+          "context_keywords": [
+            "DATABASE_URL",
+            "MONGO_URI",
+            "DB_CONNECTION",
+            "REDIS_URL"
+          ],
+          "minimum_length": 15,
+          "severity": "critical"
+        }
+      ]
+    }
+  ],
+
+  "context_rules": [
+    {
+      "id": "generic_api_key",
+      "name": "Possible API Key",
+      "keywords": [
+        "API_KEY",
+        "APIKEY",
+        "API_SECRET"
+      ],
+      "severity": "medium"
+    },
+    {
+      "id": "generic_password",
+      "name": "Possible Hardcoded Password",
+      "keywords": [
+        "PASSWORD",
+        "PASSWD",
+        "DB_PASSWORD"
+      ],
+      "severity": "medium"
+    },
+    {
+      "id": "generic_secret",
+      "name": "Possible Secret",
+      "keywords": [
+        "SECRET",
+        "CLIENT_SECRET",
+        "ACCESS_TOKEN",
+        "AUTH_TOKEN"
+      ],
+      "severity": "medium"
+    }
+  ]
+}
