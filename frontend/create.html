@@ -6,6 +6,7 @@
 
   
 <script src="config.js"></script>
+  <script src="/scanner.js"></script>
 <script src="/encryption.js"></script>
 <script src="templates.js"></script>
 
@@ -121,6 +122,131 @@ if(localStorage.getItem("theme")==="dark"){
 <meta name="msvalidate.01" content="0E9393C673E8CAAC7ADCBD5CAB4C3B1E" />
   
   <style>
+    
+.pdb-secret-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(7px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.pdb-secret-modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #15171d;
+    color: #f5f5f5;
+    border: 1px solid #30343e;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.4);
+    font-family: inherit;
+}
+
+.pdb-secret-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.pdb-secret-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    background: rgba(239, 68, 68, 0.13);
+    color: #ff6464;
+    border-radius: 12px;
+    font-size: 22px;
+}
+
+.pdb-secret-heading h2 {
+    margin: 0 0 5px;
+    font-size: 19px;
+}
+
+.pdb-secret-heading p,
+.pdb-secret-item p {
+    color: #9298a5;
+    font-size: 13px;
+    margin: 0;
+}
+
+.pdb-secret-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pdb-secret-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    background: #1e222b;
+    border: 1px solid #30343e;
+    border-radius: 10px;
+}
+
+.pdb-secret-item strong {
+    font-size: 14px;
+}
+
+.pdb-secret-item p {
+    margin-top: 5px;
+}
+
+.pdb-secret-severity {
+    color: #ff8585;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.pdb-secret-privacy {
+    margin-top: 18px;
+    padding: 11px;
+    background: #192b25;
+    color: #86d9ae;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.pdb-secret-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pdb-secret-actions button {
+    flex: 1;
+    min-width: 130px;
+    padding: 12px;
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#pdb-secret-review {
+    background: #303641;
+    color: white;
+}
+
+#pdb-secret-continue {
+    background: #dc4545;
+    color: white;
+}
+
     .privacy-footer {
     margin-top: 18px;
     padding: 16px 18px;
