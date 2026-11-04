@@ -28,9 +28,8 @@ const SCANNER_CONFIG = {
 let identifierDatabase = null;
 
 async function loadKeyIdentifiers() {
-    if (keyIdentifiersCache) {
-        return keyIdentifiersCache;
-    }
+    
+    
 
     const response = await fetch(KEY_IDENTIFIERS_URL, {
         cache: "no-cache"
