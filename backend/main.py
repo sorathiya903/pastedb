@@ -991,7 +991,7 @@ async def create_paste_logic(
             and not paste_data.get("encrypted_pek")    ):
             raise HTTPException(
                 status_code=400,
-                detail="encrypted_pek required for account E2EE pastes"
+                detail="encrypted_pek required for account E2EE pastes. This can also happen if your device doesn't have accountKEK stored."
             )
 
     # PASSWORD HASH
