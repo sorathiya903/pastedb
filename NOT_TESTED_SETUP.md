@@ -1,11 +1,15 @@
 # PasteDB Setup Guide
 
+> ⚠️ **Testing Status: Not Yet Verified**
+>
+> These setup instructions have not been tested on a
+> fresh environment. Some steps may require adjustments.
+> Contributions and feedback are welcome.
+
 This guide explains the initial steps for running your own PasteDB
 instance.
 
-> **Status:** This is an initial self-hosting guide. Some deployment
-> details may need to be updated after testing the setup on a clean
-> server.
+
 
 ## 1. Requirements
 
