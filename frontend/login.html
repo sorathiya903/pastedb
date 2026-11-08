@@ -3,7 +3,7 @@
 
 <head>
 
-</script>
+
    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8NDTL7KT9"></script>
  
   <script src="config.js"></script>
@@ -21,7 +21,7 @@
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
 <script>
 
 if(
@@ -346,7 +346,9 @@ display:flex;
       </svg>
       <span class="row" id="googleBtnText">Continue with Google</span>
     </button>
-
+<button onclick="triggerAuth0Login()" class="google-btn">
+    Continue with Auth0
+</button>
     <div class="divider">or</div>
 
     <div class="footer-text">
@@ -433,6 +435,47 @@ display:flex;
    </div>
 
   <script>
+     let auth0Client;
+
+async function initializeAuth0() {
+    auth0Client = await auth0.createAuth0Client({
+        domain: "YOUR_AUTH0_DOMAIN",
+        clientId: "YOUR_AUTH0_CLIENT_ID",
+        authorizationParams: {
+            redirect_uri: location.origin + "/login.html",
+            scope: "openid profile email"
+        }
+    });
+
+    // Handle return from Auth0
+    if (
+        location.search.includes("code=") &&
+        location.search.includes("state=")
+    ) {
+        try {
+            await auth0Client.handleRedirectCallback();
+
+            const claims = await auth0Client.getIdTokenClaims();
+
+            if (!claims || !claims.__raw) {
+                throw new Error("Could not obtain Auth0 ID token");
+            }
+
+            // Pass token to PasteDB's backend
+            await handleAuth0Credential(claims.__raw);
+
+            history.replaceState({}, document.title, "/login.html");
+
+        } catch (err) {
+            console.error(err);
+            showError(err.message || "Auth0 login failed");
+        }
+    }
+}
+
+async function triggerAuth0Login() {
+    await auth0Client.loginWithRedirect();
+}
      async function checkSession(api) {
     try {
         const res = await fetch(`${api}/auth/me`, {
