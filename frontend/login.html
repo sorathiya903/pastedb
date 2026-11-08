@@ -356,7 +356,56 @@ display:flex;
       By signing in, you agree to our <a href="/terms">Terms</a>
     </div>
   </div>
+<div id="verificationCard" class="login-card" style="display:none;">
 
+    <div class="logo">
+        <div class="logo-icon">✉️</div>
+        <div class="logo-text">
+            <h1>PasteDB</h1>
+            <p>Email verification</p>
+        </div>
+    </div>
+
+    <div class="login-header">
+        <h2>Verify your email</h2>
+        <p>One more step before accessing PasteDB.</p>
+    </div>
+
+    <div style="line-height:1.8;color:var(--muted);font-size:14px;">
+        We've sent a verification link to:
+
+        <p id="verificationEmail"
+           style="color:var(--text);font-weight:600;margin:12px 0;">
+        </p>
+
+        Please follow these steps:
+
+        <ol style="padding-left:20px;margin-top:12px;">
+            <li>Open your email inbox.</li>
+            <li>Find the verification email from PasteDB/Auth0.</li>
+            <li>If you can't find it, check your Spam or Junk folder.</li>
+            <li>Open the email and click <strong>Verify Email Address</strong>.</li>
+            <li>Return here after verification.</li>
+        </ol>
+    </div>
+
+    <button class="google-btn"
+            id="verifiedBtn"
+            onclick="continueAfterVerification()"
+            style="margin-top:25px;">
+        I've verified my email
+    </button>
+
+    <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:16px;">
+        If you haven't verified your email yet, complete that step first.
+    </p>
+
+    <div id="verificationError"
+         class="error-box"
+         style="margin-top:18px;">
+    </div>
+
+</div>
    <div id="kekRequired" style="display:none;" class="login-card">
 
     <div class="logo">
@@ -435,6 +484,47 @@ display:flex;
    </div>
 
   <script>
+     function showVerificationScreen(email) {
+    document.querySelector(".login-card").style.display = "none";
+
+    document.getElementById("verificationCard").style.display = "block";
+
+    document.getElementById("verificationEmail").textContent =
+        email || "your registered email address";
+}
+
+async function continueAfterVerification() {
+    const btn = document.getElementById("verifiedBtn");
+    const error = document.getElementById("verificationError");
+
+    error.style.display = "none";
+    error.classList.remove("show");
+
+    btn.disabled = true;
+    btn.textContent = "Checking verification...";
+
+    try {
+        // Force Auth0 to authenticate again instead of relying
+        // on a previously cached, unverified login.
+        await auth0Client.loginWithRedirect({
+            authorizationParams: {
+                prompt: "login"
+            }
+        });
+
+    } catch (err) {
+        console.error("Verification check error:", err);
+
+        error.textContent =
+            "Could not reconnect to Auth0. Please try again.";
+
+        error.style.display = "block";
+        error.classList.add("show");
+
+        btn.disabled = false;
+        btn.textContent = "I've verified my email";
+    }
+}
 let auth0Client = null;
 let auth0Ready = false;
 
@@ -632,16 +722,23 @@ async function initializeAuth0() {
         ) {
             await auth0Client.handleRedirectCallback();
 
-            const claims = await auth0Client.getIdTokenClaims();
+const claims = await auth0Client.getIdTokenClaims();
 
-            if (!claims?.__raw) {
-                throw new Error("Could not obtain Auth0 ID token");
-            }
+if (!claims?.__raw) {
+    throw new Error("Could not obtain Auth0 ID token");
+}
 
-            await handleAuth0Credential(claims.__raw);
+// Remove Auth0 callback parameters from the URL
+history.replaceState({}, document.title, "/login.html");
 
-            history.replaceState({}, document.title, "/login.html");
-        }
+// Check email verification BEFORE backend login
+if (claims.email_verified !== true) {
+    showVerificationScreen(claims.email);
+    return;
+}
+
+// Email verified: continue with your existing login process
+await handleAuth0Credential(claims.__raw);     }
 
     } catch (err) {
         console.error("Auth0 initialization error:", err);
