@@ -441,8 +441,8 @@ let auth0Ready = false;
 async function initializeAuth0() {
     try {
         auth0Client = await auth0.createAuth0Client({
-            domain: "YOUR_AUTH0_DOMAIN",
-            clientId: "YOUR_AUTH0_CLIENT_ID",
+            domain: "dev-0p2xl7xnadekrbly.us.auth0.com",
+            clientId: "a1AowrU1IH1WfcisiffYb8PidsUukEoT",
             authorizationParams: {
                 redirect_uri: location.origin + "/login.html",
                 scope: "openid profile email"
