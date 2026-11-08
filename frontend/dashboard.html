@@ -2794,26 +2794,48 @@ async function deleteAccount(){
   }
 }
 
-async function logout(){
-  try{
+const AUTH0_DOMAIN = "dev-0p2xl7xnadekrbly.us.auth0.com";
+const AUTH0_CLIENT_ID = "a1AowrU1IH1WfcisiffYb8PidsUukEoT";
 
-    await fetch(
-      `${BACKEND}/logout`,
-      {
-        method: "POST",
-        credentials: "include"
-      }
-    );
-     showToast("Logged Out Successfully!");
+async function logout() {
+    try {
+        const provider = localStorage.getItem("authProvider");
 
-    window.location.href = "/";
+        // First clear the PasteDB session cookie
+        const res = await fetch(`${BACKEND}/logout`, {
+            method: "POST",
+            credentials: "include"
+        });
 
-  }catch(err){
-showToast("Logout Error", "error");
-    alert(err);
-  }
+        if (!res.ok) {
+            throw new Error("Could not clear PasteDB session");
+        }
+
+        localStorage.removeItem("authProvider");
+
+        showToast("Logged out successfully!");
+
+        if (provider === "auth0") {
+            // Also terminate the Auth0 browser session
+            const returnTo = encodeURIComponent(
+                "https://pastedb.netlify.app/"
+            );
+
+            const logoutURL =
+                `https://${AUTH0_DOMAIN}/v2/logout` +
+                `?client_id=${encodeURIComponent(AUTH0_CLIENT_ID)}` +
+                `&returnTo=${returnTo}`;
+
+            window.location.replace(logoutURL);
+        } else {
+            window.location.replace("/");
+        }
+
+    } catch (err) {
+        console.error("Logout error:", err);
+        showToast("Logout failed", "error");
+    }
 }
-
       async function init(){
              const acKEK = await getFromDB("accountKEK");
 
