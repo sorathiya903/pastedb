@@ -438,6 +438,179 @@ display:flex;
 let auth0Client = null;
 let auth0Ready = false;
 
+    
+async function handleAuth0Credential(idToken) {
+    const btn = document.querySelector(
+        'button[onclick="triggerAuth0Login()"]'
+    );
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Signing in...";
+    }
+
+    try {
+        // First authenticate through the selected API
+        let AUTH_API = API_URL;
+
+        let loginRes = await fetch(
+            `${AUTH_API}/auth/auth0`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    token: idToken
+                })
+            }
+        );
+
+        let loginData = await loginRes.json();
+
+        // If direct authentication fails, retry through proxy
+        if (!loginRes.ok || loginData.status !== "success") {
+            AUTH_API = "/api";
+
+            loginRes = await fetch(
+                `${AUTH_API}/auth/auth0`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        token: idToken
+                    })
+                }
+            );
+
+            loginData = await loginRes.json();
+        }
+
+        if (!loginRes.ok || loginData.status !== "success") {
+            throw new Error(
+                loginData.detail || "Auth0 login failed."
+            );
+        }
+
+        // Verify that the selected backend session works
+        const sessionWorks = await checkSession(AUTH_API);
+
+        if (!sessionWorks) {
+            throw new Error("Could not establish a login session.");
+        }
+
+        // Register device
+        const keys = await ensureDeviceKeys();
+
+        const publicKey = await exportPublicKey(
+            keys.publicKey
+        );
+
+        const registerRes = await fetch(
+            `${AUTH_API}/device/register`,
+            {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    device_id: keys.deviceId,
+                    device_name: navigator.userAgent,
+                    public_key: publicKey
+                })
+            }
+        );
+
+        const registerData = await registerRes.json();
+
+        if (!registerRes.ok) {
+            throw new Error(
+                registerData.detail ||
+                "Device registration failed."
+            );
+        }
+
+        // Check whether this device needs its encryption key
+        const localKEK = await getFromDB("accountKEK");
+
+        if (
+            !localKEK &&
+            registerData.status === "already_registered" &&
+            !registerData.approved &&
+            registerData.generate_kek === false
+        ) {
+            document.querySelector(".login-card").style.display = "none";
+            document.getElementById("kekRequired").style.display = "block";
+            return;
+        }
+
+        let accountKEK = localKEK;
+
+        // Generate encryption key for first device
+        if (!accountKEK && registerData.generate_kek) {
+            accountKEK = await generatePEK();
+
+            await saveToDB("accountKEK", accountKEK);
+
+            const rawKEK = await crypto.subtle.exportKey(
+                "raw",
+                accountKEK
+            );
+
+            const encryptedKEK = await encryptPEKWithPublicKey(
+                rawKEK,
+                keys.publicKey
+            );
+
+            const updateRes = await fetch(
+                `${AUTH_API}/device/register`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        device_id: keys.deviceId,
+                        device_name: navigator.userAgent,
+                        public_key: publicKey,
+                        encrypted_kek: encryptedKEK
+                    })
+                }
+            );
+
+            if (!updateRes.ok) {
+                throw new Error("Failed to save encryption key.");
+            }
+        }
+
+        // Redirect
+        const redirect = new URLSearchParams(
+            location.search
+        ).get("redirect");
+
+        location.href = redirect || "/dashboard";
+
+    } catch (err) {
+        console.error("Auth0 login error:", err);
+
+        showError(
+            err.message || "Could not connect to server."
+        );
+
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Continue with Auth0";
+        }
+    }
+}
+ 
+
 async function initializeAuth0() {
     try {
         auth0Client = await auth0.createAuth0Client({
