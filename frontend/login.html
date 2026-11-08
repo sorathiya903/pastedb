@@ -435,45 +435,52 @@ display:flex;
    </div>
 
   <script>
-     let auth0Client;
+let auth0Client = null;
+let auth0Ready = false;
 
 async function initializeAuth0() {
-    auth0Client = await auth0.createAuth0Client({
-        domain: "YOUR_AUTH0_DOMAIN",
-        clientId: "YOUR_AUTH0_CLIENT_ID",
-        authorizationParams: {
-            redirect_uri: location.origin + "/login.html",
-            scope: "openid profile email"
-        }
-    });
+    try {
+        auth0Client = await auth0.createAuth0Client({
+            domain: "YOUR_AUTH0_DOMAIN",
+            clientId: "YOUR_AUTH0_CLIENT_ID",
+            authorizationParams: {
+                redirect_uri: location.origin + "/login.html",
+                scope: "openid profile email"
+            }
+        });
 
-    // Handle return from Auth0
-    if (
-        location.search.includes("code=") &&
-        location.search.includes("state=")
-    ) {
-        try {
+        auth0Ready = true;
+
+        // Handle Auth0 redirect
+        if (
+            new URLSearchParams(location.search).has("code") &&
+            new URLSearchParams(location.search).has("state")
+        ) {
             await auth0Client.handleRedirectCallback();
 
             const claims = await auth0Client.getIdTokenClaims();
 
-            if (!claims || !claims.__raw) {
+            if (!claims?.__raw) {
                 throw new Error("Could not obtain Auth0 ID token");
             }
 
-            // Pass token to PasteDB's backend
             await handleAuth0Credential(claims.__raw);
 
             history.replaceState({}, document.title, "/login.html");
-
-        } catch (err) {
-            console.error(err);
-            showError(err.message || "Auth0 login failed");
         }
+
+    } catch (err) {
+        console.error("Auth0 initialization error:", err);
+        showError(err.message || "Auth0 initialization failed");
     }
 }
 
 async function triggerAuth0Login() {
+    if (!auth0Ready || !auth0Client) {
+        showError("Auth0 is still initializing. Please try again.");
+        return;
+    }
+
     await auth0Client.loginWithRedirect();
 }
      async function checkSession(api) {
@@ -731,6 +738,7 @@ if (
 }
 
    }
+     initializeAuth0();
   </script>
 </body>
   </html>
