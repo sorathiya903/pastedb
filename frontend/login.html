@@ -579,12 +579,24 @@ async function handleAuth0Credential(idToken) {
 
             loginData = await loginRes.json();
         }
+if (!loginRes.ok || loginData.status !== "success") {
 
-        if (!loginRes.ok || loginData.status !== "success") {
-            throw new Error(
-                loginData.detail || "Auth0 login failed."
-            );
-        }
+    if (
+        loginRes.status === 403 &&
+        String(loginData.detail || "")
+            .toLowerCase()
+            .includes("verify")
+    ) {
+        const claims = await auth0Client.getIdTokenClaims();
+        showVerificationScreen(claims?.email);
+        return;
+    }
+
+    throw new Error(
+        loginData.detail || "Auth0 login failed."
+    );
+}
+        
 
         // Verify that the selected backend session works
         const sessionWorks = await checkSession(AUTH_API);
