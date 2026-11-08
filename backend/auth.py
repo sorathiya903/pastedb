@@ -9,6 +9,11 @@ from datetime import datetime, timedelta, timezone
 import os
 
 from pymongo import MongoClient
+import httpx
+from jose import jwk
+
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
+AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")
 
 router = APIRouter()
 
@@ -25,7 +30,9 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 
-
+class Auth0Login(BaseModel):
+    token: str
+    
 class GoogleLogin(BaseModel):
     token: str
 
@@ -39,6 +46,116 @@ class CreateTransfer(BaseModel):
 
 class CompleteTransfer(BaseModel):
     transfer_id: str
+
+@router.post("/auth/auth0")
+async def auth0_auth(data: Auth0Login, response: Response):
+
+    if not AUTH0_DOMAIN or not AUTH0_CLIENT_ID:
+        raise HTTPException(500, "Auth0 not configured")
+
+    issuer = f"https://{AUTH0_DOMAIN}/"
+    jwks_url = f"{issuer}.well-known/jwks.json"
+
+    try:
+        # Read token header to identify signing key
+        header = jwt.get_unverified_header(data.token)
+
+        if header.get("alg") != "RS256":
+            raise HTTPException(401, "Invalid token algorithm")
+
+        # Retrieve Auth0 public signing keys
+        async with httpx.AsyncClient(timeout=10) as client:
+            result = await client.get(jwks_url)
+            result.raise_for_status()
+            jwks = result.json()
+
+        signing_key = next(
+            (
+                key for key in jwks["keys"]
+                if key["kid"] == header.get("kid")
+            ),
+            None
+        )
+
+        if not signing_key:
+            raise HTTPException(401, "Invalid signing key")
+
+        public_key = jwk.construct(signing_key).to_pem().decode("utf-8")
+
+        # Verify signature, audience, issuer and expiry
+        user_data = jwt.decode(
+            data.token,
+            public_key,
+            algorithms=["RS256"],
+            audience=AUTH0_CLIENT_ID,
+            issuer=issuer
+        )
+
+        email = user_data.get("email")
+        name = user_data.get("name") or email
+        picture = user_data.get("picture")
+        auth0_sub = user_data.get("sub")
+
+        if not email or not auth0_sub:
+            raise HTTPException(401, "Missing account information")
+
+        if user_data.get("email_verified") is not True:
+            raise HTTPException(403, "Please verify your email first")
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        raise HTTPException(401, "Invalid Auth0 token")
+
+    email_key = email.replace(".", "_")
+
+    # Find or create the existing PasteDB user
+    users_collection.update_one(
+        {"email_key": email_key},
+        {
+            "$set": {
+                "email": email,
+                "name": name,
+                "picture": picture,
+                "auth0_sub": auth0_sub
+            },
+            "$setOnInsert": {
+                "pastes": [],
+                "created_at": datetime.now(timezone.utc)
+            }
+        },
+        upsert=True
+    )
+
+    # Generate the SAME PasteDB JWT
+    payload = {
+        "email": email,
+        "email_key": email_key,
+        "name": name,
+        "picture": picture,
+        "exp": datetime.now(timezone.utc) + timedelta(days=7)
+    }
+
+    token = jwt.encode(
+        payload,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+    # Set the SAME PasteDB session cookie
+    response.set_cookie(
+        key="session",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=60 * 60 * 24 * 7
+    )
+
+    return {
+        "status": "success"
+    }
 # ---------------- GOOGLE LOGIN ----------------
 @router.post("/auth/google")
 async def google_auth(data: GoogleLogin, response: Response):
