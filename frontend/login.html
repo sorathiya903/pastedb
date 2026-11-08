@@ -593,6 +593,7 @@ async function handleAuth0Credential(idToken) {
         const redirect = new URLSearchParams(
             location.search
         ).get("redirect");
+      localStorage.setItem("authProvider", "auth0"); 
 
         location.href = redirect || "/dashboard";
 
@@ -890,6 +891,8 @@ if (
             new URLSearchParams(
                 location.search
             ).get("redirect");
+
+      localStorage.setItem("authProvider", "google"); 
 
         window.location.href =
             redirect ||
