@@ -1172,35 +1172,28 @@ async def user_dash(user=Depends(get_current_user)):
     }
 
 
-
-
 @app.get("/p/{paste_id}")
 async def get_paste(
     paste_id: str,
     request: Request
 ):
-
     try:
-
         paste = None
 
         # SEARCH BY OBJECT ID
         if ObjectId.is_valid(paste_id):
-
             paste = pastes_collection.find_one({
                 "_id": ObjectId(paste_id)
             })
 
         # SEARCH BY CUSTOM ID
         if not paste:
-
             paste = pastes_collection.find_one({
                 "custom_id": paste_id
             })
 
         # NOT FOUND
         if not paste:
-
             raise HTTPException(
                 status_code=404,
                 detail="Paste not found"
@@ -1212,7 +1205,6 @@ async def get_paste(
             token = request.cookies.get("session")
 
             if not token:
-
                 raise HTTPException(
                     status_code=404,
                     detail="Paste not found"
@@ -1221,83 +1213,95 @@ async def get_paste(
             payload = decode_token(token)
 
             if not payload:
-
                 raise HTTPException(
                     status_code=401,
                     detail="Invalid token"
                 )
 
             current_email_key = (
-                payload["email"]
-                .replace(".", "_")
+                payload["email"].replace(".", "_")
             )
 
-            if (
-                current_email_key !=
-                paste.get("user_email_key")
-            ):
-
+            if current_email_key != paste.get("user_email_key"):
                 raise HTTPException(
                     status_code=404,
                     detail="Paste not found"
                 )
 
-        # ANALYTICS UPDATE
-        now = datetime.now(
-            timezone.utc
-        ).timestamp()
+        # CHECK PASSWORD
+        has_password = bool(paste.get("password"))
 
-        visitor_data = {
+        # ANALYTICS
+        # Protected pastes are counted after successful verification.
+        if not has_password:
 
-            "ip": request.client.host,
+            now = datetime.now(
+                timezone.utc
+            ).timestamp()
 
-            "timestamp": now,
-
-            "user_agent": request.headers.get(
-                "user-agent",
-                "Unknown"
-            )
-        }
-
-        pastes_collection.update_one(
-
-            {"_id": paste["_id"]},
-
-            {
-                "$inc": {
-                    "analytics.views": 1
-                },
-
-                "$push": {
-                    "analytics.visitors":
-                        visitor_data
-                },
-
-                "$set": {
-                    "analytics.last_viewed":
-                        now
-                }
+            visitor_data = {
+                "ip": request.client.host if request.client else "Unknown",
+                "timestamp": now,
+                "user_agent": request.headers.get(
+                    "user-agent",
+                    "Unknown"
+                )
             }
-        )
 
-        # SAFE SERIALIZATION
-        paste["_id"] = str(
-            paste["_id"]
-        )
+            pastes_collection.update_one(
+                {"_id": paste["_id"]},
+                {
+                    "$inc": {
+                        "analytics.views": 1
+                    },
+                    "$push": {
+                        "analytics.visitors": visitor_data
+                    },
+                    "$set": {
+                        "analytics.last_viewed": now
+                    }
+                }
+            )
+
+        # SERIALIZATION
+        mongo_id = paste["_id"]
+        paste["_id"] = str(mongo_id)
+
+        # REMOVE PASSWORD HASH
         paste.pop("password", None)
-        
-        if paste.get("burn_after_read"):
-            pastes_collection.delete_one({"_id": paste["_id"] })
-            users_collection.update_one( {      "email_key": paste["user_email_key"]  },   {  "$pull": {  "pastes": str(paste["_id"])      }   }        )
+
+        # SEND PASSWORD STATUS
+        paste["password"] = has_password
+
+        # HIDE CONTENT IF PASSWORD PROTECTED
+        if has_password:
+            paste["content"] = None
+
+        # BURN AFTER READ
+        # Only unprotected pastes are deleted here.
+        if paste.get("burn_after_read") and not has_password:
+
+            pastes_collection.delete_one({
+                "_id": mongo_id
+            })
+
+            users_collection.update_one(
+                {
+                    "email_key": paste.get("user_email_key")
+                },
+                {
+                    "$pull": {
+                        "pastes": str(mongo_id)
+                    }
+                }
+            )
 
         return paste
 
     except HTTPException:
-
         raise
 
-    except Exception as e:
-
+    except Exception:
         print("GET PASTE ERROR:")
         print(traceback.format_exc())
 
@@ -1750,44 +1754,166 @@ async def check_custom_id(id: str):
         "available": existing is None
     }
 
-@app.post("/p/{custom_id}/verify-password")
-def verify_custom_password(
+@@app.post("/p/{custom_id}/verify-password")
+async def verify_custom_password(
     custom_id: str,
-    body: PasswordCheck
+    body: PasswordCheck,
+    request: Request
 ):
+    try:
 
-    paste = pastes_collection.find_one({
-        "custom_id": custom_id
-    })
+        # SEARCH BY CUSTOM ID
+        paste = pastes_collection.find_one({
+            "custom_id": custom_id
+        })
 
-    if not paste:
-        raise HTTPException(404, "Paste not found")
+        # OBJECT ID FALLBACK
+        if not paste and ObjectId.is_valid(custom_id):
+            paste = pastes_collection.find_one({
+                "_id": ObjectId(custom_id)
+            })
 
-    stored_password = paste.get("password")
+        if not paste:
+            raise HTTPException(
+                status_code=404,
+                detail="Paste not found"
+            )
 
-    # no password
-    if not stored_password:
-        return {"access": True}
+        # PRIVATE CHECK
+        if paste.get("visibility") == "private":
 
-    # correct password
-    if verify_password(
-        body.password,
-        stored_password
-    ):
-        return {"access": True}
+            token = request.cookies.get("session")
 
-    # WRONG PASSWORD
-    pastes_collection.update_one(
-        {"_id": paste["_id"]},
-        {
-            "$inc": {
-                "analytics.failed_passwords": 1
-            }
+            if not token:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Paste not found"
+                )
+
+            payload = decode_token(token)
+
+            if not payload:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid token"
+                )
+
+            current_email_key = (
+                payload["email"].replace(".", "_")
+            )
+
+            if current_email_key != paste.get("user_email_key"):
+                raise HTTPException(
+                    status_code=404,
+                    detail="Paste not found"
+                )
+
+        stored_password = paste.get("password")
+
+        # NO PASSWORD
+        if not stored_password:
+            raise HTTPException(
+                status_code=400,
+                detail="Paste does not require a password"
+            )
+
+        # VERIFY PASSWORD
+        if not verify_password(
+            body.password,
+            stored_password
+        ):
+
+            pastes_collection.update_one(
+                {"_id": paste["_id"]},
+                {
+                    "$inc": {
+                        "analytics.failed_passwords": 1
+                    }
+                }
+            )
+
+            raise HTTPException(
+                status_code=401,
+                detail="Incorrect password"
+            )
+
+        # ANALYTICS
+        now = datetime.now(
+            timezone.utc
+        ).timestamp()
+
+        visitor_data = {
+            "ip": request.client.host if request.client else "Unknown",
+            "timestamp": now,
+            "user_agent": request.headers.get(
+                "user-agent",
+                "Unknown"
+            )
         }
-    )
 
-    return {"access": False}
-    
+        pastes_collection.update_one(
+            {"_id": paste["_id"]},
+            {
+                "$inc": {
+                    "analytics.views": 1
+                },
+                "$push": {
+                    "analytics.visitors": visitor_data
+                },
+                "$set": {
+                    "analytics.last_viewed": now
+                }
+            }
+        )
+
+        # PREPARE RESPONSE
+        mongo_id = paste["_id"]
+
+        paste["_id"] = str(mongo_id)
+
+        # NEVER SEND PASSWORD HASH
+        paste.pop("password", None)
+
+        # INDICATE THAT PASSWORD WAS VERIFIED
+        paste["password"] = True
+
+        # BURN AFTER READ
+        if paste.get("burn_after_read"):
+
+            pastes_collection.delete_one({
+                "_id": mongo_id
+            })
+
+            users_collection.update_one(
+                {
+                    "email_key": paste.get("user_email_key")
+                },
+                {
+                    "$pull": {
+                        "pastes": str(mongo_id)
+                    }
+                }
+            )
+
+        # RETURN COMPLETE PASTE
+        return {
+            "access": True,
+            "paste": paste
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        print("VERIFY PASSWORD ERROR:")
+        print(traceback.format_exc())
+
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error"
+        )
+
+
 @app.post("/paste/{paste_id}/save-version")
 def save_version(
     paste_id: str,
