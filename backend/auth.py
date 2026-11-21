@@ -509,7 +509,7 @@ async def get_paste(
 
         # HIDE CONTENT IF PASSWORD PROTECTED
         if has_password:
-            paste["content"] = None
+            paste= {"password":true}
 
         # BURN AFTER READ
         # Only unprotected pastes are deleted here.
