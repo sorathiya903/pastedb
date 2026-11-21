@@ -406,7 +406,7 @@ async def delete_account(
 
     return response
 
-@app.get("/p/{paste_id}")
+@router.get("/p/{paste_id}")
 async def get_paste(
     paste_id: str,
     request: Request
