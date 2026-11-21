@@ -1754,7 +1754,7 @@ async def check_custom_id(id: str):
         "available": existing is None
     }
 
-@@app.post("/p/{custom_id}/verify-password")
+@app.post("/p/{custom_id}/verify-password")
 async def verify_custom_password(
     custom_id: str,
     body: PasswordCheck,
