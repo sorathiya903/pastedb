@@ -2492,10 +2492,19 @@ const pasteId = getPasteId();
    const params = new URLSearchParams(window.location.search);
 const version = params.get("version");
 
-async function loadPaste() {
+async function loadPaste(unlockedPaste = null) {
 
+try {
 
-try{
+    let data;
+
+    // IF CONTENT WAS ALREADY RETURNED BY VERIFY ROUTE
+    if (unlockedPaste) {
+
+        data = unlockedPaste;
+
+    } else {
+
         let url;
 
         if (version) {
@@ -2508,27 +2517,30 @@ try{
             credentials: "include"
         });
 
+        // INVALID ID
+        if (!response.ok) {
 
+            heroSection.style.display = "none";
+            codeWrapper.style.display = "none";
+            errorState.style.display = "block";
 
-      // INVALID ID
+            return;
+        }
 
-      if(!response.ok){
+        data = await response.json();
+    }
 
-        heroSection.style.display = "none"
+    // CHECK PASSWORD BEFORE DECRYPTION
+    if (data.password && !unlockedPaste) {
 
-        codeWrapper.style.display = "none"
+        window._pasteData = data;
 
-        errorState.style.display = "block"
+        document.getElementById(
+            "passwordModal"
+        ).style.display = "flex";
 
-        return
-
-      }
-
-
-
-      const data =
-        await response.json()
-
+        return;
+    }
 
     if (data.e2ee) {
       try {
@@ -2583,13 +2595,7 @@ try {
 
     }
 
-  
 
-if (data.password && !isUnlocked) {
-  window._pasteData = data;
-  document.getElementById("passwordModal").style.display = "flex";
-  return;
-}
       console.log(data);
 console.log("images:", data.images);
       if (data.images && data.images.length > 0) {
@@ -3151,60 +3157,93 @@ document
 
   }
 
- async function verifyPassword(){
+ async function verifyPassword() {
 
-  const password =
-    document.getElementById("pastePassword").value;
+    const password =
+        document.getElementById("pastePassword").value;
 
-  const loadingText =
-    document.getElementById("loadingText");
+    const loadingText =
+        document.getElementById("loadingText");
 
-  const errorText =
-    document.getElementById("passError");
+    const errorText =
+        document.getElementById("passError");
 
-  // RESET UI
-  errorText.textContent = "";
-  loadingText.style.display = "block";
+    errorText.textContent = "";
 
-  try {
-
-    const res = await fetch(
-      `${API_URL}/p/${pasteId}/verify-password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ password })
-      }
-    );
-
-    const data = await res.json();
-
-    if(data.access){
-
-      isUnlocked = true;
-
-      document.getElementById("passwordModal").style.display = "none";
-
-      loadPaste();
-
-    } else {
-
-      errorText.textContent = "Wrong password";
-
+    if (!password) {
+        errorText.textContent = "Please enter a password";
+        return;
     }
 
-  } catch (err) {
+    loadingText.style.display = "block";
 
-    errorText.textContent = "Server error. Try again."+err;
+    try {
 
-  } finally {
+        const res = await fetch(
+            `${API_URL}/p/${pasteId}/verify-password`,
+            {
+                method: "POST",
 
-    loadingText.style.display = "none";
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-  }
-  }
+                credentials: "include",
+
+                body: JSON.stringify({
+                    password: password
+                })
+            }
+        );
+
+        const data = await res.json();
+
+        // WRONG PASSWORD OR OTHER ERROR
+        if (!res.ok || !data.access) {
+
+            errorText.textContent =
+                data.detail || "Incorrect password";
+
+            return;
+        }
+
+        // VERIFY ROUTE MUST RETURN THE PASTE
+        if (!data.paste || data.paste.content === null) {
+
+            errorText.textContent =
+                "Paste content was not returned by the server";
+
+            return;
+        }
+
+        // UNLOCK
+        isUnlocked = true;
+
+        document.getElementById(
+            "passwordModal"
+        ).style.display = "none";
+
+        document.getElementById(
+            "pastePassword"
+        ).value = "";
+
+        // USE THE DATA ALREADY RETURNED BY VERIFY ROUTE
+        // DO NOT MAKE ANOTHER GET REQUEST
+        await loadPaste(data.paste);
+
+    } catch (err) {
+
+        console.error(err);
+
+        errorText.textContent =
+            "Server error. Please try again.";
+
+    } finally {
+
+        loadingText.style.display = "none";
+
+    }
+}
 </script>
 <!-- Elegant Full Width Footer -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
