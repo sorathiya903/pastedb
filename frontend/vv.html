@@ -267,7 +267,13 @@ list.innerHTML = data.versions.map(v => {
                 <div class="time-label">${date}</div>
                 <div class="top">
                     <div class="version">v${v.version === 0 ? 1 : v.version}</div>
-                    ${v.current ? '<span class="badge">Current</span>' : ''}
+                  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    ${v.current ? '<span class="badge">Current</span>' : ''}
+
+    ${isBurnAfterRead
+        ? '<span class="burn-badge">🔥 Burn After Read</span>'
+        : ''}
+</div>
                 </div>
                 <div class="actions">
                     <button class="btn" onclick="viewVersion(${v.version}, ${v.current})">
