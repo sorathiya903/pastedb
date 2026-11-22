@@ -246,8 +246,7 @@ async function loadVersions(){
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        const isBurnAfterRead = data.burn_after_read === true;
-
+        isBurnAfterRead = data.burn_after_read === true;
 if (isBurnAfterRead) {
     document.getElementById("burnBadge").style.display = "inline-flex";
     document.getElementById("burnWarning").style.display = "block";
