@@ -159,13 +159,14 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
  
 </header>
 
-<div class="timeline" id="versionsList">
-  <div class="burn-warning" id="burnWarning">
+<div class="burn-warning" id="burnWarning">
     <strong>🔥 Burn After Read is enabled</strong>
     This paste will be permanently deleted after it is viewed.
     Viewing any version will delete the entire paste, including
     all other versions and its version history.
-</div>  <!-- SHIMMER SKELETONS -->
+</div>
+
+<div class="timeline" id="versionsList">  <!-- SHIMMER SKELETONS -->
     <div class="version-card skeleton-card">
         <div class="time-label shimmer"></div>
         <div class="top"><div class="version shimmer"></div></div>
@@ -247,13 +248,11 @@ async function loadVersions(){
         const data = await res.json();
 
         isBurnAfterRead = data.burn_after_read === true;
-if (isBurnAfterRead) {
-    document.getElementById("burnBadge").style.display = "inline-flex";
-    document.getElementById("burnWarning").style.display = "block";
-}
-        
-        count.textContent = `${data.total_versions} versions`;
 
+document.getElementById("burnWarning").style.display =
+    isBurnAfterRead ? "block" : "none";
+
+count.textContent = `${data.total_versions} versions`;
         if(data.versions.length === 0){
             list.innerHTML = `<div class="error">No versions found</div>`;
             return;
