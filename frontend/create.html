@@ -3372,32 +3372,35 @@ updateLines();
     }
 
 // EDIT PASTE
+async function editPaste(editId, pasteData) {
+  const content = document.getElementById("code").value;
+  const allowed = await checkSecrets(content);
+  if (!allowed) return;
 
-async function editPaste(editId, pasteData){
-const content = document.getElementById("code").value;
+  const requestOptions = {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(pasteData)
+  };
 
-    const allowed = await checkSecrets(content);
+  let response = await fetch(`${API_URL}/paste/${editId}`, requestOptions);
 
-    if (!allowed) return;
-  const response = await fetch(
-    `${API_URL}/paste/${editId}`,
-    {
-      method: "PUT",
-      credentials: "include",
+  // If the primary request fails with 401 Unauthenticated, try the fallback URL
+  if (response.status === 401) {
+    response = await fetch(`https://pastedb.netlify.app/api/edit`, requestOptions);
+  }
 
-      headers: {
-        "Content-Type": "application/json"
-      },
-
-      body: JSON.stringify(pasteData)
-    }
-  )
-
-  return response
+  return response;
 }
+
 if (editId) {
   document.getElementById("idStatus").style.display = "none";
 }
+
+
     // CREATE PASTE
 
 async function createPaste(pasteData){
