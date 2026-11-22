@@ -111,6 +111,40 @@ header p{color:var(--muted);margin-top:4px;font-size:13px}
 .version-card::before{left:-26px}
 header{flex-direction:column;align-items:flex-start;gap:12px}
 }
+
+    .burn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #3a1c0b;
+    color: #ffad66;
+    border: 1px solid #75401d;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.burn-warning {
+    display: none;
+    background: #24160d;
+    border: 1px solid #75401d;
+    color: #ffd2ad;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    font-size: 13px;
+}
+
+.burn-warning strong {
+    display: block;
+    color: #ffad66;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
 </style>
 </head>
 <body>
@@ -126,7 +160,12 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
 </header>
 
 <div class="timeline" id="versionsList">
-    <!-- SHIMMER SKELETONS -->
+  <div class="burn-warning" id="burnWarning">
+    <strong>🔥 Burn After Read is enabled</strong>
+    This paste will be permanently deleted after it is viewed.
+    Viewing any version will delete the entire paste, including
+    all other versions and its version history.
+</div>  <!-- SHIMMER SKELETONS -->
     <div class="version-card skeleton-card">
         <div class="time-label shimmer"></div>
         <div class="top"><div class="version shimmer"></div></div>
@@ -147,6 +186,7 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
 </div>
 
 <script>
+    let isBurnAfterRead = false;
     function formatVersionDate(value) {
     if (!value) return "Unknown date";
 
@@ -205,6 +245,13 @@ async function loadVersions(){
 
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+
+        const isBurnAfterRead = data.burn_after_read === true;
+
+if (isBurnAfterRead) {
+    document.getElementById("burnBadge").style.display = "inline-flex";
+    document.getElementById("burnWarning").style.display = "block";
+}
         
         count.textContent = `${data.total_versions} versions`;
 
@@ -239,18 +286,29 @@ list.innerHTML = data.versions.map(v => {
     }
 }
 
-function viewVersion(version, current){
+function viewVersion(version, current) {
 
-    if(current){
+    if (isBurnAfterRead) {
+        const confirmed = confirm(
+            "🔥 Burn After Read Warning\n\n" +
+            "This paste is set to Burn After Read.\n\n" +
+            "Viewing this version will permanently delete the ENTIRE paste, " +
+            "including all other versions and its version history.\n\n" +
+            "This action cannot be undone.\n\n" +
+            "Do you want to continue?"
+        );
+
+        if (!confirmed) return;
+    }
+
+    if (current) {
         window.location.href = `/paste/${paste_id}`;
         return;
     }
 
     window.location.href =
         `/paste/${paste_id}?version=${version}`;
-                                      }
-
-loadVersions();
+}
 </script>
 
 </body>
