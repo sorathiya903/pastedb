@@ -247,8 +247,6 @@ async function loadVersions(){
         const data = await res.json();
 
         
-document.getElementById("burnWarning").style.display =
-    isBurnAfterRead ? "block" : "none";
 
 count.textContent = `${data.total_versions} versions`;
         if(data.versions.length === 0){
@@ -296,12 +294,12 @@ list.innerHTML = data.versions.map(v => {
     }
 }
 
-function viewVersion(version, current) {
+function viewVersion(version, current, burnAfterRead) {
 
-    if (isBurnAfterRead) {
+    if (burnAfterRead === true) {
         const confirmed = confirm(
             "🔥 Burn After Read Warning\n\n" +
-            "This paste is set to Burn After Read.\n\n" +
+            "This version is set to Burn After Read.\n\n" +
             "Viewing this version will permanently delete the ENTIRE paste, " +
             "including all other versions and its version history.\n\n" +
             "This action cannot be undone.\n\n" +
@@ -319,7 +317,6 @@ function viewVersion(version, current) {
     window.location.href =
         `/paste/${paste_id}?version=${version}`;
 }
-
     loadVersions();
 </script>
 
