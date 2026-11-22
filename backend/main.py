@@ -1287,7 +1287,8 @@ def get_versions(
     versions.insert(0,{
     "version": current,
     "created_at": paste.get("updated_at"),
-    "current": True
+    "current": True,
+    "burn_after_read":paste.get("burn_after_read")
       })
 
     
