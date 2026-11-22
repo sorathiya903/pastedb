@@ -579,13 +579,6 @@ async def copy_paste(paste_id: str):
 
 
 
-
-
-
-
-
-
-
 receivers = {}
 
 MAX_RECEIVERS = 5
@@ -1294,8 +1287,8 @@ def get_versions(
     
 
     for v in versions:
+        v["burn_after_read"] = bool(v.get("burn_after_read", False))
         v["current"] = (v["version"] == current)
-
     return {
         "current_version": current,
         "total_versions": len(versions),
