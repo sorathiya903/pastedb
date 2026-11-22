@@ -187,7 +187,6 @@ header{flex-direction:column;align-items:flex-start;gap:12px}
 </div>
 
 <script>
-    let isBurnAfterRead = false;
     function formatVersionDate(value) {
     if (!value) return "Unknown date";
 
@@ -247,9 +246,7 @@ async function loadVersions(){
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        isBurnAfterRead = data.versions.some(
-    v => v.burn_after_read === true
-);
+        
 document.getElementById("burnWarning").style.display =
     isBurnAfterRead ? "block" : "none";
 
@@ -266,17 +263,25 @@ list.innerHTML = data.versions.map(v => {
                 <div class="time-label">${date}</div>
                 <div class="top">
                     <div class="version">v${v.version === 0 ? 1 : v.version}</div>
-                  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  
+ <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
     ${v.current ? '<span class="badge">Current</span>' : ''}
 
-    ${isBurnAfterRead
+    ${v.burn_after_read === true
         ? '<span class="burn-badge">🔥 Burn After Read</span>'
         : ''}
 </div>
+
                 </div>
                 <div class="actions">
-                    <button class="btn" onclick="viewVersion(${v.version}, ${v.current})">
+                 <button class="btn"
+    onclick="viewVersion(
+        ${v.version},
+        ${v.current},
+        ${v.burn_after_read === true}
+    )">
     View
+</button>
 </button>
 
                 </div>
