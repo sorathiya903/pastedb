@@ -247,8 +247,9 @@ async function loadVersions(){
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        isBurnAfterRead = data.burn_after_read === true;
-
+        isBurnAfterRead = data.versions.some(
+    v => v.burn_after_read === true
+);
 document.getElementById("burnWarning").style.display =
     isBurnAfterRead ? "block" : "none";
 
