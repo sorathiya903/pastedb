@@ -1,7 +1,7 @@
 const API_URL = "https://pastedb.netlify.app/api"
 const WS_URL = "wss://pastedb-rw62.onrender.com"
 
-const debug=true
+const debug=false
 
 
 
