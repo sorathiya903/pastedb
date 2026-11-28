@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="PasteDB is an open-source paste-sharing platform for code, notes, text and images, with end-to-end encrypted pastes, APIs, SDKs, a CLI and a VS Code extension.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://pastedb.netlify.app/open-source-pastebin">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>PasteDB — Open-Source Pastebin for Developers</title>
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PasteDB — Open-Source Pastebin for Developers">
+  <meta property="og:description" content="Share code, notes, text and images. Explore PasteDB's encrypted pastes, developer API, SDKs, CLI and VS Code extension.">
+  <meta property="og:url" content="https://pastedb.netlify.app/open-source-pastebin">
+  <meta property="og:site_name" content="PasteDB">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PasteDB — Open-Source Pastebin for Developers">
+  <meta name="twitter:description" content="An open-source paste-sharing platform with tools for developer workflows.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PasteDB",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "description": "An open-source paste-sharing platform for code, notes, text and images, with end-to-end encrypted pastes, developer API access, Python and Node.js SDKs, a CLI and a Visual Studio Code extension.",
+    "url": "https://pastedb.netlify.app",
+    "codeRepository": "https://github.com/sorathiya903/pastedb",
+    "license": "https://opensource.org/license/mit",
+    "author": {
+      "@type": "Person",
+      "name": "Aditya Sorathiya"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080808;
+      --surface: #101010;
+      --surface-2: #151515;
+      --text: #f4f4f4;
+      --muted: #a1a1a1;
+      --quiet: #737373;
+      --line: #292929;
+      --line-strong: #3b3b3b;
+      --white: #fff;
+      --content: 1120px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Manrope", system-ui, sans-serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--white);
+      outline-offset: 4px;
+    }
+    .wrap { width: min(var(--content), calc(100% - 48px)); margin-inline: auto; }
+    .mono { font-family: "DM Mono", monospace; }
+    .muted { color: var(--muted); }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      color: #c5c5c5; font: 12px "DM Mono", monospace;
+      letter-spacing: .12em; text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: #777; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: rgb(8 8 8 / 88%); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgb(255 255 255 / 8%);
+    }
+    .nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 800; letter-spacing: -.04em; font-size: 19px; }
+    .brand img { width: 30px; height: 30px; object-fit: contain; }
+    .nav-links { display: flex; align-items: center; gap: 26px; color: #b7b7b7; font-size: 12px; font-weight: 600; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: white; }
+    .nav-cta, .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      border: 1px solid var(--line-strong); border-radius: 7px;
+      padding: 10px 15px; font-size: 12px; font-weight: 700;
+      transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .nav-cta:hover, .button.secondary:hover { border-color: #777; background: #171717; }
+    .button.primary { color: #080808; background: #f4f4f4; border-color: #f4f4f4; }
+    .button.primary:hover { background: #dcdcdc; transform: translateY(-2px); }
+    .button.secondary { color: #eee; background: transparent; }
+
+    .hero { padding: 112px 0 92px; border-bottom: 1px solid var(--line); overflow: hidden; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr); align-items: end; gap: 70px; }
+    h1 { max-width: 780px; margin: 23px 0 24px; font-size: clamp(44px, 7vw, 82px); line-height: .99; letter-spacing: -.075em; font-weight: 700; }
+    h1 span { color: #858585; }
+    .hero-copy { max-width: 660px; color: #b5b5b5; font-size: 16px; line-height: 1.85; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 30px; }
+    .hero-aside {
+      border-left: 1px solid var(--line); padding: 8px 0 8px 26px;
+      color: var(--muted); font-size: 13px;
+    }
+    .hero-aside strong { display: block; margin-bottom: 9px; color: #eee; font-size: 14px; }
+    .hero-aside .mono { color: #858585; font-size: 11px; }
+
+    .trustline { border-bottom: 1px solid var(--line); }
+    .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .trust-item { padding: 23px 20px; border-right: 1px solid var(--line); }
+    .trust-item:first-child { padding-left: 0; }
+    .trust-item:last-child { border-right: 0; }
+    .trust-item strong { display: block; font-size: 13px; font-weight: 700; }
+    .trust-item span { color: var(--quiet); font: 10px "DM Mono", monospace; letter-spacing: .04em; }
+
+    section.content-section { padding: 100px 0; border-bottom: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: .7fr 1.3fr; gap: 40px; margin-bottom: 48px; }
+    .section-index { color: #777; font: 12px "DM Mono", monospace; }
+    h2 { margin: 0; font-size: clamp(30px, 4.3vw, 48px); line-height: 1.12; letter-spacing: -.055em; }
+    .section-intro { max-width: 660px; margin: 17px 0 0; color: var(--muted); font-size: 14px; line-height: 1.9; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .feature {
+      min-height: 190px; padding: 25px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      transition: background .25s ease;
+    }
+    .feature:hover { background: #111; }
+    .feature-num { color: #777; font: 11px "DM Mono", monospace; }
+    .feature h3 { margin: 24px 0 9px; font-size: 16px; letter-spacing: -.025em; }
+    .feature p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.85; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start; }
+    .statement { font-size: clamp(23px, 3vw, 34px); line-height: 1.4; letter-spacing: -.045em; }
+    .statement em { color: #888; font-style: normal; }
+    .body-copy { color: var(--muted); font-size: 13px; line-height: 2; }
+    .tool-list { border-top: 1px solid var(--line); }
+    .tool-row { display: grid; grid-template-columns: 150px 1fr auto; gap: 20px; align-items: center; padding: 19px 0; border-bottom: 1px solid var(--line); }
+    .tool-row strong { font-size: 13px; }
+    .tool-row p { margin: 0; color: var(--muted); font-size: 12px; }
+    .tool-row a { color: #ddd; font: 11px "DM Mono", monospace; white-space: nowrap; }
+    .tool-row a:hover { text-decoration: underline; }
+
+    .ecosystem { background: #0c0c0c; }
+    .ecosystem-note { margin-top: 18px; max-width: 700px; color: var(--muted); font-size: 13px; line-height: 1.9; }
+    .comparison { width: 100%; border-collapse: collapse; margin-top: 35px; font-size: 12px; }
+    .comparison th, .comparison td { text-align: left; padding: 16px 14px; border-bottom: 1px solid var(--line); }
+    .comparison th { color: #888; font: 10px "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .comparison td { color: #c7c7c7; }
+    .comparison td:first-child { color: white; font-weight: 700; }
+    .comparison tr:last-child td { border-bottom: 0; }
+
+    .audience-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 38px; }
+    .audience { padding: 22px; min-height: 135px; border: 1px solid var(--line); border-radius: 6px; }
+    .audience strong { display: block; margin-bottom: 9px; font-size: 13px; }
+    .audience p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.8; }
+
+    .faq { max-width: 850px; margin-left: auto; }
+    details { border-top: 1px solid var(--line); }
+    details:last-child { border-bottom: 1px solid var(--line); }
+    summary { cursor: pointer; list-style: none; padding: 21px 0; display: flex; justify-content: space-between; gap: 20px; font-size: 14px; font-weight: 700; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: #888; font: 20px "DM Mono", monospace; transition: transform .2s ease; }
+    details[open] summary::after { content: "−"; }
+    details p { max-width: 720px; margin: -3px 0 22px; color: var(--muted); font-size: 12px; line-height: 1.9; }
+
+    .closing { padding: 95px 0; }
+    .closing-box { display: flex; align-items: end; justify-content: space-between; gap: 35px; padding: 42px; border: 1px solid var(--line-strong); border-radius: 8px; background: linear-gradient(120deg, #111, #090909); }
+    .closing h2 { max-width: 580px; margin-top: 16px; }
+    .closing p { max-width: 520px; color: var(--muted); font-size: 13px; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; color: #858585; font-size: 11px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 20px; }
+    .footer-links a:hover { color: white; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+    @media (max-width: 800px) {
+      .hero { padding: 82px 0 68px; }
+      .hero-grid, .section-head, .split { grid-template-columns: 1fr; gap: 28px; }
+      .hero-aside { max-width: 480px; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .audience-grid { grid-template-columns: repeat(2, 1fr); }
+      .trust-grid { grid-template-columns: repeat(2, 1fr); }
+      .trust-item:nth-child(2) { border-right: 0; }
+      .trust-item:nth-child(3), .trust-item:nth-child(4) { border-top: 1px solid var(--line); }
+      .trust-item:nth-child(3) { padding-left: 0; }
+      .closing-box { align-items: start; flex-direction: column; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: min(var(--content), calc(100% - 36px)); }
+      .nav { min-height: 64px; }
+      .nav-links { gap: 13px; font-size: 11px; }
+      .nav-links a:nth-child(2), .nav-links a:nth-child(3) { display: none; }
+      .nav-cta { padding: 9px 11px; }
+      .hero { padding: 70px 0 58px; }
+      h1 { font-size: clamp(43px, 13vw, 62px); }
+      .hero-copy { font-size: 14px; }
+      section.content-section { padding: 72px 0; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .feature { min-height: 150px; }
+      .tool-row { grid-template-columns: 1fr auto; gap: 5px 12px; }
+      .tool-row p { grid-column: 1 / -1; grid-row: 2; }
+      .comparison { min-width: 560px; }
+      .table-scroll { overflow-x: auto; }
+      .audience-grid { gap: 8px; }
+      .audience { padding: 16px; }
+      .closing { padding: 70px 0; }
+      .closing-box { padding: 26px; }
+      .footer-inner { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="/" aria-label="PasteDB home">
+        <img src="/favicon.png" alt="" width="30" height="30">
+        <span>PasteDB</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="#ecosystem">Ecosystem</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="https://pastedb.netlify.app">Open PasteDB <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="reveal">
+          <div class="eyebrow">Open-source developer tool</div>
+          <h1>A pastebin built for the way <span>developers work.</span></h1>
+          <p class="hero-copy">PasteDB is an open-source platform for sharing code, notes, text and images through simple links. It brings paste sharing together with developer tools, including end-to-end encrypted pastes, APIs, SDKs, a CLI and a Visual Studio Code extension.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://pastedb.netlify.app">Explore PasteDB <span aria-hidden="true">↗</span></a>
+            <a class="button secondary" href="https://github.com/sorathiya903/pastedb">View source on GitHub <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <aside class="hero-aside reveal">
+          <strong>One platform. Multiple ways to share.</strong>
+          PasteDB supports everyday sharing in the browser and programmatic workflows from the tools developers already use.
+          <p class="mono">INDEPENDENTLY BUILT · MIT LICENSE</p>
+        </aside>
+      </div>
+    </section>
+
+    <div class="trustline">
+      <div class="wrap trust-grid">
+        <div class="trust-item"><strong>Open source</strong><span>MIT LICENSE</span></div>
+        <div class="trust-item"><strong>FastAPI + Python</strong><span>BACKEND</span></div>
+        <div class="trust-item"><strong>MongoDB</strong><span>DATA STORAGE</span></div>
+        <div class="trust-item"><strong>Web + developer tools</strong><span>CONNECTED ECOSYSTEM</span></div>
+      </div>
+    </div>
+
+    <section class="content-section" id="features">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-index">01 / PLATFORM</div>
+          <div>
+            <h2>More than a place to paste code.</h2>
+            <p class="section-intro">PasteDB combines the familiar simplicity of a pastebin with features for privacy, organization and developer workflows. Use the web interface for quick sharing, or connect through the tools built around the platform.</p>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <article class="feature reveal"><span class="feature-num">01 — SHARE</span><h3>Text, code and images</h3><p>Create shareable pastes, use syntax highlighting for 40+ languages, preview Markdown and HTML, and share images through dedicated links.</p></article>
+          <article class="feature reveal"><span class="feature-num">02 — PRIVACY</span><h3>End-to-end encrypted pastes</h3><p>Paste content is encrypted on the client before it is uploaded. The encryption key is not stored on the PasteDB server. If all trusted devices and keys are lost, encrypted content cannot be recovered.</p></article>
+          <article class="feature reveal"><span class="feature-num">03 — CONTROL</span><h3>Sharing controls</h3><p>Choose public or private pastes, add password protection, set expiration times or use Burn After Read for supported one-time sharing.</p></article>
+          <article class="feature reveal"><span class="feature-num">04 — ORGANIZE</span><h3>Dashboard and history</h3><p>Manage your pastes, review analytics and access version history for supported logged-in pastes, with up to 10 historical versions.</p></article>
+          <article class="feature reveal"><span class="feature-num">05 — DISCOVER</span><h3>Explore and share</h3><p>Explore public pastes, create custom paste IDs, generate QR codes and use Link Paste to share small pieces of content stored in a compressed URL.</p></article>
+          <article class="feature reveal"><span class="feature-num">06 — UTILITIES</span><h3>Useful in the browser</h3><p>Copy content, render Markdown, preview HTML and run supported languages using PasteDB's built-in utilities.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="wrap split">
+        <div class="reveal">
+          <div class="eyebrow">02 / DEVELOPER WORKFLOW</div>
+          <p class="statement">Use PasteDB from the browser, <em>terminal, editor or your own application.</em></p>
+        </div>
+        <div class="reveal">
+          <p class="body-copy">PasteDB has an ecosystem of official developer tools maintained alongside the main platform. They make it possible to create and manage pastes without relying only on the website.</p>
+          <div class="tool-list">
+            <div class="tool-row"><strong>PasteDB CLI</strong><p>Create, fetch and delete pastes, manage API keys and more from a terminal.</p><a href="https://pastedb.netlify.app/cli">CLI docs ↗</a></div>
+            <div class="tool-row"><strong>Python SDK</strong><p>Work with PasteDB from Python applications.</p><a href="https://github.com/sorathiya903">Source ↗</a></div>
+            <div class="tool-row"><strong>Node.js SDK</strong><p>Create and manage pastes from Node.js projects.</p><a href="https://github.com/sorathiya903">Source ↗</a></div>
+            <div class="tool-row"><strong>VS Code extension</strong><p>Upload the current file or selected text and copy the resulting URL.</p><a href="https://marketplace.visualstudio.com/items?itemName=adityasorathiya.pastedb">Marketplace ↗</a></div>
+            <div class="tool-row"><strong>Developer API</strong><p>Integrate paste creation and management into your own workflows.</p><a href="https://pastedb.netlify.app">Explore ↗</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section ecosystem" id="ecosystem">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-index">03 / THE ECOSYSTEM</div>
+          <div>
+            <h2>Part of the open-source pastebin landscape.</h2>
+            <p class="section-intro">Open-source pastebin projects serve different needs. Some focus on minimal sharing, some emphasize secret sharing or encryption, and others provide broader developer workflows. PasteDB is one of the projects in this ecosystem.</p>
+          </div>
+        </div>
+        <p class="ecosystem-note reveal">Projects such as PrivateBin, Paaster, Yopass and Pastefy are also part of this space. They have their own designs, security models and priorities. PasteDB's focus is to combine paste sharing with an accompanying set of developer integrations. This is a description of project focus, not a security audit or a claim that one tool is universally better than another.</p>
+        <div class="table-scroll reveal">
+          <table class="comparison">
+            <thead><tr><th>Project</th><th>General focus</th><th>Project</th></tr></thead>
+            <tbody>
+              <tr><td>PasteDB</td><td>Paste sharing with developer tools, SDKs, CLI and editor integration</td><td><a href="https://pastedb.netlify.app">Visit ↗</a></td></tr>
+              <tr><td>PrivateBin</td><td>Minimalist pastebin with client-side encryption</td><td><a href="https://privatebin.info" rel="noopener noreferrer">Visit ↗</a></td></tr>
+              <tr><td>Paaster</td><td>Encrypted paste sharing</td><td><a href="https://github.com/Paaster/paaster" rel="noopener noreferrer">Source ↗</a></td></tr>
+              <tr><td>Yopass</td><td>Sharing secrets with automatic expiration</td><td><a href="https://github.com/jhaals/yopass" rel="noopener noreferrer">Source ↗</a></td></tr>
+              <tr><td>Pastefy</td><td>Pastebin with code-sharing and optional encryption features</td><td><a href="https://pastefy.app" rel="noopener noreferrer">Visit ↗</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-index">04 / WHO IT'S FOR</div>
+          <div>
+            <h2>Made for sharing useful information.</h2>
+            <p class="section-intro">PasteDB is designed for people who need a practical way to move code and information between people, devices and development environments.</p>
+          </div>
+        </div>
+        <div class="audience-grid">
+          <article class="audience reveal"><strong>Developers</strong><p>Share snippets, logs, configuration examples and technical notes.</p></article>
+          <article class="audience reveal"><strong>Students</strong><p>Share notes, code exercises and learning resources.</p></article>
+          <article class="audience reveal"><strong>Teachers</strong><p>Distribute text, examples and classroom resources through links.</p></article>
+          <article class="audience reveal"><strong>Builders</strong><p>Connect paste sharing to applications using the API and SDKs.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="faq">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-index">05 / QUESTIONS</div>
+          <div><h2>Frequently asked questions.</h2></div>
+        </div>
+        <div class="faq reveal">
+          <details><summary>What is PasteDB?</summary><p>PasteDB is an open-source paste-sharing platform for creating and sharing code snippets, notes, text and images through links. It also provides developer tools such as an API, SDKs, a CLI and a VS Code extension.</p></details>
+          <details><summary>Is PasteDB open source?</summary><p>Yes. The main PasteDB repository is publicly available on GitHub under the MIT License: <a href="https://github.com/sorathiya903/pastedb">github.com/sorathiya903/pastedb</a>.</p></details>
+          <details><summary>Does PasteDB support end-to-end encryption?</summary><p>PasteDB supports end-to-end encrypted pastes. Content is encrypted on the client before upload, and the encryption key is not stored on the PasteDB server. Keep your trusted devices and keys safe: encrypted content cannot be recovered if all copies of the key are lost.</p></details>
+          <details><summary>Can I use PasteDB from a terminal or code editor?</summary><p>Yes. PasteDB provides a CLI and a Visual Studio Code extension, as well as official Python and Node.js SDKs.</p></details>
+          <details><summary>Does PasteDB have an API?</summary><p>Yes. PasteDB provides API access and API key management for programmatic use. See the platform for current API documentation and access details.</p></details>
+          <details><summary>What makes PasteDB different from other pastebins?</summary><p>PasteDB combines common paste-sharing features with a set of developer integrations, including Python and Node.js SDKs, a terminal CLI and a VS Code extension. Other pastebin projects have different feature sets and priorities.</p></details>
+          <details><summary>Who creates and maintains PasteDB?</summary><p>PasteDB is independently created and maintained by Aditya Sorathiya. Its main source repository and related project links are available on GitHub.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="wrap">
+        <div class="closing-box reveal">
+          <div>
+            <div class="eyebrow">Explore the project</div>
+            <h2>Make sharing part of your workflow.</h2>
+            <p>Try PasteDB, explore its developer tools or browse the source code. The project is built in the open and continues to evolve.</p>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="https://pastedb.netlify.app">Open PasteDB ↗</a>
+            <a class="button secondary" href="https://github.com/sorathiya903/pastedb">GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>© <span id="year">2026</span> PasteDB · Created and maintained by Aditya Sorathiya</span>
+      <div class="footer-links">
+        <a href="https://pastedb.netlify.app">Website</a>
+        <a href="https://github.com/sorathiya903/pastedb">GitHub</a>
+        <a href="https://pastedb.netlify.app/cli">CLI docs</a>
+        <a href="https://marketplace.visualstudio.com/items?itemName=adityasorathiya.pastedb">VS Code</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal sections as they enter the viewport; content remains visible without JS.
+    const revealItems = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealItems.forEach(item => observer.observe(item));
+    } else {
+      revealItems.forEach(item => item.classList.add("visible"));
+    }
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
